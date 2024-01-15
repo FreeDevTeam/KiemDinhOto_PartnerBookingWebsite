@@ -44,7 +44,7 @@ function BookingDriving({
   setListBookingDate,
   dataBookingParam
 }) {
-  console.log("dataVihcle:", dataVihcle)
+
   const [form] = Form.useForm()
   const [bookingData, setBookingData] = useState({})
   const [disableBookingDate, setDisableBookingDate] = useState(true)
@@ -205,9 +205,20 @@ function BookingDriving({
         let tmp = data?.data || []
         if (tmp.length > 0)
           tmp.forEach((element) => {
-            const name = `${element.stationCode} - ${element.stationsName}`
+            // const name = `${element.stationCode} - ${element.stationsName}`
 
-            element.label = <div className="text-station-select">{name}</div>
+            // element.label = <div className="text-station-select">{name}</div>
+            const name = `${element.stationCode} - ${element.stationsAddress || element.stationsName}`
+            if(element?.enablePriorityMode){
+              element.label =<div className="text-station-select" style={{display:'flex',flexWrap:'wrap' }}>
+                  <div className="ai-c" style={{ display: 'inline-flex' }}>
+                    <span className='priority-mode'>Được ưu tiên</span>
+                  </div>
+                  {' '+name}
+                </div>
+            }else{
+              element.label = <div className="text-station-select">{name}</div>
+            }
             element.value = element.stationsId
             const textParse = JSON.parse(element?.stationBookingConfig)
             const enableBookingHandler = textParse.some((item) => {
@@ -226,10 +237,10 @@ function BookingDriving({
               element.disabled = true
               element.label = (
                 <div className="text-station-select" style={{ color: 'var(--error-btn-color)',display:'flex',flexWrap:'wrap' }}>
-                  {name}
-                  <div className="ai-c disable-station" style={{ display: 'inline-flex' }}>
-                    <WarningOutlined style={{ margin: '0 5px' }} /> <span>Ngưng hoạt động</span>
+                  <div className="ai-c disable-station" style={{ display: 'inline-flex',border: '1px solid var(--error-btn-color)',borderRadius: '4px' }}>
+                    <span style={{padding:'0 2px'}}>Ngưng hoạt động</span>
                   </div>
+                  {' '+name}
                 </div>
               )
               return
