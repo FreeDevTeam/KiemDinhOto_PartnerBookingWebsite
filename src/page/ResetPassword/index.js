@@ -28,6 +28,8 @@ const DefaultPage = (props) => {
             <p>
                 Trong quá trình đặt lại mật khẩu cho tài khoản của mình trên ứng dụng
                 <span className='text-blue'> "TTDK - Đặt lịch đăng kiểm" </span>, chúng tôi cần sự xác nhận từ phía bạn để tiếp tục quá trình này một cách bảo mật và chính xác.
+            </p>
+            <p>
                 Xin vui lòng lưu ý rằng chúng tôi sẽ sử dụng số điện thoại đã đăng ký của bạn để tạo lại mật khẩu mới. Để hoàn tất quá trình, vui lòng bấm vào nút "Xác nhận".
             </p>
             <div className="w-100 d-flex justify-content-center">
