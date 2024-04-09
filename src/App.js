@@ -16,31 +16,37 @@ import { IS_ZALO_MINI_APP } from './constants/global';
 import Layout from './components/Layout';
 import { ReactComponent as LogoTTDK } from './assets/icons/Logo.svg'
 import Logo from './assets/MAINLOGO.png'
+import { PATH } from './constants/router';
 const BookingPartner = React.lazy(() => import('./page/BookingPartner/index'))
 const BookingPartnerIframe = React.lazy(() => import('./page/Booking/index'))
 const BookingHistory = React.lazy(() => import('./page/BookingHistory/index'))
+const HomePage = React.lazy(() => import('./page/Home/index'))
 
 export const routes = {
+  homePage: {
+    path: PATH.HOME,
+    component: HomePage
+  },
   home: {
-    path: '/',
+    path: PATH.BOOKING,
     component: BookingPartner
   },
   bookingPartnerIframe: {
-    path: '/booking-partner-iframe',
+    path: PATH.BOOKING_PARTNER_IFRAME,
     component: BookingPartnerIframe
   },
-  // bookingHistory: {
-  //   path: '/booking-history',
-  //   component: BookingHistory
-  // },
+  bookingHistory: {
+    path: '/booking-history',
+    component: BookingHistory
+  },
 }
 
 export const baseName = IS_ZALO_MINI_APP ? `/zapps/${process.env.REACT_APP_ZMP_APP_ID}` : '/'
 
 function App() {
-  const themeApp=process.env.REACT_APP_THEME_NAME
-  const setThemeApp=()=>{
-    document.querySelector('body').setAttribute('data-theme',themeApp)
+  const themeApp = process.env.REACT_APP_THEME_NAME
+  const setThemeApp = () => {
+    document.querySelector('body').setAttribute('data-theme', themeApp)
   }
   useEffect(() => {
     setThemeApp()

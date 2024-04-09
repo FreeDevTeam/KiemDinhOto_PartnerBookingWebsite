@@ -1,0 +1,7 @@
+export { default as banner1 } from "./banner1.png"
+export { default as banner2 } from "./banner2.png"
+export { default as banner3 } from "./banner3.png"
+export { default as banner4 } from "./banner4.png"
+export { default as banner5 } from "./banner5.png"
+export { default as carImage } from "./car.png"
+export { default as motoImage } from "./moto.png"
