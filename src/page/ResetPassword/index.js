@@ -1,12 +1,10 @@
 import { Button, Spin } from 'antd'
-import React, { useEffect, useState } from 'react'
-import { useHistory, useLocation, useParams } from 'react-router-dom/cjs/react-router-dom.min'
-import LoadFormBookingFailed from '../../components/BasicComponent/LoadFormBookingFailed'
-import { CheckApiKey } from '../../helper/CheckApiKey'
-import { getZaloUserName, getZaloUserPhone } from '../../helper/common'
+import React, { useState } from 'react'
+import { getZaloUserPhone } from '../../helper/common'
 import { ReactComponent as LogoTTDK } from './../../assets/icons/Logo.svg'
-import { Typography } from 'antd';
 import "./index.scss"
+import { resetPassword } from '../../services/ttdkService'
+import { notification } from "antd";
 
 const statePage = {
     Default: "default",
@@ -46,77 +44,66 @@ const SuccessPage = () => {
         window.open(link, '_blank');
 
     }
-    return(
-    <div>
-        <p>Mật khẩu mới cho tài khoản của bạn là "<span className='text-blue' copyable>123456</span>"</p>
-        <p>
-            Chúng tôi xin gửi lời cảm ơn chân thành đến quý khách về sự hợp tác trong quá trình này.
-            Nếu cần hỗ trợ thêm, vui lòng liên hệ với chúng tôi.
-            Chúng tôi rất hân hạnh được phục vụ và chúc quý khách một ngày vui vẻ và thành công.
-        </p>
-        <div className='d-flex flex-column'>
-            <Button className='text-left p-0' type='link' onClick={() => handleGetLink('https://ttdk.com.vn')} >Đặt lịch đăng kiểm</Button>
-            <Button className='text-left p-0' type='link' onClick={() => handleGetLink('https://ttdk.com.vn/gia-han-bao-hiem-tnds?title=Gia%20h%E1%BA%A1n%20b%E1%BA%A3o%20hi%E1%BB%83m%20TNDS')}>Gia hạn bảo hiểm TNDS</Button>
-            <Button className='text-left p-0' type='link' onClick={() => handleGetLink('https://ttdk.com.vn/kiemtraphatnguoi')}>Tra cứu cảnh báo, phạt nguội</Button>
+    return (
+        <div>
+            <p>Mật khẩu mới cho tài khoản của bạn là "<span className='text-blue'>123456</span>"</p>
+            <p>
+                Chúng tôi xin gửi lời cảm ơn chân thành đến quý khách về sự hợp tác trong quá trình này.
+                Nếu cần hỗ trợ thêm, vui lòng liên hệ với chúng tôi.
+                Chúng tôi rất hân hạnh được phục vụ và chúc quý khách một ngày vui vẻ và thành công.
+            </p>
+            <div className='d-flex flex-column'>
+                <Button className='text-left p-0' type='link' onClick={() => handleGetLink('https://ttdk.com.vn')} >Đặt lịch đăng kiểm</Button>
+                <Button className='text-left p-0' type='link' onClick={() => handleGetLink('https://ttdk.com.vn/gia-han-bao-hiem-tnds?title=Gia%20h%E1%BA%A1n%20b%E1%BA%A3o%20hi%E1%BB%83m%20TNDS')}>Gia hạn bảo hiểm TNDS</Button>
+                <Button className='text-left p-0' type='link' onClick={() => handleGetLink('https://ttdk.com.vn/kiemtraphatnguoi')}>Tra cứu cảnh báo, phạt nguội</Button>
+            </div>
         </div>
-    </div>
 
-)}
+    )
+}
 
 const ContentPage = (props) => {
     const contentPage = {
         [statePage.Default]: <DefaultPage handleConfirm={props.handleConfirm} />,
         [statePage.Success]: <SuccessPage />,
         [statePage.Loading]: <LoadingPage />,
+        [statePage.Error]: <DefaultPage />,
     }
 
     return contentPage[props.page]
 }
 
 export default function ResetPassword() {
-    const history = useHistory();
-    const { search } = useLocation();
-    let { id } = useParams();
-    const params = new URLSearchParams(search)
-    const [isVisible, setIsVisible] = useState(false)
-    const partner = params.get('partner')?.toLowerCase()
-    const isResetPassword = params.get('reset')?.toLowerCase()
-    const apikey = CheckApiKey()
     const [currentStatePage, setCurrentStatePage] = useState(statePage.Default);
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
         try {
-            getZaloUserPhone().then(data => {
-                console.log("🚀 ~ getZaloUserPhone ~ data:", data)
-            })
-            getZaloUserName().then(data => {
-                console.log("🚀 ~ getZaloUserName ~ data:", data)
-            })
+            setCurrentStatePage(statePage.Loading)
+            const phoneNumber = await getZaloUserPhone()
+            if (!phoneNumber) {
+                notification.error({
+                    message: "Đã xảy ra lỗi, vui lòng thử lại."
+                })
+                setCurrentStatePage(statePage.Default)
+                return
+
+            }
+            const modifiedPhoneNumber = "0" + phoneNumber.slice(2);
+            await resetPassword(modifiedPhoneNumber)
             setCurrentStatePage(statePage.Success)
+
         } catch (error) {
             setCurrentStatePage(statePage.Error)
         }
     }
     return (
-        <>
-            {apikey ?
-                (
-                    <div style={{ maxWidth: 480, margin: 'auto', padding: '10px' }}>
-
-                        <ContentPage page={currentStatePage} handleConfirm={handleConfirm} />
-                        <div style={{ maxWidth: 600, margin: 'auto', padding: '30px 0', textAlign: 'center' }}>
-                            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
-                                <LogoTTDK />
-                            </div>
-                            <div className='text-blue mt-3'>Powered by TTDK</div>
-                        </div>
-                    </div>
-                ) :
-                (
-                    <>
-                        <LoadFormBookingFailed></LoadFormBookingFailed>
-                    </>
-                )
-            }
-        </>
+        <div style={{ maxWidth: 480, margin: 'auto', padding: '10px' }}>
+            <ContentPage page={currentStatePage} handleConfirm={handleConfirm} />
+            <div style={{ maxWidth: 600, margin: 'auto', padding: '30px 0', textAlign: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
+                    <LogoTTDK />
+                </div>
+                <div className='text-blue mt-3'>Powered by TTDK</div>
+            </div>
+        </div>
     )
 }

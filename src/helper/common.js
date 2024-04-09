@@ -41,7 +41,7 @@ export async function getZaloUserPhone() {
       const headers = {
         access_token: accessToken,
         code: token,
-        secret_key: '750jF23N1T5JW8UXXQxt',
+        secret_key: process.env.REACT_APP_ZALO_SECRECT_KEY,
       };
 
       const result = await BookingService.getZaloUserPhoneNumber(headers);
