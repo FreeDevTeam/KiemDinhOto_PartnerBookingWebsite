@@ -30,7 +30,7 @@ const DefaultPage = (props) => {
                 <span className='text-blue'> "TTDK - Đặt lịch đăng kiểm" </span>, chúng tôi cần sự xác nhận từ phía bạn để tiếp tục quá trình này một cách bảo mật và chính xác.
                 Xin vui lòng lưu ý rằng chúng tôi sẽ sử dụng số điện thoại đã đăng ký của bạn để tạo lại mật khẩu mới. Để hoàn tất quá trình, vui lòng bấm vào nút "Xác nhận".
             </p>
-            <div className="w-100 d-flex justify-content-center mgt-40">
+            <div className="w-100 d-flex justify-content-center">
                 <Button onClick={props.handleConfirm} className="login__button df" type="primary" htmlType="submit" size="large">
                     Xác nhận
                 </Button>
