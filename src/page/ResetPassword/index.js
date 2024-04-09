@@ -52,6 +52,8 @@ const SuccessPage = () => {
             <p>
                 Chúng tôi xin gửi lời cảm ơn chân thành đến quý khách về sự hợp tác trong quá trình này.
                 Nếu cần hỗ trợ thêm, vui lòng liên hệ với chúng tôi.
+            </p>
+            <p>
                 Chúng tôi rất hân hạnh được phục vụ và chúc quý khách một ngày vui vẻ và thành công.
             </p>
             <div className='d-flex flex-column'>
@@ -69,7 +71,7 @@ const ContentPage = (props) => {
         [statePage.Default]: <DefaultPage handleConfirm={props.handleConfirm} />,
         [statePage.Success]: <SuccessPage />,
         [statePage.Loading]: <LoadingPage />,
-        [statePage.Error]: <DefaultPage />,
+        [statePage.Error]: <DefaultPage handleConfirm={props.handleConfirm}/>,
     }
 
     return contentPage[props.page]
@@ -94,6 +96,9 @@ export default function ResetPassword() {
             setCurrentStatePage(statePage.Success)
 
         } catch (error) {
+            notification.error({
+                message: "Đã xảy ra lỗi, vui lòng thử lại."
+            })
             setCurrentStatePage(statePage.Error)
         }
     }
