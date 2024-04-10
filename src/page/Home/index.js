@@ -10,10 +10,17 @@ import { ReactComponent as SupportIcon } from '../../assets/icons/support.svg'
 import { ReactComponent as ScheduleDetailIcon } from '../../assets/icons/lh.svg'
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
 import { PATH } from '../../constants/router'
+import { useGlobalContext } from '../../context/GlobalContext'
 
 export default function HomePage() {
   const BANNER_IMG = [banner1, banner2, banner3, banner4, banner5]
   const history = useHistory()
+  const { globalState, handleGetUserPhone } = useGlobalContext();
+  const handleRouter= async(path)=>{
+    handleGetUserPhone().then(data => {
+      history.push(path)
+    }).catch(err =>{})
+  }
   return (
     <div
       className="home-page"
@@ -29,12 +36,12 @@ export default function HomePage() {
         ))}
       </Carousel>
       <div className="content">
-        <div className="left box" onClick={() => history.push(PATH.BOOKING)}>
+        <div className="left box" onClick={() => handleRouter(PATH.BOOKING)}>
           <ScheduleIcon className="icon"> </ScheduleIcon>
           Đặt lịch đăng kiểm
         </div>
         <div className="right">
-          <div className="first-box">
+          <div className="first-box" onClick={() => handleRouter(PATH.MY_BOOKING_HYSTORY)}>
             <ScheduleDetailIcon className="icon-small" />
             Xem lịch hẹn
           </div>

@@ -17,10 +17,13 @@ import Layout from './components/Layout';
 import { ReactComponent as LogoTTDK } from './assets/icons/Logo.svg'
 import Logo from './assets/MAINLOGO.png'
 import { PATH } from './constants/router';
+import { GlobalProvider } from './context/GlobalContext';
 const BookingPartner = React.lazy(() => import('./page/BookingPartner/index'))
 const BookingPartnerIframe = React.lazy(() => import('./page/Booking/index'))
 const BookingHistory = React.lazy(() => import('./page/BookingHistory/index'))
 const HomePage = React.lazy(() => import('./page/Home/index'))
+const ResetPassword = React.lazy(() => import('./page/ResetPassword'))
+const MyBookingHistory = React.lazy(() => import('./page/MyBookingHistory/index'))
 
 export const routes = {
   homePage: {
@@ -35,8 +38,16 @@ export const routes = {
     path: PATH.BOOKING_PARTNER_IFRAME,
     component: BookingPartnerIframe
   },
+  resetPassword: {
+    path: PATH.RESET_PASSWORD,
+    component: ResetPassword
+  },
+  myBooking: {
+    path: PATH.MY_BOOKING_HYSTORY,
+    component: MyBookingHistory
+  },
   bookingHistory: {
-    path: '/booking-history',
+    path: PATH.BOOKING_HYSTORY,
     component: BookingHistory
   },
 }
@@ -58,7 +69,7 @@ function App() {
     }
   }, []);
   return (
-    <>
+    <GlobalProvider>
       <Router export basename={baseName}>
         <Switch>
           {Object.keys(routes).map((key) => {
@@ -82,7 +93,7 @@ function App() {
           })}
         </Switch>
       </Router>
-    </>
+    </GlobalProvider>
   );
 }
 

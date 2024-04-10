@@ -30,7 +30,7 @@
     "prettier": "^2.8.1"
   },
   "scripts": {
-    "deploy-zalo-app": "npm install --save zmp-cli && npm install --save zmp-sdk && npm run build && node deployZApp.js",
+    "deploy-zalo-app": "npm run build && node deployZApp.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
