@@ -19,6 +19,8 @@ import Logo from './assets/MAINLOGO.png'
 const BookingPartner = React.lazy(() => import('./page/BookingPartner/index'))
 const BookingPartnerIframe = React.lazy(() => import('./page/Booking/index'))
 const BookingHistory = React.lazy(() => import('./page/BookingHistory/index'))
+const ResetPassword = React.lazy(() => import('./page/ResetPassword'))
+
 
 export const routes = {
   home: {
@@ -33,6 +35,10 @@ export const routes = {
   //   path: '/booking-history',
   //   component: BookingHistory
   // },
+  resetPassword: {
+    path: '/resetPassword',
+    component: ResetPassword
+  },
 }
 
 export const baseName = IS_ZALO_MINI_APP ? `/zapps/${process.env.REACT_APP_ZMP_APP_ID}` : '/'
