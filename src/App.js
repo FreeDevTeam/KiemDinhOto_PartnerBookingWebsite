@@ -35,7 +35,7 @@ export const routes = {
   //   path: '/booking-history',
   //   component: BookingHistory
   // },
-  bookingPartnerIframe: {
+  resetPassword: {
     path: '/resetPassword',
     component: ResetPassword
   },
