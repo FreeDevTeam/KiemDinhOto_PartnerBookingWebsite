@@ -20,6 +20,7 @@ import { validatorPlateNumber } from './../../helper/validatorPlateNumber'
 import { ReactComponent as LogoTTDK } from './../../assets/icons/Logo.svg'
 
 function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
+  const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE === "1"
   const location = useLocation();
   const searchparam = location.search
   const params = new URLSearchParams(searchparam)
@@ -510,19 +511,19 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     setIsLoading(true)
     const newData = {
       licensePlates: values.licensePlates.toUpperCase(),
-      phone: zaloUserPhone.trim(),
+      phone: values.phone,
       fullnameSchedule: values.fullnameSchedule.trim(),
       email: values.email,
       dateSchedule: values.dateSchedule,
       time: values.time.scheduleTime,
       stationsId: values.stationsId,
-      vehicleType:bookingData.vehicleType,
+      vehicleType: bookingData.vehicleType,
       licensePlateColor: values.licensePlateColor,
       notificationMethod: 'SMS',
       scheduleType: values.scheduleType,
-      vehicleSubCategory:values.vehicleSubCategory,
-      vehicleSubType:values.vehicleSubType,
-      certificateSeries:values.certificateSeries,
+      vehicleSubCategory: values.vehicleSubCategory,
+      vehicleSubType: values.vehicleSubType,
+      certificateSeries: values.certificateSeries,
     }
 
     BookingService.createSchedule(newData).then((result) => {
@@ -811,13 +812,31 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     }
   },[dataBookingParam])
 
+  useEffect(() => {
+    if (isZaloApp) {
+      form.setFieldsValue({
+        "phone": zaloUserPhone,
+      })
+      saveDataLocal('phone', zaloUserPhone)
+    }
+  }, [zaloUserPhone, form])
+
+  useEffect(() => {
+    if (isZaloApp) {
+      form.setFieldsValue({
+        "fullnameSchedule": zaloUserName,
+      })
+      saveDataLocal('fullnameSchedule', zaloUserName)
+    }
+  }, [zaloUserName, form])
+
   return (
     <Form
       name="booking"
       layout="vertical"
       initialValues={{}}
       form={form}
-      onFinish={(values) => {onFinish(values)}}>
+      onFinish={(values) => { onFinish(values) }}>
       <Form.Item
         name="fullnameSchedule"
         label="Họ và tên chủ xe"
@@ -830,53 +849,51 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
             message: 'Vui lòng nhập tên',
             pattern: new RegExp(/^\S/)
           }
-        ]}>
-        <div className="login__input__icon">
-          <Input
-            defaultValue={zaloUserName}
-            className="login__input booking-input"
-            placeholder="Nguyễn Văn a"
-            type="text"
-            size="large"
-            onInput={(e) => {
-              saveDataLocal('fullnameSchedule', e.target.value)
-            }} />
-        </div>
+        ]}
+      >
+        <Input
+          defaultValue={isZaloApp ? zaloUserName : dataBookingParam?.fullnameSchedule || dataLocal?.fullnameSchedule}
+          className="login__input booking-input"
+          placeholder="Nguyễn Văn a"
+          type="text"
+          size="large"
+          onChange={(e) => {
+            saveDataLocal('fullnameSchedule', e.target.value);
+          }}
+        />
       </Form.Item>
       <Form.Item
         name="phone"
         label="Số điện thoại"
-      // rules={[
-      //   {
-      //     required: true,
-      //     message: 'Vui lòng nhập số điện thoại'
-      //   },
-      //   {
-      //     message: 'Số điện thoại không hợp lệ',
-      //     pattern: new RegExp(/^(03|05|07|08|09|01[2|6|8|9])+([0-9])*$\b/),
-      //   },
-      //   {
-      //     min: 10,
-      //     message: 'Số điện thoại quá ngắn'
-      //   },
-      //   {
-      //     max: 11,
-      //     message: 'Số điện thoại quá dài'
-      //   }
-      // ]}
+        rules={[
+          {
+            required: !isZaloApp,
+            message: 'Vui lòng nhập số điện thoại'
+          },
+          {
+            message: 'Số điện thoại không hợp lệ',
+            pattern: new RegExp(/^(03|05|07|08|09|01[2|6|8|9])+([0-9])*$\b/),
+          },
+          {
+            min: 10,
+            message: 'Số điện thoại quá ngắn'
+          },
+          {
+            max: 11,
+            message: 'Số điện thoại quá dài'
+          }
+        ]}
       >
-        <div className="login__input__icon">
-          <Input
-            value={zaloUserPhone}
-            className="login__input booking-input"
-            placeholder="Nhập số điện thoại"
-            type="text"
-            size="large"
-            disabled
-            onInput={(e) => {
-              saveDataLocal('phone', e.target.value)
-            }} />
-        </div>
+        <Input
+          defaultValue={isZaloApp ? zaloUserPhone : dataBookingParam?.phone || dataLocal?.phone}
+          className="login__input booking-input"
+          placeholder="Nhập số điện thoại"
+          type="text"
+          size="large"
+          disabled={isZaloApp}
+          onInput={(e) => {
+            saveDataLocal('phone', e.target.value)
+          }} />
       </Form.Item>
 
       <Form.Item

@@ -29,16 +29,16 @@ function BookingPartner() {
           notification.error({
             message: "Không tìm thấy số điện thoại. Vui lòng thử lại"
           })
-          return
         }
-          setZaloUserPhone(phoneNumber)
+        phoneNumber && setZaloUserPhone(phoneNumber)
         }).catch(err => {
+         
           notification.error({
             message: "Có lỗi phát sinh. Vui lòng thử lại."
           })
         })
       getZaloUserName().then(data => {
-        setZaloUserName(data)
+        data && setZaloUserName(data)
       })
     }
     setTimeout(() => {
