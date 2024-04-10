@@ -2,7 +2,7 @@ import { notification } from "antd";
 import Axios from "axios";
 import queryString from "query-string";
 
-const TTDK_API_KEY = "e2d07e80-a1f8-11ed-a8fc-0242ac120002"
+const TTDK_API_KEY = process.env.REACT_APP_SYSTEM_API_KEY
 
 const apiService = Axios.create({
     baseURL: process.env.REACT_APP_API_URL,
