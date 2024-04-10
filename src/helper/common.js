@@ -1,6 +1,4 @@
 import queryString from 'query-string'
-import api from "zmp-sdk";
-import BookingService from '../services/addBookingService';
 
 export const getQueryString = (query) => {
   const result = queryString.stringify(query)
@@ -26,59 +24,3 @@ export const xoa_dau = (str) => {
   str = str.replace(/Đ/g, 'D')
   return str
 }
-
-export async function getZaloUserPhone() {
-  try {
-    const { token } = await new Promise((resolve, reject) => {
-      api.getPhoneNumber({
-        success: resolve,
-        fail: reject
-      });
-    });
-
-    if (token) {
-      const accessToken = await api.getAccessToken();
-      const headers = {
-        access_token: accessToken,
-        code: token,
-        secret_key: process.env.REACT_APP_ZALO_SECRECT_KEY,
-      };
-
-      const result = await BookingService.getZaloUserPhoneNumber(headers);
-      const { error, data } = result;
-
-      if (error) {
-        throw new Error(error);
-      }
-
-      return data?.number;
-    }
-  } catch (error) {
-    console.error("Error:", error);
-    throw new Error("Failed to get Zalo user phone number");
-  }
-}
-
-export const getZaloUserName = async () => {
-  try {
-    const { userInfo } = await new Promise((resolve, reject) => {
-      api.getUserInfo({
-        success: resolve,
-        fail: reject
-      });
-    });
-
-    if (userInfo) {
-      if (userInfo.name === 'User Name') {
-        return ''; 
-      } else {
-        return userInfo.name; 
-      }
-    } else {
-      return ''
-    }
-  } catch (error) {
-    console.error("Error:", error); 
-    throw new Error("Failed to get Zalo user name");
-  }
-};
