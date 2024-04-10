@@ -1,6 +1,6 @@
 import { Button, Spin } from 'antd'
 import React, { useState } from 'react'
-import { getZaloUserPhone } from '../../helper/common'
+import { getZaloUserPhone } from '../../helper/zaloSDK'
 import { ReactComponent as LogoTTDK } from './../../assets/icons/Logo.svg'
 import "./index.scss"
 import { resetPassword } from '../../services/ttdkService'
@@ -71,7 +71,7 @@ const ContentPage = (props) => {
         [statePage.Default]: <DefaultPage handleConfirm={props.handleConfirm} />,
         [statePage.Success]: <SuccessPage />,
         [statePage.Loading]: <LoadingPage />,
-        [statePage.Error]: <DefaultPage handleConfirm={props.handleConfirm}/>,
+        [statePage.Error]: <DefaultPage handleConfirm={props.handleConfirm} />,
     }
 
     return contentPage[props.page]
@@ -85,19 +85,25 @@ export default function ResetPassword() {
             const phoneNumber = await getZaloUserPhone()
             if (!phoneNumber) {
                 notification.error({
-                    message: "Đã xảy ra lỗi, vui lòng thử lại."
+                    message: "Không tìm thấy số điện thoại. Vui lòng thử lại"
                 })
                 setCurrentStatePage(statePage.Default)
                 return
 
             }
-            const modifiedPhoneNumber = "0" + phoneNumber.slice(2);
-            await resetPassword(modifiedPhoneNumber)
-            setCurrentStatePage(statePage.Success)
+            resetPassword(phoneNumber).then(data => {
+                setCurrentStatePage(statePage.Success)
+            })
+            .catch(err => {
+                notification.error({
+                    message: "Cập nhật mật khẩu thất bại. Vui lòng thử lại"
+                })
+                setCurrentStatePage(statePage.Error)
+            })
 
         } catch (error) {
             notification.error({
-                message: "Đã xảy ra lỗi, vui lòng thử lại."
+                message: "Có lỗi phát sinh. Vui lòng thử lại"
             })
             setCurrentStatePage(statePage.Error)
         }

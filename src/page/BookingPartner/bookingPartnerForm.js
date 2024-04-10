@@ -80,7 +80,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
       ...bookingData,
       licensePlates: localBookingData?.licensePlates || params.get('licensePlates'),
       phone: localBookingData?.phone || params.get('phone'),
-      fullnameSchedule: localBookingData?.fullnameSchedule || params.get('name'),
+      fullnameSchedule: zaloUserName || localBookingData?.fullnameSchedule || params.get('name'),
       email: localBookingData?.email || params.get('email'),
       dateSchedule: localBookingData?.dateSchedule || params.get('dateSchedule'),
       time: localBookingData?.time?.scheduleTime || params.get('time'),
@@ -510,7 +510,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     setIsLoading(true)
     const newData = {
       licensePlates: values.licensePlates.toUpperCase(),
-      phone: values.phone.trim(),
+      phone: zaloUserPhone.trim(),
       fullnameSchedule: values.fullnameSchedule.trim(),
       email: values.email,
       dateSchedule: values.dateSchedule,
@@ -832,46 +832,49 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           }
         ]}>
         <div className="login__input__icon">
-          <Input 
-            defaultValue={dataBookingParam?.fullnameSchedule || dataLocal?.fullnameSchedule}
+          <Input
+            defaultValue={zaloUserName}
             className="login__input booking-input"
-            placeholder="Nguyễn Văn a" 
-            type="text" 
+            placeholder="Nguyễn Văn a"
+            type="text"
             size="large"
             onInput={(e) => {
-              saveDataLocal('fullnameSchedule',e.target.value)
+              saveDataLocal('fullnameSchedule', e.target.value)
             }} />
         </div>
       </Form.Item>
       <Form.Item
         name="phone"
         label="Số điện thoại"
-        rules={[
-          {
-            required: true,
-            message: 'Vui lòng nhập số điện thoại'
-          },
-          {
-            message: 'Số điện thoại không hợp lệ',
-            pattern: new RegExp(/^(03|05|07|08|09|01[2|6|8|9])+([0-9])*$\b/),
-          },
-          {
-            min: 10,
-            message: 'Số điện thoại quá ngắn'
-          },
-          {
-            max: 11,
-            message: 'Số điện thoại quá dài'
-          }
-        ]}>
+      // rules={[
+      //   {
+      //     required: true,
+      //     message: 'Vui lòng nhập số điện thoại'
+      //   },
+      //   {
+      //     message: 'Số điện thoại không hợp lệ',
+      //     pattern: new RegExp(/^(03|05|07|08|09|01[2|6|8|9])+([0-9])*$\b/),
+      //   },
+      //   {
+      //     min: 10,
+      //     message: 'Số điện thoại quá ngắn'
+      //   },
+      //   {
+      //     max: 11,
+      //     message: 'Số điện thoại quá dài'
+      //   }
+      // ]}
+      >
         <div className="login__input__icon">
-          <Input defaultValue={dataBookingParam?.phone|| dataLocal?.phone} 
-            className="login__input booking-input" 
-            placeholder="Nhập số điện thoại" 
-            type="text" 
+          <Input
+            value={zaloUserPhone}
+            className="login__input booking-input"
+            placeholder="Nhập số điện thoại"
+            type="text"
             size="large"
-            onInput={(e)=>{
-              saveDataLocal('phone',e.target.value)
+            disabled
+            onInput={(e) => {
+              saveDataLocal('phone', e.target.value)
             }} />
         </div>
       </Form.Item>
