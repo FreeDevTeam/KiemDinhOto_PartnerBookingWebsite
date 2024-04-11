@@ -203,3 +203,29 @@
     height: 100%;
   }
 }
+
+.detail-modal-header{
+  background: var(--primary-button-color) !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0 !important;
+  margin-bottom: 0px !important;
+  border-radius: 0px !important;
+  .ant-modal-title{
+    font-size: 16px !important;
+    font-weight: 500 !important;  
+    color: #ffffff !important;
+  }
+ 
+}
+.detail-modal-content{
+  padding: 20px 24px !important;
+  .ant-modal-close {
+    position: absolute;
+    color: var(--primary-button-color) !important;
+    right: 6px;
+    top: 3px;
+
+  }
+}

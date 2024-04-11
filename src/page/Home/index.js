@@ -1,6 +1,6 @@
 import React from 'react'
 import { banner1, banner2, banner3, banner4, banner5, carImage, motoImage } from '../../assets/img'
-import { Carousel } from 'antd'
+import { Carousel, notification } from 'antd'
 import './index.scss'
 // import { ScheduleIcon } from '../../assets/icons'
 import { ReactComponent as ScheduleIcon } from '../../assets/icons/dldk.svg'
@@ -13,24 +13,53 @@ import { PATH } from '../../constants/router'
 import { useGlobalContext } from '../../context/GlobalContext'
 
 export default function HomePage() {
-  const BANNER_IMG = [banner1, banner2, banner3, banner4, banner5]
+  const BANNER = [
+    {
+      img:banner4,
+      link:"https://ttdk.com.vn/kiemtraphatnguoi",
+
+    },
+    {
+      img:banner5,
+      link:"https://vucar.vn/?utm_source=TTDK&utm_medium=Partnership&utm_campaign=Partnership_TTDK",
+
+    },
+    {
+      img:banner1,
+      link:"https://ttdk.partner.saladin.vn/promo",
+
+    },
+    {
+      img:banner2,
+      link:"https://forms.gle/o3iGkaa63Ney5nq1A",
+
+    },
+    {
+      img:banner3,
+      link:"https://ttdk.com.vn/contact-cooperation",
+
+    },
+  ]
   const history = useHistory()
   const { globalState, handleGetUserPhone } = useGlobalContext();
-  const handleRouter= async(path)=>{
+  const handleRouter = async (path) => {
     handleGetUserPhone().then(data => {
       history.push(path)
-    }).catch(err =>{})
+    }).catch(err => { 
+      notification.error({
+        message: "Có lỗi phát sinh. Vui lòng thử lại."
+      })
+    })
   }
   return (
     <div
       className="home-page"
-      //   style={{ maxWidth: 480, margin: 'auto', padding: '10px' }}
     >
       <Carousel autoplay>
-        {BANNER_IMG.map((src) => (
+        {BANNER.map((v) => (
           <div className="slide">
-            <a href="https://forms.gle/o3iGkaa63Ney5nq1A" target="_blank">
-              <img src={src} />
+            <a href={v.link} target="_blank">
+              <img src={v.img} />
             </a>
           </div>
         ))}
@@ -52,7 +81,7 @@ export default function HomePage() {
         </div>
       </div>
       <div className="second-content">
-        <a  href="https://ttdk.com.vn/gia-han-bao-hiem-tnds?title=Gia%20h%E1%BA%A1n%20b%E1%BA%A3o%20hi%E1%BB%83m%20TNDS" target="_blank" className="left-content">
+        <a href="https://ttdk.com.vn/gia-han-bao-hiem-tnds?title=Gia%20h%E1%BA%A1n%20b%E1%BA%A3o%20hi%E1%BB%83m%20TNDS" target="_blank" className="left-content">
           <p className="title">Bảo Hiểm</p>
           <img src={carImage} alt="" srcset="" />
           <div className="small-text mt-2">An toàn trên mọi nẻo đường</div>
@@ -61,7 +90,7 @@ export default function HomePage() {
             Bảo hiểm TNDS Ô tô
           </div>
         </a>
-        <a  href="https://ttdk.com.vn/doi-tac-bao-hiem/saladin-bao-hiem-toan-dien" target="_blank" className="right-content">
+        <a href="https://ttdk.com.vn/doi-tac-bao-hiem/saladin-bao-hiem-toan-dien" target="_blank" className="right-content">
           <img src={motoImage} alt="" srcset="" />
           <div className="small-text mt-2">Bảo hiểm xe máy trong 5 phút</div>
           <div className="small-extra-text mt-2">

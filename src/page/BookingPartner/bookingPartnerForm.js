@@ -857,7 +857,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           placeholder="Nguyễn Văn a"
           type="text"
           size="large"
-          onChange={(e) => {
+          onInput={(e) => {
             saveDataLocal('fullnameSchedule', e.target.value);
           }}
         />

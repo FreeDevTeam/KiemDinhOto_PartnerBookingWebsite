@@ -112,9 +112,21 @@ const ScheduleItem = ({
       {isModalErrOpen &&
         <PopupMessage isModalOpen={isModalErrOpen} onClose={() => { setIsModalErrOpen(false); window.location.reload() }} text={errorMessage} ></PopupMessage>
       }
-      <Modal title="" open={modalDetailSchedule} onCancel={() => handleCancel()} className='popup-cancel'>
-        <DetailScheduledComponent status={status} customerScheduleId={customerScheduleId}></DetailScheduledComponent>
-      </Modal>
+      <Modal classNames={
+          {
+            header:"detail-modal-header",
+            content:'detail-modal-content'
+          }
+        } 
+        closeIcon={null}
+         footer={null} 
+         width={"400px"}
+         title="Thông tin lịch hẹn" 
+         open={modalDetailSchedule} 
+          onCancel={()=>handleCancel()} 
+          className='my-modal'>
+          <DetailScheduledComponent isHeader={false} status={status} customerScheduleId={customerScheduleId}></DetailScheduledComponent>
+        </Modal>
     </>
   )
 }

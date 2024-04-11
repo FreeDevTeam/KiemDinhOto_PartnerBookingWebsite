@@ -8,12 +8,12 @@ import { CheckApiKey } from '../../helper/CheckApiKey'
 import { ReactComponent as LogoTTDK } from './../../assets/icons/Logo.svg'
 import { TTDK_PARTNER } from '../../components/BasicComponent/CheckLogoPartner'
 import { getZaloUserName, getZaloUserPhone } from '../../helper/zaloSDK'
+import { useGlobalContext } from '../../context/GlobalContext'
 function BookingPartner() {
+  const { globalState, handleGetUserPhone,handleGetUserName } = useGlobalContext();
   const [isVisible, setIsVisible] = useState(false)
   const [nextTab, setNextTab] = useState('partner')
   const [tabKey, setTabKey] = useState()
-  const [zaloUserPhone, setZaloUserPhone] = useState('')
-  const [zaloUserName, setZaloUserName] = useState('')
   const [form] = Form.useForm()
   const location = useLocation();
   const searchparam = location.search
@@ -23,24 +23,12 @@ function BookingPartner() {
 
   useEffect(() => {
     setIsVisible(true)
-    if (process.env.REACT_APP_ZALO_AUTH_ENABLE == 1) {
-      getZaloUserPhone().then(phoneNumber => {
-        if (!phoneNumber) {
-          notification.error({
-            message: "Không tìm thấy số điện thoại. Vui lòng thử lại"
-          })
-        }
-        phoneNumber && setZaloUserPhone(phoneNumber)
-        }).catch(err => {
-         
-          notification.error({
-            message: "Có lỗi phát sinh. Vui lòng thử lại."
-          })
-        })
-      getZaloUserName().then(data => {
-        data && setZaloUserName(data)
+    handleGetUserPhone().catch(err => {
+      notification.error({
+        message: "Có lỗi phát sinh. Vui lòng thử lại."
       })
-    }
+    })
+    handleGetUserName()
     setTimeout(() => {
       setIsVisible(false)
     }, 1000);
@@ -70,7 +58,7 @@ function BookingPartner() {
                         <Tabs.TabPane tab="Đặt lịch" key="booking"> */}
                   <div className='booking-title title-small'>ĐẶT LỊCH ĐĂNG KIỂM</div>
                   <div className='mt-4'>
-                    <BookingPartnerForm zaloUserPhone={zaloUserPhone} zaloUserName={zaloUserName} setTabKey={setTabKey} form={form} />
+                    <BookingPartnerForm zaloUserPhone={globalState.phoneNumber} zaloUserName={globalState.userName} setTabKey={setTabKey} form={form} />
                   </div>
                   {/* </Tabs.TabPane>
                         <Tabs.TabPane tab="Lịch hẹn" key="bookingList">

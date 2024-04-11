@@ -20,7 +20,8 @@ const appTheme=process.env.REACT_APP_THEME_NAME
 const DetailScheduledComponent = ({
   status,
   customerScheduleId,
-  contentHeader = <></>
+  contentHeader = <></>,
+  isHeader = true
 }) => {
   let wab = []
   const [data,setData]=useState([])
@@ -126,10 +127,10 @@ const DetailScheduledComponent = ({
   }
 
   return (
-    <div className="detail-sche" style={{marginTop:'30px'}}>
-      <div className="heads">
+    <div className="detail-sche" style={{marginTop: isHeader ?'30px' : '0px'}}>
+     {isHeader && <div className="heads">
         Thông tin lịch hẹn
-      </div>
+      </div>}
       <div className="content">
         <div className="box">
           <div className="title-i">Nơi đặt chỗ</div>
@@ -269,7 +270,7 @@ const DetailScheduledComponent = ({
           </div>
           : <></>
         }
-      <Modal title="Hủy Lịch hẹn" open={isModal} onCancel={()=>handleCancel()} className='popup-cancel'>
+      <Modal title="Hủy Lịch hẹn" open={isModal} onCancel={()=>handleCancel()} className={ `${isHeader ? '' : 'my-modal' } popup-cancel`}>
       <div style={{ maxWidth: 600, margin: 'auto', padding: '0 30px', minHeight: '400px', paddingTop: 30 }}>
           <div>
             <strong>Lý do huỷ lịch:</strong>
