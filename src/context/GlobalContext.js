@@ -73,7 +73,6 @@ export const GlobalProvider = ({ children }) => {
 
     const handleGetUserName = async () => {
         if (process.env.REACT_APP_ZALO_AUTH_ENABLE == 1) {
-
             try {
                 if (!globalState.userName) {
                     const userName = await getZaloUserName()
@@ -91,7 +90,7 @@ export const GlobalProvider = ({ children }) => {
     }
 
     return (
-        <GlobalContext.Provider value={{ globalState, updateGlobalState, handleGetUserPhone, handleGetUserName }}>
+        <GlobalContext.Provider value={{ setGlobalState,globalState, updateGlobalState, handleGetUserPhone, handleGetUserName }}>
             {children}
             <WarningNotify isModalOpen={openModal} onConfirm={handleConfirm} onClose={() => setOpenModal(false)} />
         </GlobalContext.Provider>

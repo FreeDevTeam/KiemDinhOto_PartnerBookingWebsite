@@ -80,7 +80,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     setDataBookingParam({
       ...bookingData,
       licensePlates: localBookingData?.licensePlates || params.get('licensePlates'),
-      phone: localBookingData?.phone || params.get('phone'),
+      phone: zaloUserPhone || localBookingData?.phone || params.get('phone'),
       fullnameSchedule: zaloUserName || localBookingData?.fullnameSchedule || params.get('name'),
       email: localBookingData?.email || params.get('email'),
       dateSchedule: localBookingData?.dateSchedule || params.get('dateSchedule'),

@@ -10,7 +10,7 @@ import { TTDK_PARTNER } from '../../components/BasicComponent/CheckLogoPartner'
 import { getZaloUserName, getZaloUserPhone } from '../../helper/zaloSDK'
 import { useGlobalContext } from '../../context/GlobalContext'
 function BookingPartner() {
-  const { globalState, handleGetUserPhone,handleGetUserName } = useGlobalContext();
+  const { globalState, handleGetUserPhone, handleGetUserName, setGlobalState } = useGlobalContext();
   const [isVisible, setIsVisible] = useState(false)
   const [nextTab, setNextTab] = useState('partner')
   const [tabKey, setTabKey] = useState()
@@ -21,17 +21,26 @@ function BookingPartner() {
   let partner = params.get('partner')?.toLowerCase()
   let apikey = CheckApiKey()
 
-  useEffect(() => {
-    setIsVisible(true)
-    handleGetUserPhone().catch(err => {
+  const handleGetUserInfor = async () => {
+    try {
+      handleGetUserName()
+    } catch (error) {
+      
+    }
+    try {
+      await handleGetUserPhone()
+    } catch (error) {
+      setIsVisible(false)
       notification.error({
         message: "Có lỗi phát sinh. Vui lòng thử lại."
       })
-    })
-    handleGetUserName()
-    setTimeout(() => {
-      setIsVisible(false)
-    }, 1000);
+    }
+    setIsVisible(false)
+  }
+
+  useEffect(() => {
+    setIsVisible(true)
+    handleGetUserInfor()
   }, [])
   return (
     <>

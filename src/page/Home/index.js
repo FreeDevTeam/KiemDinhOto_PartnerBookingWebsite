@@ -41,14 +41,10 @@ export default function HomePage() {
     },
   ]
   const history = useHistory()
-  const { globalState, handleGetUserPhone } = useGlobalContext();
+  const { handleGetUserPhone } = useGlobalContext();
   const handleRouter = async (path) => {
     handleGetUserPhone().then(data => {
       history.push(path)
-    }).catch(err => { 
-      notification.error({
-        message: "Có lỗi phát sinh. Vui lòng thử lại."
-      })
     })
   }
   return (
@@ -81,8 +77,8 @@ export default function HomePage() {
         </div>
       </div>
       <div className="second-content">
-        <a href="https://ttdk.com.vn/gia-han-bao-hiem-tnds?title=Gia%20h%E1%BA%A1n%20b%E1%BA%A3o%20hi%E1%BB%83m%20TNDS" target="_blank" className="left-content">
-          <p className="title">Bảo Hiểm</p>
+      <p className="title">Bảo Hiểm</p>
+        <a href="https://ttdk.com.vn/gia-han-bao-hiem-tnds?title=Gia%20h%E1%BA%A1n%20b%E1%BA%A3o%20hi%E1%BB%83m%20TNDS" target="_blank" className="right-content">
           <img src={carImage} alt="" srcset="" />
           <div className="small-text mt-2">An toàn trên mọi nẻo đường</div>
           <div className="small-extra-text mt-2">
