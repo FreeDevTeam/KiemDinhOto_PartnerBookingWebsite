@@ -5,8 +5,10 @@ import DefaultButton from '../../components/elements/button'
 import { useGlobalContext } from '../../context/GlobalContext'
 import { PATH } from '../../constants/router'
 import BookingHistoryList from './BookingHistoryList'
-const MyBookingHistory = ({ history }) => {
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
+const MyBookingHistory = () => {
   const [loading, setLoading] = useState(false)
+  const history = useHistory()
   const { globalState, handleGetUserPhone } = useGlobalContext();
   useEffect(() => {
     setLoading(true)
@@ -27,7 +29,7 @@ const MyBookingHistory = ({ history }) => {
             colorType="dark"
             title="+ Đặt lịch hẹn"
             action={() => {
-              history.push(`${PATH.BOOKING_PARTNER_IFRAME}?apikey=${null}&name=${userName}&phone=${phoneNumber}`)
+              history.push(`${PATH.BOOKING}`)
             }}
           />
         </div>

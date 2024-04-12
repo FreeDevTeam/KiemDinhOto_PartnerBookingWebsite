@@ -1,0 +1,147 @@
+.detail-sche {
+  background: #ffffff;
+  overflow: hidden;
+
+  &-scheduleCode {
+    word-wrap: break-word;
+    word-break: break-all;
+  }
+
+  .heads {
+    background: var(--primary-button-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 500;
+
+    svg {
+      margin-right: 5px;
+    }
+  }
+  .payment-icon{
+    text-align: start;
+    & img{
+      width: 53px !important;
+      height: 60px !important;
+    }
+  } 
+
+  .content {
+    padding: 15px 0px;
+  }
+
+  .notes {
+    margin-top: 15px;
+    color: #0870d9;
+  }
+}
+
+.title-i {
+  font-size: 16px;
+  color: #0870d9;
+  cursor: pointer;
+}
+
+.mt-20 {
+  margin-top: 20px;
+}
+
+.fs-12 {
+  font-size: 14px !important;
+}
+
+.edit-btn {
+  position: relative;
+  float: right;
+  padding-right: 16px;
+  padding-top: 16px;
+  cursor: pointer;
+}
+
+.mb-0 {
+  margin-bottom: 0px;
+}
+
+.text-note {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.fw-700 {
+  font-weight: 700;
+}
+.text-i {
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.fs-10 {
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: 10px;
+}
+
+.detail-sche .wrap-payment-schedule {
+  display: flex;
+  justify-content : flex-start;
+  margin-bottom: 10px;
+  .height-mobile {
+    width: 250px;
+    .wrap-icon svg {
+      width: 40px;
+    }
+
+    .wrap-label {
+      font-size: 12px;
+    }
+  }
+}
+
+@media (max-width: 460px) {
+  .with-mobile {
+    width: 30px;
+  }
+
+  .wrap-payment-schedule {
+    flex-direction: column;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  .wrap-label {
+    position: relative;
+    top: -2px;
+    left: 36px;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .height-mobile {
+    height: 50px;
+  }
+  .d-flex{
+    gap: 8px;
+  }
+  .plate-tag{
+    padding: 2px !important;
+    min-height:28px;
+    height: 100%;
+  }
+}
+.scheduleHash{
+  text-align: center;
+  border-top: 2px dashed var(--title-color);
+  margin-top:10px;
+  margin-bottom: 40px;
+  &-copy{
+    color: var(--title-color);
+    font-style: italic;
+    cursor: pointer;
+    padding: 10px;
+    text-decoration: underline;
+  }
+}

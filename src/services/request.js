@@ -8,7 +8,6 @@ import { CheckApiKey } from '../helper/CheckApiKey'
 function cleanUp() {
   window.localStorage.clear()
   if (IS_ZALO_MINI_APP) {
-    window.location.reload()
   } else {
     window.location.href = '/login'
   }

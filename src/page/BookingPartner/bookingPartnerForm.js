@@ -342,13 +342,13 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
       time: null
     }
     localStorage.setItem(addKeyLocalStorage('bookingData'), JSON.stringify(localData))
-    if(listBookingDate?.length > 0 && dataLocal?.stationsId){
-      for(let i =0;i<listBookingDate?.length;i++){
-        if(listBookingDate[i].scheduleDateStatus){
-          handleFillValues('dateSchedule',listBookingDate[i].scheduleDate,listBookingDate[i].scheduleDate)
+    if (listBookingDate?.length > 0 && dataLocal?.stationsId) {
+      for (let i = 0; i < listBookingDate?.length; i++) {
+        if (listBookingDate[i].scheduleDateStatus && listBookingDate[i].totalBookingSchedule === 0) {
+          handleFillValues('dateSchedule', listBookingDate[i].scheduleDate, listBookingDate[i].scheduleDate)
           //lưu dữ liệu thỏa mãn vào local
-          saveDataLocal('dateSchedule',listBookingDate[i].scheduleDate)
-          const  stationsId  = bookingData?.stationsId?.stationsId
+          saveDataLocal('dateSchedule', listBookingDate[i].scheduleDate)
+          const stationsId = bookingData?.stationsId?.stationsId
           //gọi api lấy giờ hẹn
           if (stationsId && bookingData) {
             //chạy api lấy danh sách giờ hẹn
@@ -382,10 +382,10 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
       time: null
     }
     localStorage.setItem(addKeyLocalStorage('bookingData'), JSON.stringify(localData))
-    if(listBookingTime?.length > 0){
-      for(let i =0;i<listBookingTime?.length;i++){
-        if(!listBookingTime[i].disabled){
-          handleFillValues('time',listBookingTime[i].scheduleTime,listBookingTime[i])
+    if (listBookingTime?.length > 0) {
+      for (let i = 0; i < listBookingTime?.length; i++) {
+        if (!listBookingTime[i].disabled && listBookingTime[i]?.totalBookingSchedule ===0) {
+          handleFillValues('time', listBookingTime[i].scheduleTime, listBookingTime[i])
           //lưu dữ liệu thỏa mãn vào local
           saveDataLocal('time',listBookingTime[i].scheduleTime)
           return

@@ -1,44 +1,49 @@
 import React, { useEffect, useState } from 'react'
 import './index.scss'
-import { Tag, Row,message,Button, Modal, Spin,Pagination,Empty,Radio,Space,Input } from 'antd'
-import { VEHICLE_SUB_TYPE,VIHCLE_TYPES, SCHEDULE_STATUS, CUSTOMER_RECEIPT_STATUS, CUSTOMER_RECEIPT_STATUS_TO_TEXT, PAYMENT_OBJECT } from './../../constants/global'
+import { Tag, Row, message, Button, Modal, Spin, Pagination, Empty, Radio, Space, Input } from 'antd'
+import { VEHICLE_SUB_TYPE, VIHCLE_TYPES, SCHEDULE_STATUS, CUSTOMER_RECEIPT_STATUS, CUSTOMER_RECEIPT_STATUS_TO_TEXT, PAYMENT_OBJECT, SCHEDULE_STATUS_3_0 } from '../../constants/global'
 import _ from 'lodash'
 import { changeTime } from '../../helper/changeTime'
 import { useHistory } from 'react-router-dom'
 import moment from 'moment'
 import { QRCodeCanvas } from 'qrcode.react'
-import BookingService from './../../services/addBookingService'
+import BookingService from '../../services/addBookingService'
 import PopupMessage from '../BookingPartner/PopupMessage'
+import { useParams } from 'react-router-dom/cjs/react-router-dom'
 
 const { TextArea } = Input
 
-const listtype = {
-  view: "view"
+const RetunStatus = ({ status }) => {
+  let el = _.find(SCHEDULE_STATUS_3_0, { value: status })
+  return el ? (
+    <div style={{ color: el?.color, fontWeight: 500, fontSize: 14, lineHeight: '15.4px', display: 'inline' }}>
+      {el?.label}
+    </div>
+  ) : (
+    <></>
+  )
 }
 
-const appTheme=process.env.REACT_APP_THEME_NAME
-const DetailScheduledComponent = ({
-  status,
-  customerScheduleId,
+const BookingDetail = ({
   contentHeader = <></>,
   isHeader = true
 }) => {
+  const { customerScheduleId } = useParams()
   let wab = []
-  const [data,setData]=useState([])
+  const [scheduleInformation, setScheduleInformation] = useState([])
   const [isModal, setIsModal] = useState(false)
   const [vali, setVali] = useState(false)
   const [reasonRateCancelSchedule, setReasonRateCancelSchedule] = useState(null)
   const [reasonNoteCancelSchedule, setReasonNoteCancelSchedule] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
   const [isModalErrOpen, setIsModalErrOpen] = useState(false)
-  
+
   const handleCancel = () => {
     setIsModal(false);
   };
   const onChangeReasonRateCancelSchedule = (e) => {
     setReasonRateCancelSchedule(e.target.value)
   }
-
   const handleCheck = (customerScheduleId) => {
     if ((reasonNoteCancelSchedule || reasonRateCancelSchedule) !== null) {
       setIsModal(true)
@@ -52,6 +57,10 @@ const DetailScheduledComponent = ({
           setIsModalErrOpen(true)
         } else {
           setErrorMessage('Hủy lịch hẹn thành công')
+          setScheduleInformation({
+            ...scheduleInformation,
+            CustomerScheduleStatus: 20
+          })
           setIsModalErrOpen(true)
           setIsModal(false)
         }
@@ -60,40 +69,42 @@ const DetailScheduledComponent = ({
       setVali(true)
     }
   }
-  const enablePaymentMethods = data?.station?.stationPayments ? data?.station?.stationPayments.split(',') : [];
+
+
+  const enablePaymentMethods = scheduleInformation?.station?.stationPayments ? scheduleInformation?.station?.stationPayments.split(',') : [];
   const ENABLE_PAYMENT_GATEWAY =
     process.env.REACT_APP_ENABLE_PAYMENT * 1 === 1 &&
     enablePaymentMethods.length > 0 && // trạm bật phương thức thanh toán
-    data?.station?.enablePaymentGateway === 1 && // trạm bật thanh toán
-    // (data?.CustomerScheduleStatus === status.confirmed) && // lịch chưa hoàn tất
-    data?.order?.paymentStatus !== CUSTOMER_RECEIPT_STATUS.SUCCESS && // chưa hoàn tất thanh toán
-    data?.order?.totalPayment > 0 // số tiền phải > 0
+    scheduleInformation?.station?.enablePaymentGateway === 1 && // trạm bật thanh toán
+    // (scheduleInformation?.CustomerScheduleStatus === status.confirmed) && // lịch chưa hoàn tất
+    scheduleInformation?.order?.paymentStatus !== CUSTOMER_RECEIPT_STATUS.SUCCESS && // chưa hoàn tất thanh toán
+    scheduleInformation?.order?.totalPayment > 0 // số tiền phải > 0
 
   const isViewDetails =
     process.env.REACT_APP_ENABLE_PAYMENT * 1 === 1 &&
-    (enablePaymentMethods.length === 0 || data?.station?.enablePaymentGateway === 0) && // trạm bật phương thức thanh toán
-    // (data?.CustomerScheduleStatus === status.confirmed) && // lịch chưa hoàn tất
-    data?.order?.paymentStatus !== CUSTOMER_RECEIPT_STATUS.SUCCESS && // chưa hoàn tất thanh toán
-    data?.order?.totalPayment > 0 // số tiền phải > 0
+    (enablePaymentMethods.length === 0 || scheduleInformation?.station?.enablePaymentGateway === 0) && // trạm bật phương thức thanh toán
+    // (scheduleInformation?.CustomerScheduleStatus === status.confirmed) && // lịch chưa hoàn tất
+    scheduleInformation?.order?.paymentStatus !== CUSTOMER_RECEIPT_STATUS.SUCCESS && // chưa hoàn tất thanh toán
+    scheduleInformation?.order?.totalPayment > 0 // số tiền phải > 0
 
-  const dataTime = data?.station?.stationWorkTimeConfig
+  const dataTime = scheduleInformation?.station?.stationWorkTimeConfig
   if (dataTime) {
-    wab = JSON.parse(data?.station?.stationWorkTimeConfig)
+    wab = JSON.parse(scheduleInformation?.station?.stationWorkTimeConfig)
   }
 
-  const getScheduleDetail=()=>{
+  const getScheduleDetail = () => {
     BookingService.getBookingDetail(customerScheduleId).then((result) => {
       const { isSuccess, message, data } = result
       if (!isSuccess || !data) {
         return
       } else {
-        setData(data)
+        setScheduleInformation(data)
       }
     })
   }
-  useEffect(()=>{
+  useEffect(() => {
     getScheduleDetail()
-  },[])
+  }, [customerScheduleId])
   const history = useHistory()
   const BindPlate = ({ type, number }) => {
     const colors = {
@@ -108,96 +119,103 @@ const DetailScheduledComponent = ({
       </Tag>
     )
   }
-  function getVehicleTypeName(vehicleData){
+  function getVehicleTypeName(vehicleData) {
     console.log("getVehicleTypeName ~ vehicleData:", vehicleData)
     const vehicleType = vehicleData?.vehicleType
     let vehicle
-    if(vehicleType){
+    if (vehicleType) {
       vehicle = VIHCLE_TYPES.find((e) => e.value == vehicleType)?.label
       return vehicle
-    }else{
-      if(vehicleType){
+    } else {
+      if (vehicleType) {
         vehicle = VIHCLE_TYPES.find((e) => e.value == vehicleType?.vehicleType)?.label
         return vehicle
-      }else{
-      return ('Phương tiện khác')
+      } else {
+        return ('Phương tiện khác')
       }
     }
     return ('Phương tiện khác')
   }
 
   return (
-    <div className="detail-sche" style={{marginTop: isHeader ?'30px' : '0px'}}>
-     {isHeader && <div className="heads">
+    <div className="detail-sche" style={{ maxWidth: 480, margin: 'auto', padding: '10px' }}>
+      {isHeader && <div className="heads">
         Thông tin lịch hẹn
       </div>}
       <div className="content">
         <div className="box">
           <div className="title-i">Nơi đặt chỗ</div>
           <div className="text-i">
-            {data?.station?.stationsName} - {data?.station?.stationsAddress}
+            {scheduleInformation?.station?.stationsName} - {scheduleInformation?.station?.stationsAddress}
           </div>
         </div>
         <div className="d-flex j-sb mgt-15">
           <div className="box w-50">
             <div className="title-i">Họ và tên</div>
-            <div className="text-i">{data?.fullnameSchedule}</div>
+            <div className="text-i">{scheduleInformation?.fullnameSchedule}</div>
           </div>
           <div className="box w-50">
             <div className="title-i">Số điện thoại</div>
-            <div className="text-i">{data?.phone}</div>
+            <div className="text-i">{scheduleInformation?.phone}</div>
           </div>
         </div>
         <div className="d-flex j-sb mgt-15">
-          {data?.licensePlates ? (
+          {scheduleInformation?.licensePlates ? (
             <div className="box w-50">
               <div className="title-i">Biển số xe</div>
               <div className="text-i">
                 {' '}
-                <BindPlate type={data?.licensePlateColor} number={data?.licensePlates} />
+                <BindPlate type={scheduleInformation?.licensePlateColor} number={scheduleInformation?.licensePlates} />
               </div>
             </div>
-          ):(<div className="box w-50">
-              <div className="title-i">Ngày</div>
-              <div className="text-i">{data?.dateSchedule}</div>
-            </div>)
+          ) : (<div className="box w-50">
+            <div className="title-i">Ngày</div>
+            <div className="text-i">{scheduleInformation?.dateSchedule}</div>
+          </div>)
           }
           <div className="box w-50">
             <div className="title-i">Loại phương tiện</div>
-            <div className="text-i">{getVehicleTypeName(data)}</div>
+            <div className="text-i">{getVehicleTypeName(scheduleInformation)}</div>
           </div>
         </div>
-        {data?.time && 
+        {scheduleInformation?.time &&
           <div className="d-flex j-sb mgt-15">
             <div className="box w-50">
               <div className="title-i">Ngày</div>
-              <div className="text-i">{data?.dateSchedule}</div>
+              <div className="text-i">{scheduleInformation?.dateSchedule}</div>
             </div>
             <div className="box w-50">
               <div className="title-i">Giờ</div>
-              <div className="text-i">{changeTime(data?.time)}</div>
+              <div className="text-i">{changeTime(scheduleInformation?.time)}</div>
             </div>
           </div>
         }
         <div className="d-flex j-sb mgt-15">
-          {data?.scheduleCode && (
+          {scheduleInformation?.scheduleCode && (
             <div className="box w-50">
-              <div className="title-i">Mã đặt vé</div>
-              <div className="text-i detail-sche-scheduleCode">{data?.scheduleCode}</div>
+              <div className="title-i">Trạng thái</div>
+             <RetunStatus status={scheduleInformation?.CustomerScheduleStatus} />
             </div>
           )}
+          {scheduleInformation?.scheduleCode && (
+            <div className="box w-50">
+              <div className="title-i">Mã đặt vé</div>
+              <div className="text-i detail-sche-scheduleCode">{scheduleInformation?.scheduleCode}</div>
+            </div>
+          )}
+
         </div>
 
-        {data?.station?.enablePaymentGateway === 1 && (
+        {scheduleInformation?.station?.enablePaymentGateway === 1 && (
           <div>
-            {data?.order?.paymentStatus !== CUSTOMER_RECEIPT_STATUS.SUCCESS ? (
+            {scheduleInformation?.order?.paymentStatus !== CUSTOMER_RECEIPT_STATUS.SUCCESS ? (
               <>
                 <div className="d-flex j-sb mgt-15">
-                  {data?.order?.totalPayment > 0 && (
+                  {scheduleInformation?.order?.totalPayment > 0 && (
                     <div className="box">
                       <div className="title-i">Chi phí dự kiến</div>
                       <div className="text-i">
-                        {data?.order?.totalPayment?.toLocaleString()}
+                        {scheduleInformation?.order?.totalPayment?.toLocaleString()}
                       </div>
                       <div className="text-i">
                         <i>Ghi chú: Trên đây chỉ là chi phí dự kiến mang tính tham khảo.</i>
@@ -205,12 +223,12 @@ const DetailScheduledComponent = ({
                     </div>
                   )}
                 </div>
-                {data?.stationServices?.length > 0 && (
+                {scheduleInformation?.stationServices?.length > 0 && (
                   <div className="mgt-15">
                     <div className="">
                       <div className="title-i mb-2">Dịch vụ lịch hẹn</div>
                       <ul>
-                        {data.stationServices.map((item, index) => (
+                        {scheduleInformation.stationServices.map((item, index) => (
                           <li key={index} className="text-i">
                             {item.serviceName}
                           </li>
@@ -249,29 +267,29 @@ const DetailScheduledComponent = ({
               <div className="d-flex j-sb mgt-15">
                 <div className="box w-50">
                   <div className="title-i">Trạng thái thanh toán</div>
-                  <div className="text-i">{CUSTOMER_RECEIPT_STATUS_TO_TEXT[data?.order?.paymentStatus?.toUpperCase()] || ''}</div>
+                  <div className="text-i">{CUSTOMER_RECEIPT_STATUS_TO_TEXT[scheduleInformation?.order?.paymentStatus?.toUpperCase()] || ''}</div>
                 </div>
                 <div className="box w-50">
                   <div className="title-i">Thời gian thanh toán</div>
-                  <div className="text-i">{moment(data?.order?.approveDate || new Date()).format('DD/MM/YYYY HH:mm:ss')}</div>
+                  <div className="text-i">{moment(scheduleInformation?.order?.approveDate || new Date()).format('DD/MM/YYYY HH:mm:ss')}</div>
                 </div>
               </div>
             )}
           </div>
         )}
         {contentHeader}
-        <a target="_blank" style={{marginTop:'1rem'}} href="https://youtu.be/mpIQeRGv3Lg?feature=shared" className="">Xem thêm hướng dẫn quy trình đăng kiểm</a>
+        <a target="_blank" style={{ marginTop: '1rem' }} href="https://youtu.be/mpIQeRGv3Lg?feature=shared" className="mgt-15 d-block">Xem thêm hướng dẫn quy trình đăng kiểm</a>
       </div>
-        {status != 20 ?
-          <div className="w-100 d-flex justify-content-center">
-            <Button className="cancel-schedule" type="primary" onClick={()=>{setIsModal(true)}} size="larger">
-              Hủy lịch hẹn
-            </Button>
-          </div>
-          : <></>
-        }
-      <Modal title="Hủy Lịch hẹn" open={isModal} onCancel={()=>handleCancel()} className={ `${isHeader ? '' : 'my-modal' } popup-cancel`}>
-      <div style={{ maxWidth: 600, margin: 'auto', padding: '0 30px', minHeight: '400px', paddingTop: 30 }}>
+      {scheduleInformation?.CustomerScheduleStatus !== 20 ?
+        <div className="w-100 d-flex justify-content-center">
+          <Button className="cancel-schedule" type="primary" onClick={() => { setIsModal(true) }} size="larger">
+            Hủy lịch hẹn
+          </Button>
+        </div>
+        : <></>
+      }
+      <Modal title="Hủy Lịch hẹn" open={isModal} onCancel={() => handleCancel()} className={`${isHeader ? '' : 'my-modal'} popup-cancel`}>
+        <div style={{ maxWidth: 600, margin: 'auto', padding: '0 30px', minHeight: '400px', paddingTop: 30 }}>
           <div>
             <strong>Lý do huỷ lịch:</strong>
 
@@ -283,16 +301,16 @@ const DetailScheduledComponent = ({
                 }}
                 value={reasonRateCancelSchedule}>
                 <Space direction="vertical">
-                  <Radio value={'Tôi đặt nhầm thời gian / địa điểm.'} style={{ color: '#909090',padding:"8px 0" }}>
+                  <Radio value={'Tôi đặt nhầm thời gian / địa điểm.'} style={{ color: '#909090', padding: "8px 0" }}>
                     Tôi đặt nhầm thời gian / địa điểm
                   </Radio>
-                  <Radio value={'Trung tâm từ chối lịch của tôi.'} style={{ color: '#909090',padding:"8px 0" }}>
+                  <Radio value={'Trung tâm từ chối lịch của tôi.'} style={{ color: '#909090', padding: "8px 0" }}>
                     Trung tâm từ chối lịch của tôi
                   </Radio>
-                  <Radio value={'Tôi bận việc khác, không đến đúng giờ hẹn trước.'} style={{ color: '#909090',padding:"8px 0" }}>
+                  <Radio value={'Tôi bận việc khác, không đến đúng giờ hẹn trước.'} style={{ color: '#909090', padding: "8px 0" }}>
                     Tôi bận việc khác, không đến đúng giờ hẹn trước
                   </Radio>
-                  <Radio value={'Khác.'} style={{ color: '#909090',padding:"8px 0" }}>
+                  <Radio value={'Khác.'} style={{ color: '#909090', padding: "8px 0" }}>
                     Khác
                   </Radio>
                 </Space>
@@ -300,7 +318,7 @@ const DetailScheduledComponent = ({
               <TextArea
                 rows={4}
                 onChange={(e) => {
-                  setReasonNoteCancelSchedule((e.target.value+'.'))
+                  setReasonNoteCancelSchedule((e.target.value + '.'))
                 }}
                 placeholder="Nhập lý do...."
               />
@@ -313,10 +331,13 @@ const DetailScheduledComponent = ({
         </div>
       </Modal>
       {isModalErrOpen &&
-      <PopupMessage isModalOpen={isModalErrOpen} onClose={() => {setIsModalErrOpen(false)}} text={errorMessage} ></PopupMessage>
+        <PopupMessage
+          isModalOpen={isModalErrOpen}
+          onClose={() => { setIsModalErrOpen(false) }}
+          text={errorMessage} ></PopupMessage>
       }
     </div>
   )
 }
 
-export default DetailScheduledComponent
+export default BookingDetail

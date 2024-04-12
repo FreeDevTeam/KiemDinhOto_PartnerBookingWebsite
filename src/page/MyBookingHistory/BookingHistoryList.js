@@ -8,6 +8,7 @@ import { changeTime } from '../../helper/changeTime'
 import { useHistory, useLocation } from 'react-router-dom'
 import PopupMessage from '../BookingPartner/PopupMessage'
 import DetailScheduledComponent from '../ScheduledDetail'
+import { PATH } from '../../constants/router'
 const { TextArea } = Input
 const LicensePlateTag = ({ color, licensePlate }) => {
   const plateColor = {
@@ -72,7 +73,7 @@ const ScheduleItem = ({
   };
   return (
     <>
-      <div className="scheduleItem cursor" onClick={() => setModalDetailSchedule(true)}>
+      <div className="scheduleItem cursor" onClick={() => history.push(PATH.BOOKING_DETAIL.replace(":customerScheduleId",customerScheduleId))}>
         <div className="d-flex justify-content-between">
           <div className="d-flex align-items-center">
             {licensePlates && <LicensePlateTag licensePlate={licensePlates} color={licensePlateColor} />}
@@ -110,28 +111,13 @@ const ScheduleItem = ({
         </div>
       </div>
       {isModalErrOpen &&
-        <PopupMessage isModalOpen={isModalErrOpen} onClose={() => { setIsModalErrOpen(false); window.location.reload() }} text={errorMessage} ></PopupMessage>
+        <PopupMessage isModalOpen={isModalErrOpen} onClose={() => { setIsModalErrOpen(false) }} text={errorMessage} ></PopupMessage>
       }
-      <Modal classNames={
-          {
-            header:"detail-modal-header",
-            content:'detail-modal-content'
-          }
-        } 
-        closeIcon={null}
-         footer={null} 
-         width={"400px"}
-         title="Thông tin lịch hẹn" 
-         open={modalDetailSchedule} 
-          onCancel={()=>handleCancel()} 
-          className='my-modal'>
-          <DetailScheduledComponent isHeader={false} status={status} customerScheduleId={customerScheduleId}></DetailScheduledComponent>
-        </Modal>
     </>
   )
 }
 
-function BookingHistoryList({ loading, setLoading,phoneNumber }) {
+function BookingHistoryList({ loading, setLoading, phoneNumber }) {
   const location = useLocation();
   const DEFAULT_FILTER = {
     skip: 0,
@@ -180,7 +166,7 @@ function BookingHistoryList({ loading, setLoading,phoneNumber }) {
   return (
     <div>
       <div>
-        { dataList?.data.map((element, index) => {
+        {dataList?.data.map((element, index) => {
           return (
             <ScheduleItem
               key={index}
@@ -191,8 +177,8 @@ function BookingHistoryList({ loading, setLoading,phoneNumber }) {
               scheduleHash={element.scheduleHash}
             />
           )
-        }) 
-      }
+        })
+        }
       </div>
       <div className="" style={{ maxWidth: 600, margin: 'auto', width: '100%', marginBottom: '60px' }}>
         {(dataList?.data?.length > 0 && (

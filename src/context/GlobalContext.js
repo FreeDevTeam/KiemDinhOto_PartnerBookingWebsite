@@ -38,7 +38,8 @@ const WarningNotify = ({ isModalOpen, onClose, onConfirm }) => {
 export const GlobalProvider = ({ children }) => {
     const [globalState, setGlobalState] = useState({
         phoneNumber: "",
-        userName: ""
+        userName: "",
+        isZaloApp: process.env.REACT_APP_ZALO_AUTH_ENABLE
     });
 
     const [openModal, setOpenModal] = useState(false);

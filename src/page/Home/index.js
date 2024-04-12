@@ -52,8 +52,8 @@ export default function HomePage() {
       className="home-page"
     >
       <Carousel autoplay>
-        {BANNER.map((v) => (
-          <div className="slide">
+        {BANNER.map((v,index) => (
+          <div key={index} className="slide">
             <a href={v.link} target="_blank">
               <img src={v.img} />
             </a>

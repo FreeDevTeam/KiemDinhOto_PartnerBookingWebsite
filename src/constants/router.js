@@ -5,5 +5,6 @@ export const PATH = {
     RESET_PASSWORD: '/resetPassword',
     MY_BOOKING_HYSTORY: '/my-booking-history',
     BOOKING_HYSTORY: '/booking-history',
+    BOOKING_DETAIL: '/booking-detail/:customerScheduleId',
 
 }
