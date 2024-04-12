@@ -344,7 +344,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     localStorage.setItem(addKeyLocalStorage('bookingData'), JSON.stringify(localData))
     if (listBookingDate?.length > 0 && dataLocal?.stationsId) {
       for (let i = 0; i < listBookingDate?.length; i++) {
-        if (listBookingDate[i].scheduleDateStatus && listBookingDate[i].totalBookingSchedule === 0) {
+        if (listBookingDate[i].scheduleDateStatus) {
           handleFillValues('dateSchedule', listBookingDate[i].scheduleDate, listBookingDate[i].scheduleDate)
           //lưu dữ liệu thỏa mãn vào local
           saveDataLocal('dateSchedule', listBookingDate[i].scheduleDate)
@@ -384,7 +384,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     localStorage.setItem(addKeyLocalStorage('bookingData'), JSON.stringify(localData))
     if (listBookingTime?.length > 0) {
       for (let i = 0; i < listBookingTime?.length; i++) {
-        if (!listBookingTime[i].disabled && listBookingTime[i]?.totalBookingSchedule ===0) {
+        if (!listBookingTime[i].disabled) {
           handleFillValues('time', listBookingTime[i].scheduleTime, listBookingTime[i])
           //lưu dữ liệu thỏa mãn vào local
           saveDataLocal('time',listBookingTime[i].scheduleTime)
