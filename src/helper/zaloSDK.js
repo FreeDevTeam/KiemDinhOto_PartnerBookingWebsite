@@ -55,7 +55,7 @@ export async function getZaloUserPhone() {
       }
     } catch (error) {
       console.error("Error:", error);
-      throw new Error("Failed to get Zalo user name");
+      throw new Error("Truy vấn số tên thất bại");
     }
   };
   

@@ -120,7 +120,6 @@ const BookingDetail = ({
     )
   }
   function getVehicleTypeName(vehicleData) {
-    console.log("getVehicleTypeName ~ vehicleData:", vehicleData)
     const vehicleType = vehicleData?.vehicleType
     let vehicle
     if (vehicleType) {

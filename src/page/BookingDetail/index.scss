@@ -1,5 +1,7 @@
+@import '../../assets/scss/variable';
+
 .detail-sche {
-  background: #ffffff;
+  background: $--unnamed-color-ffffff;
   overflow: hidden;
 
   &-scheduleCode {
@@ -13,8 +15,8 @@
     justify-content: center;
     align-items: center;
     padding: 10px 0;
-    color: #ffffff;
-    font-size: 16px;
+    color: $--unnamed-color-ffffff;
+    font-size: $font-size-base;
     font-weight: 500;
 
     svg {
@@ -35,13 +37,13 @@
 
   .notes {
     margin-top: 15px;
-    color: #0870d9;
+    color: $--unnamed-color-0870d9;
   }
 }
 
 .title-i {
-  font-size: 16px;
-  color: #0870d9;
+  font-size: $font-size-base;
+  color: $--unnamed-color-0870d9;
   cursor: pointer;
 }
 
