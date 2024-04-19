@@ -11,6 +11,7 @@ import { ReactComponent as ScheduleDetailIcon } from '../../assets/icons/lh.svg'
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
 import { PATH } from '../../constants/router'
 import { useGlobalContext } from '../../context/GlobalContext'
+import { openChatScreen } from '../../helper/zaloSDK'
 
 export default function HomePage() {
   const BANNER = [
@@ -70,10 +71,10 @@ export default function HomePage() {
             <ScheduleDetailIcon className="icon-small" />
             Xem lịch hẹn
           </div>
-          <a href="http://zalo.me/3485707806416347108?src=qr&f=1" target="_blank" className="second-box">
+          <div onClick={() => openChatScreen({id:"3485707806416347108"})} className="second-box">
             <SupportIcon className="icon-small" />
             Hỗ trợ CSKH
-          </a>
+          </div>
         </div>
       </div>
       <div className="second-content">
