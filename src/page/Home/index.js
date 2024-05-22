@@ -12,32 +12,34 @@ import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
 import { PATH } from '../../constants/router'
 import { useGlobalContext } from '../../context/GlobalContext'
 import { openChatScreen } from '../../helper/zaloSDK'
+import momoContent from "../../assets/img/momo-content.jpg"
+import momoLogo from "../../assets/img/momoLogo.png"
 
 export default function HomePage() {
   const BANNER = [
     {
-      img:banner4,
-      link:"https://ttdk.com.vn/kiemtraphatnguoi",
+      img: banner4,
+      link: "https://ttdk.com.vn/kiemtraphatnguoi",
 
     },
     {
-      img:banner5,
-      link:"https://vucar.vn/?utm_source=TTDK&utm_medium=Partnership&utm_campaign=Partnership_TTDK",
+      img: banner5,
+      link: "https://vucar.vn/?utm_source=TTDK&utm_medium=Partnership&utm_campaign=Partnership_TTDK",
 
     },
     {
-      img:banner1,
-      link:"https://ttdk.partner.saladin.vn/promo",
+      img: banner1,
+      link: "https://ttdk.partner.saladin.vn/promo",
 
     },
     {
-      img:banner2,
-      link:"https://forms.gle/o3iGkaa63Ney5nq1A",
+      img: banner2,
+      link: "https://forms.gle/o3iGkaa63Ney5nq1A",
 
     },
     {
-      img:banner3,
-      link:"https://ttdk.com.vn/contact-cooperation",
+      img: banner3,
+      link: "https://ttdk.com.vn/contact-cooperation",
 
     },
   ]
@@ -53,7 +55,7 @@ export default function HomePage() {
       className="home-page"
     >
       <Carousel autoplay>
-        {BANNER.map((v,index) => (
+        {BANNER.map((v, index) => (
           <div key={index} className="slide">
             <a href={v.link} target="_blank">
               <img src={v.img} />
@@ -71,30 +73,39 @@ export default function HomePage() {
             <ScheduleDetailIcon className="icon-small" />
             Xem lịch hẹn
           </div>
-          <div onClick={() => openChatScreen({id:"3485707806416347108"})} className="second-box">
+          <div onClick={() => openChatScreen({ id: "3485707806416347108" })} className="second-box">
             <SupportIcon className="icon-small" />
             Hỗ trợ CSKH
           </div>
         </div>
       </div>
       <div className="second-content">
-      <p className="title">Bảo Hiểm</p>
-        <a href="https://ttdk.com.vn/gia-han-bao-hiem-tnds?title=Gia%20h%E1%BA%A1n%20b%E1%BA%A3o%20hi%E1%BB%83m%20TNDS" target="_blank" className="right-content">
-          <img src={carImage} alt="" srcset="" />
-          <div className="small-text mt-2">An toàn trên mọi nẻo đường</div>
-          <div className="small-extra-text mt-2">
-            <CarIcon className="small-icon" />
-            Bảo hiểm TNDS Ô tô
-          </div>
-        </a>
-        <a href="https://ttdk.com.vn/doi-tac-bao-hiem/saladin-bao-hiem-toan-dien" target="_blank" className="right-content">
-          <img src={motoImage} alt="" srcset="" />
-          <div className="small-text mt-2">Bảo hiểm xe máy trong 5 phút</div>
-          <div className="small-extra-text mt-2">
-            <MotoIcon className="small-icon" />
-            Bảo hiểm TNDS xe máy
-          </div>
-        </a>
+        <p className="title">Bảo Hiểm</p>
+        <div className='d-flex'>
+          <a href="https://ttdk.com.vn/gia-han-bao-hiem-tnds?title=Gia%20h%E1%BA%A1n%20b%E1%BA%A3o%20hi%E1%BB%83m%20TNDS" target="_blank" className="right-content">
+            <img src={carImage} alt="" srcset="" />
+            <div>
+
+              <div className="small-text mt-2">An toàn trên mọi nẻo đường</div>
+              <div className="small-extra-text mt-2">
+                <CarIcon className="small-icon" />
+                Bảo hiểm TNDS Ô tô
+              </div>
+            </div>
+          </a>
+          <a href={"https://momo.vn/tin-tuc/khuyen-mai/dang-kiem-xe-dat-lich-hen-tren-momo-nhanh-gon-5947"} target="_blank" className="right-content">
+
+            <img src={momoContent} alt="" srcset="" />
+            <div>
+
+              <div className="small-text mt-2">Đặt lịch đăng kiểm trên MOMO</div>
+              <div className="small-extra-text mt-2">
+                <img src={momoLogo} className="small-icon" />
+                Ưu đãi 265.000Đ các dịch vụ cho xế yêu
+              </div>
+            </div>
+          </a>
+        </div>
       </div>
     </div>
   )
