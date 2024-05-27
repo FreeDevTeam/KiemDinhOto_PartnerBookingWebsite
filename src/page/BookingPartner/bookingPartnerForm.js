@@ -18,6 +18,8 @@ import AreaByIP from '../../services/getAreaByIP'
 import addKeyLocalStorage from '../../helper/localStorage'
 import { validatorPlateNumber } from './../../helper/validatorPlateNumber'
 import { ReactComponent as LogoTTDK } from './../../assets/icons/Logo.svg'
+import BookingDatePicker from '../../components/BookingDatePicker'
+import BookingHoursPicker from '../../components/BookingHoursPicker'
 
 function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   const isZaloApp = (process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1)
@@ -49,14 +51,18 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   const [dateFilter, setDateFilter] = useState({
     stationsId: null,
     startDate: moment().format(DATE_DISPLAY_FORMAT),
-    endDate:moment().add(30, 'days').format(DATE_DISPLAY_FORMAT),
-    vehicleType: null,
+    endDate: moment().endOf('month').format(DATE_DISPLAY_FORMAT),
+    vehicleType: null
   })
   const [isVisible, setIsVisible] = useState({
     stationsId: false,
     dateSchedule: false,
     time: false
   })
+
+  const [loadingDatePicker, setLoadingDatePicker] = useState(false)
+  const [loadingHoursPicker, setLoadingHoursPicker] = useState(false)
+
   let getParamData ={
     licensePlates:params.get('licensePlates'),
     phone:zaloUserPhone || params.get('phone'),
@@ -106,6 +112,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   }
   function getBookingHours(params) {
     setIsVisible((prev) => ({ ...prev, time: true }))
+    setLoadingHoursPicker(true)
     setSelectedBookingHour(false)
     BookingService.getBookingHours(params)
       .then((data) => {
@@ -127,11 +134,11 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
                 element.disabled = 0
               }
               element.label = (
-                <div className="d-flex ai-c j-sb w-100">
-                  <span>{changeTime(element.scheduleTime)}</span>
-                    <span className="text-primary">
+                <div className="ai-c j-sb w-100">
+                <div>{changeTime(element.scheduleTime)}</div>
+                  <div className="text-primary">
                       {getDisplayTextByScheduleTimeStatus(element)}
-                    </span>
+                      </div>
                 </div>
               )
               element.value = element.value
@@ -147,9 +154,11 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
       .catch(() => {
         setErrorMessage('Lấy thông tin giờ hẹn thất bại.')
         setIsModalErrOpen(true)
+        setLoadingHoursPicker(false)
       })
       .finally(() => {
         setIsVisible((prev) => ({ ...prev, time: false }))
+        setLoadingHoursPicker(false)
       })
   }
   const getDisplayTextByScheduleTimeStatus=(element) => {
@@ -571,6 +580,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   //func chạy api lấy ngày hẹn sau khi chọn trạm
   function getBookingDate() {
     setSelectedBookingDate(false)
+    setLoadingDatePicker(true)
     setIsVisible((prev) => ({ ...prev, dateSchedule: true }))
     BookingService.getBookingDate(dateFilter)
       .then((data) => {
@@ -621,9 +631,11 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
       .catch(() => {
         setErrorMessage('Lấy thông tin ngày hẹn thất bại.')
         setIsModalErrOpen(true)
+        setLoadingDatePicker(false)
       })
       .finally(() => {
         setIsVisible((prev) => ({ ...prev, dateSchedule: false }))
+        setLoadingDatePicker(false)
       })
   }
 
@@ -733,6 +745,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     }
     localStorage.setItem(addKeyLocalStorage('bookingData'), JSON.stringify(localData))
   }
+  
   const handleFillData=()=>{
     const newData=dataBookingParam
     setBookingData(newData)
@@ -1209,36 +1222,42 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
             message: 'Vui lòng nhập'
           }
         ]}>
-        <SelectAntd
-          className="cs-select ant-custom booking-input"
-          isSearchable={true}
-          placeholder="Vui lòng chọn ngày hẹn"
-          styles={customStyles}
-          options={listBookingDate}
-          menuPlacement="top"
-          defaultValue={dataBookingParam?.dateSchedule || dataLocal?.dateSchedule}
-          isOptionDisabled={(option) => option.disabled}
-          disabled={!bookingData.stationsId || isVisible.dateSchedule}
-          onChange={(values) => {
-            saveDataLocal('dateSchedule',values)
-            form.setFieldsValue({
-              time: null
-            })
-            const  stationsId  = bookingData.stationsId.stationsId || localBookingData?.stationsId?.stationsId
-            if (stationsId && bookingData) {
-              getBookingHours({
-                stationsId: stationsId,
-                date: values,
-                vehicleType: bookingData.vehicleType
+          <BookingDatePicker
+            disabled={!bookingData.stationsId}
+            loading={loadingDatePicker}
+            currentMonth={dateFilter.startDate}
+            setCurrentMonth={(selectedMonth) => {
+              setDateFilter({
+                ...dateFilter,
+                startDate: moment(selectedMonth).format(DATE_DISPLAY_FORMAT),
+                endDate: moment(selectedMonth).endOf('months').format(DATE_DISPLAY_FORMAT),
               })
-              setBookingData({
-                ...bookingData,
-                dateSchedule: values,
+            }}
+            selectedDate={form.getFieldValue('dateSchedule')}
+            setSelectedDate={(values) => {
+              saveDataLocal('dateSchedule',values)
+              saveDataLocal('time',null)
+              form.setFieldsValue({
+                dateSchedule:values,
                 time: null
               })
-            }
-          }}
-        />
+              const  stationsId  = bookingData.stationsId.stationsId || localBookingData?.stationsId?.stationsId
+              if (stationsId && bookingData) {
+                getBookingHours({
+                  stationsId: stationsId,
+                  date: values,
+                  vehicleType: bookingData.vehicleType
+                })
+                setBookingData({
+                  ...bookingData,
+                  dateSchedule: values,
+                  time: null
+                })
+              }
+            }}
+            listBookingDate={listBookingDate}
+            // bookingConfig={bookingConfig}
+          />
       </Form.Item>
 
       <Form.Item
@@ -1250,7 +1269,24 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
             message: 'Vui lòng nhập'
           }
         ]}>
-        <Select
+          <BookingHoursPicker
+            disabled={!bookingData.dateSchedule || isVisible.time}
+            listBookingTime={listBookingTime}
+            loading={loadingHoursPicker}
+            setSelectedTime={(values) => {
+              form.setFieldsValue({
+                ["time"]: values
+              })
+              saveDataLocal('time',values)
+              setBookingData({
+                ...bookingData,
+                time: values.scheduleTime
+              })
+            }}
+            selectedTime={form.getFieldValue('time')}
+            bookingConfig={bookingConfig}
+          />
+        {/* <Select
           className="cs-select schedule-hour booking-input"
           isSearchable={true}
           placeholder="Chọn khung giờ"
@@ -1273,7 +1309,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
               time: values.scheduleTime
             })
           }}
-        />
+        /> */}
       </Form.Item>
 
       <div className="w-100 d-flex justify-content-center mgt-40">
