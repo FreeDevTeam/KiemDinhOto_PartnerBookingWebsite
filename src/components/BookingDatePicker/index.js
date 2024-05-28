@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import moment from 'moment'
 import { LeftOutlined, RightOutlined } from '@ant-design/icons'
-import { Button } from 'antd'
+import { Button, Empty } from 'antd'
 import './index.scss'
 import 'moment/locale/vi'
 import { DATE_DISPLAY_FORMAT } from '../../constants/dateFormats'
@@ -38,6 +38,7 @@ export default function BookingDatePicker({
   setCurrentMonth,
   loading= false
 }) {
+  const disablePickDate = disabled || !listBookingDate?.length
   const handlePickDate = (date) => {
     
     if(disabled) return
@@ -46,7 +47,6 @@ export default function BookingDatePicker({
   }
 
   const decreaseMonth = () => {
-    if(disabled) return
     const checkCurrentMonth = moment(currentMonth, DATE_DISPLAY_FORMAT).subtract(1, 'months')
     if (checkCurrentMonth.isSameOrBefore(moment(), 'month')) {
       setCurrentMonth(moment())
@@ -54,7 +54,6 @@ export default function BookingDatePicker({
   }
 
   const increaseMonth = () => {
-    if(disabled) return
     setCurrentMonth(moment(currentMonth, DATE_DISPLAY_FORMAT).startOf('month').add(1, 'months'))
   }
 
@@ -85,7 +84,7 @@ const isDisabledDate = (element)=>{
   return fullSchedule
 }
 
-const listDateData = listBookingDate?.length ?listBookingDate : getDaysInMonthFromToday()
+const listDateData = listBookingDate
   return (
     <div className={`booking-date-picker`}>
       <div className={`booking-date-picker_header`}>
@@ -103,12 +102,12 @@ const listDateData = listBookingDate?.length ?listBookingDate : getDaysInMonthFr
         </div>
       </div>
       {!loading ? <div className="booking-date-picker_content">
-        {listDateData.map((value, index) => {
+        {listDateData?.length ? listDateData.map((value, index) => {
           const dateObj = moment(value?.scheduleDate, DATE_DISPLAY_FORMAT).locale('vi')
           return (
             <div
               index={index}
-              style={{ cursor: disabled ? "not-allowed" : "pointer", height: disabled ? 70 : 100 }}
+              style={{ cursor: disablePickDate ? "not-allowed" : "pointer", height: disablePickDate ? 70 : 100 }}
               onClick={() => handlePickDate(value)}
               className={`${isDisabledDate(value) ? 'disabled-date' : ''} booking-date-picker__day ${selectedDate === value?.scheduleDate ? 'active' : ''}`}
               key={index}>
@@ -117,7 +116,7 @@ const listDateData = listBookingDate?.length ?listBookingDate : getDaysInMonthFr
               <span className="wrap-text">{getDisplayTextByScheduleDateStatus(value)}</span>
             </div>
           )
-        })}
+        }): <Empty description={"Không có ngày hẹn trống"}></Empty>}
       </div> : <LoadingPopup type="content"/>}
     </div>
   )

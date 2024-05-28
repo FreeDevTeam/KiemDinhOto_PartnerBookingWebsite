@@ -617,11 +617,12 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
               }, 1000);
             }
           }else{
-            setErrorMessage('Không tìm thấy ngày hẹn thích hợp.<br>Vui lòng chọn trạm khác.')
-            setIsModalErrOpen(true)
+            setListBookingDate([])
+            setListBookingTime([])
             setBookingData({
               ...bookingData,
-              stationsId: null,
+              dateSchedule: null,
+              // stationsId: null,
               dateSchedule: null,
               time: null
             })
