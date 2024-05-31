@@ -38,7 +38,7 @@ const Notification = ({ history }) => {
           />
           <div style={{ height: '40px' }} />
           <div className='history-lable'>Tìm kiếm lịch hẹn theo số điện thoại:</div>
-          <SearchList placeholder="Nhập số điện thoại" className="w-100" onSearch={handleSearch} />
+          {/* <SearchList placeholder="Nhập số điện thoại" className="w-100" onSearch={handleSearch} /> */}
         </div>
         <div>
           <TabNotification search={search} />
