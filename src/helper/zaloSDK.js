@@ -59,3 +59,18 @@ export async function getZaloUserPhone() {
     }
   };
   
+  export const openChatScreen = async ({
+    id,
+    message = "",
+    type = "oa"
+  }) => {
+    try {
+      await zaloAPI.openChat({
+        type: type,
+        id: id,
+        message: message,
+      });
+    } catch (error) {
+      throw new Error("Mở cửa sổ chat thất bại");
+    }
+  }

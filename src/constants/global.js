@@ -745,7 +745,7 @@ export const VEHICLE_SUB_TYPE = [
     vehicleType:10,
   },
   {
-    label: 'Đoàn ô tô (ô tô đầu kéo + sơ mi rơ mooc)',
+    label: 'Ô tô đầu kéo',
     value: 13,
     vehicleType:10,
   },
