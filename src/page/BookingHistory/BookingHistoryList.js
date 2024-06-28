@@ -49,7 +49,8 @@ const ScheduleItem = ({
   scheduleHash,
   scheduleType,
   stationsId,
-  chatLinkUserToEmployee
+  chatLinkUserToEmployee,
+  getData
 }) => {
   const history = useHistory()
   
@@ -113,7 +114,7 @@ const ScheduleItem = ({
         <PopupMessage isModalOpen={isModalErrOpen} onClose={() => {setIsModalErrOpen(false);window.location.reload()}} text={errorMessage} ></PopupMessage>
         }
         <Modal title="" open={modalDetailSchedule}  onCancel={()=>handleCancel()} className='popup-cancel'>
-          <DetailScheduledComponent status={status} customerScheduleId={customerScheduleId}></DetailScheduledComponent>
+          <DetailScheduledComponent status={status} customerScheduleId={customerScheduleId} getData={getData}></DetailScheduledComponent>
         </Modal>
     </>
   )
@@ -199,6 +200,7 @@ function BookingHistoryList({ search, status }) {
               }}
               history={history}
               scheduleHash={element.scheduleHash}
+              getData={getData}
             />
           )
         })}
