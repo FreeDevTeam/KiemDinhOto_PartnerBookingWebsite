@@ -33,7 +33,8 @@ const Notification = ({ history }) => {
             colorType="dark"
             title="+ Đặt lịch hẹn"
             action={() => {
-              history.push(`/booking-partner-iframe?apikey=${apikey}&name=${fullName}&phone=${phoneNumber}`)
+              // history.push(`/booking-partner-iframe?apikey=${apikey}&name=${fullName}&phone=${phoneNumber}`)
+              history.push(`/?apikey=${apikey}&name=${fullName}&phone=${phoneNumber}`)
             }}
           />
           <div style={{ height: '40px' }} />
