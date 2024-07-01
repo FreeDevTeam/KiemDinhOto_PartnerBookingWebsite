@@ -18,7 +18,9 @@ export const TTDK_PARTNER = [
     icon:<MomoIcon />
   },
   {
-    name:'mic',
-    icon:<MICIcon />
+    name:'dvbhmic',
+    icon:(
+      <div style={{ height: '100%', width: '100%',display:'flex',alignItems:'center'}}><img src="./MIC.png" alt="" /></div>
+    )
   },
 ]
