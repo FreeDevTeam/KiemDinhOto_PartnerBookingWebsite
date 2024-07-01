@@ -84,7 +84,7 @@ function BookingPartner() {
                     <LogoTTDK></LogoTTDK>
                     {TTDK_PARTNER.map(item => {
                       if (item.name == partner) {
-                        return (<div style={{ maxHeight: '58px', maxWidth: '58px' }}>
+                        return (<div style={{ maxHeight: '58px',maxWidth:'150px' }}>
                           {item.icon}
                         </div>)
                       }
@@ -104,7 +104,7 @@ function BookingPartner() {
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 {TTDK_PARTNER.map(item => {
                   if (item.name == partner) {
-                    return (<div style={{ maxHeight: '58px', maxWidth: '58px' }}>
+                    return (<div style={{ maxHeight: '58px',maxWidth:'150px' }}>
                       {item.icon}
                     </div>)
                   }
