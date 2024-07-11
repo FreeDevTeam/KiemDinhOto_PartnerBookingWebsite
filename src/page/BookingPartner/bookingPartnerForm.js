@@ -573,7 +573,11 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
       vehicleSubType: values.vehicleSubType,
       certificateSeries: values.certificateSeries,
     }
-
+    Object.keys(newData).forEach((key) => {
+      if (newData[key] === "") {
+        delete newData[key];
+      }})
+      
     BookingService.createSchedule(newData).then((result) => {
       const { error: rsMess, statusCode, data } = result
       if (statusCode != 200) {
@@ -1053,7 +1057,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
         </div>
       </Form.Item>
       <Row className='vehicleType mt-3'>
-        <Col className='mWidth-100' span={11}>
+        <Col className='mWidth-100' span={dataBookingParam.visible_vehicleSubCategory === "false" ? 24 : 11}>
           <Form.Item
             className="radio-label"
             label="Loại phương tiện"
@@ -1103,7 +1107,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           </Form.Item>
         </Col>
         <Col span={2}></Col>
-        <Col className='mWidth-100' span={11}>
+        <Col className='mWidth-100' span={dataBookingParam.visible_vehicleSubType === "false" ? 24 : 11}>
           <Form.Item
             className="radio-label"
             label="Phân loại"
