@@ -1007,7 +1007,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           {
             required: dataBookingParam?.require_vehicleIdentity === 'false' ? false : true,
             validator(_, value) {
-              return validatorPlateNumber(value)
+              return validatorPlateNumber(value.toUpperCase())
             }
           }
           ]}>
@@ -1166,7 +1166,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
         rules={[
           {
             required: dataBookingParam?.require_certificateSeries === 'true' ? true : false,
-            message: 'Vui lòng nhập tên'
+            message: 'Vui lòng nhập số seri GCN'
           },
           {
             message: 'Số seri GCN không hợp lệ',

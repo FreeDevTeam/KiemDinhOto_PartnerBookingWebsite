@@ -32,7 +32,7 @@ export default function BookingHoursPicker({
               className={`${selectedTime?.scheduleTime === value?.scheduleTime ? 'active' : ''} booking-hours-picker_item ${value?.disabled ?'booking-hours-picker-disabled' : ''}`}
               index={index}
               key={index}>
-              <div className="booking-hours-picker__text">{value?.label}</div>
+              <div className="booking-hours-picker__text">{value?.scheduleTime || value?.label}</div>
             </div>
           )
         })}
