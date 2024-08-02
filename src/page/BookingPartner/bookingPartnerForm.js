@@ -1007,7 +1007,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           {
             required: dataBookingParam?.require_vehicleIdentity === 'false' ? false : true,
             validator(_, value) {
-              return validatorPlateNumber(value.toUpperCase())
+              return validatorPlateNumber(value?.toUpperCase())
             }
           }
           ]}>
