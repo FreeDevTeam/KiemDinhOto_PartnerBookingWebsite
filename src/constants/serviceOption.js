@@ -1,5 +1,5 @@
 export const SCHEDULE_TYPE = {
-  VEHICLE_INSPECTION: 1, // Đăng kiểm xe cũ
+  VEHICLE_INSPECTION: 1, // Đăng kiểm xe định kỳ
   NEW_VEHICLE_INSPECTION: 2, // đăng kiểm xe mới
   CHANGE_REGISTATION: 4, // Đổi mục đích sử dụng, đổi chủ, đổi thông tin hồ sơ
   PAY_ROAD_FEE: 5, // Thanh toán phí đường bộ
@@ -8,7 +8,7 @@ export const SCHEDULE_TYPE = {
 
 export const SCHEDULE_TITLE = {
   [SCHEDULE_TYPE.VEHICLE_INSPECTION]: {
-    title: 'Đăng kiểm xe cũ',
+    title: 'Đăng kiểm xe định kỳ',
     subTitle: 'Dành cho khách hàng đặt lịch để đăng kiểm các xe đã đăng kiểm trước đây'
   },
   [SCHEDULE_TYPE.NEW_VEHICLE_INSPECTION]: {

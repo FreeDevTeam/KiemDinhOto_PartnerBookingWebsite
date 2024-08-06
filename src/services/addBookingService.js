@@ -211,6 +211,23 @@ export default class BookingService {
     })
   }
 
+  static async createConsultantSchedule(data) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/PartnerAPI/CustomerSchedule/user/userCreateConsultant',
+        data: data
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(result)
+        } else {
+          return resolve(result)
+        }
+      })
+    })
+  }
+
   static async findByHash(data) {
     return new Promise((resolve) => {
       Request.send({
