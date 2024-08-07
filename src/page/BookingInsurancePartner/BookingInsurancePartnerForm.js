@@ -106,7 +106,7 @@ function BookingInsurancePartnerForm({form, setTabKey, zaloUserName,zaloUserPhon
     vehicleSubCategory: Number(params.get('vehicleSubCategory')) || VIHCLE_CATEGORY_OTO[0].value,
     vntId: params.get('vntId'),
     certificateSeries: params.get('certificateSeries'),
-    transportBusiness: params.get('transportBusiness'),
+    vehicleForBusiness: params.get('vehicleForBusiness'),
     vehicleBrandName: params.get('vehicleBrandName'),
     usagePurposeType: params.get('usagePurposeType'),
     specialTransport: params.get('specialTransport'),
@@ -149,7 +149,7 @@ function BookingInsurancePartnerForm({form, setTabKey, zaloUserName,zaloUserPhon
       vehicleSubCategory: Number(params.get('vehicleSubCategory')) || localBookingData?.vehicleSubCategory || VIHCLE_CATEGORY_OTO[0].value,
       vntId: params.get('vntId') || localBookingData?.vntId,
       certificateSeries: localBookingData?.certificateSeries || params.get('certificateSeries'),
-      transportBusiness:localBookingData?.transportBusiness|| params.get('transportBusiness') || 0,
+      vehicleForBusiness:localBookingData?.vehicleForBusiness|| params.get('vehicleForBusiness') || 0,
       vehicleBrandName:localBookingData?.vehicleBrandName|| params.get('vehicleBrandName'),
       usagePurposeType:localBookingData?.usagePurposeType|| params.get('usagePurposeType') || usagePurposeTypeOptions[0].value,
       specialTransport:localBookingData?.specialTransport|| params.get('specialTransport') || specialTransportOptions[0].value,
@@ -299,18 +299,18 @@ function BookingInsurancePartnerForm({form, setTabKey, zaloUserName,zaloUserPhon
       vehicleSubCategory: values.vehicleSubCategory,
       vehicleSubType: values.vehicleSubType,
       certificateSeries: values.certificateSeries,
-      transportBusiness:values?.transportBusiness,
+      vehicleForBusiness:values?.vehicleForBusiness,
       vehicleBrandName:values?.vehicleBrandName,
       yearManufacture:moment(values?.yearManufacture).format("YYYY"),
-      usagePurposeType:values?.usagePurposeType,
-      specialTransport:values?.specialTransport,
-      vehicleSeatsLimit:values?.vehicleSeatsLimit,
-      supplier:values?.supplier,
-      insuranceDuration:values?.insuranceDuration,
-      insuranceStart:dayStart,
-      insuranceEnd:values?.insuranceEnd,
-      referCode:values?.referCode,
-      discountCode:values?.discountCode,
+      usagePurposeType:values?.usagePurposeType || undefined,
+      specialTransport:values?.specialTransport || undefined,
+      vehicleSeatsLimit:values?.vehicleSeatsLimit || undefined,
+      supplier:values?.supplier || undefined,
+      insuranceDuration:values?.insuranceDuration || undefined,
+      insuranceStart:dayStart || undefined,
+      insuranceEnd:values?.insuranceEnd || undefined,
+      referCode:values?.referCode || undefined,
+      discountCode:values?.discountCode || undefined,
     }
     Object.keys(newData).forEach((key) => {
       if (newData[key] === "") {
@@ -824,7 +824,7 @@ console.log(dataLocal)
       <Form.Item
         className="radio-label transport_business"
         label={'Kinh doanh vận tải'}
-        name="transportBusiness"
+        name="vehicleForBusiness"
         rules={[
           {
             required: true,
@@ -835,13 +835,13 @@ console.log(dataLocal)
           size="large"
           onChange={(event) => {
             const value = event.target.value
-            saveDataLocal('transportBusiness',value)
+            saveDataLocal('vehicleForBusiness',value)
             form.setFieldsValue({
-              transportBusiness: value,
+              vehicleForBusiness: value,
             })
             setBookingData({
               ...bookingData,
-              transportBusiness: value,
+              vehicleForBusiness: value,
             })
           }}
           defaultValue={0}
@@ -997,7 +997,7 @@ console.log(dataLocal)
           <Row style={{gap:'10px',display:'grid',gridTemplateColumns:'1fr 1fr'}}>
             {Object.values(TTDK_INSURANCE_PARTNER).map(item=>(
               <div className='supplier-item'>
-                <Radio value={item?.id}>
+                <Radio value={item?.label}>
                   <div className='d-flex' style={{alignItems:'center',gap:'10px'}}>
                     <div>
                       {item?.icon}
