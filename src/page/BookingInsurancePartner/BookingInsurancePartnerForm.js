@@ -154,7 +154,7 @@ function BookingInsurancePartnerForm({form, setTabKey, zaloUserName,zaloUserPhon
       usagePurposeType:localBookingData?.usagePurposeType|| params.get('usagePurposeType') || usagePurposeTypeOptions[0].value,
       specialTransport:localBookingData?.specialTransport|| params.get('specialTransport') || specialTransportOptions[0].value,
       vehicleSeatsLimit:localBookingData?.vehicleSeatsLimit|| params.get('vehicleSeatsLimit'),
-      supplier:localBookingData?.supplier|| params.get('supplier') || Object.values(TTDK_INSURANCE_PARTNER)[0].id,
+      supplier:localBookingData?.supplier|| params.get('supplier') || Object.values(TTDK_INSURANCE_PARTNER)[0].label,
       insuranceDuration:localBookingData?.insuranceDuration|| params.get('insuranceDuration') || insuranceDurationOptions[0].value,
       referCode:localBookingData?.referCode|| params.get('referCode'),
       discountCode:localBookingData?.discountCode|| params.get('discountCode'),
