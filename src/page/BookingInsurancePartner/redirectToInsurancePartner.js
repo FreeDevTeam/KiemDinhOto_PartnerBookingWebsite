@@ -1,7 +1,7 @@
 import { VEHICLE_COLOR } from '../../constants/global'
 
 const redirectToInsurancePartner = (data,url)=> {
-  let _targetUrl = url || 'https://ttdk.partner.saladin.vn/'
+  let _targetUrl = url || 'https://ttdk.partner.saladin.vn/mua-bao-hiem-o-to/thong-tin-xe'
     let _targetRequireData = {
       phone: data?.phone || '',
       name: data.fullnameSchedule || '',
