@@ -18,6 +18,7 @@ import { validatorPlateNumber } from '../../helper/validatorPlateNumber'
 import { ReactComponent as LogoTTDK } from './../../assets/icons/Logo.svg'
 import PopupMessage from '../BookingPartner/PopupMessage'
 import BookingSuccess from '../BookingPartner/BookingSuccessModal'
+import redirectToInsurancePartner from './redirectToInsurancePartner'
 
 const usagePurposeTypeOptions=[
   {
@@ -89,6 +90,7 @@ function BookingInsurancePartnerForm({form, setTabKey, zaloUserName,zaloUserPhon
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadDataLocal, setIsLoadDataLocal] = useState(false)
   const [vehicleSubCategoryOptions, setVehicleSubCategoryOptions] = useState([])
+  const [targetLink, setTargetLink] = useState('')
   const [dateFilter, setDateFilter] = useState({
     startDate: moment().format(DATE_DISPLAY_FORMAT),
     endDate: moment().endOf('month').format(DATE_DISPLAY_FORMAT),
@@ -332,6 +334,15 @@ function BookingInsurancePartnerForm({form, setTabKey, zaloUserName,zaloUserPhon
         setTimeout(() => {
           setIsLoading(false)
         }, 500);
+        if(data.insuranceLink && data.insuranceLink.length > 0){
+          setTimeout(() => {
+            window.open(data.insuranceLink, '_blank')
+          }, 500);
+        }else{
+          setTimeout(() => {
+            redirectToInsurancePartner(newData,targetLink)
+          }, 500);
+        }
         setIsModalOpen(true)
         localStorage.removeItem(addKeyLocalStorage('bookingData'))
         setTimeout(() => {
@@ -355,7 +366,6 @@ function BookingInsurancePartnerForm({form, setTabKey, zaloUserName,zaloUserPhon
       [VEHICLE_SUB_CATEGORY.CAR_SPECIALIZED]: VIHCLE_CATEGORY_PICKUP,
       [VEHICLE_SUB_CATEGORY.ORTHER]: VIHCLE_CATEGORY_SPECIALIZED,
     };
-console.log(dataLocal)
     const options = categoryOptionsMap[evt];
     if(options){
       setBookingData(prev => ({
@@ -391,7 +401,10 @@ console.log(dataLocal)
     } else {
       getAreaByIP()
     }
-
+    if(dataLocal?.supplier){
+      let target = Object.values(TTDK_INSURANCE_PARTNER).find(item=>item?.label == dataLocal?.supplier)?.link
+      setTargetLink(target)
+    } 
     if (!bookingData?.vntId) {
       setTimeout(() => {
         getStationAreas()
@@ -991,6 +1004,8 @@ console.log(dataLocal)
               ...bookingData,
               supplier: value,
             })
+            let target = Object.values(TTDK_INSURANCE_PARTNER).find(item=>item?.label == value)?.link
+            setTargetLink(target)
           }}
           defaultValue={1}
           style={{ width: '100%' }}>

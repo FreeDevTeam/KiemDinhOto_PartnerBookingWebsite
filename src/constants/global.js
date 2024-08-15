@@ -7,6 +7,8 @@ import AtmIcon from "../assets/Booking-icon/atmCard.png";
 import L2PVIIcon from "../assets/icons/PVI.png";
 import L2VNIIcon from "../assets/icons/VNI.png";
 import L2VBSHIcon from "../assets/icons/BSH.png";
+import L2MICIcon from "../assets/icons/MIC.png";
+import L2TASCOIcon from "../assets/icons/Tasco.png";
 
 export const IS_ZALO_MINI_APP = window.APP_CONTEXT === 'zalo-mini-app'
 
@@ -770,33 +772,53 @@ export const VEHICLE_SUB_TYPE = [
   }
 ]
 export const TTDK_INSURANCE_PARTNER = {
-  PVI:{
+  MIC:{
     id:1,
-    label: 'PVI',
-    note:true,
+    label: 'MIC',
+    link:'https://emic.vn/menuak.aspx?p=G,071_TTDK,XEL#bhhd_xelE',
     icon:(
       <div className="d-flex align-items-center justify-content-center">
-        <img src={L2PVIIcon} style={{width:'30px',height:'13px'}}/>
+        <img src={L2MICIcon} style={{width:'35px',height:'15px'}}/>
+      </div>
+    ),
+  },
+  TASCO:{
+    id:2,
+    label: 'TASCO',
+    link:'https://baohiemtasco.vn/',
+    icon:(
+      <div className="d-flex align-items-center justify-content-center">
+        <img src={L2TASCOIcon} style={{width:'35px',height:'15px'}}/>
+      </div>
+    ),
+  },
+  PVI:{
+    id:3,
+    label: 'PVI',
+    link:'https://ttdk.partner.saladin.vn',
+    icon:(
+      <div className="d-flex align-items-center justify-content-center">
+        <img src={L2PVIIcon} style={{width:'35px',height:'15px'}}/>
       </div>
     ),
   },
   VNI:{
-    id:2,
+    id:4,
     label: 'VNI',
-    note:true,
+    link:'https://ttdk.partner.saladin.vn',
     icon:(
       <div className="d-flex align-items-center justify-content-center">
-        <img src={L2VNIIcon} style={{width:'30px',height:'13px'}}/>
+        <img src={L2VNIIcon} style={{width:'35px',height:'15px'}}/>
       </div>
     ),
   },
   BSH:{
-    id:3,
+    id:5,
     label: 'BSH',
-    note:false,
+    link:'https://ttdk.partner.saladin.vn',
     icon:(
       <div className="d-flex align-items-center justify-content-center">
-        <img src={L2VBSHIcon} style={{width:'30px',height:'13px'}}/>
+        <img src={L2VBSHIcon} style={{width:'35px',height:'15px'}}/>
       </div>
     ),
 
