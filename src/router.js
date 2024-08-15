@@ -25,7 +25,7 @@ export const ROUTERS = {
     },
     booking: {
         path: PATH.BOOKING,
-        component: BookingPartner,
+        component: BookingType ? BookingInsurancePartner : BookingPartner,
         isZaloApp: 1,
     },
     myBookingHistory: {
@@ -41,7 +41,7 @@ export const ROUTERS = {
     //page on web
     bookingHome: {
         path: PATH.HOME,
-        component: BookingType ? BookingInsurancePartner : BookingPartner,
+        component: !BookingType ? BookingInsurancePartner : BookingPartner,
         isZaloApp: 0,
     },
     bookingHistory: {

@@ -595,6 +595,11 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
         setTimeout(() => {
           setIsLoading(false)
         }, 500);
+        if(data.paymentUrl && data.paymentUrl.length > 0){
+          setTimeout(() => {
+            window.open(data.paymentUrl, '_blank')
+          }, 500);
+        }
         setIsModalOpen(true)
         localStorage.removeItem(addKeyLocalStorage('bookingData'))
         setTimeout(() => {
