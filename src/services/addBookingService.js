@@ -46,6 +46,24 @@ export default class BookingService {
       })
     })
   }
+  static async checkVihcleInfo() {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/StationIntroduction/stationIntroductionDetail',
+        data: {
+          stationUrl: window.location.origin.split('://')[1]
+        }
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(data)
+        } else {
+          return resolve(data)
+        }
+      })
+    })
+  }
 
   static async getScheduleDetail(data) {
     return new Promise((resolve) => {

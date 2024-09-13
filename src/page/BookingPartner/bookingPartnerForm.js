@@ -24,6 +24,7 @@ import BookingHoursPicker from '../../components/BookingHoursPicker'
 function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   const isZaloApp = (process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1)
   const location = useLocation();
+  const dataVihcle=location.state || {}
   const searchparam = location.search
   const params = new URLSearchParams(searchparam)
   const dataLocal=JSON.parse(localStorage.getItem(addKeyLocalStorage('bookingData')))
@@ -64,7 +65,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   const [loadingHoursPicker, setLoadingHoursPicker] = useState(false)
 
   let getParamData ={
-    licensePlates:params.get('licensePlates'),
+    licensePlates:dataVihcle?.licensePlates || params.get('licensePlates'),
     phone:zaloUserPhone || params.get('phone'),
     fullnameSchedule:zaloUserName || params.get('name'),
     email:params.get('email'),
@@ -77,7 +78,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     vehicleSubType: Number(params.get('vehicleSubType')) || VEHICLE_SUB_TYPE[0].value,
     vehicleSubCategory: Number(params.get('vehicleSubCategory')) || VIHCLE_CATEGORY_OTO[0].value,
     vntId: params.get('vntId'),
-    certificateSeries: params.get('certificateSeries'),
+    certificateSeries: dataVihcle?.certificateSeries || params.get('certificateSeries'),
     visible_StationArea : (params.get('visible_StationArea')),
     visible_StationsCode : (params.get('visible_StationsCode')),
     visible_firstName : (params.get('visible_firstName')),
@@ -101,7 +102,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     setIsLoadDataLocal(false)
     setDataBookingParam({
       ...bookingData,
-      licensePlates: localBookingData?.licensePlates || params.get('licensePlates'),
+      licensePlates:dataVihcle?.licensePlates || localBookingData?.licensePlates || params.get('licensePlates'),
       phone: zaloUserPhone || localBookingData?.phone || params.get('phone'),
       fullnameSchedule: zaloUserName || localBookingData?.fullnameSchedule || params.get('name'),
       email: localBookingData?.email || params.get('email'),
@@ -114,7 +115,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
       vehicleSubType: Number(params.get('vehicleSubType')) || localBookingData?.vehicleSubType || VEHICLE_SUB_TYPE[0].value,
       vehicleSubCategory: Number(params.get('vehicleSubCategory')) || localBookingData?.vehicleSubCategory || VIHCLE_CATEGORY_OTO[0].value,
       vntId: params.get('vntId') || localBookingData?.vntId,
-      certificateSeries: localBookingData?.certificateSeries || params.get('certificateSeries'),
+      certificateSeries:dataVihcle?.certificateSeries ||  localBookingData?.certificateSeries || params.get('certificateSeries'),
       visible_StationArea : (params.get('visible_StationArea')),
       visible_StationsCode : (params.get('visible_StationsCode')),
       visible_firstName : (params.get('visible_firstName')),
@@ -1023,6 +1024,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
             placeholder="59B16856" 
             type="text" 
             size="large"
+            readOnly = {dataVihcle?.licensePlates}
             onInput={(e)=>{
               e.target.value = e.target.value.toUpperCase().replace(/\s/g, '')
               saveDataLocal('licensePlates',e.target.value)
@@ -1185,6 +1187,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           type="text"
           style={{textTransform:'uppercase'}}
           size="large"
+          readOnly = {dataVihcle?.certificateSeries}
           onInput={(event) => {
             event.target.value = event.target.value.toUpperCase().replace(/\s/g, '')
             saveDataLocal('certificateSeries',event.target.value)

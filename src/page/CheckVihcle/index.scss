@@ -1,0 +1,133 @@
+@import "../../assets/scss/variable";
+.ant-form-item-label{
+  label{
+    padding-bottom: 6px;
+  }
+}
+.css-894a34-indicatorSeparator{
+  width: 0px !important;
+}
+.record{
+  margin-top: 30px;
+  &-error{
+    &-title{
+      margin: 5px 0px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: $title-small-fs;
+      font-weight: $title-normal-fw;
+      color: $--color-FA541C;
+      background-color: $--color-FFF2E8;
+      padding:10px 0;
+      border-radius: 20px;
+      text-align: center;
+    }
+    &-content{
+      display: flex;
+      gap:8px;
+      align-items: center;
+      font-size: $text-normal-fs;
+      padding: 8px;
+    }
+    &-booking{
+      display: grid;
+      margin: 15px 0;
+      grid-template-columns: 4fr 1fr;
+      gap:8px;
+      align-items: center;
+      font-size: $text-normal-fs;
+      background-color: $--color-F4F7FF;
+      padding: 8px;
+      border-radius: 5px;
+    }
+  }
+  &-success{
+    &-title{
+      margin: 5px 0px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: $title-small-fs;
+      font-weight: $title-normal-fw;
+      color: var(--success-btn-color);
+      padding: 10px 0;
+      background-color: $--color-EBF7EC;
+      border-radius: 20px;
+      text-align: center;
+    }
+    &-content{
+      display: flex;
+      gap:8px;
+      align-items: center;
+      font-size: $text-normal-fs;
+    }
+    &-booking{
+      display: grid;
+      margin: 15px 0 25px 0;
+      grid-template-columns: 4fr 1fr;
+      gap:8px;
+      align-items: center;
+      font-size: $text-normal-fs;
+      background-color: $--color-F4F7FF;
+      border-radius: 5px;
+      padding: 8px;
+    }
+  }
+  @media (max-width: 980px) {
+    min-height: 400px;
+  }
+}
+.booking-btn{
+  text-align: center;
+  cursor: pointer;
+  font-size: $text-normal-fs;
+  color: var(--primary-button-color);
+}
+
+@media (max-width: 480px) {
+  .vehicleIdentity{
+    flex-flow: row;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .mWidth-100{
+    max-width: 100% !important;
+  }
+}
+.criminal-loading{
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.GCN_exp{
+  padding: 18px;
+  margin-top: 8px;
+  border-radius: 8px;
+  background-color: var(--secondary-color);
+  font-weight: bold;
+}
+.GCN_img{
+  max-width: 100%;
+  border-radius: 6px;
+}
+.popup-GCNSeri{
+  top: 25px;
+  .ant-modal-footer{
+    border-top:1px solid var(--gray-color);
+    text-align:center;
+    padding: 5px 10px;
+  }
+  .ant-modal-body{
+    max-height: 520px;
+    overflow: auto;
+  }
+  .btn-ok{
+    background: var(--transparent-color) !important;
+    border: none;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+}

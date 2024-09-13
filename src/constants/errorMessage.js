@@ -63,3 +63,6 @@ export const ASK_ERROR = {
   NO_SERVICE_STATION: 'Không có trạm nào mở dịch vụ này. Vui lòng liên hệ CSKH để được hỗ trợ',
   UNCONFIRMED_BOOKING_EXISTED:'Đã có lịch hẹn. Vui lòng kiểm tra lại trong danh sách lịch hẹn'
 }
+export const CRIMINAL_ERROR = {
+  VEHICLE_NOT_REGISTERED: 'Phương tiện chưa được đăng ký.<br> Vui lòng đăng ký hồ sơ phương tiện trước khi thực hiện kiểm tra cảnh báo',
+}

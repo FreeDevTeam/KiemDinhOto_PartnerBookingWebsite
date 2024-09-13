@@ -1,6 +1,7 @@
 import { PATH } from './constants/router';
 import React, { createContext, useState } from 'react';
 const BookingPartner = React.lazy(() => import('./page/BookingPartner/index'))
+const CheckVihcle = React.lazy(() => import('./page/CheckVihcle/index'))
 const BookingInsurancePartner = React.lazy(() => import('./page/BookingInsurancePartner/index'))
 const BookingPartnerIframe = React.lazy(() => import('./page/Booking/index'))
 const BookingHistory = React.lazy(() => import('./page/BookingHistory/index'))
@@ -25,7 +26,7 @@ export const ROUTERS = {
     },
     booking: {
         path: PATH.BOOKING,
-        component: BookingType ? BookingInsurancePartner : BookingPartner,
+        component:BookingType == 1 ? BookingInsurancePartner : BookingPartner,
         isZaloApp: 1,
     },
     myBookingHistory: {
@@ -38,10 +39,15 @@ export const ROUTERS = {
         component: ResetPassword,
         isZaloApp: 1
     },
-    //page on web
-    bookingHome: {
+    // page on web
+    checkVihcle: {
         path: PATH.HOME,
-        component: BookingType ? BookingInsurancePartner : BookingPartner,
+        component:CheckVihcle,
+        isZaloApp: 0,
+    },
+    bookingHome: {
+        path: PATH.BOOKING,
+        component:BookingType == 1 ? BookingInsurancePartner : BookingPartner,
         isZaloApp: 0,
     },
     bookingHistory: {
