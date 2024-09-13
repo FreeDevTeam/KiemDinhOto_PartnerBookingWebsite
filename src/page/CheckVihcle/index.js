@@ -73,30 +73,33 @@ function CheckVihcle() {
       vehicleIdentity: values.vehicleIdentity,
       certificateSeries: values.certificateSeries
     }))
-    BookingService.checkVihcleInfo({data})
-    .then((result) => {
-      const {statusCode,error} = result
-      handleCheckCriminalErr(result.data[0].error)
-      if(result?.NoPermission || error == 'NoPermission'){
-        setErrorMessage('Hệ thống đang bảo trì, vui lòng quay lại sau. Quý khách có thể đặt lịch đăng kiểm để được hệ thống tự động tra cứu mỗi ngày.')
-        setIsModalErrOpen(true)
-        setIsLoading(false)
-        return
-      }
-      if(statusCode !== 200){
-          setErrorMessage('Tra cứu không thành công')
-          setIsModalErrOpen(true)
-      }else{
-        setErrorRecord(result.data[0])
-        if(result.data[0].error){
-        }else{
-          setTimeout(() => {
-            history.push(`${PATH.BOOKING}${isZaloApp ? '':`?apikey=${apikey}`}`,data)
-          }, 500);
-        }
-      }
-      setIsLoading(false)
-    })
+    setTimeout(() => {
+      history.push(`${PATH.BOOKING}${isZaloApp ? '':`?apikey=${apikey}`}`,data)
+    }, 500);
+    // BookingService.checkVihcleInfo({data})
+    // .then((result) => {
+    //   const {statusCode,error} = result
+    //   handleCheckCriminalErr(result.data[0].error)
+    //   if(result?.NoPermission || error == 'NoPermission'){
+    //     setErrorMessage('Hệ thống đang bảo trì, vui lòng quay lại sau. Quý khách có thể đặt lịch đăng kiểm để được hệ thống tự động tra cứu mỗi ngày.')
+    //     setIsModalErrOpen(true)
+    //     setIsLoading(false)
+    //     return
+    //   }
+    //   if(statusCode !== 200){
+    //       setErrorMessage('Tra cứu không thành công')
+    //       setIsModalErrOpen(true)
+    //   }else{
+    //     setErrorRecord(result.data[0])
+    //     if(result.data[0].error){
+    //     }else{
+    //       setTimeout(() => {
+    //         history.push(`${PATH.BOOKING}${isZaloApp ? '':`?apikey=${apikey}`}`,data)
+    //       }, 500);
+    //     }
+    //   }
+    //   setIsLoading(false)
+    // })
   }
 
   useEffect(() => {

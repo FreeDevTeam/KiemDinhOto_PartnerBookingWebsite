@@ -64,7 +64,7 @@ export default function HomePage() {
         ))}
       </Carousel>
       <div className="content">
-        <div className="left box" onClick={() => handleRouter(PATH.BOOKING)}>
+        <div className="left box" onClick={() => handleRouter(PATH.CHECK_VIHCLE)}>
           <ScheduleIcon className="icon"> </ScheduleIcon>
           Đặt lịch đăng kiểm
         </div>

@@ -24,6 +24,11 @@ export const ROUTERS = {
         component: BookingDetail,
         isZaloApp: 1
     },
+    checkVihcleZalo: {
+        path: PATH.CHECK_VIHCLE,
+        component:CheckVihcle,
+        isZaloApp: 1,
+    },
     booking: {
         path: PATH.BOOKING,
         component:BookingType == 1 ? BookingInsurancePartner : BookingPartner,
