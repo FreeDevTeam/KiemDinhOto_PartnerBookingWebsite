@@ -60,12 +60,10 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     dateSchedule: false,
     time: false
   })
-
   const [loadingDatePicker, setLoadingDatePicker] = useState(false)
   const [loadingHoursPicker, setLoadingHoursPicker] = useState(false)
-
   let getParamData ={
-    licensePlates:dataVihcle?.licensePlates || params.get('licensePlates'),
+    licensePlates:dataVihcle?.vehicleIdentity || params.get('licensePlates'),
     phone:zaloUserPhone || params.get('phone'),
     fullnameSchedule:zaloUserName || params.get('name'),
     email:params.get('email'),
@@ -75,7 +73,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     vehicleType:VEHICLE_SUB_TYPE[0].vehicleType,
     licensePlateColor:Number(dataLocal?.licensePlateColor) || Number(params.get('licensePlateColor')) || PLATE_COLOR[0].value,
     scheduleType:Number(dataLocal?.scheduleType) ||Number(params.get('scheduleType')) || SCHEDULE_TYPE[0].value,
-    vehicleSubType: Number(params.get('vehicleSubType')) || VEHICLE_SUB_TYPE[0].value,
+    vehicleSubType:Number(params.get('vehicleSubType')) || VEHICLE_SUB_TYPE[0].value,
     vehicleSubCategory: Number(params.get('vehicleSubCategory')) || VIHCLE_CATEGORY_OTO[0].value,
     vntId: params.get('vntId'),
     certificateSeries: dataVihcle?.certificateSeries || params.get('certificateSeries'),
@@ -102,17 +100,17 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     setIsLoadDataLocal(false)
     setDataBookingParam({
       ...bookingData,
-      licensePlates:dataVihcle?.licensePlates || localBookingData?.licensePlates || params.get('licensePlates'),
+      licensePlates:dataVihcle?.vehicleIdentity || localBookingData?.licensePlates || params.get('licensePlates'),
       phone: zaloUserPhone || localBookingData?.phone || params.get('phone'),
       fullnameSchedule: zaloUserName || localBookingData?.fullnameSchedule || params.get('name'),
       email: localBookingData?.email || params.get('email'),
       dateSchedule: localBookingData?.dateSchedule || params.get('dateSchedule'),
       time: localBookingData?.time?.scheduleTime || params.get('time'),
       stationsId: Number(params.get('stationsId')) || localBookingData?.stationsId?.stationsId ,
-      vehicleType: Number(dataBookingParam?.vehicleType) || VEHICLE_SUB_TYPE[0].vehicleType,
+      vehicleType:Number(dataBookingParam?.vehicleType) || VEHICLE_SUB_TYPE[0].vehicleType,
       licensePlateColor: Number(dataBookingParam?.licensePlateColor) || Number(params.get('licensePlateColor')),
       scheduleType: Number(dataBookingParam?.scheduleType) || Number(params.get('scheduleType')),
-      vehicleSubType: Number(params.get('vehicleSubType')) || localBookingData?.vehicleSubType || VEHICLE_SUB_TYPE[0].value,
+      vehicleSubType:Number(params.get('vehicleSubType')) || localBookingData?.vehicleSubType || VEHICLE_SUB_TYPE[0].value,
       vehicleSubCategory: Number(params.get('vehicleSubCategory')) || localBookingData?.vehicleSubCategory || VIHCLE_CATEGORY_OTO[0].value,
       vntId: params.get('vntId') || localBookingData?.vntId,
       certificateSeries:dataVihcle?.certificateSeries ||  localBookingData?.certificateSeries || params.get('certificateSeries'),
@@ -763,10 +761,10 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
         setIsModalErrOpen(true)
       })
     }
-    const handleCategory = (evt,vehicleSubCategory) => {
-      const categoryOptionsMap = {
-        [VEHICLE_SUB_CATEGORY.CAR]: VIHCLE_CATEGORY_OTO,
-        [VEHICLE_SUB_CATEGORY.PASSENGER]: VIHCLE_CATEGORY_BUS,
+  const handleCategory = (evt,vehicleSubCategory) => {
+    const categoryOptionsMap = {
+      [VEHICLE_SUB_CATEGORY.CAR]: VIHCLE_CATEGORY_OTO,
+      [VEHICLE_SUB_CATEGORY.PASSENGER]: VIHCLE_CATEGORY_BUS,
       [VEHICLE_SUB_CATEGORY.TRUCKER]: VIHCLE_CATEGORY_TRUCK,
       [VEHICLE_SUB_CATEGORY.GROUP]: VIHCLE_CATEGORY_GROUP,
       [VEHICLE_SUB_CATEGORY.ROMOOCL]: VIHCLE_CATEGORY_MOOC,
@@ -1024,7 +1022,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
             placeholder="59B16856" 
             type="text" 
             size="large"
-            readOnly = {dataVihcle?.licensePlates}
+            readOnly = {dataVihcle?.vehicleIdentity}
             onInput={(e)=>{
               e.target.value = e.target.value.toUpperCase().replace(/\s/g, '')
               saveDataLocal('licensePlates',e.target.value)

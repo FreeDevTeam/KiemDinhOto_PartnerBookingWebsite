@@ -1,105 +1,62 @@
 import React, { useState, useEffect } from 'react'
-import moment from 'moment'
-import { Select, Form, Input, Button, Spin, Row, Col, Modal } from 'antd'
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { Form, Input, Button, Row, Col, Modal } from 'antd'
+import { useHistory, useLocation } from 'react-router-dom'
 import './index.scss'
 import seriGCN from './../../assets/icons/seriGCN.png'
 import { validatorPlateNumber } from '../../helper/validatorPlateNumber'
-import { DATE_DISPLAY_FORMAT } from '../../constants/dateFormats'
-import DefaultButton from '../../components/elements/button'
 import PopupMessage from '../BookingPartner/PopupMessage'
-import BookingService from '../Booking/BookingService'
-import { CRIMINAL_ERROR } from '../../constants/errorMessage'
 import LoadingPopup from '../../components/LoadingPopup'
 import { PATH } from '../../constants/router'
 import { CheckApiKey } from '../../helper/CheckApiKey'
 import LoadFormBookingFailed from '../../components/BasicComponent/LoadFormBookingFailed'
+import BookingService from '../../services/addBookingService'
 
 function CheckVihcle() {
   const history=useHistory()
-  const [dateFilter, setDateFilter] = useState({
-    stationsId: null,
-    startDate: moment().format(DATE_DISPLAY_FORMAT),
-    endDate: moment().add(1, 'M').format(DATE_DISPLAY_FORMAT),
-  })
   const location = useLocation();
-  const [changeField, setChangeField] = useState('')
-  const [listData, setListData] = useState([])
-  const [listPlate, setListPlate] = useState([])
-  const [isOpenSelectionModal, setIsOpenSelectionModal] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [isLoadingVihcle, setIsLoadingVihcle] = useState(false)
   const [dataVihcle, setDataVihcle] = useState({})
-  const [errorRecord, setErrorRecord] = useState({})
   const [isModalErrOpen, setIsModalErrOpen] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const BookingType=process.env.REACT_APP_BHTNDS
-  const isNoVihcle = !dataVihcle?.appUserVehicleId
   const [form] = Form.useForm()
   const apikey= CheckApiKey()
   const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1
-  const handleCheckCriminalErr=(err)=>{
-    switch (err) {
-      case 'InvalidSeriGCN':
-        setIsModalErrOpen(true)
-        setErrorMessage(  "GCN hoặc thông tin phương tiện không chính xác.")
-        return
-      case 'NoPermission':
-        setIsModalErrOpen(true)
-        setErrorMessage(  "Bạn không có quyền thực hiện tra cứu")
-        return
-      case 'NoDataCriminal':
-        setIsModalErrOpen(true)
-        setErrorMessage( "Không tìm thấy thông tin phương tiện tại cục đăng kiểm")
-        return
-      case 'InvalidInput':
-        setIsModalErrOpen(true)
-        setErrorMessage( "Thông tin phương tiện không chính xác.")
-        return
-      case 'NoData':
-        setIsModalErrOpen(true)
-        setErrorMessage(  "Không tìm thấy thông tin phương tiện tại cục đăng kiểm")
-        return
-    }
-  }
   const onFinish = (values) => {
     setIsLoading(true)
     let data={
-      licensePlates: values.vehicleIdentity,
+      vehicleIdentity: values.vehicleIdentity,
       certificateSeries: values.certificateSeries
     }
     setDataVihcle((prev) => ({ ...prev, 
       vehicleIdentity: values.vehicleIdentity,
       certificateSeries: values.certificateSeries
     }))
-    setTimeout(() => {
-      history.push(`${PATH.BOOKING}${isZaloApp ? '':`?apikey=${apikey}`}`,data)
-    }, 500);
-    // BookingService.checkVihcleInfo({data})
-    // .then((result) => {
-    //   const {statusCode,error} = result
-    //   handleCheckCriminalErr(result.data[0].error)
-    //   if(result?.NoPermission || error == 'NoPermission'){
-    //     setErrorMessage('Hệ thống đang bảo trì, vui lòng quay lại sau. Quý khách có thể đặt lịch đăng kiểm để được hệ thống tự động tra cứu mỗi ngày.')
-    //     setIsModalErrOpen(true)
-    //     setIsLoading(false)
-    //     return
-    //   }
-    //   if(statusCode !== 200){
-    //       setErrorMessage('Tra cứu không thành công')
-    //       setIsModalErrOpen(true)
-    //   }else{
-    //     setErrorRecord(result.data[0])
-    //     if(result.data[0].error){
-    //     }else{
-    //       setTimeout(() => {
-    //         history.push(`${PATH.BOOKING}${isZaloApp ? '':`?apikey=${apikey}`}`,data)
-    //       }, 500);
-    //     }
-    //   }
-    //   setIsLoading(false)
-    // })
+    BookingService.userCheckVehicleInfo(data)
+    .then((result) => {
+      const {statusCode,error} = result
+      if(result?.NoPermission || error == 'NoPermission'){
+        setErrorMessage('Hệ thống đang bảo trì, vui lòng quay lại sau. Quý khách có thể đặt lịch đăng kiểm để được hệ thống tự động tra cứu mỗi ngày.')
+        setIsModalErrOpen(true)
+        setIsLoading(false)
+        return
+      }
+      if(statusCode !== 200){
+        if(error=="NOT_FOUND"){
+          setIsModalErrOpen(true)
+          setErrorMessage('Không tìm thấy thông tin phương tiện tại TTDK và cục đăng kiểm')
+          setIsLoading(false)
+          return
+        }
+          setErrorMessage('Tra cứu không thành công')
+          setIsModalErrOpen(true)
+      }else{
+        setTimeout(() => {
+          history.push(`${PATH.BOOKING}${isZaloApp ? '':`?apikey=${apikey}`}`,result.data)
+        }, 500);
+      }
+      setIsLoading(false)
+    })
   }
 
   useEffect(() => {

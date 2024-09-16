@@ -98,7 +98,7 @@ function BookingInsurancePartnerForm({form, setTabKey, zaloUserName,zaloUserPhon
     vehicleType: null
   })
   let getParamData ={
-    licensePlates:dataVihcle?.licensePlates || params.get('licensePlates'),
+    licensePlates:dataVihcle?.vehicleIdentity || params.get('licensePlates'),
     phone:zaloUserPhone || params.get('phone'),
     fullnameSchedule:zaloUserName || params.get('name'),
     email:params.get('email'),
@@ -141,7 +141,7 @@ function BookingInsurancePartnerForm({form, setTabKey, zaloUserName,zaloUserPhon
     setIsLoadDataLocal(false)
     setDataBookingParam({
       ...bookingData,
-      licensePlates:dataVihcle?.licensePlates || localBookingData?.licensePlates || params.get('licensePlates'),
+      licensePlates:dataVihcle?.vehicleIdentity || localBookingData?.licensePlates || params.get('licensePlates'),
       phone: zaloUserPhone || localBookingData?.phone || params.get('phone'),
       fullnameSchedule: zaloUserName || localBookingData?.fullnameSchedule || params.get('name'),
       email: localBookingData?.email || params.get('email'),
@@ -641,7 +641,7 @@ function BookingInsurancePartnerForm({form, setTabKey, zaloUserName,zaloUserPhon
             style={{textTransform:'uppercase'}} 
             placeholder="59B16856" 
             type="text" 
-            readOnly={dataVihcle?.licensePlates}
+            readOnly={dataVihcle?.vehicleIdentity}
             size="large"
             onInput={(e)=>{
               e.target.value = e.target.value.toUpperCase().replace(/\s/g, '')

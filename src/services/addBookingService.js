@@ -27,7 +27,22 @@ export default class BookingService {
       })
     })
   }
-
+  static async userCheckVehicleInfo(data = {}) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/PartnerAPI/AppUserVehicle/user/fetchVehicleInfo',
+        data
+      }).then((result = {}) => {
+        const { statusCode } = result
+        if (statusCode === 200) {
+          return resolve(result)
+        } else {
+          return resolve(result)
+        }
+      })
+    })
+  }
   static async getDetailIntroductionPage() {
     return new Promise((resolve) => {
       Request.send({
