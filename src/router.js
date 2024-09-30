@@ -3,6 +3,7 @@ import React, { createContext, useState } from 'react';
 const BookingPartner = React.lazy(() => import('./page/BookingPartner/index'))
 const CheckVihcle = React.lazy(() => import('./page/CheckVihcle/index'))
 const BookingInsurancePartner = React.lazy(() => import('./page/BookingInsurancePartner/index'))
+const BookingInsuranceSaladin = React.lazy(() => import('./page/BookingInsuranceSaladin/index'))
 const BookingPartnerIframe = React.lazy(() => import('./page/Booking/index'))
 const BookingHistory = React.lazy(() => import('./page/BookingHistory/index'))
 const HomePage = React.lazy(() => import('./page/Home/index'))
@@ -11,6 +12,20 @@ const MyBookingHistory = React.lazy(() => import('./page/MyBookingHistory/index'
 const BookingDetail = React.lazy(() => import('./page/BookingDetail/index'))
 
 const BookingType=process.env.REACT_APP_BHTNDS
+
+const handleCheckPage=()=>{
+    switch (BookingType) {
+        case 0:
+            return (BookingPartner)
+        case 1:
+            return (BookingInsurancePartner)
+        case 2:
+            return (BookingInsuranceSaladin)
+            
+        default:
+            return (BookingPartner)
+    }
+}
 
 export const ROUTERS = {
     //page on ZALO app
@@ -31,7 +46,7 @@ export const ROUTERS = {
     },
     booking: {
         path: PATH.BOOKING,
-        component:BookingType == 1 ? BookingInsurancePartner : BookingPartner,
+        component:handleCheckPage(),
         isZaloApp: 1,
     },
     myBookingHistory: {
@@ -52,7 +67,7 @@ export const ROUTERS = {
     },
     bookingHome: {
         path: PATH.BOOKING,
-        component:BookingType == 1 ? BookingInsurancePartner : BookingPartner,
+        component:handleCheckPage(),
         isZaloApp: 0,
     },
     bookingHistory: {
