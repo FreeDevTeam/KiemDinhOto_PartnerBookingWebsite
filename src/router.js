@@ -14,12 +14,13 @@ const BookingDetail = React.lazy(() => import('./page/BookingDetail/index'))
 const BookingType=process.env.REACT_APP_BHTNDS
 
 const handleCheckPage=()=>{
+    console.log(BookingType);
     switch (BookingType) {
-        case 0:
+        case '0':
             return (BookingPartner)
-        case 1:
+        case '1':
             return (BookingInsurancePartner)
-        case 2:
+        case '2':
             return (BookingInsuranceSaladin)
             
         default:
