@@ -26,6 +26,7 @@ function BookingInsuranceSaladinForm({form, setTabKey, zaloUserName,zaloUserPhon
   const isZaloApp = (process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1)
   const location = useLocation();
   const dataVihcle=location.state || {}
+  console.log(dataVihcle);
   const searchparam = location.search
   const params = new URLSearchParams(searchparam)
   const dataLocal=JSON.parse(localStorage.getItem(addKeyLocalStorage('bookingData')))
@@ -113,7 +114,7 @@ function BookingInsuranceSaladinForm({form, setTabKey, zaloUserName,zaloUserPhon
         }, 500);
         let redirectData={
           ...newData,
-          chassis:values?.frameNumber
+          chassis:dataVihcle?.vehicleRegistrationCode
         }
         redirectToInsurancePartner(redirectData)
         // setIsModalOpen(true)
@@ -384,27 +385,6 @@ function BookingInsuranceSaladinForm({form, setTabKey, zaloUserName,zaloUserPhon
                 onInput={(event) => {
                   event.target.value = event.target.value.toUpperCase().replace(/\s/g, '')
                   saveDataLocal('certificateSeries',event.target.value)
-                }}
-              />
-            </Form.Item>
-            <Form.Item
-              name="frameNumber"
-              label="Số khung"
-              rules={[
-                {
-                  required: true,
-                  message: 'Vui lòng nhập số khung'
-                }
-              ]}
-            >
-              <Input
-                defaultValue={dataBookingParam?.frameNumber || dataLocal?.frameNumber}
-                className="login__input booking-input"
-                placeholder="1HGBH51AXMN142091"
-                type="text"
-                size="large"
-                onInput={(e) => {
-                  saveDataLocal('frameNumber', e.target.value);
                 }}
               />
             </Form.Item>
