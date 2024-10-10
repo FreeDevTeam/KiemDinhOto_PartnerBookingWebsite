@@ -111,8 +111,12 @@ function BookingInsuranceSaladinForm({form, setTabKey, zaloUserName,zaloUserPhon
         setTimeout(() => {
           setIsLoading(false)
         }, 500);
-        redirectToInsurancePartner(newData)
-        setIsModalOpen(true)
+        let redirectData={
+          ...newData,
+          chassis:values?.frameNumber
+        }
+        redirectToInsurancePartner(redirectData)
+        // setIsModalOpen(true)
         localStorage.removeItem(addKeyLocalStorage('bookingData'))
         setTimeout(() => {
           setBookingData({})
@@ -340,7 +344,7 @@ function BookingInsuranceSaladinForm({form, setTabKey, zaloUserName,zaloUserPhon
             </Form.Item>
             <Form.Item
               name="certificateSeries"
-              extra={'Nhập số seri GCN để được tự động kiểm tra phạt nguội'}
+              // extra={'Nhập số seri GCN để được tự động kiểm tra phạt nguội'}
               label={
                 <div>
                   Số seri đăng kiểm
@@ -364,6 +368,10 @@ function BookingInsuranceSaladinForm({form, setTabKey, zaloUserName,zaloUserPhon
                   message: 'Số seri GCN không hợp lệ',
                   pattern: new RegExp(/^([a-zA-Z]{2})+(-(?!-))+([0-9]{7}\b)$/),
                 },
+                {
+                  message: 'Số seri GCN phải có dấu "-". Ví dụ: KA-42521XX ',
+                  pattern: new RegExp(/^([a-zA-Z]{2})+(-(?!-))/),
+                },
               ]}>
               <Input
                 className="login__input"
@@ -379,11 +387,32 @@ function BookingInsuranceSaladinForm({form, setTabKey, zaloUserName,zaloUserPhon
                 }}
               />
             </Form.Item>
+            <Form.Item
+              name="frameNumber"
+              label="Số khung"
+              rules={[
+                {
+                  required: true,
+                  message: 'Vui lòng nhập số khung'
+                }
+              ]}
+            >
+              <Input
+                defaultValue={dataBookingParam?.frameNumber || dataLocal?.frameNumber}
+                className="login__input booking-input"
+                placeholder="1HGBH51AXMN142091"
+                type="text"
+                size="large"
+                onInput={(e) => {
+                  saveDataLocal('frameNumber', e.target.value);
+                }}
+              />
+            </Form.Item>
           </div>
           <div className='note-text'>Khi bấm Tiếp tục, bạn đồng ý cho TTDK và Saladin (10X) sử dụng thông tin mà bạn đã cung cấp để phục vụ mục đích marketing và giới thiệu sản phẩm.</div>
           <div className="w-100 d-flex justify-content-center">
             <Button className="_button df"  htmlType="submit" size="large">
-              Đặt lịch
+              Mua ngay
             </Button>
           </div>
           <BookingSuccess isModalOpen={isModalOpen} setTabKey={setTabKey} setIsModalOpen={setIsModalOpen} onClose={() => {setIsModalOpen(false);window.location.reload()}}></BookingSuccess>

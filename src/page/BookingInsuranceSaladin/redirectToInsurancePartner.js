@@ -5,6 +5,7 @@ const redirectToInsurancePartner = (data)=> {
     let _targetRequireData = {
       phone: data?.phone || '',
       name: data.fullnameSchedule.replaceAll(' ','') || '',
+      chassis:data?.chassis,
       plate_number: data?.licensePlates, 
       email: data?.email, 
       plate_color: '',
@@ -31,6 +32,6 @@ const redirectToInsurancePartner = (data)=> {
       }
     }
     console.log(_targetUrl);
-window.open(_targetUrl.replace('?&','?'), '_blank');
+    window.location.replace(_targetUrl.replace('?&','?'));
 }
 export default redirectToInsurancePartner;

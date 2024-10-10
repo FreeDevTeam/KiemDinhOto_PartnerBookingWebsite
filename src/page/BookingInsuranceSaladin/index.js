@@ -80,7 +80,7 @@ function BookingInsurancePartner() {
                         </div>
                       </div>
                     </div>
-                    <div style={{display:'flex',justifyContent:'center'}}>
+                    <div className='img-banner'>
                       <img className='banner' src="/banner-saladin.png" alt="" />
                     </div>
                   </div>
