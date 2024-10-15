@@ -1,18 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Form, Input, Button, Select as SelectAntd, Row, Col, Spin, Radio, Tag, DatePicker } from 'antd'
+import { Form, Input, Button, Select as SelectAntd, Row, Col, Spin } from 'antd'
 import BookingService from '../../services/addBookingService'
-import { WarningOutlined } from '@ant-design/icons'
-import { xoa_dau } from '../../helper/common'
 import { DATE_DISPLAY_FORMAT } from '../../constants/dateFormats'
-import { changeTime } from '../../helper/changeTime'
-import queryString from 'query-string'
-import _ from 'lodash'
 import moment from 'moment'
-import Select from 'react-select'
-import { PLATE_COLOR, SCHEDULE_TYPE, TTDK_INSURANCE_PARTNER, VEHICLE_SUB_CATEGORY, VEHICLE_SUB_TYPE, VIHCLE_CATEGORY_BUS, VIHCLE_CATEGORY_GROUP, VIHCLE_CATEGORY_MOOC, VIHCLE_CATEGORY_OTO, VIHCLE_CATEGORY_PICKUP, VIHCLE_CATEGORY_SPECIALIZED, VIHCLE_CATEGORY_TRUCK, VIHCLE_TYPES } from '../../constants/global'
+import { PLATE_COLOR, TTDK_INSURANCE_PARTNER, VEHICLE_SUB_TYPE } from '../../constants/global'
 import { SCHEDULE_ERROR } from '../../constants/errorMessage'
 import { useLocation } from 'react-router-dom'
-import AreaByIP from '../../services/getAreaByIP'
 import addKeyLocalStorage from '../../helper/localStorage'
 import { validatorPlateNumber } from '../../helper/validatorPlateNumber'
 import { ReactComponent as LogoTTDK } from './../../assets/icons/Logo.svg'
@@ -25,12 +18,10 @@ import redirectToInsurancePartner from './redirectToInsurancePartner'
 function BookingInsuranceSaladinForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   const isZaloApp = (process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1)
   const location = useLocation();
-  const dataVihcle=location.state || {}
-  console.log(dataVihcle);
+  const dataVihcle=location?.state || {}
   const searchparam = location.search
   const params = new URLSearchParams(searchparam)
   const dataLocal=JSON.parse(localStorage.getItem(addKeyLocalStorage('bookingData')))
-  const [customerParam, setCustomerParam] = useState({filter: {} })
   const [errorMessage, setErrorMessage] = useState('')
   const [isModalErrOpen, setIsModalErrOpen] = useState(false)
   const [bookingData, setBookingData] = useState({})
@@ -45,13 +36,23 @@ function BookingInsuranceSaladinForm({form, setTabKey, zaloUserName,zaloUserPhon
     endDate: moment().endOf('month').format(DATE_DISPLAY_FORMAT),
     vehicleType: null
   })
+  const handleCheckPlateColor=(value)=>{
+    if(value == "BLUE") {
+      return 2
+    }else if(value == "YELLOW"){
+      return 3
+    }else{
+      return 1
+    }
+  }
+  console.log(dataVihcle);
   let getParamData ={
     licensePlates:dataVihcle?.vehicleIdentity || params.get('licensePlates'),
     phone:zaloUserPhone || params.get('phone'),
     fullnameSchedule:zaloUserName || params.get('name'),
     email:params.get('email'),
     certificateSeries:dataVihcle?.certificateSeries ||  params.get('certificateSeries'),
-    licensePlateColor:Number(dataLocal?.licensePlateColor) || Number(params.get('licensePlateColor')) || PLATE_COLOR[0].value,
+    licensePlateColor:handleCheckPlateColor(dataVihcle?.vehiclePlateColor) || Number(dataLocal?.licensePlateColor) || Number(params.get('licensePlateColor')) || PLATE_COLOR[0].value,
 
   }
   const customStyles = {

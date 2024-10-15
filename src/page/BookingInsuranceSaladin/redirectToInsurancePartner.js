@@ -5,7 +5,8 @@ const redirectToInsurancePartner = (data)=> {
     let _targetRequireData = {
       phone: data?.phone || '',
       name: data.fullnameSchedule.replaceAll(' ','') || '',
-      chassis:data?.chassis,
+      chassis:data?.chassis || '',
+      is_business:'',
       plate_number: data?.licensePlates, 
       email: data?.email, 
       plate_color: '',
@@ -14,10 +15,13 @@ const redirectToInsurancePartner = (data)=> {
 
     if(data?.licensePlateColor == 2) {
       _targetRequireData.plate_color=0;
+      _targetRequireData.is_business=0;
     }else if(data?.licensePlateColor == 3){
       _targetRequireData.plate_color=1;
+      _targetRequireData.is_business=1;
     }else{
       _targetRequireData.plate_color=2;
+      _targetRequireData.is_business=0;
     }
 
 
@@ -31,7 +35,6 @@ const redirectToInsurancePartner = (data)=> {
         }
       }
     }
-    console.log(_targetUrl);
     window.location.replace(_targetUrl.replace('?&','?'));
 }
 export default redirectToInsurancePartner;
