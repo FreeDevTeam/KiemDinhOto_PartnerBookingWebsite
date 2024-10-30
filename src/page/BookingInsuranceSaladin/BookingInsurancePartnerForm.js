@@ -45,7 +45,6 @@ function BookingInsuranceSaladinForm({form, setTabKey, zaloUserName,zaloUserPhon
       return 1
     }
   }
-  console.log(dataVihcle);
   let getParamData ={
     licensePlates:dataVihcle?.vehicleIdentity || params.get('licensePlates'),
     phone:zaloUserPhone || params.get('phone'),

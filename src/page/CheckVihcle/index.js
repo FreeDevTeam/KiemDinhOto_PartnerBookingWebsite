@@ -34,7 +34,7 @@ function CheckVihcle() {
     }))
     BookingService.userCheckVehicleInfo(data)
     .then((result) => {
-      const {statusCode,error} = result
+      const {statusCode,error,data} = result
       if(result?.NoPermission || error == 'NoPermission'){
         setErrorMessage('Hệ thống đang bảo trì, vui lòng quay lại sau. Quý khách có thể đặt lịch đăng kiểm để được hệ thống tự động tra cứu mỗi ngày.')
         setIsModalErrOpen(true)
@@ -51,8 +51,12 @@ function CheckVihcle() {
           setErrorMessage('Tra cứu không thành công')
           setIsModalErrOpen(true)
       }else{
+        let params={
+          ...data,
+          certificateSeries:data?.certificateSeries || values.certificateSeries
+        }
         setTimeout(() => {
-          history.push(`${PATH.BOOKING}${isZaloApp ? '':`?apikey=${apikey}`}`,result.data)
+          history.push(`${PATH.BOOKING}${isZaloApp ? '':`?apikey=${apikey}`}`,params)
         }, 500);
       }
       setIsLoading(false)
@@ -103,31 +107,27 @@ function CheckVihcle() {
               value: dataVihcle.certificateSeries
             },
           ]}>
-            <Form.Item label={'Biển số xe'} required>
-              <Row className='vehicleIdentity' gutter={8}>
-                <Col className='mWidth-100' span={24}>
-                  <Form.Item
-                    name="vehicleIdentity"
-                    style={{marginBottom:'0px'}}
-                    rules={[
-                      {
-                        required: true,
-                        validator(_, value) {
-                          return validatorPlateNumber(value)
-                        }
-                      }
-                    ]}>
-                    <Input
-                      className="login__input"
-                      placeholder={"Nhập biển số xe. VD: 30A38362"}
-                      type="text"
-                      allowClear
-                      size="large"
-                      onInput={(e) => (e.target.value = e.target.value.toUpperCase().replace(/\s/g, ''))}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
+          <Form.Item
+            name="vehicleIdentity"
+            style={{marginBottom:'10px'}}
+            label={'Biển số xe'} 
+            required
+            rules={[
+              {
+                required: true,
+                validator(_, value) {
+                  return validatorPlateNumber(value)
+                }
+              }
+            ]}>
+              <Input
+                className="login__input"
+                placeholder={"Nhập biển số xe. VD: 30A38362"}
+                type="text"
+                allowClear
+                size="large"
+                onInput={(e) => (e.target.value = e.target.value.toUpperCase().replace(/\s/g, ''))}
+              />
             </Form.Item>
 
             <Form.Item
@@ -182,6 +182,7 @@ function CheckVihcle() {
             className="popup-GCNSeri"
             style={{
               maxWidth:'550px',
+              padding:'10px'
             }}>
             <div className='text-nomal'>
               <div>
