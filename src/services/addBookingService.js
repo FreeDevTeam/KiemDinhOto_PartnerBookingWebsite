@@ -347,6 +347,22 @@ export default class BookingService {
       })
     })
   }
+  static async userGetExpertNews(data) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/StationNews/user/getExpertNews',
+        data: data
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(data)
+        } else {
+          return resolve({})
+        }
+      })
+    })
+  }
   static async getStationAreaList() {
     return new Promise((resolve) => {
       Request.send({

@@ -58,7 +58,7 @@ const PartnerPromotionNew = ({ listNews, setSheetVisible, setDataBtn }) => {
                     title={item.stationNewsTitle}
                     src={item.stationNewsAvatar}
                     showEye={false}
-                    handleCardClick={handleCardClick}
+                    handleCardClick={()=>handleCardClick(item)}
                   />
                 </div>
               ))

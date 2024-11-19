@@ -32,6 +32,7 @@ const HomeLayout2 = (props) => {
   const [driverAmenities, setDriverAmenities] = useState(CONVENIENCE_DRIVERS_BTN)
   const [governmentAgency, setGovernmentAgency] = useState(GOVERNMENT_BTN)
   const [stationNewsPartnerPromotion, setStationNewsPartnerPromotion] = useState([])
+  const [expertNews, setExpertNews] = useState([])
   const [recruitmentList, setRecruitmentList] = useState([])
   const [partnerUtilityNews, setPartnerUtilityNews] = useState([])
   const [setting, setSetting] = useState([]);
@@ -86,6 +87,22 @@ const HomeLayout2 = (props) => {
       setIsLoading(false);
     })
 
+  }
+  const getExpertNews = async () =>{
+    await NewService.userGetExpertNews(
+    {
+      "skip": 0,
+      "limit": 10,
+      "order": {
+        "key": "ordinalNumber",
+        "value": "asc"
+      }
+    }
+    ).then((result) => {
+      if (result) {
+        setExpertNews(result.data)
+      }
+    })
   }
   const getRecruitmentListNew = async () =>{
     await NewService.getPartnerPromotionNews({
@@ -186,10 +203,11 @@ const HomeLayout2 = (props) => {
     getHomePageConfig(1)
     getHomePageConfig(2)
     setTimeout(async() =>  {
+      await fetchData()
+      await getExpertNews()
       await getRecruitmentListNew()
       await getPartnerUtilityNews()
       await getStationNewsPartnerPromotion()
-      await fetchData()
       await getBannerBySectionCache(12).then(data =>{
         if(data?.length > 0){
           setBottomBanner(data)
@@ -223,7 +241,6 @@ const HomeLayout2 = (props) => {
       link: `${process.env.REACT_APP_DEPLOY_URL}${link}`
     })
   }
-  console.log(dataBtn);
 
   return (
     <>
@@ -325,8 +342,24 @@ const HomeLayout2 = (props) => {
                   </div>
                 </div>
               )}
+              {expertNews?.length > 0 &&
+                <div className="home-container mb-5">
+                  <div className="d-flex justify-content-between align-items-center news-center" >
+                    <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Chuyên gia chia sẻ</div>
+                    <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Chuyên gia chia sẻ",'/expert-news')}>
+                      <a href="/" onClick={(e) => e.preventDefault()}>
+                        Xem tất cả
+                      </a>
+                    </div>
+                  </div>
+                  <div className='mobile-content'>
+                    <HomeNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={expertNews} />
+                  </div>
+                </div>
+              }
             </div>
-            {bottomBanner?.length > 0 && <PageLayout>{renderBottomSlider}</PageLayout>}
+            {bottomBanner?.length > 1 && <PageLayout>{renderBottomSlider}</PageLayout>}
+            {bottomBanner?.length == 1 && <div className={'layout2'}><img style={{borderRadius:'8px'}} src={bottomBanner[0]?.bannerImageUrl}></img></div>}
           </div>
         </div>
       </sc.Container>

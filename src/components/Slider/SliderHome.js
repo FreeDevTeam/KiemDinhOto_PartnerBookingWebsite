@@ -14,7 +14,7 @@ export const SliderHome = (props) => {
     autoplay:true,
     autoplaySpeed:5000,
 		appendDots: dots => (
-			<div style={{ bottom: '32px' }}>
+			<div style={{ bottom: '16px' }}>
 				<ul style={{ margin: "0px", paddingLeft: "10px" }} className='d-flex justify-content-start align-items-end'> {dots} </ul>
 			</div>
 		),
