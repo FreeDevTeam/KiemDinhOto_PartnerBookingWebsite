@@ -301,6 +301,52 @@ export default class BookingService {
       })
     })
   }
+  static async userGetPartnerUtilityNews(limit) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/StationNews/user/getPartnerUtilityNews',
+        data: {
+          skip: 0,
+          limit: limit || 10,
+          order:{
+              key: 'ordinalNumber',
+              value:"asc"
+          }
+        }
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(data)
+        } else {
+          return resolve({})
+        }
+      })
+    })
+  }
+  static async userGetRecruitmentNews(data) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/StationNews/user/getRecruitmentNews',
+        data: data || {
+          skip: 0,
+          limit: 10,
+          order:{
+              key: 'ordinalNumber',
+              value:"asc"
+          }
+        }
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(data)
+        } else {
+          return resolve({})
+        }
+      })
+    })
+  }
   static async getStationAreaList() {
     return new Promise((resolve) => {
       Request.send({

@@ -39,65 +39,65 @@ import MomoPartner from "./../assets/Layout2Icons/momo.png";
 import BICPartner from "./../assets/Layout2Icons/BIC.png";
 import BHSPartner from "./../assets/Layout2Icons/BHS.png";
 import { PATH } from './router'
-const EpassLogo = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4}} src={Epass}></img></div>
-const DatXeLogo = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4}} src={DatXe}></img></div>
+const EpassLogo = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4,display:'inline'}} src={Epass}></img></div>
+const DatXeLogo = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4,display:'inline'}} src={DatXe}></img></div>
 
 export const BTN_LIST_SERVICE = [
   {
     label: 'Trung tâm <br> đăng kiểm',
     icon: <TrungTamDKIcon></TrungTamDKIcon>,
-    link: `https://ttdk.com.vn/stations?type=${STATIONS_TYPE.CENTER}&name=Trung tâm đăng kiểm`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.CENTER}&name=Trung tâm đăng kiểm`,
     
   },
   {
     label: 'Cứu hộ <br> đăng kiểm',
     icon: <CuuHoIcon></CuuHoIcon>,
-    link: `https://ttdk.com.vn/stations?type=${STATIONS_TYPE.INSPECTION_RESCUE}&name=cuuho`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.INSPECTION_RESCUE}&name=cuuho`,
   },
   {
     label: 'Hợp tác xã <br> vận tải',
     icon: <HoptacxaIcon></HoptacxaIcon>,
-    link: `https://ttdk.com.vn/stations?type=${STATIONS_TYPE.TRANSPORT_COOPERATIVE}&name=htx`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.TRANSPORT_COOPERATIVE}&name=htx`,
   },
   {
     label: 'Mua bán <br> xe cũ',
     icon: <ShowRoomIcon></ShowRoomIcon>,
-    link: `https://ttdk.com.vn/stations?type=${STATIONS_TYPE.USED_CAR_TRADING}&name=muabanxe`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.USED_CAR_TRADING}&name=muabanxe`,
   },
   {
     label: 'Đơn vị <br> bảo hiểm',
     icon: <GiaHanBaoHiemTNDSIcon></GiaHanBaoHiemTNDSIcon>,
-    link: `https://ttdk.com.vn/stations?type=${STATIONS_TYPE.INSURANCE_COMPANY}&name=DonviBH`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.INSURANCE_COMPANY}&name=DonviBH`,
   },
   {
     label: 'Mua bán phụ <br> tùng ô tô',
     icon: <MuaBanXeIcon></MuaBanXeIcon>,
-    link: `https://ttdk.com.vn/stations?type=${STATIONS_TYPE.SPARE_PARTS_DEALERSHIP}&name=Mua bán phụ tùng ô tô`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.SPARE_PARTS_DEALERSHIP}&name=Mua bán phụ tùng ô tô`,
   },
   {
     label: 'Bảo dưỡng <br> ô tô',
     icon: <TramBDIcon></TramBDIcon>,
-    link: `https://ttdk.com.vn/stations?type=${STATIONS_TYPE.GARAGE}&name=Bảo dưỡng ô tô`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.GARAGE}&name=Bảo dưỡng ô tô`,
   },
   {
     label: 'Bãi giữ xe',
     icon: <GarageIcon></GarageIcon>,
-    link: `https://ttdk.com.vn/stations?type=${STATIONS_TYPE.PARKING_LOT}&name=Bãi giữ xe`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.PARKING_LOT}&name=Bãi giữ xe`,
   },
   {
     label: 'Đơn vị <br> cải tạo xe',
     icon: <HangBHIcon></HangBHIcon>,
-    link: `https://ttdk.com.vn/stations?type=${STATIONS_TYPE.VEHICLE_RENOVATION_COMPANY}&name=caitao`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.VEHICLE_RENOVATION_COMPANY}&name=caitao`,
   },
   {
     label: 'Trường học <br> lái xe',
     icon: <DangKiemXeCuIcon></DangKiemXeCuIcon>,
-    link: `https://ttdk.com.vn/stations?type=${STATIONS_TYPE.DRIVING_SCHOOL}&name=Trường học lái xe`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.DRIVING_SCHOOL}&name=Trường học lái xe`,
   },
   {
     label: 'Dịch vụ <br> lái xe hộ',
     icon: <HocLaiXeIcon></HocLaiXeIcon>,
-    link: `https://ttdk.com.vn/stations?type=${STATIONS_TYPE.CHAUFFEUR_SERVICE}&name=Dịch vụ lái xe hộ`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.CHAUFFEUR_SERVICE}&name=Dịch vụ lái xe hộ`,
   },
   {
     label: 'Tư vấn SX <br> phụ tùng xe',

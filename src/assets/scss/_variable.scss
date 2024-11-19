@@ -192,6 +192,8 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --transparent-color:transparent;
   --secondary-button-color:#14C560;
   --title-color:#0870d9;
+  --background-banner-color: #F4F7FF;
+  --bgr-list-btn-color: #F2F5FF;
   --unactive-button-color:#d6d6d6;
   --primary-button-color:#262FED;
   --stop-receiving-color:#AA8934;
@@ -218,6 +220,8 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --primary-button-color:#CD2226;
   --stop-receiving-color:#AA8934;
   --error-btn-color:#FF1001;
+  --background-banner-color: #F4F7FF;
+  --bgr-list-btn-color: #F2F5FF;
   --success-btn-color:#34AA44;
   --step-line-booking:rgb(255, 34, 86);
   --float-btn-color:#f43b3e;

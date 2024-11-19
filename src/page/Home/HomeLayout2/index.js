@@ -14,6 +14,10 @@ import HomeNew from '../HomeNew'
 import SystemConfigurationsService from '../../../services/SystemConfigurationsService'
 import { Button, Sheet, Text, Box, Page } from "zmp-ui";
 import "zmp-ui/zaui.min.css";
+import { getBannerBySectionCache } from '../../../helper/getBannerBySectionCache'
+import HomeRecruitment from '../HomeRecruitment'
+import PartnerPromotionNew from '../PartnerPromotionNew'
+import useWindowDimensions from '../../../hooks/window-dimensions'
 const filter = {
   limit: 5,
   filter: {
@@ -25,10 +29,15 @@ const HomeLayout2 = (props) => {
   const { introduction } = props
   const history = useHistory();
   const [hotNews, setHotNews] = useState([])
-  const [driverAmenities, setDriverAmenities] = useState([])
-  const [governmentAgency, setGovernmentAgency] = useState([])
+  const [driverAmenities, setDriverAmenities] = useState(CONVENIENCE_DRIVERS_BTN)
+  const [governmentAgency, setGovernmentAgency] = useState(GOVERNMENT_BTN)
   const [stationNewsPartnerPromotion, setStationNewsPartnerPromotion] = useState([])
+  const [recruitmentList, setRecruitmentList] = useState([])
+  const [partnerUtilityNews, setPartnerUtilityNews] = useState([])
   const [setting, setSetting] = useState([]);
+  const [bottomBanner, setBottomBanner] = useState([]);
+  const { height, width } = useWindowDimensions()
+  const mobile= width < 580
   const [paramsFilter, setParamsFilter] = useState({
     filter: {
       configCategory:1
@@ -78,6 +87,20 @@ const HomeLayout2 = (props) => {
     })
 
   }
+  const getRecruitmentListNew = async () =>{
+    await NewService.getPartnerPromotionNews({
+        "skip": 0,
+        "limit": 10,
+        "order": {
+          "key": "ordinalNumber",
+          "value": "asc"
+        }
+      }).then((result) => {
+      if (result) {
+        setRecruitmentList(result.data)
+      }
+    })
+  }
   const getStationNewsPartnerPromotion = async () =>{
     await NewService.getPartnerPromotionNews({
         "skip": 0,
@@ -93,9 +116,11 @@ const HomeLayout2 = (props) => {
     })
   }
   const renderSlider = useMemo(() => {
-    return <SliderHome setting={setting} isLoading={isLoading} />
+    return <div className='banner-Layout2'><SliderHome className={'layout2'} setting={setting} isLoading={isLoading} /></div>
   }, [setting , isLoading])
-
+  const renderBottomSlider = useMemo(() => {
+    return <SliderHome className={'layout2'} setting={bottomBanner} isLoading={isLoading} />
+  }, [])
 
   const getNews = () =>{
     setTimeout(() => {
@@ -150,12 +175,30 @@ const HomeLayout2 = (props) => {
       }
     })
   }
-
+  const getPartnerUtilityNews = async () =>{
+    await NewService.userGetPartnerUtilityNews(4).then((result) => {
+      if (result) {
+        setPartnerUtilityNews(result.data)
+      }
+    })
+  }
   useEffect(() => {
     getHomePageConfig(1)
     getHomePageConfig(2)
-    fetchData()
-    getStationNewsPartnerPromotion()
+    setTimeout(async() =>  {
+      await getRecruitmentListNew()
+      await getPartnerUtilityNews()
+      await getStationNewsPartnerPromotion()
+      await fetchData()
+      await getBannerBySectionCache(12).then(data =>{
+        if(data?.length > 0){
+          setBottomBanner(data)
+          return
+        }else{
+          setBottomBanner([]);
+        }
+      })
+    }, 500);
   }, [])
 
   useEffect(() => {
@@ -169,24 +212,34 @@ const HomeLayout2 = (props) => {
       if((dataBtn?.linkNavigation).slice(0, 7).includes("http") ){
         return dataBtn?.linkNavigation
       }else{
-        return `https://ttdk.com.vn${dataBtn?.linkNavigation}`
+        return `${process.env.REACT_APP_DEPLOY_URL}${dataBtn?.linkNavigation}`
       }
     }
   }
+  const handleOpenSheet=(Title,link)=>{
+    setSheetVisible(true);
+    setDataBtn({
+      label: Title,
+      link: `${process.env.REACT_APP_DEPLOY_URL}${link}`
+    })
+  }
+  console.log(dataBtn);
 
   return (
     <>
       <sc.Container>
         <PageLayout>{renderSlider}</PageLayout>
         <div className="more mt-3">
-          <div style={{ maxWidth: 600, margin: 'auto' }}>
-            <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} list={BOOKING_LIST_BTN} title={'Đặt lịch'}></L2FunctionButtonList>
-            <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} list={BTN_LIST_SERVICE} title={'Điểm dịch vụ đề xuất'}></L2FunctionButtonList>
+        <div className='layout2-body' style={{ maxWidth: 600, margin: 'auto' }}>
+            <div className='booking-layout2'>
+              <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} list={BOOKING_LIST_BTN} title={'Đặt lịch'}></L2FunctionButtonList>
+            </div>
+            <L2FunctionButtonList setSheetVisible={setSheetVisible} slider={true} setDataBtn={setDataBtn} list={BTN_LIST_SERVICE} title={'Điểm dịch vụ đề xuất'}></L2FunctionButtonList>
             {hotNews?.length > 0 &&
               <div style={{padding:'0 10px',marginBottom:'1.5rem'}}>
                 <div className="d-flex justify-content-between align-items-center news-center" >
                   <div className='text-large title-homelayout'>Nổi bật</div>
-                  <div className="d-flex mb-0 justify-content-end home-link" onClick={() => history.push('/highlight-news')}>
+                  <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Nổi bật",'/highlight-news')}>
                     <a href="/" onClick={(e) => e.preventDefault()}>
                       Xem tất cả
                     </a>
@@ -195,13 +248,43 @@ const HomeLayout2 = (props) => {
                 <L2HotNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} hotNew={hotNews} />
               </div>
             }
-            <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} list={driverAmenities} title={'Tiện ích cho tài xế'}></L2FunctionButtonList>
+            <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} slider={driverAmenities?.length > 9 || (mobile && driverAmenities?.length > 7)} list={driverAmenities} title={'Tiện ích cho tài xế'}></L2FunctionButtonList>
+            <div className=''>
+              {partnerUtilityNews?.length > 0 &&
+                <div className="home-container mb-5">
+                  <div className="d-flex justify-content-between align-items-center news-center" >
+                  <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Tiện ích từ đối tác</div>
+                    <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet('Tiện ích từ đối tác','/partner-news')}>
+                      <a href="/" onClick={(e) => e.preventDefault()}>
+                        Xem tất cả
+                      </a>
+                    </div>
+                  </div>
+                  <div className='mobile-content'>
+                    <PartnerPromotionNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={partnerUtilityNews?.slice(0,4)} />
+                  </div>
+                </div>
+              }
+            </div>
+            <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} list={governmentAgency} className='government-btn' title={'Cơ quan chính phủ'}></L2FunctionButtonList>
+            <div className='mb-5'>
+              <div className="home-container sation-slider">
+                <div className="d-flex justify-content-between align-items-center news-center" >
+                  <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Đối tác</div>
+                  <div >
+                  </div>
+                </div>
+                <div className='mobile-content'>
+                  <HomePartner setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} />
+                </div>
+              </div>
+            </div>
             <div>
               {stationNewsPartnerPromotion?.length > 0 && (
                 <div className="home-container mb-5">
                   <div className="d-flex justify-content-between align-items-center news-center" >
                     <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Ưu đãi từ đối tác</div>
-                    <div className="d-flex mb-0 justify-content-end home-link" onClick={() => history.push(stationNewsPartnerPromotion.path)}>
+                    <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Ưu đãi từ đối tác",'/station-newsPartner-promotion')}>
                       <a href="/" onClick={(e) => e.preventDefault()}>
                         Xem tất cả
                       </a>
@@ -216,7 +299,7 @@ const HomeLayout2 = (props) => {
                 <div className="home-container mb-5">
                   <div className="d-flex justify-content-between align-items-center news-center" >
                     <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Tin tức</div>
-                    <div className="d-flex mb-0 justify-content-end home-link" onClick={() => history.push('/new')}>
+                    <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Tin tức",'/new')}>
                       <a href="/" onClick={(e) => e.preventDefault()}>
                         Xem tất cả
                       </a>
@@ -227,20 +310,23 @@ const HomeLayout2 = (props) => {
                   </div>
                 </div>
               )}
-            </div>
-            <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} list={governmentAgency} className='government-btn' title={'Cơ quan chính phủ'}></L2FunctionButtonList>
-              <div className='mb-5'>
-                <div className="home-container sation-slider">
+              {recruitmentList?.length > 0 && (
+                <div className="home-container mb-5">
                   <div className="d-flex justify-content-between align-items-center news-center" >
-                    <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Đối tác</div>
-                    <div >
+                    <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Tuyển dụng</div>
+                    <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Tuyển dụng",'/recruitment-news')}>
+                      <a href="/" onClick={(e) => e.preventDefault()}>
+                        Xem tất cả
+                      </a>
                     </div>
                   </div>
                   <div className='mobile-content'>
-                    <HomePartner setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} />
+                    <HomeRecruitment setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={recruitmentList.slice(0,2)} />
                   </div>
                 </div>
-              </div>
+              )}
+            </div>
+            {bottomBanner?.length > 0 && <PageLayout>{renderBottomSlider}</PageLayout>}
           </div>
         </div>
       </sc.Container>
@@ -260,7 +346,7 @@ const HomeLayout2 = (props) => {
               <iframe
                 src={handleReturnLink()}
                 width={"100%"}
-                style={{ minHeight: "60vh" }}
+                style={{ minHeight: "70vh" }}
                 frameborder="0"
               ></iframe>
             </Box>

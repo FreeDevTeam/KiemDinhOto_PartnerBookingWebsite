@@ -19,7 +19,7 @@ export default function HomePage() {
   const BANNER = [
     {
       img: banner4,
-      link: "https://ttdk.com.vn/kiemtraphatnguoi",
+      link: `${process.env.REACT_APP_DEPLOY_URL}/kiemtraphatnguoi`,
 
     },
     {
@@ -39,7 +39,7 @@ export default function HomePage() {
     },
     {
       img: banner3,
-      link: "https://ttdk.com.vn/contact-cooperation",
+      link: `${process.env.REACT_APP_DEPLOY_URL}/contact-cooperation`,
 
     },
   ]
@@ -82,7 +82,7 @@ export default function HomePage() {
       <div className="second-content">
         <p className="title">Bảo Hiểm</p>
         <div className='d-flex'>
-          <a href="https://ttdk.com.vn/gia-han-bao-hiem-tnds?title=Gia%20h%E1%BA%A1n%20b%E1%BA%A3o%20hi%E1%BB%83m%20TNDS" target="_blank" className="right-content">
+          <a href={`${process.env.REACT_APP_DEPLOY_URL}/gia-han-bao-hiem-tnds?title=Gia%20h%E1%BA%A1n%20b%E1%BA%A3o%20hi%E1%BB%83m%20TNDS`} target="_blank" className="right-content">
             <img src={carImage} alt="" srcset="" />
             <div>
 

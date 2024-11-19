@@ -21,8 +21,11 @@ const HomePartner = ({ setSheetVisible, setDataBtn }) => {
     autoplaySpeed:5000,
     initialSlide:rand,
   }
-  const [partner,setPartner]=useState([])
-  console.log(partner);
+  let arr=[]
+  Object.values(PARTNER).map(item=>{
+    arr.push(item)
+  })
+  const [partner,setPartner]=useState(arr)
   const [paramsFilter, setParamsFilter] = useState({
     filter: {
       configCategory:3
@@ -51,12 +54,15 @@ const HomePartner = ({ setSheetVisible, setDataBtn }) => {
   }
   useEffect(() => {
     getHomePageConfig(paramsFilter)
+    if(window.innerWidth < 580){
+      setNumberSlide(3)
+    }
   }, [])
   const handleClickPartner = (value) => {
     setSheetVisible(true)
     let data= {
       label: value?.title,
-      link: (value?.linkNavigation).slice(0, 7).includes("http") ? value?.linkNavigation : `https://ttdk.com.vn${value?.linkNavigation}`
+      link: (value?.linkNavigation)?.slice(0, 7)?.includes("http") ? value?.linkNavigation : `${process.env.REACT_APP_DEPLOY_URL}${value?.linkNavigation}`
     }
     setDataBtn(data)
   }

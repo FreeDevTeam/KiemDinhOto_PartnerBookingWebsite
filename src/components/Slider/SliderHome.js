@@ -25,7 +25,7 @@ export const SliderHome = (props) => {
 		)
 	};
 
-	const { setting , isLoading } = props
+	const { setting , isLoading,className } = props
 	const renderSlider = useMemo(() => {
 
 		if(isLoading) {
@@ -35,7 +35,7 @@ export const SliderHome = (props) => {
 			</div>
 		}
 		return (
-			<div className="slider-container sliderHome">
+			<div className={`slider-container sliderHome ${className}`}>
 				<Slider {...settingSilde}>
 				{setting  && setting?.map((item,index)=>{
 					return(
