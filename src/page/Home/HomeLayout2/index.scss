@@ -1,3 +1,4 @@
+@import "../../../assets/scss/variable";
 .layout2-btn-booking-section {
 	padding-top: 22px;
 	.layout2-btn-booking-item{
@@ -128,6 +129,9 @@
 }
 .layout2 {
   padding: 0 16px;
+  .slick-arrow{
+    display: none !important;
+  }
   .slick-list{
     border-radius: 8px;
   }
@@ -139,6 +143,28 @@
   }
   img {
     aspect-ratio: 358/134 !important;
+  }
+  .slick-initialized .slick-slide {
+    padding: 0 4px !important;
+    img {
+      aspect-ratio: 358/134 !important;
+      border-radius: 8px;
+    }
+    .slide:before{
+      border-radius: 8px !important;
+    }
+  }
+}
+.layout2-bg{
+  background-color: var(--background-banner-color);
+  padding: 8px 0;
+}
+.home-link {
+  & a {
+    color: var(--primary-button-color);
+    font-size: $text-small-fs;
+    font-weight: 500;
+    border: none;
   }
 }
 .moblie-header-Layout2{

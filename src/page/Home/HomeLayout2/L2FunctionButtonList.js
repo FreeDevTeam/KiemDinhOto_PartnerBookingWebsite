@@ -8,7 +8,6 @@ import useWindowDimensions from '../../../hooks/window-dimensions'
 const L2FunctionButtonList = (props) => {
   const {setSheetVisible, setDataBtn,slider}=props
   const { list ,title,className } = props
-  const [numberSlide,setNumberSlide]= useState(4)
   const history = useHistory()
   const { handleGetUserPhone } = useGlobalContext();
   const handleRouter = async (path) => {
@@ -22,15 +21,10 @@ const L2FunctionButtonList = (props) => {
     dots: true,
     infinite: false,
     speed: 500,
-    slidesToShow: numberSlide,
-    slidesToScroll: numberSlide,
+    slidesToShow: 4,
+    slidesToScroll: 4,
     rows: 2,
   }
-  useEffect(() => {
-    if(width<580){
-      setNumberSlide(3)
-    }
-  }, []);
   const renderBtns = () => {
     return (
       <div style={{marginBottom:'1rem'}}>

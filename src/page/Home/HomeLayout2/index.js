@@ -32,6 +32,7 @@ const HomeLayout2 = (props) => {
   const [driverAmenities, setDriverAmenities] = useState(CONVENIENCE_DRIVERS_BTN)
   const [governmentAgency, setGovernmentAgency] = useState(GOVERNMENT_BTN)
   const [stationNewsPartnerPromotion, setStationNewsPartnerPromotion] = useState([])
+  const [stationNewsPromotion, setStationNewsPromotion] = useState([])
   const [expertNews, setExpertNews] = useState([])
   const [recruitmentList, setRecruitmentList] = useState([])
   const [partnerUtilityNews, setPartnerUtilityNews] = useState([])
@@ -199,6 +200,20 @@ const HomeLayout2 = (props) => {
       }
     })
   }
+  const getStationNewsPromotion = async () =>{
+    await NewService.getPromotionNews({
+        "skip": 0,
+        "limit": 10,
+        "order": {
+          "key": "ordinalNumber",
+          "value": "asc"
+        }
+      }).then((result) => {
+      if (result) {
+        setStationNewsPromotion(result.data)
+      }
+    })
+  }
   useEffect(() => {
     getHomePageConfig(1)
     getHomePageConfig(2)
@@ -208,6 +223,7 @@ const HomeLayout2 = (props) => {
       await getRecruitmentListNew()
       await getPartnerUtilityNews()
       await getStationNewsPartnerPromotion()
+      await getStationNewsPromotion()
       await getBannerBySectionCache(12).then(data =>{
         if(data?.length > 0){
           setBottomBanner(data)
@@ -252,19 +268,21 @@ const HomeLayout2 = (props) => {
               <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} list={BOOKING_LIST_BTN} title={'Đặt lịch'}></L2FunctionButtonList>
             </div>
             <L2FunctionButtonList setSheetVisible={setSheetVisible} slider={true} setDataBtn={setDataBtn} list={BTN_LIST_SERVICE} title={'Điểm dịch vụ đề xuất'}></L2FunctionButtonList>
-            {hotNews?.length > 0 &&
-              <div style={{padding:'0 10px',marginBottom:'1.5rem'}}>
-                <div className="d-flex justify-content-between align-items-center news-center" >
-                  <div className='text-large title-homelayout'>Nổi bật</div>
-                  <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Nổi bật",'/highlight-news')}>
-                    <a href="/" onClick={(e) => e.preventDefault()}>
-                      Xem tất cả
-                    </a>
+            <div className='layout2-bg'>
+              {hotNews?.length > 0 &&
+                <div style={{padding:'0 10px',marginBottom:'1.5rem'}}>
+                  <div className="d-flex justify-content-between align-items-center news-center" >
+                    <div className='text-large title-homelayout'>Nổi bật</div>
+                    <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Nổi bật",'/highlight-news')}>
+                      <a href="/" onClick={(e) => e.preventDefault()}>
+                        Xem tất cả
+                      </a>
+                    </div>
                   </div>
+                  <L2HotNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} hotNew={hotNews} />
                 </div>
-                <L2HotNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} hotNew={hotNews} />
-              </div>
-            }
+              }
+            </div>
             <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} slider={driverAmenities?.length > 9 || (mobile && driverAmenities?.length > 7)} list={driverAmenities} title={'Tiện ích cho tài xế'}></L2FunctionButtonList>
             <div className=''>
               {partnerUtilityNews?.length > 0 &&
@@ -312,36 +330,55 @@ const HomeLayout2 = (props) => {
                   </div>
                 </div>
               )}
-              {listNews?.length > 0 && (
+              <div className='layout2-bg'>
+                {listNews?.length > 0 && (
+                  <div className="home-container mb-1 mt-1">
+                    <div className="d-flex justify-content-between align-items-center news-center" >
+                      <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Tin tức</div>
+                      <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Tin tức",'/new')}>
+                        <a href="/" onClick={(e) => e.preventDefault()}>
+                          Xem tất cả
+                        </a>
+                      </div>
+                    </div>
+                    <div className='mobile-content'>
+                      <HomeNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={listNews} />
+                    </div>
+                  </div>
+                )}
+              </div>
+              {stationNewsPromotion?.length > 0 && (
                 <div className="home-container mb-5">
                   <div className="d-flex justify-content-between align-items-center news-center" >
-                    <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Tin tức</div>
-                    <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Tin tức",'/new')}>
+                    <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Ưu đãi</div>
+                    <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Ưu đãi",'/station-news-promotion')}>
                       <a href="/" onClick={(e) => e.preventDefault()}>
                         Xem tất cả
                       </a>
                     </div>
                   </div>
                   <div className='mobile-content'>
-                    <HomeNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={listNews} />
+                    <HomeNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={stationNewsPromotion} linkDirectDetail = {"station-news-promotion-post"} showEye={false}/>
                   </div>
                 </div>
               )}
-              {recruitmentList?.length > 0 && (
-                <div className="home-container mb-5">
-                  <div className="d-flex justify-content-between align-items-center news-center" >
-                    <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Tuyển dụng</div>
-                    <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Tuyển dụng",'/recruitment-news')}>
-                      <a href="/" onClick={(e) => e.preventDefault()}>
-                        Xem tất cả
-                      </a>
+              <div className='layout2-bg'>
+                {recruitmentList?.length > 0 && (
+                  <div className="home-container mb-1 mt-1">
+                    <div className="d-flex justify-content-between align-items-center news-center" >
+                      <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Tuyển dụng</div>
+                      <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Tuyển dụng",'/recruitment-news')}>
+                        <a href="/" onClick={(e) => e.preventDefault()}>
+                          Xem tất cả
+                        </a>
+                      </div>
+                    </div>
+                    <div className='mobile-content'>
+                      <HomeRecruitment setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={recruitmentList.slice(0,2)} />
                     </div>
                   </div>
-                  <div className='mobile-content'>
-                    <HomeRecruitment setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={recruitmentList.slice(0,2)} />
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
               {expertNews?.length > 0 &&
                 <div className="home-container mb-5">
                   <div className="d-flex justify-content-between align-items-center news-center" >

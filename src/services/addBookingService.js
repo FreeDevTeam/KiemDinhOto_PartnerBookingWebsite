@@ -204,6 +204,22 @@ export default class BookingService {
       })
     })
   }
+  static async getPromotionNews(data={}) { // mặc định {} để có payload
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/StationNews/user/getPromotionNews',
+        data: data
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(data)
+        } else {
+          return resolve({})
+        }
+      })
+    })
+  }
   static async getZaloUserPhoneNumber(headers) {
     return new Promise((resolve) => {
       console.log("BookingService ~ returnnewPromise ~ headers:", headers)
