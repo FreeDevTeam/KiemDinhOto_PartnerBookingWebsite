@@ -134,10 +134,10 @@ const HomeLayout2 = (props) => {
     })
   }
   const renderSlider = useMemo(() => {
-    return <div className='banner-Layout2'><SliderHome className={'layout2'} setting={setting} isLoading={isLoading} /></div>
+    return <div className='banner-Layout2'><SliderHome className={'layout2'} center setting={setting} isLoading={isLoading} /></div>
   }, [setting , isLoading])
   const renderBottomSlider = useMemo(() => {
-    return <SliderHome className={'layout2'} setting={bottomBanner} isLoading={isLoading} />
+    return <SliderHome className={'layout2 border-r'} setting={bottomBanner} isLoading={isLoading} />
   }, [])
 
   const getNews = () =>{

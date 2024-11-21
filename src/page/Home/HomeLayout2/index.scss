@@ -132,9 +132,6 @@
   .slick-arrow{
     display: none !important;
   }
-  .slick-list{
-    border-radius: 8px;
-  }
   .slick-slide img {
     display: unset !important;
   }
@@ -158,6 +155,11 @@
 .layout2-bg{
   background-color: var(--background-banner-color);
   padding: 8px 0;
+}
+.border-r{
+  .slick-list{
+    border-radius: 8px;
+  }
 }
 .home-link {
   & a {
