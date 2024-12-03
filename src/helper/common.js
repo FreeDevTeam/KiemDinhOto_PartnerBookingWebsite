@@ -1,3 +1,4 @@
+import { message } from 'antd'
 import queryString from 'query-string'
 
 export const getQueryString = (query) => {
@@ -6,7 +7,31 @@ export const getQueryString = (query) => {
   if (!result) return ''
   return `?${result}`
 }
+export const copyToClipboard = (textToCopy) => {
+  message.success('Sao chép thành công!')
 
+  // navigator clipboard api needs a secure context (https)
+  if (navigator.clipboard && window.isSecureContext) {
+    // navigator clipboard api method'
+    return navigator.clipboard.writeText(textToCopy)
+  } else {
+    // text area method
+    let textArea = document.createElement('textarea')
+    textArea.value = textToCopy
+    // make the textarea out of viewport
+    textArea.style.position = 'fixed'
+    textArea.style.left = '-999999px'
+    textArea.style.top = '-999999px'
+    document.body.appendChild(textArea)
+    textArea.focus()
+    textArea.select()
+    return new Promise((res, rej) => {
+      // here the magic happens
+      document.execCommand('copy') ? res() : rej()
+      textArea.remove()
+    })
+  }
+}
 export const xoa_dau = (str) => {
   str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, 'a')
   str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, 'e')

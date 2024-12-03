@@ -1,0 +1,106 @@
+@import "./../../assets/scss/variable";
+
+.automatedTrafficFineNotification-container.automatedTrafficFineNotification-payment {
+    display: flex;
+    flex-flow: column;
+    height: calc(100% - 70px);
+    position: relative;
+}
+
+.automatedTrafficFineNotification-payment .automatedTrafficFineNotification-body {
+    @media (max-width: 993px) {
+        padding-bottom: 70px !important;
+    }
+    @media (max-width: 600px) {
+        padding-bottom: 145px !important;
+    }
+}
+
+.automatedTrafficFineNotification-body {
+    .choose-one-vehicle {
+        display: block;
+        color: var(--blue-ribbon);
+        text-align: center;
+    }
+
+    .SearchList .ant-input-group .ant-input {
+        height: 46px;
+        max-height: unset;
+    }
+}
+
+.vehicle-prices {
+    @media (max-width: 993px) {
+        position: sticky;
+        bottom: 70px;
+        z-index: 999;
+        padding: 12px 0;
+    }
+
+    .total-price {
+        &-number {
+            font-size: $text-large-fs;
+            display: block;
+            color: var(--blue-ribbon);
+        }   
+    }
+}
+
+.modal-payment-qr {
+    &-price {
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .ant-modal-body {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    &-header h1 {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    &-expired-in-countdown {
+        color: var(--error-btn-color);
+        font-weight: 700;
+    }
+
+    &-content {
+        border: 1px solid var(--gray-alto);
+        border-radius: 12px;
+
+        &-title {
+            display: block;
+            width: 90px !important;
+            min-width: 90px !important;
+            text-align: left;
+        }
+
+        .hr {
+            border-bottom: 1px solid var(--gray-alto);
+            margin-top: 24px;
+            margin-bottom: 24px;
+            height: 1px;
+            width: 100%;
+        }
+
+        .download-qr {
+            background-color: var(--step-line-booking-opacity30);
+            border-radius: 24px;
+        }
+
+        .anticon-copy {
+            margin-left: auto;
+        }
+    }
+}
+
+.payment-success {
+    @media (max-width: 993px) {
+        position: fixed;
+        width: 100%;
+        max-width: 600px;
+    }
+}

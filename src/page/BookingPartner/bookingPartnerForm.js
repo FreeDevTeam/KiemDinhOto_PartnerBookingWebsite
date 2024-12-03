@@ -20,6 +20,8 @@ import { validatorPlateNumber } from './../../helper/validatorPlateNumber'
 import { ReactComponent as LogoTTDK } from './../../assets/icons/Logo.svg'
 import BookingDatePicker from '../../components/BookingDatePicker'
 import BookingHoursPicker from '../../components/BookingHoursPicker'
+import ModalPaymentQR from '../../components/ModalPaymentQR/ModalPaymentQR'
+import { numberWithSeparator } from '../../helper/numberWithSeparator'
 
 function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   const isZaloApp = (process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1)
@@ -63,6 +65,8 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   })
   const [loadingDatePicker, setLoadingDatePicker] = useState(false)
   const [loadingHoursPicker, setLoadingHoursPicker] = useState(false)
+  const [open, setOpen] = useState(false)
+  const [scheduleDetail, setScheduleDetail] = useState(null);
   let getParamData ={
     licensePlates:dataVihcle?.vehicleIdentity || params.get('licensePlates'),
     phone:zaloUserPhone || params.get('phone'),
@@ -554,6 +558,24 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     getStationBooking()
   },[selectedBookingStation])
 
+  const getScheduleDetail=(value)=>{
+    BookingService.getScheduleDetail({
+      customerScheduleId:value,
+    }).then((res) => {
+      if(res?.data){
+        res.data.runTime = new Date();
+        setScheduleDetail(res?.data);
+        if(res?.data?.order?.totalAmount){
+          setIsModalOpen(false)
+          setOpen(true)
+          return
+        }else{
+          setIsModalOpen(true)
+        }
+      } 
+    })
+  }
+
   const onFinish = (values) => {
     setIsVisible(false)
     setIsLoading(true)
@@ -592,6 +614,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
         setIsLoading(false)
       }, 500);
       } else {
+        getScheduleDetail(data[0])
         setTimeout(() => {
           setIsLoading(false)
         }, 500);
@@ -600,7 +623,6 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
             window.open(data.paymentUrl, '_blank')
           }, 500);
         }
-        setIsModalOpen(true)
         localStorage.removeItem(addKeyLocalStorage('bookingData'))
         setTimeout(() => {
           setBookingData({})
@@ -888,6 +910,9 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     }
   }, [zaloUserPhone, form])
 
+  const onClose=()=>{
+    setOpen(false)
+  }
   useEffect(() => {
     if (isZaloApp) {
       form.setFieldsValue({
@@ -1411,6 +1436,24 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
         // window.location.reload()}
         history.goBack()
         }}></BookingSuccess>
+      <ModalPaymentQR
+        open={open}
+        onClose={() => {
+            onClose();
+        }}
+        driver={{
+          totalPay: scheduleDetail?.order?.totalAmount,
+          formatedTotalPay: numberWithSeparator(scheduleDetail?.order?.totalAmount),
+          qr: scheduleDetail?.paymentQR?.bankQR,
+          expiredInMinutes: 10,
+          runTime: new Date(),
+          status: scheduleDetail?.order?.paymentStatus
+        }}
+        onRefresh={() => {
+          setScheduleDetail({ ...scheduleDetail, runTime: new Date() });
+        }}
+        method={'bank'}
+      />
       {isModalErrOpen &&
         <PopupMessage isModalOpen={isModalErrOpen} onClose={() => {setIsModalErrOpen(false)}} text={errorMessage} ></PopupMessage>
       }

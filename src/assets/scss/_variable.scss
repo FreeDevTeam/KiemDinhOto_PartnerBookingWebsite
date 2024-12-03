@@ -200,8 +200,22 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --error-btn-color:#FF1001;
   --success-btn-color:#34AA44;
   --step-line-booking:#1890ff;
+  --step-line-booking-opacity30:#1890ff30;
   --float-btn-color:#4b7fed;
   --attention-color:#0039e3;
+  --light-black-color: #333;
+  --sunrise-yellow-color:$--sunrise-yellow-6;
+  --bgr-review-color:#F3F3F5;
+  --blue-ribbon: #0068FF;
+  --gray-solitude: #E8F0FE;
+  --gray-alto: #DDDDDD;
+  --gray-silver: #C4C4C4;
+  --gray-gallery: #EDEDED;
+  --gray-mercury: #E4E4E4;
+  --gray-mid-gray: #686770;
+  --gray-athens: #F9F9FB;
+  --gray-zircon: #F4F7FF;
+  --blue-deep-cove: #040747;
   // ...Thêm biến sáng 
 }
 
