@@ -109,7 +109,7 @@
 .banner-Layout2{
   max-width: 600px;
   margin: auto;
-  height: 350px;
+  height: 340px;
   padding-top: 8px;
   background-color: var(--background-banner-color);
   border-radius: 0 0 32px 32px;
@@ -130,6 +130,9 @@
     box-shadow: 0px 4px 12px 0px #1D21A70A;
     .layout1-btn-booking-item{
       margin-top: 0 !important;
+      svg,img{
+        margin-bottom: 8px !important;
+      }
     }
   }
 }

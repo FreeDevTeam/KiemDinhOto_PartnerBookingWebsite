@@ -12,12 +12,22 @@ const L2HotNew = ({ hotNew, setSheetVisible, setDataBtn }) => {
   const [isDragging, setIsDragging] = useState(false)
   const sliderRef = useRef(null)
   const { width } = useWindowDimensions()
-
+  const getSlideToShow=()=>{
+    if(hotNew.length > 1){
+      if(width < 980){
+        return 1
+      }else{
+        return 2
+      }
+    }else{
+      return 1
+    }
+  }
   const settings = {
     dots: false,
     infinite: true,
     speed: 500,
-    slidesToShow: width < 980 ? 1 : 2,
+    slidesToShow: getSlideToShow(),
     slidesToScroll: 1,
     rows: 1,
     beforeChange: () => setIsDragging(true),
@@ -36,7 +46,7 @@ const L2HotNew = ({ hotNew, setSheetVisible, setDataBtn }) => {
   }
 
   return (
-    <div className="card-slider news-slider">
+    <div className={`card-slider news-slider ${hotNew.length > 1 ? '' :'hotnew'}`}>
       <div className="slider-navigation d-flex">
       </div>
       <Slider ref={sliderRef} {...settings}>
@@ -59,7 +69,7 @@ const L2HotNew = ({ hotNew, setSheetVisible, setDataBtn }) => {
 
 const CardItem = ({ title, src, id, handleCardClick,content }) => {
   return (
-    <div className="card">
+    <div className="card w-100">
       <div className="group-wrappe w-100">
         <div className="group">
           <AspectRatio ratio={RATIO_IMG.DEFAULT.value} style={{ maxWidth: '100%' }}>
@@ -76,7 +86,7 @@ const CardItem = ({ title, src, id, handleCardClick,content }) => {
               className="login__button w-100 custom-df-btn custom-btn layout2-hot-new-detail-btn"
               onClick={() => handleCardClick(id)}
               size="normal">
-              Xem ngay
+              <span style={{margin:'auto'}}>Xem ngay</span>
             </Button>
             </div>
           </div>

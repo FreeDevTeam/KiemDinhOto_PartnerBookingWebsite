@@ -20,15 +20,23 @@ import { ReactComponent as HuongDanDKIcon } from './../assets/Layout2Icons/L2huo
 import { ReactComponent as GiaHanDangKiemIcon } from './../assets/Layout2Icons/L2ghdk.svg'
 import { ReactComponent as KhamSKIcon } from './../assets/Layout2Icons/L2Khamsklaixe.svg'
 import { ReactComponent as DinhGiaXeIcon } from './../assets/Layout2Icons/L2dinhgiaxe.svg'
+import { ReactComponent as ChuyenGia } from './../assets/Layout2Icons/L2chuyengia.svg'
 import { ReactComponent as DoiGPLX } from './../assets/Layout2Icons/L2doiGPLX.svg'
 import { ReactComponent as UuDaiTuDoiTac } from './../assets/Layout2Icons/L2uudaitudoitac.svg'
+import { ReactComponent as TheVETC } from './../assets/Layout2Icons/L2theVETC.svg'
 import  Epass  from './../assets/Layout2Icons/epass.png'
 import  DatXe  from './../assets/Layout2Icons/Datxe.png'
+import  TuDongTBPN  from './../assets/Layout2Icons/TuDongTBPN.png'
 import { ReactComponent as TuVanDKIcon } from './../assets/Layout2Icons/L2tvdangkiem.svg'
+import { ReactComponent as DangKiemXeDinhKyIcon } from './../assets/Layout2Icons/L2dkxdk.svg'
 import { ReactComponent as DangKiemXeMoiIcon } from './../assets/Layout2Icons/L2dkxm.svg'
 import { ReactComponent as TuVanBaoHiemIcon } from './../assets/Layout2Icons/L2tvbh.svg'
 import { ReactComponent as TuVanBaoDuongIcon } from './../assets/Layout2Icons/L2tvbd.svg'
+import { ReactComponent as TuVanDangKiemIcon } from './../assets/Layout2Icons/L2tvdangkiem.svg'
 import { ReactComponent as TuVanDangKiem } from './../assets/Layout2Icons/L2tvdk.svg'
+import { ReactComponent as DinhGiaXe } from './../assets/Layout2Icons/L2dinhgiaxe.svg'
+import { ReactComponent as XuLyPN } from './../assets/Layout2Icons/L2xlpn.svg'
+import TraCuuPN from "./../assets/Layout2Icons/tracuupn.png";
 import CucDKLogo from "./../assets/Layout2Icons/cucdk.png";
 import DVCongLogo from "./../assets/Layout2Icons/dvcong.png";
 import { STATIONS_TYPE } from './stationsList'
@@ -41,6 +49,8 @@ import BHSPartner from "./../assets/Layout2Icons/BHS.png";
 import { PATH } from './router'
 const EpassLogo = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4,display:'inline'}} src={Epass}></img></div>
 const DatXeLogo = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4,display:'inline'}} src={DatXe}></img></div>
+const TuDongBaoPN = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4,display:'inline'}} src={TuDongTBPN}></img></div>
+const TraCuuPn = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4,display:'inline'}} src={TraCuuPN}></img></div>
 
 export const BTN_LIST_SERVICE = [
   {
@@ -116,16 +126,16 @@ export const CONVENIENCE_DRIVERS_BTN = [
     icon: <CongDongIcon></CongDongIcon>,
     link: 'https://www.facebook.com/groups/940007330455923/?ref=share&mibextid=K35XfP',
   },
-  {
-    label: 'Gia hạn <br> BH TNDS',
-    icon: <GiaHanBaoHiemTNDSIcon></GiaHanBaoHiemTNDSIcon>,
-    link: '/check-vihcle?service=/gia-han-bao-hiem-tnds&redirect=0',
-  },
-  {
-    label: 'Gia hạn <br> BH vật chất',
-    icon: <GiaHanDangKiemIcon></GiaHanDangKiemIcon>,
-    link: `/check-vihcle?service=https://ttdk.partner.saladin.vn/bao-hiem-vat-chat-toan-dien-xe-oto&redirect=1&bhvc=1`,
-  },
+  // {
+  //   label: 'Gia hạn <br> BH TNDS',
+  //   icon: <GiaHanBaoHiemTNDSIcon></GiaHanBaoHiemTNDSIcon>,
+  //   link: '/check-vihcle?service=/gia-han-bao-hiem-tnds&redirect=0',
+  // },
+  // {
+  //   label: 'Gia hạn <br> BH vật chất',
+  //   icon: <GiaHanDangKiemIcon></GiaHanDangKiemIcon>,
+  //   link: `/check-vihcle?service=https://ttdk.partner.saladin.vn/bao-hiem-vat-chat-toan-dien-xe-oto&redirect=1&bhvc=1`,
+  // },
   {
     label: 'Mua bán <br> xe cũ',
     icon: <VucarIcon></VucarIcon>,
@@ -194,11 +204,16 @@ export const CONVENIENCE_DRIVERS_BTN = [
     link: "https://customer.epass-vdtc.com.vn/#/register/VDTC",
 
   },
-    {
-    label: 'Đặt lịch bảo dưỡng',
-    icon: <DatXeLogo ></DatXeLogo>,
-    link: "https://oga.datxe.com/dlbd/?apiKey=a7f4c2eb-057b-4596-b016-b386b49af723",
-  },
+  //   {
+  //   label: 'Đặt lịch bảo dưỡng',
+  //   icon: <DatXeLogo ></DatXeLogo>,
+  //   link: "https://oga.datxe.com/dlbd/?apiKey=a7f4c2eb-057b-4596-b016-b386b49af723",
+  // },
+  // {
+  //   label: 'Tự động thông <br /> báo phạt nguội',
+  //   icon: <TuDongBaoPN ></TuDongBaoPN>,
+  //   link: "/automated-traffic-fine-notification/services",
+  // },
 ]
 export const GOVERNMENT_BTN = [
   {
@@ -209,6 +224,7 @@ export const GOVERNMENT_BTN = [
         <img className='layout1-partner-img' src={CucDKLogo}/>
       </div>
     ),
+    disable:true
   },
   {
     label: 'Cổng DV <br> Công QG',
@@ -218,6 +234,7 @@ export const GOVERNMENT_BTN = [
         <img className='layout1-partner-img' src={DVCongLogo}/>
       </div>
     ),
+    disable:true
   },
 ]
 export const PARTNER_BTN = {
@@ -270,10 +287,21 @@ export const PARTNER_BTN = {
 
 export const BOOKING_LIST_BTN = [
   {
-    label: 'Đăng kiểm <br> xe định kỳ',
+    label: 'Nộp hồ sơ <br> xe mới',
     icon: <DangKiemXeMoiIcon></DangKiemXeMoiIcon>,
+    link: `${PATH.BOOKING}?scheduleType=2`,
+    unOpen: true,
+  },
+  {
+    label: 'Đăng kiểm <br> xe định kỳ',
+    icon: <DangKiemXeDinhKyIcon></DangKiemXeDinhKyIcon>,
     link: `${PATH.BOOKING}?scheduleType=1`,
     unOpen: true,
+  },
+  {
+    label: 'Tra cứu <br> phạt nguội',
+    icon: <TraCuuPn></TraCuuPn>,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/kiemtraphatnguoi`,
   },
   {
     label: 'Thay đổi <br> thông tin xe',
@@ -282,20 +310,129 @@ export const BOOKING_LIST_BTN = [
     unOpen: true,
   },
   {
-    label: 'Tư vấn <br> bảo hiểm TNDS',
+    label: 'Gia hạn <br> đăng kiểm',
+    icon: <GiaHanDangKiemIcon></GiaHanDangKiemIcon>,
+    link: `https://giahanxcg.vr.org.vn/#/dashboard`,
+  },
+  {
+    label: 'Gia hạn <br> BH TNDS',
+    icon: <GiaHanBaoHiemTNDSIcon></GiaHanBaoHiemTNDSIcon>,
+    link: '/check-vihcle?service=/gia-han-bao-hiem-tnds&redirect=0',
+  },
+  {
+    label: 'Nộp phí <br> đường bộ',
+    icon: <DKxeKinhDoanhIcon></DKxeKinhDoanhIcon>,
+    link: `${PATH.BOOKING}?scheduleType=16`,
+    unOpen: true,
+  },
+  {
+    label: 'Tra cứu <br> thông tin xe',
+    icon: <DinhGiaXe></DinhGiaXe>,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/kiemtraphatnguoi`,
+  },
+]
+export const INSPECTION_SERVICES = [
+  {
+    label: 'Tư vấn <br> cải tạo xe',
+    icon: <TramBDIcon></TramBDIcon>,
+    link: `${PATH.BOOKING}?scheduleType=9`,
+    unOpen: true,
+  },
+  {
+    label: 'Tư vấn hồ sơ <br> đăng kiểm xe',
+    icon: <TuyendungIcon></TuyendungIcon>,
+    link: `${PATH.BOOKING}?scheduleType=12`,
+    unOpen: true,
+  },
+  {
+    label: 'Tư vấn BH <br> TNDS xe ô tô',
     icon: <TuVanBaoHiemIcon></TuVanBaoHiemIcon>,
     link: `${PATH.BOOKING}?scheduleType=14`,
     unOpen: true,
   },
   {
-    label: 'Tư vấn <br> bảo hiểm vật chất',
-    icon: <TuVanBaoDuongIcon></TuVanBaoDuongIcon>,
-    link: `${PATH.BOOKING}?scheduleType=8`,
+    label: 'Tư vấn đăng kiểm <br/> xe định kỳ',
+    icon: <TuVanDangKiemIcon></TuVanDangKiemIcon>,
+    link: `${PATH.BOOKING}?scheduleType=12`,
     unOpen: true,
   },
   {
-    label: 'Tư vấn <br> đăng kiểm',
-    icon: <TuVanDangKiem></TuVanDangKiem>,
+    label: 'Nộp hồ sơ xe <br/> mới (Ngoài giờ)',
+    icon: <HuongDanDKIcon></HuongDanDKIcon>,
+    link: `${PATH.BOOKING}?scheduleType=3`,
+    unOpen: true,
+  },
+  {
+    label: 'Đăng kiểm định kỳ <br/> (Ngoài giờ)',
+    icon: <TuVanBaoDuongIcon></TuVanBaoDuongIcon>,
+    link: `${PATH.BOOKING}?scheduleType=1`,
+    unOpen: true,
+  },
+  {
+    label: 'Tra cứu phạt <br/> nguội đăng kiểm',
+    icon: <TraCuuPn></TraCuuPn>,
+    link: `${PATH.BOOKING}?scheduleType=15`,
+  },
+  {
+    label: 'Gỡ cảnh báo <br/> phạt nguội',
+    icon: <XuLyPN></XuLyPN>,
+    link: `${PATH.BOOKING}?scheduleType=12`,
+    unOpen: true,
+  },
+]
+export const HOT_SERVICES = [
+  {
+    label: 'Mua bảo hiểm TNDS',
+    icon: <TramBDIcon></TramBDIcon>,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/gia-han-bao-hiem-tnds`,
+  },
+  {
+    label: 'Mua bảo hiểm <br> vật chất xe',
+    icon: <GiaHanDangKiemIcon></GiaHanDangKiemIcon>,
+    link: `${PATH.BOOKING}?scheduleType=12`,
+    unOpen: true,
+  },
+  {
+    label: 'Bảo dưỡng xe',
+    icon: <TuVanBaoHiemIcon></TuVanBaoHiemIcon>,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=3&name=Bảo%20dưỡng%20ô%20tô`,
+  },
+  {
+    label: 'Gia hạn định vị',
+    icon: <TuVanDangKiemIcon></TuVanDangKiemIcon>,
+    link: `${PATH.BOOKING}`,//?scheduleType=17`,
+    unOpen: true,
+  },
+  {
+    label: 'Gia hạn phù hiệu <br> xe kinh doanh',
+    icon: <ChuyenGia></ChuyenGia>,
+    link: `${PATH.BOOKING}`,//?scheduleType=18`,
+    unOpen: true,
+  },
+  {
+    label: 'Gia hạn <br> giấy tập huấn',
+    icon: <DoiGPLX></DoiGPLX>,
+    link: `${PATH.BOOKING}`,//?scheduleType=19`,
+    unOpen: true,
+  },
+  {
+    label: 'Gia hạn camera <br> hành trình',
+    icon: <ShowRoomIcon></ShowRoomIcon>,
+    link: `${PATH.BOOKING}`,//?scheduleType=20`,
+  },
+  {
+    label: 'Khám sức khỏe <br> lái xe',
+    icon: <KhamSKIcon></KhamSKIcon>,
+    link: `/stations?type=${STATIONS_TYPE.DRIVER_HEALTH}&name=Khám sức khỏe lái xe`,
+  },
+  {
+    label:  'Đăng ký dán <br> thẻ ePass',
+    icon: <EpassLogo ></EpassLogo>,
+    link: "https://customer.epass-vdtc.com.vn/#/register/VDTC",
+  },
+  {
+    label: 'Đăng ký dán <br> thẻ VETC',
+    icon: <TheVETC></TheVETC>,
     link: `${PATH.BOOKING}?scheduleType=12`,
     unOpen: true,
   },

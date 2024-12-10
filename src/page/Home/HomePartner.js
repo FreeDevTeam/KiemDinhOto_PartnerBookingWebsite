@@ -77,7 +77,7 @@ const HomePartner = ({ setSheetVisible, setDataBtn }) => {
               <div>
                 {item ? (
                   <>
-                    <div onClick={()=>handleClickPartner(item)}>
+                     <div> {/*onClick={()=>handleClickPartner(item)}> */}
                         {item.partnerBanner}
                         <ItemsRender img={item.image ||item?.imageUrl} title={item.title}/>
                     </div>

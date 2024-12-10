@@ -154,9 +154,19 @@
     &:nth-child(n + 5) {
       margin-bottom: 0;
     }
+    svg,img{
+      margin-bottom: 8px !important;
+    }
   }
 }
-
+.hotnew{
+  .slick-list{
+    width: 100% !important;
+    .slick-track .slick-slide.slick-active{
+      padding: 0;
+    }
+  }
+}
 .home-link {
   width: 30%;
   color: var(--title-color);

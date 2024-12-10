@@ -16,14 +16,19 @@ const L2FunctionButtonList = (props) => {
     })
   }
   const { height, width } = useWindowDimensions()
+  const smallMobile= width <= 360
   const sliderRef = useRef(null)
   const settings = {
     dots: true,
     infinite: false,
     speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 4,
+    slidesToShow: smallMobile ? 3 : 4,
+    slidesToScroll: smallMobile ? 3 : 4,
     rows: 2,
+  }
+  const handleClick=(element)=>{
+    setSheetVisible(true);
+    setDataBtn(element)
   }
   const renderBtns = () => {
     return (
@@ -35,7 +40,7 @@ const L2FunctionButtonList = (props) => {
               {list.map((element, key) => {
                 if(element?.unOpen){
                   return(
-                    <div className="layout1-btn-booking-item" onClick={() => handleRouter(element?.link || element?.linkNavigation)}>
+                    <div className="layout1-btn-booking-item" onClick={() => element?.disable ? '' : handleRouter(element?.link || element?.linkNavigation)}>
                       {element.icon ? element.icon : (
                         <img style={{width:'40px',height:'40px',borderRadius:'4px',display:'inline'}} className='mb-2' src={element?.imageUrl} alt="" />
                       )}
@@ -44,7 +49,7 @@ const L2FunctionButtonList = (props) => {
                   )
                 }else{
                   return(
-                    <div className="layout1-btn-booking-item" onClick={()=>{setSheetVisible(true);setDataBtn(element)}}>
+                    <div className="layout1-btn-booking-item" onClick={()=>element?.disable ? '' : handleClick(element)}>
                       {element.icon ? element.icon : (
                         <img style={{width:'40px',height:'40px',borderRadius:'4px',display:'inline'}} className='mb-2' src={element?.imageUrl} alt="" />
                       )}
@@ -60,7 +65,7 @@ const L2FunctionButtonList = (props) => {
             {list.map((element, key) => {
               if(element?.unOpen){
                 return(
-                  <div className="layout1-btn-booking-item" onClick={() => handleRouter(element?.link || element?.linkNavigation)}>
+                  <div className="layout1-btn-booking-item" onClick={() => element?.disable ? '' : handleRouter(element?.link || element?.linkNavigation)}>
                     {element.icon ? element.icon : (
                       <img style={{width:'40px',height:'40px',borderRadius:'4px'}} className='mb-2' src={element?.imageUrl} alt="" />
                     )}
@@ -69,7 +74,7 @@ const L2FunctionButtonList = (props) => {
                 )
               }else{
                 return(
-                  <div className="layout1-btn-booking-item" onClick={()=>{setSheetVisible(true);setDataBtn(element)}}>
+                  <div className="layout1-btn-booking-item" onClick={()=>element?.disable ? '' : handleClick(element)}>
                     {element.icon ? element.icon : (
                       <img style={{width:'40px',height:'40px',borderRadius:'4px'}} className='mb-2' src={element?.imageUrl} alt="" />
                     )}
