@@ -339,7 +339,7 @@ export const INSPECTION_SERVICES = [
     unOpen: true,
   },
   {
-    label: 'Tư vấn hồ sơ <br> đăng kiểm xe',
+    label: 'Tư vấn hồ <br> sơ ĐK xe',
     icon: <TuyendungIcon></TuyendungIcon>,
     link: `${PATH.BOOKING}?scheduleType=12`,
     unOpen: true,
@@ -351,7 +351,7 @@ export const INSPECTION_SERVICES = [
     unOpen: true,
   },
   {
-    label: 'Tư vấn đăng kiểm <br/> xe định kỳ',
+    label: 'Tư vấn ĐK <br/> xe định kỳ',
     icon: <TuVanDangKiemIcon></TuVanDangKiemIcon>,
     link: `${PATH.BOOKING}?scheduleType=12`,
     unOpen: true,
@@ -363,13 +363,13 @@ export const INSPECTION_SERVICES = [
     unOpen: true,
   },
   {
-    label: 'Đăng kiểm định kỳ <br/> (Ngoài giờ)',
+    label: 'ĐK định kỳ <br/> (Ngoài giờ)',
     icon: <TuVanBaoDuongIcon></TuVanBaoDuongIcon>,
     link: `${PATH.BOOKING}?scheduleType=1`,
     unOpen: true,
   },
   {
-    label: 'Tra cứu phạt <br/> nguội đăng kiểm',
+    label: 'Tra cứu <br/> phạt nguội ĐK',
     icon: <TraCuuPn></TraCuuPn>,
     link: `${PATH.BOOKING}?scheduleType=15`,
   },
@@ -387,7 +387,7 @@ export const HOT_SERVICES = [
     link: `${process.env.REACT_APP_DEPLOY_URL}/gia-han-bao-hiem-tnds`,
   },
   {
-    label: 'Mua bảo hiểm <br> vật chất xe',
+    label: 'Mua BH <br> vật chất xe',
     icon: <GiaHanDangKiemIcon></GiaHanDangKiemIcon>,
     link: `${PATH.BOOKING}?scheduleType=12`,
     unOpen: true,
@@ -404,7 +404,7 @@ export const HOT_SERVICES = [
     unOpen: true,
   },
   {
-    label: 'Gia hạn phù hiệu <br> xe kinh doanh',
+    label: 'GH phù hiệu <br> xe KD',
     icon: <ChuyenGia></ChuyenGia>,
     link: `${PATH.BOOKING}`,//?scheduleType=18`,
     unOpen: true,
@@ -416,12 +416,12 @@ export const HOT_SERVICES = [
     unOpen: true,
   },
   {
-    label: 'Gia hạn camera <br> hành trình',
+    label: 'GH camera <br> hành trình',
     icon: <ShowRoomIcon></ShowRoomIcon>,
     link: `${PATH.BOOKING}`,//?scheduleType=20`,
   },
   {
-    label: 'Khám sức khỏe <br> lái xe',
+    label: 'Khám sức <br> khỏe lái xe',
     icon: <KhamSKIcon></KhamSKIcon>,
     link: `/stations?type=${STATIONS_TYPE.DRIVER_HEALTH}&name=Khám sức khỏe lái xe`,
   },
