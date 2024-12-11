@@ -4,6 +4,8 @@ import { IS_ZALO_MINI_APP } from '../constants/global'
 import { getQueryString } from '../helper/common'
 import addKeyLocalStorage from './../helper/localStorage'
 import { CheckApiKey } from '../helper/CheckApiKey'
+import { decryptAes256CBC } from './../pageUtililiy/EncryptionFunctions'
+import { sendTelegramNotification } from './../hooks/botTelegram'
 
 function cleanUp() {
   window.localStorage.clear()
@@ -32,6 +34,11 @@ function send({ method = 'get', path, data = null, query = null, headers = {}, n
     })
       .then((result) => {
         const data = result.data
+        let decryption = data.data
+        if (data.data.idEn) {
+          decryption = decryptAes256CBC(data.data) // mã hoá lấy về
+          data.data=decryption
+        }
         return resolve(data)
       })
       .catch((error) => {

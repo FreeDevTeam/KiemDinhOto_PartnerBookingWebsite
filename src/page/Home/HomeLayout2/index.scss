@@ -202,10 +202,23 @@
       width: 25%;
     }
   }
+  .layout2-body{
+    transform: translateY(-130px);
+  }
   .banner-Layout2{
     height: 280px;
   }
   .layout2 {
     padding: 0 12px;
+  }
+}
+@media (max-width: 380px) {
+  .layout2-body{
+    transform: translateY(-150px);
+  }
+}
+@media (max-width: 300px) {
+  .layout2-body{
+    transform: translateY(-180px);
   }
 }

@@ -75,6 +75,7 @@ const HomeLayout2 = (props) => {
       },
     }).then(res =>{
       const {data}=res
+      console.log(data);
       if(data?.length > 0){
         setSetting(data);
         setIsLoading(false);
@@ -106,7 +107,7 @@ const HomeLayout2 = (props) => {
     })
   }
   const getRecruitmentListNew = async () =>{
-    await NewService.getPartnerPromotionNews({
+    await NewService.userGetRecruitmentNews({
         "skip": 0,
         "limit": 10,
         "order": {
@@ -136,6 +137,7 @@ const HomeLayout2 = (props) => {
   const renderSlider = useMemo(() => {
     return <div className='banner-Layout2'><SliderHome className={'layout2'} center setting={setting} isLoading={isLoading} /></div>
   }, [setting , isLoading])
+  console.log(setting);
   const renderBottomSlider = useMemo(() => {
     return <SliderHome className={'layout2 border-r'} setting={bottomBanner} isLoading={isLoading} />
   }, [])
@@ -217,8 +219,10 @@ const HomeLayout2 = (props) => {
   useEffect(() => {
     getHomePageConfig(1)
     getHomePageConfig(2)
+    setTimeout(() => {
+      fetchData()
+    }, 200);
     setTimeout(async() =>  {
-      await fetchData()
       await getExpertNews()
       await getRecruitmentListNew()
       await getPartnerUtilityNews()
