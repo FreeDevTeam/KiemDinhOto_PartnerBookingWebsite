@@ -411,6 +411,7 @@ const HomeLayout2 = (props) => {
           visible={sheetVisible}
           onClose={() => setSheetVisible(false)}
           autoHeight
+          className='sheet-zalo'
           mask={true}
           swipeToClose
         >

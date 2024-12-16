@@ -317,7 +317,7 @@ export const BOOKING_LIST_BTN = [
   {
     label: 'Gia hạn <br> BH TNDS',
     icon: <GiaHanBaoHiemTNDSIcon></GiaHanBaoHiemTNDSIcon>,
-    link: '/check-vihcle?service=/gia-han-bao-hiem-tnds&redirect=0',
+    link: `${process.env.REACT_APP_DEPLOY_URL}/check-vihcle?service=/gia-han-bao-hiem-tnds&redirect=0`,
   },
   {
     label: 'Nộp phí <br> đường bộ',
@@ -372,6 +372,7 @@ export const INSPECTION_SERVICES = [
     label: 'Tra cứu <br> phạt nguội ĐK',
     icon: <TraCuuPn></TraCuuPn>,
     link: `${PATH.BOOKING}?scheduleType=15`,
+    unOpen: true,
   },
   {
     label: 'Gỡ cảnh báo <br> phạt nguội',
