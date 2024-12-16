@@ -522,7 +522,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     })
   }
   const getMetaData = async() => {
-    await BookingService.getMetaData().then((result) => {
+    await BookingService.getMetaData({}).then((result) => {
       const { statusCode,data } = result
       if(statusCode==200){
       let newValues=[]

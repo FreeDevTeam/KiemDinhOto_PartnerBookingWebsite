@@ -33,11 +33,11 @@ function send({ method = 'get', path, data = null, query = null, headers = {}, n
       headers
     })
       .then((result) => {
-        const data = result.data
-        let decryption = data.data
-        if (data.data.idEn) {
-          decryption = decryptAes256CBC(data.data) // mã hoá lấy về
-          data.data=decryption
+        let data = result.data
+        let decryption = data
+        if (data.idEn) {
+          decryption = JSON.parse(decryptAes256CBC(data)) // mã hoá lấy về
+          data=decryption
         }
         return resolve(data)
       })
