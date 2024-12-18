@@ -56,18 +56,18 @@ export const BTN_LIST_SERVICE = [
   {
     label: 'Trung tâm <br> đăng kiểm',
     icon: <TrungTamDKIcon></TrungTamDKIcon>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.CENTER}&name=Trung tâm đăng kiểm`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.CENTER}&name=Trung tâm đăng kiểm&isEmbeddedView=true`,
     
   },
   {
     label: 'Cứu hộ <br> đăng kiểm',
     icon: <CuuHoIcon></CuuHoIcon>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.INSPECTION_RESCUE}&name=cuuho`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.INSPECTION_RESCUE}&name=cuuho&isEmbeddedView=true`,
   },
   {
     label: 'Hợp tác xã <br> vận tải',
     icon: <HoptacxaIcon></HoptacxaIcon>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.TRANSPORT_COOPERATIVE}&name=htx`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.TRANSPORT_COOPERATIVE}&name=htx&isEmbeddedView=true`,
   },
   {
     label: 'Mua bán <br> xe cũ',
@@ -77,7 +77,7 @@ export const BTN_LIST_SERVICE = [
   {
     label: 'Đơn vị <br> bảo hiểm',
     icon: <GiaHanBaoHiemTNDSIcon></GiaHanBaoHiemTNDSIcon>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.INSURANCE_COMPANY}&name=DonviBH`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.INSURANCE_COMPANY}&name=DonviBH&isEmbeddedView=true`,
   },
   {
     label: 'Mua bán phụ <br> tùng ô tô',
@@ -87,27 +87,27 @@ export const BTN_LIST_SERVICE = [
   {
     label: 'Bảo dưỡng <br> ô tô',
     icon: <TramBDIcon></TramBDIcon>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.GARAGE}&name=Bảo dưỡng ô tô`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.GARAGE}&name=Bảo dưỡng ô tô&isEmbeddedView=true`,
   },
   {
     label: 'Bãi giữ xe',
     icon: <GarageIcon></GarageIcon>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.PARKING_LOT}&name=Bãi giữ xe`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.PARKING_LOT}&name=Bãi giữ xe&isEmbeddedView=true`,
   },
   {
     label: 'Đơn vị <br> cải tạo xe',
     icon: <HangBHIcon></HangBHIcon>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.VEHICLE_RENOVATION_COMPANY}&name=caitao`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.VEHICLE_RENOVATION_COMPANY}&name=caitao&isEmbeddedView=true`,
   },
   {
     label: 'Trường học <br> lái xe',
     icon: <DangKiemXeCuIcon></DangKiemXeCuIcon>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.DRIVING_SCHOOL}&name=Trường học lái xe`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.DRIVING_SCHOOL}&name=Trường học lái xe&isEmbeddedView=true`,
   },
   {
     label: 'Dịch vụ <br> lái xe hộ',
     icon: <HocLaiXeIcon></HocLaiXeIcon>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.CHAUFFEUR_SERVICE}&name=Dịch vụ lái xe hộ`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.CHAUFFEUR_SERVICE}&name=Dịch vụ lái xe hộ&isEmbeddedView=true`,
   },
   {
     label: 'Tư vấn SX <br> phụ tùng xe',
@@ -301,7 +301,7 @@ export const BOOKING_LIST_BTN = [
   {
     label: 'Tra cứu <br> phạt nguội',
     icon: <TraCuuPn></TraCuuPn>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/kiemtraphatnguoi`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/kiemtraphatnguoi?isEmbeddedView=true`,
   },
   {
     label: 'Thay đổi <br> thông tin xe',
@@ -317,19 +317,21 @@ export const BOOKING_LIST_BTN = [
   {
     label: 'Gia hạn <br> BH TNDS',
     icon: <GiaHanBaoHiemTNDSIcon></GiaHanBaoHiemTNDSIcon>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/check-vihcle?service=/gia-han-bao-hiem-tnds&redirect=0`,
-  },
-  {
-    label: 'Nộp phí <br> đường bộ',
-    icon: <DKxeKinhDoanhIcon></DKxeKinhDoanhIcon>,
-    link: `${PATH.BOOKING}?scheduleType=16`,
+    link: `${PATH.BOOKING}?scheduleType=22`,
     unOpen: true,
   },
-  {
-    label: 'Tra cứu <br> thông tin xe',
-    icon: <DinhGiaXe></DinhGiaXe>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/kiemtraphatnguoi`,
-  },
+  //tạm ẩn
+  // {
+  //   label: 'Nộp phí <br> đường bộ',
+  //   icon: <DKxeKinhDoanhIcon></DKxeKinhDoanhIcon>,
+  //   link: `${PATH.BOOKING}?scheduleType=5`,
+  //   unOpen: true,
+  // },
+  // {
+  //   label: 'Tra cứu <br> thông tin xe',
+  //   icon: <DinhGiaXe></DinhGiaXe>,
+  //   link: `${process.env.REACT_APP_DEPLOY_URL}/kiemtraphatnguoi`,
+  // },
 ]
 export const INSPECTION_SERVICES = [
   {
@@ -359,25 +361,24 @@ export const INSPECTION_SERVICES = [
   {
     label: 'Nộp hồ sơ xe <br> mới (Ngoài giờ)',
     icon: <HuongDanDKIcon></HuongDanDKIcon>,
-    link: `${PATH.BOOKING}?scheduleType=3`,
+    link: `${PATH.BOOKING}?scheduleType=23`,
     unOpen: true,
   },
   {
-    label: 'ĐK định kỳ <br> (Ngoài giờ)',
+    label: 'Đăng kiểm xe <br> (Ngoài giờ HC)',
     icon: <TuVanBaoDuongIcon></TuVanBaoDuongIcon>,
-    link: `${PATH.BOOKING}?scheduleType=1`,
+    link: `${PATH.BOOKING}?scheduleType=24`,
     unOpen: true,
   },
   {
-    label: 'Tra cứu <br> phạt nguội ĐK',
+    label: 'Tra cứu <br> cảnh báo ĐK',
     icon: <TraCuuPn></TraCuuPn>,
-    link: `${PATH.BOOKING}?scheduleType=15`,
-    unOpen: true,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/kiemtraphatnguoi?isEmbeddedView=true`,
   },
   {
-    label: 'Gỡ cảnh báo <br> phạt nguội',
+    label: 'Hỗ trợ xử lý <br> phạt nguội',
     icon: <XuLyPN></XuLyPN>,
-    link: `${PATH.BOOKING}?scheduleType=12`,
+    link: `${PATH.BOOKING}?scheduleType=16`,
     unOpen: true,
   },
 ]
@@ -385,46 +386,46 @@ export const HOT_SERVICES = [
   {
     label: 'Mua bảo hiểm TNDS',
     icon: <TramBDIcon></TramBDIcon>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/gia-han-bao-hiem-tnds`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/doi-tac-bao-hiem/saladin-bao-hiem-toan-dien?isEmbeddedView=true`,
   },
   {
     label: 'Mua BH <br> vật chất xe',
     icon: <GiaHanDangKiemIcon></GiaHanDangKiemIcon>,
-    link: `${PATH.BOOKING}?scheduleType=12`,
-    unOpen: true,
+    link: `https://ttdk.partner.saladin.vn/mua-bao-hiem-vat-chat-toan-dien-xe-oto/thong-tin-xe`,
   },
   {
     label: 'Bảo dưỡng xe',
     icon: <TuVanBaoHiemIcon></TuVanBaoHiemIcon>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=3&name=Bảo%20dưỡng%20ô%20tô`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=3&name=Bảo%20dưỡng%20ô%20tô&isEmbeddedView=true`,
   },
   {
     label: 'Gia hạn định vị',
     icon: <TuVanDangKiemIcon></TuVanDangKiemIcon>,
-    link: `${PATH.BOOKING}`,//?scheduleType=17`,
+    link: `${PATH.BOOKING}?scheduleType=17`,
     unOpen: true,
   },
   {
     label: 'GH phù hiệu <br> xe KD',
     icon: <ChuyenGia></ChuyenGia>,
-    link: `${PATH.BOOKING}`,//?scheduleType=18`,
+    link: `${PATH.BOOKING}?scheduleType=18`,
     unOpen: true,
   },
   {
     label: 'Gia hạn <br> giấy tập huấn',
     icon: <DoiGPLX></DoiGPLX>,
-    link: `${PATH.BOOKING}`,//?scheduleType=19`,
+    link: `${PATH.BOOKING}?scheduleType=19`,
     unOpen: true,
   },
   {
     label: 'GH camera <br> hành trình',
     icon: <ShowRoomIcon></ShowRoomIcon>,
-    link: `${PATH.BOOKING}`,//?scheduleType=20`,
+    link: `${PATH.BOOKING}?scheduleType=20`,
+    unOpen: true,
   },
   {
     label: 'Khám sức <br> khỏe lái xe',
     icon: <KhamSKIcon></KhamSKIcon>,
-    link: `/stations?type=${STATIONS_TYPE.DRIVER_HEALTH}&name=Khám sức khỏe lái xe`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.DRIVER_HEALTH}&name=Khám sức khỏe lái xe&isEmbeddedView=true`,
   },
   {
     label:  'Đăng ký dán <br> thẻ ePass',

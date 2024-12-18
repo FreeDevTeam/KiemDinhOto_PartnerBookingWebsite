@@ -16,7 +16,7 @@ const L2FunctionButtonList = (props) => {
     })
   }
   const { height, width } = useWindowDimensions()
-  const smallMobile= width <= 360
+  const smallMobile= width <= 420
   const sliderRef = useRef(null)
   const settings = {
     dots: true,

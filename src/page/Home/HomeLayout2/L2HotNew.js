@@ -39,7 +39,7 @@ const L2HotNew = ({ hotNew, setSheetVisible, setDataBtn }) => {
       setSheetVisible(true)
       let data= {
         label: value?.stationNewsTitle,
-        link: `${process.env.REACT_APP_DEPLOY_URL}/detail-post/${value?.stationNewsId}`
+        link: `${process.env.REACT_APP_DEPLOY_URL}/detail-post/${value?.stationNewsId}?isEmbeddedView=true`
       }
       setDataBtn(data)
     }

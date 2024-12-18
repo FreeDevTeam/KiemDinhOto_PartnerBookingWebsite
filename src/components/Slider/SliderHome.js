@@ -42,9 +42,15 @@ export const SliderHome = (props) => {
 				<Slider {...settingSilde}>
 				{setting  && setting?.map((item,index)=>{
 					return(
-						<a className="slide" href={item.bannerUrl || ''} target={item.bannerUrl ? '_blank' : ''}>
-							<img src={item.bannerImageUrl || process.env.PUBLIC_URL + '/default-banner.jpg'} alt={`Slide ${index + 1}`} />
-						</a>
+						props?.hideNewsFromZaloMiniApp ? (
+							<div className="slide">
+								<img src={item.bannerImageUrl || process.env.PUBLIC_URL + '/default-banner.jpg'} alt={`Slide ${index + 1}`} />
+							</div>
+						):(
+							<a className="slide" href={item.bannerUrl || ''} target={item.bannerUrl ? '_blank' : ''}>
+								<img src={item.bannerImageUrl || process.env.PUBLIC_URL + '/default-banner.jpg'} alt={`Slide ${index + 1}`} />
+							</a>
+						)
 					)
 				})}
 				</Slider>

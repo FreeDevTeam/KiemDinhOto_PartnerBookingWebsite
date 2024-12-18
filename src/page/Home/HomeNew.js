@@ -27,7 +27,7 @@ const HomeNew = ({ listNews , linkDirectDetail = "detail-post" , showEye = true,
       setSheetVisible(true)
       let data= {
         label: value?.stationNewsTitle,
-        link: `${process.env.REACT_APP_DEPLOY_URL}/${linkDirectDetail}/${value?.stationNewsId}`
+        link: `${process.env.REACT_APP_DEPLOY_URL}/${linkDirectDetail}/${value?.stationNewsId}?isEmbeddedView=true`
       }
       setDataBtn(data)
     }
