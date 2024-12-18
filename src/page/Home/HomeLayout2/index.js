@@ -338,7 +338,9 @@ const HomeLayout2 = (props) => {
                 )}
               </div>
             )}
-            <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} slider={CONVENIENCE_DRIVERS_BTN?.length > 9 || (mobile && CONVENIENCE_DRIVERS_BTN?.length > 7)} list={CONVENIENCE_DRIVERS_BTN} title={'Tiện ích cho tài xế'}></L2FunctionButtonList>
+            {!hideNewsFromZaloMiniApp && (
+              <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} slider={CONVENIENCE_DRIVERS_BTN?.length > 9 || (mobile && CONVENIENCE_DRIVERS_BTN?.length > 7)} list={CONVENIENCE_DRIVERS_BTN} title={'Tiện ích cho tài xế'}></L2FunctionButtonList>
+            )}
             {/* <div className=''>
               {partnerUtilityNews?.length > 0 &&
                 <div className="home-container mb-5">

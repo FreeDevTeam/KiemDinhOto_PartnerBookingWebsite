@@ -72,7 +72,7 @@ export const BTN_LIST_SERVICE = [
   {
     label: 'Mua bán <br> xe cũ',
     icon: <ShowRoomIcon></ShowRoomIcon>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.USED_CAR_TRADING}&name=muabanxe`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.USED_CAR_TRADING}&name=muabanxe&isEmbeddedView=true`,
   },
   {
     label: 'Đơn vị <br> bảo hiểm',
@@ -82,7 +82,7 @@ export const BTN_LIST_SERVICE = [
   {
     label: 'Mua bán phụ <br> tùng ô tô',
     icon: <MuaBanXeIcon></MuaBanXeIcon>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.SPARE_PARTS_DEALERSHIP}&name=Mua bán phụ tùng ô tô`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.SPARE_PARTS_DEALERSHIP}&name=Mua bán phụ tùng ô tô&isEmbeddedView=true`,
   },
   {
     label: 'Bảo dưỡng <br> ô tô',
@@ -112,12 +112,12 @@ export const BTN_LIST_SERVICE = [
   {
     label: 'Tư vấn SX <br> phụ tùng xe',
     icon: <TVCaiTaoXeIcon></TVCaiTaoXeIcon>,
-    link: `/stations?type=${STATIONS_TYPE.PARTS_MANUFACTURING_CONSULTANCY}&name=Tư vấn SX phụ tùng xe`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.PARTS_MANUFACTURING_CONSULTANCY}&name=Tư vấn SX phụ tùng xe&isEmbeddedView=true`,
   },
   {
     label: 'Khám sức <br> khỏe lái xe',
     icon: <KhamSKIcon></KhamSKIcon>,
-    link: `/stations?type=${STATIONS_TYPE.DRIVER_HEALTH}&name=Khám sức khỏe lái xe`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.DRIVER_HEALTH}&name=Khám sức khỏe lái xe&isEmbeddedView=true`,
   },
 ]
 export const CONVENIENCE_DRIVERS_BTN = [
@@ -289,7 +289,7 @@ export const BOOKING_LIST_BTN = [
   {
     label: 'Nộp hồ sơ <br> xe mới',
     icon: <DangKiemXeMoiIcon></DangKiemXeMoiIcon>,
-    link: `${PATH.BOOKING}?scheduleType=2`,
+    link: `${PATH.BOOKING}?scheduleType=3`,
     unOpen: true,
   },
   {
@@ -373,7 +373,8 @@ export const INSPECTION_SERVICES = [
   {
     label: 'Tra cứu <br> cảnh báo ĐK',
     icon: <TraCuuPn></TraCuuPn>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/kiemtraphatnguoi?isEmbeddedView=true`,
+    link: `${PATH.BOOKING}?scheduleType=15`,
+    unOpen: true,
   },
   {
     label: 'Hỗ trợ xử lý <br> phạt nguội',
@@ -430,12 +431,13 @@ export const HOT_SERVICES = [
   {
     label:  'Đăng ký dán <br> thẻ ePass',
     icon: <EpassLogo ></EpassLogo>,
-    link: "https://customer.epass-vdtc.com.vn/#/register/VDTC",
+    link: `${PATH.BOOKING}?scheduleType=2`,
+    unOpen: true,
   },
   {
     label: 'Đăng ký dán <br> thẻ VETC',
     icon: <TheVETC></TheVETC>,
-    link: `${PATH.BOOKING}?scheduleType=12`,
+    link: `${PATH.BOOKING}?scheduleType=21`,
     unOpen: true,
   },
 ]

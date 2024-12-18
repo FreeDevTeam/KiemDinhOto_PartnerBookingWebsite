@@ -4,6 +4,26 @@ export const SCHEDULE_TYPE = {
   CHANGE_REGISTATION: 4, // Đổi mục đích sử dụng, đổi chủ, đổi thông tin hồ sơ
   PAY_ROAD_FEE: 5, // Thanh toán phí đường bộ
   PAY_INSURRANCE_FEE: 6, // Thanh toán phí bảo hiểm
+  REGISTER_EPASS_TAG: 2, // Đăng ký dán thẻ EPASS
+  REGISTER_NEW_VEHICLE: 3, // nộp hồ sơ xe mới
+  CONSULTANT_MAINTENANCE: 7, // Đặt lịch tư vấn bảo dưỡng
+  CONSULTANT_INSURANCE: 8, // Đặt lịch tư bảo hiểm
+  CONSULTANT_RENOVATION: 9, // Đặt lịch tư vấn hoán cải
+  LOST_REGISTRATION_PAPER: 10, // Mất giấy đăng kiểm
+  REISSUE_INSPECTION_STICKER: 11, // Cấp lại tem đăng kiểm
+  VEHICLE_INSPECTION_CONSULTATION: 12, // Tư vấn đăng kiểm xe
+  TRAFFIC_FINE_CONSULTATION: 13, // Tư vấn xử lý phạt nguội
+  CONSULTANT_TNDS_INSURANCE: 14, // Tư vấn bảo hiểm TNDS xe ô tô
+  AUTO_NOTIFY_VIOLATION: 15, // Tra cứu cảnh báo đăng kiểm
+  SUPPORT_FINE_RESOLUTION: 16, // Hỗ trợ xử lý phạt nguội
+  GPS_RENEWAL: 17, // Gia hạn định vị
+  BUSINESS_VEHICLE_BADGE_RENEWAL: 18, // Gia hạn phù hiệu xe kinh doanh
+  TRAINING_CERTIFICATE_RENEWAL: 19, // Gia hạn giấy tập huấn
+  DASHCAM_RENEWAL: 20, // Gia hạn camera hành trình
+  REGISTER_VETC_TAG: 21, // Đăng ký dán thẻ VETC
+  TNDS_INSURANCE_RENEWAL: 22, // Gia hạn BH TNDS
+  OFF_HOUR_NEW_VEHICLE_REGISTER: 23, // Nộp hồ sơ xe mới (Ngoài giờ HC)
+  OFF_HOUR_VEHICLE_INSPECTION: 24, // Đăng kiểm xe (Ngoài giờ HC)
 }
 
 export const SCHEDULE_TITLE = {
