@@ -50,6 +50,9 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   const [selectedBookingHour, setSelectedBookingHour] = useState(false)
   const [isLoadDataLocal, setIsLoadDataLocal] = useState(false)
   const [disableBookingHour, setDisableBookingHour] = useState(false)
+  const [requireScheduleDate, setRequireScheduleDate] = useState(1)
+  const [requireScheduleStation, setRequireScheduleStation] = useState(1)
+  const [requireScheduleTime, setRequireScheduleTime] = useState(1)
   const [bookingConfig, setBookingConfig] = useState({})
   const [vehicleSubCategoryOptions, setVehicleSubCategoryOptions] = useState([])
   const [dateFilter, setDateFilter] = useState({
@@ -529,6 +532,9 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
       Object.values(data.SCHEDULE_TYPE).map(item=>{
         let value = {
           value:item.scheduleType,
+          requireScheduleDate:item?.requireScheduleDate,
+          requireScheduleStation:item?.requireScheduleStation,
+          requireScheduleTime:item?.requireScheduleTime,
           disabled:item.scheduleTypeEnable ? false :true,
           label:(
           <div className="d-flex ai-c j-sb w-100">
@@ -539,6 +545,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
         }
         newValues.push(value)
         setScheduleTypes(newValues)
+        handleCheckReq(bookingData?.scheduleType || dataLocal?.scheduleType,newValues)
       })
       }else{
         setScheduleTypes(SCHEDULE_TYPE)
@@ -910,6 +917,16 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     }
   }, [zaloUserPhone, form])
 
+  const handleCheckReq=(values,arrayCheck)=>{
+    for(let i=0;i<arrayCheck.length;i++){
+      if(arrayCheck[i].value==values){
+        setRequireScheduleStation(arrayCheck[i].requireScheduleStation);
+        setRequireScheduleDate(arrayCheck[i].requireScheduleDate);
+        setRequireScheduleTime(arrayCheck[i].requireScheduleTime)
+      }
+    }
+  }
+
   const onClose=()=>{
     setOpen(false)
   }
@@ -990,7 +1007,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           placeholder="Nhập số điện thoại"
           type="text"
           size="large"
-          disabled={isZaloApp}
+          // disabled={isZaloApp}
           onInput={(e) => {
             saveDataLocal('phone', e.target.value)
           }} />
@@ -1021,6 +1038,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
               form.setFieldsValue({
                 scheduleType:values,
               })
+              handleCheckReq(values,scheduleTypes)
               setBookingData({
                 ...bookingData,
                 scheduleType:values,
@@ -1243,12 +1261,14 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
               dateSchedule: null,
               time: null
             })
-            getStations({
+            if(requireScheduleStation == '1'){
+              getStations({
               ...customerParam,
               filter: {
                 stationArea: values
               }
             })
+            }
             setCustomerParam({
               ...customerParam,
               filter: {
@@ -1269,127 +1289,155 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           options={listStationArea}
         />
       </Form.Item>
-
-      <span id="station">
-        <Form.Item
-          label="Chọn trạm"
-          name="stationsId"
-          rules={[
-            {
-              required: true,
-              message: 'Vui lòng nhập'
-            }
-          ]}
-          hidden={dataBookingParam?.visible_StationsCode === 'true' || dataBookingParam?.visible_StationsCode === null ? false : true}
-          >
-          <SelectAntd
-            className="cs-select ant-custom booking-input"
-            isSearchable={true}
-            size="middle"
-            placeholder="Vui lòng chọn trạm đăng kiểm"
-            style={{
-              customStyles,
-              ...{
-                lineHeight: 48
+      {requireScheduleStation == '1' && (
+        <span id="station">
+          <Form.Item
+            label="Chọn trạm"
+            name="stationsId"
+            rules={[
+              {
+                required: requireScheduleStation == '1' ? true : false,
+                message: 'Vui lòng nhập'
               }
-            }}
-            options={listStation}
-            menuPlacement="top"
-            disabled={!bookingData?.vntId || isVisible.stationsId}
-            // value={listStation?.filter(op => op.stationsId === dataBookingParam?.stationsId || dataLocal?.stationsId?.stationsId)}
-            // value={73}
-            // defaultValue={{
-            //   label : "2914D",
-            //   value : 73
-            // }}
-            onChange={(values) => {
-              form.setFieldsValue({
-                dateSchedule: null,
-                time: null,
-                stationsId: values
-              })
-              setDateFilter({
-                ...dateFilter,
-                stationsId: values,
-              })
-              const stationSelected = listStation?.find((e) => e.stationsId == values)
-              setBookingConfig(JSON.parse(stationSelected?.stationBookingConfig))
-              saveDataLocal('stationsId',stationSelected)
-              setBookingData({
-                ...bookingData,
-                stationsId: stationSelected,
-                dateSchedule: null,
-                time: null
-              })
-            }}
-          />
-        </Form.Item>
-      </span>
-
-      <Form.Item
-        name="dateSchedule"
-        label="Ngày hẹn"
-        extra="Đặt lịch hẹn qua App để được nhắc hẹn tự động"
-        rules={[
-          {
-            required: true,
-            message: 'Vui lòng nhập'
-          }
-        ]}>
-          <BookingDatePicker
-            disabled={!bookingData.stationsId}
-            loading={loadingDatePicker}
-            currentMonth={dateFilter.startDate}
-            setCurrentMonth={(selectedMonth) => {
-              setDateFilter({
-                ...dateFilter,
-                startDate: moment(selectedMonth).format(DATE_DISPLAY_FORMAT),
-                endDate: moment(selectedMonth).endOf('months').format(DATE_DISPLAY_FORMAT),
-              })
-            }}
-            selectedDate={form.getFieldValue('dateSchedule')}
-            setSelectedDate={(values) => {
-              saveDataLocal('dateSchedule',values)
-              saveDataLocal('time',null)
-              form.setFieldsValue({
-                dateSchedule:values,
-                time: null
-              })
-              const  stationsId  = bookingData.stationsId.stationsId || localBookingData?.stationsId?.stationsId
-              if (stationsId && bookingData) {
-                getBookingHours({
-                  stationsId: stationsId,
-                  date: values,
-                  vehicleType: bookingData.vehicleType
+            ]}
+            hidden={dataBookingParam?.visible_StationsCode === 'true' || dataBookingParam?.visible_StationsCode === null ? false : true}
+            >
+            <SelectAntd
+              className="cs-select ant-custom booking-input"
+              isSearchable={true}
+              size="middle"
+              placeholder="Vui lòng chọn trạm đăng kiểm"
+              style={{
+                customStyles,
+                ...{
+                  lineHeight: 48
+                }
+              }}
+              options={listStation}
+              menuPlacement="top"
+              disabled={!bookingData?.vntId || isVisible.stationsId}
+              // value={listStation?.filter(op => op.stationsId === dataBookingParam?.stationsId || dataLocal?.stationsId?.stationsId)}
+              // value={73}
+              // defaultValue={{
+              //   label : "2914D",
+              //   value : 73
+              // }}
+              onChange={(values) => {
+                form.setFieldsValue({
+                  dateSchedule: null,
+                  time: null,
+                  stationsId: values
                 })
+                setDateFilter({
+                  ...dateFilter,
+                  stationsId: values,
+                })
+                const stationSelected = listStation?.find((e) => e.stationsId == values)
+                setBookingConfig(JSON.parse(stationSelected?.stationBookingConfig))
+                saveDataLocal('stationsId',stationSelected)
                 setBookingData({
                   ...bookingData,
-                  dateSchedule: values,
+                  stationsId: stationSelected,
+                  dateSchedule: null,
                   time: null
                 })
-              }
-            }}
-            listBookingDate={listBookingDate}
-            // bookingConfig={bookingConfig}
-          />
-      </Form.Item>
-
-      <Form.Item
-        label="Giờ hẹn"
-        name="time"
-        rules={[
-          {
-            required: true,
-            message: 'Vui lòng nhập'
-          }
-        ]}>
-          <BookingHoursPicker
-            disabled={!bookingData.dateSchedule || isVisible.time}
-            listBookingTime={listBookingTime}
-            loading={loadingHoursPicker}
-            setSelectedTime={(values) => {
+              }}
+            />
+          </Form.Item>
+        </span>
+      )}
+      {requireScheduleDate == '1' && (
+        <Form.Item
+          name="dateSchedule"
+          label="Ngày hẹn"
+          extra="Đặt lịch hẹn qua App để được nhắc hẹn tự động"
+          rules={[
+            {
+              required: requireScheduleDate == '1' ? true : false,
+              message: 'Vui lòng nhập'
+            }
+          ]}>
+            <BookingDatePicker
+              disabled={!bookingData.stationsId}
+              loading={loadingDatePicker}
+              currentMonth={dateFilter.startDate}
+              setCurrentMonth={(selectedMonth) => {
+                setDateFilter({
+                  ...dateFilter,
+                  startDate: moment(selectedMonth).format(DATE_DISPLAY_FORMAT),
+                  endDate: moment(selectedMonth).endOf('months').format(DATE_DISPLAY_FORMAT),
+                })
+              }}
+              selectedDate={form.getFieldValue('dateSchedule')}
+              setSelectedDate={(values) => {
+                saveDataLocal('dateSchedule',values)
+                saveDataLocal('time',null)
+                form.setFieldsValue({
+                  dateSchedule:values,
+                  time: null
+                })
+                const  stationsId  = bookingData.stationsId.stationsId || localBookingData?.stationsId?.stationsId
+                if (stationsId && bookingData) {
+                  getBookingHours({
+                    stationsId: stationsId,
+                    date: values,
+                    vehicleType: bookingData.vehicleType
+                  })
+                  setBookingData({
+                    ...bookingData,
+                    dateSchedule: values,
+                    time: null
+                  })
+                }
+              }}
+              listBookingDate={listBookingDate}
+              // bookingConfig={bookingConfig}
+            />
+        </Form.Item>
+      )} 
+      {requireScheduleTime == '1' && (
+        <Form.Item
+          label="Giờ hẹn"
+          name="time"
+          rules={[
+            {
+              required: requireScheduleTime == '1' ? true : false,
+              message: 'Vui lòng nhập'
+            }
+          ]}>
+            <BookingHoursPicker
+              disabled={!bookingData.dateSchedule || isVisible.time}
+              listBookingTime={listBookingTime}
+              loading={loadingHoursPicker}
+              setSelectedTime={(values) => {
+                form.setFieldsValue({
+                  ["time"]: values
+                })
+                saveDataLocal('time',values)
+                setBookingData({
+                  ...bookingData,
+                  time: values.scheduleTime
+                })
+              }}
+              selectedTime={form.getFieldValue('time')}
+              bookingConfig={bookingConfig}
+            />
+          {/* <Select
+            className="cs-select schedule-hour booking-input"
+            isSearchable={true}
+            placeholder="Chọn khung giờ"
+            isOptionDisabled={(option) => (
+                option.disabled
+              )}
+            isDisabled={!bookingData.dateSchedule}
+            styles={customStyles}
+            options={listBookingTime}
+            defaultValue={dataBookingParam?.time || dataLocal?.time?.scheduleTime}
+            getOptionValue={(option) => option.label}
+            menuPlacement="top"
+            onChange={(values) => {
               form.setFieldsValue({
-                ["time"]: values
+                time: values
               })
               saveDataLocal('time',values)
               setBookingData({
@@ -1397,35 +1445,9 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
                 time: values.scheduleTime
               })
             }}
-            selectedTime={form.getFieldValue('time')}
-            bookingConfig={bookingConfig}
-          />
-        {/* <Select
-          className="cs-select schedule-hour booking-input"
-          isSearchable={true}
-          placeholder="Chọn khung giờ"
-          isOptionDisabled={(option) => (
-              option.disabled
-            )}
-          isDisabled={!bookingData.dateSchedule}
-          styles={customStyles}
-          options={listBookingTime}
-          defaultValue={dataBookingParam?.time || dataLocal?.time?.scheduleTime}
-          getOptionValue={(option) => option.label}
-          menuPlacement="top"
-          onChange={(values) => {
-            form.setFieldsValue({
-              time: values
-            })
-            saveDataLocal('time',values)
-            setBookingData({
-              ...bookingData,
-              time: values.scheduleTime
-            })
-          }}
-        /> */}
-      </Form.Item>
-
+          /> */}
+        </Form.Item>
+      )}
       <div className="w-100 d-flex justify-content-center mgt-40">
         <Button className="login__button df" type="primary" htmlType="submit" size="large">
           Đặt lịch
