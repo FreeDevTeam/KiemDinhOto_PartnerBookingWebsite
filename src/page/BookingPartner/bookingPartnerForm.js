@@ -655,14 +655,19 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           setIsLoading(false)
         }, 500);
         } else {
-          getScheduleDetail(data[0])
-          setTimeout(() => {
-            setIsLoading(false)
-          }, 500);
-          if(data.paymentUrl && data.paymentUrl.length > 0){
+          let adviseSchedule=Object.values(scheduleTypes).find(item=>item?.value== bookingData?.scheduleType)?.scheduleCategory == '2'
+          if(adviseSchedule){
+            getScheduleDetail(data[0])
             setTimeout(() => {
-              window.open(data.paymentUrl, '_blank')
+              setIsLoading(false)
             }, 500);
+            if(data.paymentUrl && data.paymentUrl?.length > 0){
+              setTimeout(() => {
+                window.open(data.paymentUrl, '_blank')
+              }, 500);
+            }
+          }else{
+            setIsModalOpen(true)
           }
           localStorage.removeItem(addKeyLocalStorage('bookingData'))
           setTimeout(() => {
