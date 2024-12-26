@@ -536,6 +536,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           requireScheduleStation:item?.requireScheduleStation,
           requireScheduleTime:item?.requireScheduleTime,
           scheduleCategory:item?.scheduleCategory,
+          priceTTDK:item?.priceTTDK,
           disabled:item.scheduleTypeEnable ? false :true,
           label:(
           <div className="d-flex ai-c j-sb w-100">
@@ -572,6 +573,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     }).then((res) => {
       if(res?.data){
         res.data.runTime = new Date();
+        res.data.order.totalAmount = scheduleTypes.find(item=>item?.value == res?.data?.scheduleType)?.priceTTDK || 0
         setScheduleDetail(res?.data);
         if(res?.data?.order?.totalAmount){
           setIsModalOpen(false)
@@ -623,9 +625,15 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           setIsLoading(false)
         }, 500);
         } else {
+          getScheduleDetail(data?.customerScheduleId)
           setTimeout(() => {
             setIsLoading(false)
           }, 500);
+          if(data.paymentUrl && data.paymentUrl?.length > 0){
+            setTimeout(() => {
+              window.open(data.paymentUrl, '_blank')
+            }, 500);
+          }
           setIsModalOpen(true)
           localStorage.removeItem(addKeyLocalStorage('bookingData'))
           setTimeout(() => {
@@ -655,20 +663,19 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           setIsLoading(false)
         }, 500);
         } else {
-          let adviseSchedule=Object.values(scheduleTypes).find(item=>item?.value== bookingData?.scheduleType)?.scheduleCategory == '2'
-          if(adviseSchedule){
-            getScheduleDetail(data[0])
-            setTimeout(() => {
-              setIsLoading(false)
-            }, 500);
-            if(data.paymentUrl && data.paymentUrl?.length > 0){
-              setTimeout(() => {
-                window.open(data.paymentUrl, '_blank')
-              }, 500);
-            }
-          }else{
+          // if(adviseSchedule){
+          //   getScheduleDetail(data[0])
+          //   setTimeout(() => {
+          //     setIsLoading(false)
+          //   }, 500);
+          //   if(data.paymentUrl && data.paymentUrl?.length > 0){
+          //     setTimeout(() => {
+          //       window.open(data.paymentUrl, '_blank')
+          //     }, 500);
+          //   }
+          // }else{
             setIsModalOpen(true)
-          }
+          // }
           localStorage.removeItem(addKeyLocalStorage('bookingData'))
           setTimeout(() => {
             setBookingData({})
