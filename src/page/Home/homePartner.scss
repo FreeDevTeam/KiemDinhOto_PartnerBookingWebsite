@@ -1,0 +1,25 @@
+.partner-slider {
+  & .slick-initialized .slick-slide {
+    padding-right: 9px;
+  }
+}
+.skeleton,
+.partner-img{
+  height: 65px;
+  border-radius: 15px;
+  aspect-ratio: 1/1;
+}
+
+@media (max-width: 450px) {
+  .partner-img{
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 280px) {
+  .partner-img {
+    height: 50px;
+    border-radius: 10px;
+  }
+}
+

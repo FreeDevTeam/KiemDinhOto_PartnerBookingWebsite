@@ -5,7 +5,12 @@
 .displayNone {
   display: none;
 }
-
+.text-left {
+  text-align: left;
+}
+.text-blue-ribbon {
+  color: var(--blue-ribbon);
+}
 .ant-input-number {
   width: 100% !important;
 }

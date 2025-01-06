@@ -27,7 +27,22 @@ export default class BookingService {
       })
     })
   }
-
+  static async userCheckVehicleInfo(data = {}) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/PartnerAPI/AppUserVehicle/user/fetchVehicleInfo',
+        data
+      }).then((result = {}) => {
+        const { statusCode } = result
+        if (statusCode === 200) {
+          return resolve(result)
+        } else {
+          return resolve(result)
+        }
+      })
+    })
+  }
   static async getDetailIntroductionPage() {
     return new Promise((resolve) => {
       Request.send({
@@ -42,6 +57,24 @@ export default class BookingService {
           return resolve(data)
         } else {
           return resolve({})
+        }
+      })
+    })
+  }
+  static async checkVihcleInfo() {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/StationIntroduction/stationIntroductionDetail',
+        data: {
+          stationUrl: window.location.origin.split('://')[1]
+        }
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(data)
+        } else {
+          return resolve(data)
         }
       })
     })
@@ -101,6 +134,81 @@ export default class BookingService {
       Request.send({
         method: 'POST',
         path: '/PartnerAPI/Stations/user/getDetail',
+        data: data
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(data)
+        } else {
+          return resolve({})
+        }
+      })
+    })
+  }
+  static async userGetHotNewList() {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/StationNews/user/getHighLightNews',
+        data: {
+          skip: 0,
+          limit: 10,
+          order:{
+              key: 'ordinalNumber',
+              value:"asc"
+          }
+        }
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(data)
+        } else {
+          return resolve({})
+        }
+      })
+    })
+  }
+  static async userGetLatestNew(skip) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/StationNews/user/getNewestList',
+        data: {
+          skip: skip || 0,
+          limit: 10,
+          stationsUrl: window.origin.split('://')[1],
+        }
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(data)
+        } else {
+          return resolve({})
+        }
+      })
+    })
+  }
+  static async getPartnerPromotionNews(data={}) { // mặc định {} để có payload
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/StationNews/user/getPartnerPromotionNews',
+        data: data
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(data)
+        } else {
+          return resolve({})
+        }
+      })
+    })
+  }
+  static async getPromotionNews(data={}) { // mặc định {} để có payload
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/StationNews/user/getPromotionNews',
         data: data
       }).then((result = {}) => {
         const { statusCode, data } = result
@@ -177,7 +285,100 @@ export default class BookingService {
       })
     })
   }
-
+  static async getList(data) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/HomePageConfig/user/getList',
+        data: data
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(result)
+        } else {
+          return resolve(result)
+        }
+      })
+    })
+  }
+  static async getBannerStationsList(filter) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/SystemPromoBanners/user/getList',
+        data: filter
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(data)
+        } else {
+          return resolve({})
+        }
+      })
+    })
+  }
+  static async userGetPartnerUtilityNews(limit) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/StationNews/user/getPartnerUtilityNews',
+        data: {
+          skip: 0,
+          limit: limit || 10,
+          order:{
+              key: 'ordinalNumber',
+              value:"asc"
+          }
+        }
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(data)
+        } else {
+          return resolve({})
+        }
+      })
+    })
+  }
+  static async userGetRecruitmentNews(data) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/StationNews/user/getRecruitmentNews',
+        data: data || {
+          skip: 0,
+          limit: 10,
+          order:{
+              key: 'ordinalNumber',
+              value:"asc"
+          }
+        }
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(data)
+        } else {
+          return resolve({})
+        }
+      })
+    })
+  }
+  static async userGetExpertNews(data) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/StationNews/user/getExpertNews',
+        data: data
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(data)
+        } else {
+          return resolve({})
+        }
+      })
+    })
+  }
   static async getStationAreaList() {
     return new Promise((resolve) => {
       Request.send({
@@ -199,6 +400,23 @@ export default class BookingService {
       Request.send({
         method: 'POST',
         path: '/PartnerAPI/CustomerSchedule/user/createSchedule',
+        data: data
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(result)
+        } else {
+          return resolve(result)
+        }
+      })
+    })
+  }
+
+  static async createConsultantSchedule(data) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/PartnerAPI/CustomerSchedule/user/userCreateConsultant',
         data: data
       }).then((result = {}) => {
         const { statusCode, data } = result

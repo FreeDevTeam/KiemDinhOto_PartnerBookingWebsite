@@ -1,5 +1,6 @@
 export const PATH = {
     HOME :"/",
+    CHECK_VIHCLE :"/check-vihcle",
     BOOKING: '/booking',
     BOOKING_PARTNER_IFRAME: '/booking-partner-iframe',
     RESET_PASSWORD: '/resetPassword',

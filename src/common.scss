@@ -15,7 +15,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   font-variant: tabular-nums;
   line-height: 1.5715;
-  background-color: #fff;
+  background-color: #fff !important;
   font-feature-settings: 'tnum';
 }
 
@@ -643,7 +643,7 @@ a.menu-item {
   margin-bottom: 10px;
 }
 .ant-form-item-extra {
-  color: var(--step-line-booking);
+  color: var(--step-line-booking) !important;
 }
 
 .text-blue {

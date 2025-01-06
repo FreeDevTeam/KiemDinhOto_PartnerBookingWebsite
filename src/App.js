@@ -2,6 +2,8 @@ import './App.css';
 import React, { useEffect, useLayoutEffect } from "react";
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
 import { Spin } from 'antd'
+import 'slick-carousel/slick/slick.css'
+import 'slick-carousel/slick/slick-theme.css'
 import "./assets/scss/index.scss"
 import './bootstrap.min.css'
 import './common.scss'

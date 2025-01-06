@@ -15,7 +15,13 @@ $--unnamed-color-1d21a70a: #1d21a70a;
 $--unnamed-color-fdf6fe: #fdf6fe;
 $--unnamed-color-ffffff: #ffffff;
 $--unnamed-color-0870d9: #0870d9;
-
+$--color-FA541C: #FA541C;
+$--color-FFF2E8: #FFF2E8;
+$--color-F4F7FF: #F4F7FF;
+$--color-EBF7EC: #EBF7EC;
+$--color-FFF5CE: #FFF5CE;
+$--color-FAAD14: #FAAD14;
+$--color-E5FDD1: #E5FDD1;
 
 $--gainsboro-9: #F5F5F5;
 $--light-grey-color: #d9d9d9;
@@ -184,15 +190,32 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --gray-color: gray;
   --background-iphone-popup-coler:#a6bab8;
   --transparent-color:transparent;
+  --secondary-button-color:#14C560;
   --title-color:#0870d9;
+  --background-banner-color: #F4F7FF;
+  --bgr-list-btn-color: #F2F5FF;
   --unactive-button-color:#d6d6d6;
   --primary-button-color:#262FED;
   --stop-receiving-color:#AA8934;
   --error-btn-color:#FF1001;
   --success-btn-color:#34AA44;
   --step-line-booking:#1890ff;
+  --step-line-booking-opacity30:#1890ff30;
   --float-btn-color:#4b7fed;
   --attention-color:#0039e3;
+  --light-black-color: #333;
+  --sunrise-yellow-color:$--sunrise-yellow-6;
+  --bgr-review-color:#F3F3F5;
+  --blue-ribbon: #0068FF;
+  --gray-solitude: #E8F0FE;
+  --gray-alto: #DDDDDD;
+  --gray-silver: #C4C4C4;
+  --gray-gallery: #EDEDED;
+  --gray-mercury: #E4E4E4;
+  --gray-mid-gray: #686770;
+  --gray-athens: #F9F9FB;
+  --gray-zircon: #F4F7FF;
+  --blue-deep-cove: #040747;
   // ...Thêm biến sáng 
 }
 
@@ -211,6 +234,8 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --primary-button-color:#CD2226;
   --stop-receiving-color:#AA8934;
   --error-btn-color:#FF1001;
+  --background-banner-color: #F4F7FF;
+  --bgr-list-btn-color: #F2F5FF;
   --success-btn-color:#34AA44;
   --step-line-booking:rgb(255, 34, 86);
   --float-btn-color:#f43b3e;

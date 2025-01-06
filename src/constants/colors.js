@@ -1,0 +1,11 @@
+export const redLust = `#E42310`
+export const blueSapphire = `#0E57B7`
+export const blackRaisin = `#222222`
+export const darkLiver = `#4D4D4D`
+export const sonicSilver = `#757575`
+export const grayGainsboro = `#DDDDDD`
+export const divider = `#00000008`
+export const cultured = `#F6F6F6`
+export const ghostWhite = `#F9F9F9`
+export const white = `#FFFFFF`
+export const black = `#000000`

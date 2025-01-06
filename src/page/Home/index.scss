@@ -124,3 +124,144 @@
         font-size: 12px;
     }
 }
+
+.cat-title {
+  display: inline-block;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  text-transform: uppercase;
+  color: #222222;
+  &::before {
+    content: '';
+    width: 4px;
+    height: 14px;
+    min-width: 4px;
+    min-height: 14px;
+    background: #e42310;
+    margin-right: 12px;
+    display: inline-block;
+  }
+}
+.layout1-btn-booking-section {
+	padding-top: 22px;
+	.layout1-btn-booking-item{
+    width: 20%;
+    text-align: center;
+    cursor: pointer;
+    margin-top: -22px;
+    padding: 2px;
+    &:nth-child(n + 5) {
+      margin-bottom: 0;
+    }
+    svg,img{
+      margin-bottom: 8px !important;
+    }
+  }
+}
+.hotnew{
+  .slick-list{
+    width: 100% !important;
+    .slick-track .slick-slide.slick-active{
+      padding: 0;
+    }
+  }
+}
+.home-link {
+  width: 30%;
+  color: var(--title-color);
+  cursor: pointer;
+  padding-right: 10px;
+  & a {
+    border: none;
+    padding-bottom: 0.5px;
+    font-size: 12px;
+    line-height: 17.318px;
+    color: var(--title-color);
+  }
+}
+.notification-content{
+  margin-bottom: 0;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  height: 100%;
+  min-height: 27px;
+  align-items: center;
+}
+.list-partner {
+	padding-top: 22px;
+}
+.government-btn{
+  .btn-booking-item{
+    width: 25% !important;
+  }
+}
+.title-homelayout{
+  font-weight: 700;
+}
+.home-container {
+  padding: 0px;
+  max-width: 600px;
+  margin-top: 24px;
+}
+.news-center{
+  margin-bottom: 24px;
+  & span::before{
+    background:var(--primary-button-color),
+  }
+}
+.mobile-content {
+  padding: 0px 10px;
+}
+
+@media screen and (max-width: 992px) {
+  .news-center{
+    margin-bottom: 15px;
+  }
+}
+@media screen and (max-width: 768px) {
+  .news-center{
+    margin-bottom: 5px;
+  }
+  .home-container {
+    margin-top: 15px;
+  }
+}
+
+@media (max-width: 460px) {
+  .more {
+    & .d-flex {
+      gap: unset;
+    }
+  }
+  .btn-booking-section {
+    padding-top: 10px;
+    .btn-booking-item{
+      margin-top: 0px;
+    }
+  }
+  .title-homelayout{
+    font-size: $text-normal-fs;
+  }
+  .layout1-btn-booking-section .layout1-btn-booking-item{
+    width: 25%;
+  }
+}
+.layout1-partner-img{
+  width: 41px;
+  height: 40px;
+}
+.one-slider{
+  .slick-track{
+    width: 100% !important;
+  }
+}
+.layout1-partner-logo{
+  display: flex;
+  justify-content: center;
+}
+@media (max-width: 420px) {
+  .layout1-btn-booking-section .layout1-btn-booking-item{
+    width: 33.333%;
+  }
+}

@@ -2,7 +2,21 @@ import React, { useEffect, useState } from 'react'
 import { Modal, Button, Spin } from 'antd'
 import './index.scss'
 import { LoadingOutlined } from '@ant-design/icons';
+
 const LoadFormBookingFailed = ({ }) => {
+   const CheckApiKeys = () => {
+    const searchParams = window.location.href
+    const webSaladin = 'saladin.ttdk.com.vn'
+    
+    if (searchParams.includes(webSaladin)) {
+      return window.location.href = "https://saladin.ttdk.com.vn/booking?apikey=fe58f4e7-29ac-4ade-86b1-d51a3b0602a5"
+    }
+  }
+
+  useEffect(() =>{
+    CheckApiKeys()
+  },[])
+
   return (
     <>
       <div className="text-center">

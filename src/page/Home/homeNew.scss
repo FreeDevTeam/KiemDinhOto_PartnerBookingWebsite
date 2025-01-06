@@ -1,0 +1,139 @@
+.card {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+  cursor: pointer;
+}
+.new-date{
+  word-break: break-word;
+}
+.overlap-group{
+  padding: 0 8px;
+}
+.news-slider {
+  & .slick-initialized .slick-slide {
+    padding-right: 9px;
+  }
+}
+.news-img{
+  aspect-ratio: 16/9;
+}
+.bodyContain {
+  display: flex !important;
+  justify-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  .item {
+    width: calc(50% - 6px);
+  }
+}
+
+.card-slider {
+  max-width: 600px;
+  overflow: hidden;
+
+  & .slick-list {
+    width: 90%;
+    overflow: visible;
+  }
+
+  & .slick-track {
+    box-sizing: border-box;
+  }
+
+  & .group {
+    background-color: #f9f9f9;
+  }
+
+  & .card {
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    height: 100%;
+    overflow: hidden;
+    &-title {
+      color: #180e19;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 23.492px;
+      width: 100%;
+      margin-bottom: 8px;
+      margin-top: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      height: 70px;
+      font-weight: 600;
+    }
+
+    &-date,
+    &-view {
+      color: var(--gray-color);
+      font-size: 12.02px;
+      font-weight: 400;
+    }
+  }
+}
+
+.slick-track .slick-slide.slick-active {
+  padding-right: 9px;
+  box-sizing: border-box;
+  transition: all 0.3s;
+}
+
+.card .unsplash {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.one-slider{
+  .slick-track{
+    width: 100% !important;
+  }
+}
+[style*='--aspect-ratio'] > :first-child {
+  width: 100%;
+}
+
+[style*='--aspect-ratio'] > img {
+  height: auto;
+}
+
+[style*='--aspect-ratio'] {
+  position: relative;
+}
+
+[style*='--aspect-ratio'] > :first-child {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+}
+
+[style*='--aspect-ratio']::before {
+  content: '';
+  display: block;
+}
+
+@supports not (aspect-ratio: 1/1) {
+  [style*='--aspect-ratio']::before {
+    height: 0;
+    padding-bottom: calc(100% / (var(--aspect-ratio)));
+  }
+}
+
+@supports (aspect-ratio: 1/1) {
+  [style*='--aspect-ratio']::before {
+    aspect-ratio: calc(var(--aspect-ratio));
+  }
+}
+
+@media (max-width: 420px) {
+  .mobile{
+    display: flex !important;
+    flex-direction: column;
+  }
+}

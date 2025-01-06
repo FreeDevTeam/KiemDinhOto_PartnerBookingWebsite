@@ -1,0 +1,98 @@
+.slider-container {
+  max-width: 600px;
+  margin: auto;
+
+  & .slide {
+    position: relative;
+  
+    &:before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background: linear-gradient(0deg, rgba(34, 34, 34, 0.75) 2.92%, rgba(34, 34, 34, 0) 45.14%);
+      z-index: 1;
+    }
+  }
+  & .slide img {
+    width: 100%;
+    height: auto;
+    max-width: 600px;
+    aspect-ratio: 358/134;
+    /* Đảm bảo tỷ lệ 2.67 */
+    z-index: 0;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  & .slick-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: hsla(0,0%,100%,.3764705882352941);
+    z-index: 1;
+    display: flex;
+  }
+  
+  & .slick-dots li {
+    background : transparent;
+    min-height : auto;
+    max-height : auto;
+    min-width : auto;
+    max-width : auto;
+    border-radius : 0px;
+  }
+
+  & .slick-dots li.slick-active .slick-dot {
+    width: 35px;
+    height: 7px;
+    border-radius: 8px;
+    opacity: 1;
+  }
+  
+  & .slick-dots li button {
+    padding: 0;
+  }
+  
+  & .slick-dots li {
+    width: auto;
+    min-width: 20px;
+  }
+  
+  & .slick-dots-container {
+    position: absolute;
+    left: 10px;
+    bottom: 20px;
+  }
+  
+  & .slick-dots {
+    text-align: center;
+  }
+  
+  & .no-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #333;
+    height: auto;
+    width: 100%;
+    min-height: 300px;
+  }
+
+  & .slick-dots .slick-active {
+    margin-right: 13px;
+  }
+}
+
+.sliderHome {
+  & .slide:before {
+    padding: 0px;
+  }
+
+  & .slick-track .slick-slide.slick-active {
+    padding: 0px;
+  }
+  
+}

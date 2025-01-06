@@ -21,7 +21,8 @@ const DetailScheduledComponent = ({
   status,
   customerScheduleId,
   contentHeader = <></>,
-  isHeader = true
+  isHeader = true,
+  getData
 }) => {
   let wab = []
   const [data,setData]=useState([])
@@ -54,6 +55,8 @@ const DetailScheduledComponent = ({
           setErrorMessage('Hủy lịch hẹn thành công')
           setIsModalErrOpen(true)
           setIsModal(false)
+          getScheduleDetail()
+          getData()
         }
       })
     } else {
@@ -109,7 +112,6 @@ const DetailScheduledComponent = ({
     )
   }
   function getVehicleTypeName(vehicleData){
-    console.log("getVehicleTypeName ~ vehicleData:", vehicleData)
     const vehicleType = vehicleData?.vehicleType
     let vehicle
     if(vehicleType){
@@ -262,7 +264,7 @@ const DetailScheduledComponent = ({
         {contentHeader}
         <a target="_blank" style={{marginTop:'1rem'}} href="https://youtu.be/mpIQeRGv3Lg?feature=shared" className="">Xem thêm hướng dẫn quy trình đăng kiểm</a>
       </div>
-        {status != 20 ?
+        {data?.CustomerScheduleStatus != 20 ?
           <div className="w-100 d-flex justify-content-center">
             <Button className="cancel-schedule" type="primary" onClick={()=>{setIsModal(true)}} size="larger">
               Hủy lịch hẹn

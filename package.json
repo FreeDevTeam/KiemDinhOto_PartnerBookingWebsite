@@ -12,16 +12,24 @@
     "antd": "^5.11.5",
     "axios": "^0.19.2",
     "bootstrap": "^5.3.2",
+    "crypto-js": "^4.2.0",
     "moment": "^2.29.4",
     "query-string": "^8.1.0",
     "react": "^18.2.0",
+    "react-aspect-ratio": "^1.1.6",
     "react-dom": "^18.2.0",
+    "react-i18next": "^11.12.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "5.0.1",
     "react-select": "^5.8.0",
+    "react-slick": "^0.29.0",
     "sass": "^1.69.5",
+    "slick-carousel": "^1.8.1",
+    "styled-components": "^5.2.0",
     "web-vitals": "^2.1.4",
-    "zmp-sdk": "^2.35.3"
+    "zmp-cli": "^3.15.9",
+    "zmp-sdk": "^2.42.0",
+    "zmp-ui": "^1.5.5"
   },
   "devDependencies": {
     "copyright-header": "^0.4.6",
@@ -29,7 +37,7 @@
     "prettier": "^2.8.1"
   },
   "scripts": {
-    "deploy-zalo-app": "npm install --save zmp-cli && npm install --save zmp-sdk && npm run build && node deployZApp.js",
+    "deploy-zalo-app": "npm run build && node deployZApp.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

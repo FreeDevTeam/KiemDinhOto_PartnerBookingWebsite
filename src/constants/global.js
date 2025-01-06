@@ -4,6 +4,12 @@ import { ReactComponent as BankIcon } from '../assets/Booking-icon/banking-svgre
 import ViSaIcon  from '../assets/Booking-icon/visa.png'
 import  CashIcon  from '../assets/Booking-icon/cash.png'
 import AtmIcon from "../assets/Booking-icon/atmCard.png";
+import L2PVIIcon from "../assets/icons/PVI.png";
+import L2VNIIcon from "../assets/icons/VNI.png";
+import L2VBSHIcon from "../assets/icons/BSH.png";
+import L2MICIcon from "../assets/icons/MIC.png";
+import L2TASCOIcon from "../assets/icons/Tasco.png";
+
 export const IS_ZALO_MINI_APP = window.APP_CONTEXT === 'zalo-mini-app'
 
 export const SCHEDULE_STATUS_3_0 = [
@@ -68,7 +74,14 @@ export const CUSTOMER_RECEIPT_STATUS = {
   SUCCESS: 'Success',
   CANCELED: 'Canceled'
 }
-
+export const RATIO_IMG = {
+  DEFAULT:{
+    value: "16/9"
+  },
+  PROMOTIONNEW:{
+    value: "16/12"
+  }
+}
 export const CUSTOMER_RECEIPT_STATUS_TO_TEXT = {
   NEW: 'Mới',
   PROCESSING: 'Đang xử lý',
@@ -96,24 +109,39 @@ export const PLATE_COLOR=[
     label: 'Vàng',
     value: 3,
   },
-  {
-    label: 'Đỏ',
-    value: 4,
-  },
+  // {
+  //   label: 'Đỏ',
+  //   value: 4,
+  // },
 ]
 export const SCHEDULE_TYPE = [
-  {
-    label: 'Xe cũ (Đã từng đăng kiểm)',
-    value: 1,
-  },
-  {
-    label: 'Xe mới (Chưa đăng kiểm lần nào)',
-    value: 2,
-  },
+  { value : 1, label: 'Đăng kiểm xe định kỳ'},
+  { value : 2, label: 'Đăng ký dán thẻ EPASS'},
+  { value : 3, label: 'Nộp hồ sơ xe mới'},
+  { value : 4, label: 'Thay đổi thông tin xe'},
+  { value : 7, label: 'Tư vấn bảo dưỡng'},
+  { value : 8, label: 'Tư bảo hiểm'},
+  { value : 9, label: 'Tư vấn hoán cải'},
+  { value : 10, label: 'Mất giấy đăng kiểm'},
+  { value : 11, label: 'Cấp lại tem đăng kiểm'},
+  { value : 12, label: 'Tư vấn đăng kiểm xe'},
+  { value : 13, label: 'Tư vấn xử lý phạt nguội'},
+  { value : 14, label: 'Tư vấn bảo hiểm TNDS xe ô tô'},
+  { value : 15, label: 'Tra cứu cảnh báo đăng kiểm'},
+  { value : 16, label: 'Hỗ trợ xử lý phạt nguội'},
+  { value : 17, label: 'Gia hạn định vị'},
+  { value : 18, label: 'Gia hạn phù hiệu xe kinh doanh'},
+  { value : 19, label: 'Gia hạn giấy tập huấn'},
+  { value : 20, label: 'Gia hạn camera hành trình'},
+  { value : 21, label: 'Đăng ký dán thẻ VETC'},
+  { value : 22, label: 'Gia hạn BH TNDS'},
+  { value : 23, label: 'Nộp hồ sơ xe mới (Ngoài giờ HC)'},
+  { value : 24, label: 'Đăng kiểm xe (Ngoài giờ HC)'},
+
 ]
 export const SCHEDULE_TITLE = {
   [SCHEDULE_TYPE.VEHICLE_INSPECTION]: {
-    title: 'Đăng kiểm xe cũ',
+    title: 'Đăng kiểm xe định kỳ',
     subTitle: 'Dành cho khách hàng đặt lịch để đăng kiểm các xe đã đăng kiểm trước đây'
   },
   [SCHEDULE_TYPE.NEW_VEHICLE_INSPECTION]: {
@@ -765,3 +793,56 @@ export const VEHICLE_SUB_TYPE = [
     vehicleType:10,
   }
 ]
+export const TTDK_INSURANCE_PARTNER = {
+  MIC:{
+    id:1,
+    label: 'MIC',
+    link:'https://emic.vn/menuak.aspx?p=G,071_TTDK,XEL#bhhd_xelE',
+    icon:(
+      <div className="d-flex align-items-center justify-content-center">
+        <img src={L2MICIcon} style={{width:'35px',height:'15px'}}/>
+      </div>
+    ),
+  },
+  TASCO:{
+    id:2,
+    label: 'TASCO',
+    link:'https://baohiemtasco.vn/',
+    icon:(
+      <div className="d-flex align-items-center justify-content-center">
+        <img src={L2TASCOIcon} style={{width:'35px',height:'15px'}}/>
+      </div>
+    ),
+  },
+  PVI:{
+    id:3,
+    label: 'PVI',
+    link:'https://ttdk.partner.saladin.vn',
+    icon:(
+      <div className="d-flex align-items-center justify-content-center">
+        <img src={L2PVIIcon} style={{width:'35px',height:'15px'}}/>
+      </div>
+    ),
+  },
+  VNI:{
+    id:4,
+    label: 'VNI',
+    link:'https://ttdk.partner.saladin.vn',
+    icon:(
+      <div className="d-flex align-items-center justify-content-center">
+        <img src={L2VNIIcon} style={{width:'35px',height:'15px'}}/>
+      </div>
+    ),
+  },
+  BSH:{
+    id:5,
+    label: 'BSH',
+    link:'https://ttdk.partner.saladin.vn',
+    icon:(
+      <div className="d-flex align-items-center justify-content-center">
+        <img src={L2VBSHIcon} style={{width:'35px',height:'15px'}}/>
+      </div>
+    ),
+
+  },
+}
