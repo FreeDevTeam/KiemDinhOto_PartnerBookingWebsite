@@ -19,6 +19,7 @@ import HomeRecruitment from '../HomeRecruitment'
 import PartnerPromotionNew from '../PartnerPromotionNew'
 import useWindowDimensions from '../../../hooks/window-dimensions'
 import BookingService from './../../../services/addBookingService'
+import { wait } from '@testing-library/user-event/dist/utils'
 const filter = {
   limit: 5,
   filter: {
@@ -26,6 +27,7 @@ const filter = {
     stationType:1
   }
 }
+
 const HomeLayout2 = (props) => {
   const { introduction } = props
   const history = useHistory();
@@ -40,7 +42,10 @@ const HomeLayout2 = (props) => {
   const [setting, setSetting] = useState([]);
   const [bottomBanner, setBottomBanner] = useState([]);
   const { height, width } = useWindowDimensions()
+  const [recruitmentNewsId, setRecruitmentNewsId] = useState()
+  const [stationNewsPartnerPromotionId, setStationNewsPartnerPromotionId] = useState()
   const mobile= width < 580
+
   const [paramsFilter, setParamsFilter] = useState({
     filter: {
       configCategory:1
@@ -55,13 +60,22 @@ const HomeLayout2 = (props) => {
   });
   const [isLoading , setIsLoading] = useState(false);
   const [listNews , setListNews ] = useState([]) 
-  const [hideNewsFromZaloMiniApp , setHideNewsFromZaloMiniApp ] = useState(true) 
+  const [hideNewsFromZaloMiniApp , setHideNewsFromZaloMiniApp ] = useState(false) 
+
   const getMetaData = () => {
     BookingService.getMetaData({}).then((result) => {
       const { statusCode,data } = result
       if(statusCode==200){
-        console.log(data?.HIDE_NEWS_FROM_ZALO_MINIAPP);
-        setHideNewsFromZaloMiniApp(data?.HIDE_NEWS_FROM_ZALO_MINIAPP ? true : false)
+        const { LAST_UPDATE_DATA } = data
+        console.log(data)
+
+        setHideNewsFromZaloMiniApp(false)
+
+        localStorage.setItem('PRE_FETCH_RECRUITMENT_NEWS_DATA', 
+          JSON.stringify((localStorage.getItem('LAST_RECRUITMENT_NEWS_ID') === 'undefined' 
+            ? false 
+            : JSON.parse(JSON.parse(localStorage.getItem('LAST_RECRUITMENT_NEWS_ID')) !== 650)))
+        )
       }else{
         setHideNewsFromZaloMiniApp(false)
       }
@@ -102,7 +116,7 @@ const HomeLayout2 = (props) => {
 
   }
   const getExpertNews = async () =>{
-    await NewService.userGetExpertNews(
+   await NewService.userGetExpertNews(
     {
       "skip": 0,
       "limit": 10,
@@ -115,10 +129,10 @@ const HomeLayout2 = (props) => {
       if (result) {
         setExpertNews(result.data)
       }
-    })
+    }) 
   }
   const getRecruitmentListNew = async () =>{
-    await NewService.userGetRecruitmentNews({
+    JSON.parse(localStorage.getItem('PRE_FETCH_RECRUITMENT_NEWS_DATA')) ? await NewService.userGetRecruitmentNews({
         "skip": 0,
         "limit": 10,
         "order": {
@@ -128,11 +142,13 @@ const HomeLayout2 = (props) => {
       }).then((result) => {
       if (result) {
         setRecruitmentList(result.data)
+        localStorage.setItem('LAST_RECRUITMENT_NEWS_DATA', JSON.stringify(result.data))
+        localStorage.setItem('LAST_RECRUITMENT_NEWS_ID', JSON.stringify(result.data[0]?.stationNewsId))
       }
-    })
+    }) : setRecruitmentList(JSON.parse(localStorage.getItem('LAST_RECRUITMENT_NEWS_DATA')))
   }
   const getStationNewsPartnerPromotion = async () =>{
-    await NewService.getPartnerPromotionNews({
+      await NewService.getPartnerPromotionNews({
         "skip": 0,
         "limit": 10,
         "order": {
@@ -142,6 +158,7 @@ const HomeLayout2 = (props) => {
       }).then((result) => {
       if (result) {
         setStationNewsPartnerPromotion(result.data)
+        localStorage.setItem('LAST_PARTNER_PROMOTION_NEWS_ID', JSON.stringify(result.data[0]?.stationNewsId))
       }
     })
   }
@@ -159,7 +176,7 @@ const HomeLayout2 = (props) => {
           setHotNews(result.data)
         }
       })
-    }, 500);
+    }, 500)
   }
   const getListNews = async () =>{
     await NewService.userGetLatestNew().then((result) => {
@@ -248,7 +265,7 @@ const HomeLayout2 = (props) => {
         }
       })
     }, 500);
-  }, [])
+  }, [recruitmentNewsId])
 
   useEffect(() => {
     getNews()
