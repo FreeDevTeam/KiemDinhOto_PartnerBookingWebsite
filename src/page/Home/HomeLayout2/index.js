@@ -64,14 +64,13 @@ const HomeLayout2 = (props) => {
       const { statusCode,data } = result
       if(statusCode==200){
         const { LAST_UPDATE_DATA } = data
-        console.log(data)
 
         setHideNewsFromZaloMiniApp(false)
 
         localStorage.setItem('PRE_FETCH_RECRUITMENT_NEWS_DATA', 
           JSON.stringify((localStorage.getItem('LAST_RECRUITMENT_NEWS_ID') === 'undefined' 
             ? false 
-            : JSON.parse(JSON.parse(localStorage.getItem('LAST_RECRUITMENT_NEWS_ID')) !== 650)))
+            : JSON.parse(JSON.parse(localStorage.getItem('LAST_RECRUITMENT_NEWS_ID')) !== LAST_UPDATE_DATA.lastNews_4)))
         )
       }else{
         setHideNewsFromZaloMiniApp(false)
