@@ -19,7 +19,6 @@ import HomeRecruitment from '../HomeRecruitment'
 import PartnerPromotionNew from '../PartnerPromotionNew'
 import useWindowDimensions from '../../../hooks/window-dimensions'
 import BookingService from './../../../services/addBookingService'
-import { wait } from '@testing-library/user-event/dist/utils'
 const filter = {
   limit: 5,
   filter: {
@@ -42,8 +41,6 @@ const HomeLayout2 = (props) => {
   const [setting, setSetting] = useState([]);
   const [bottomBanner, setBottomBanner] = useState([]);
   const { height, width } = useWindowDimensions()
-  const [recruitmentNewsId, setRecruitmentNewsId] = useState()
-  const [stationNewsPartnerPromotionId, setStationNewsPartnerPromotionId] = useState()
   const mobile= width < 580
 
   const [paramsFilter, setParamsFilter] = useState({
@@ -158,7 +155,6 @@ const HomeLayout2 = (props) => {
       }).then((result) => {
       if (result) {
         setStationNewsPartnerPromotion(result.data)
-        localStorage.setItem('LAST_PARTNER_PROMOTION_NEWS_ID', JSON.stringify(result.data[0]?.stationNewsId))
       }
     })
   }
@@ -265,7 +261,7 @@ const HomeLayout2 = (props) => {
         }
       })
     }, 500);
-  }, [recruitmentNewsId])
+  }, [])
 
   useEffect(() => {
     getNews()
