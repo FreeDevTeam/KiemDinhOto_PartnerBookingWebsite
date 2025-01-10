@@ -58,7 +58,7 @@ const HomeLayout2 = (props) => {
   });
   const [isLoading , setIsLoading] = useState(false);
   const [listNews , setListNews ] = useState([]) 
-  const [hideNewsFromZaloMiniApp , setHideNewsFromZaloMiniApp ] = useState(true) 
+  const [hideNewsFromZaloMiniApp , setHideNewsFromZaloMiniApp ] = useState(false) 
 
   const LAST_UPDATE_NEWS = {}
   const lastUpdateNews = JSON.parse(localStorage.getItem('LAST_UPDATE_NEWS'))
@@ -93,7 +93,7 @@ const HomeLayout2 = (props) => {
                 lastNews_7: partnerUtilityNewsId
         } = LAST_UPDATE_DATA
 
-        setHideNewsFromZaloMiniApp(data?.HIDE_NEWS_FROM_ZALO_MINIAPP ? true : false)
+        setHideNewsFromZaloMiniApp(false)
 
         pushCacheDataIntoObj('GENERAL', generalNewsId, LAST_UPDATE_NEWS)
         pushCacheDataIntoObj('HIGHLIGHTS', highlightNewsId, LAST_UPDATE_NEWS)
@@ -218,7 +218,6 @@ const HomeLayout2 = (props) => {
       if (result) {
         setListNews(result.data)
         setLocalStorage('GENERAL', [result.data[0]?.stationNewsId, result.data[1]?.stationNewsId, result.data[2]?.stationNewsId], result.data)
-        console.log(result.data)
       }
     }) : setListNews(JSON.parse(localStorage.getItem('LAST_GENERAL_NEWS_DATA')))
   }
@@ -265,7 +264,7 @@ const HomeLayout2 = (props) => {
     shouldFetch ? await NewService.userGetPartnerUtilityNews(4).then((result) => {
       if (result) {
         setPartnerUtilityNews(result.data)
-        setLocalStorage('PARTNER_UTILITY', [632], result.data)
+        setLocalStorage('PARTNER_UTILITY', [result.data[0]?.stationNewsId], result.data)
       }
     }) : setPartnerUtilityNews(JSON.parse(localStorage.getItem('LAST_PARTNER_UTILITY_NEWS')))
   }
