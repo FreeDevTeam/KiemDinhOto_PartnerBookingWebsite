@@ -58,7 +58,7 @@ const HomeLayout2 = (props) => {
   });
   const [isLoading , setIsLoading] = useState(false);
   const [listNews , setListNews ] = useState([]) 
-  const [hideNewsFromZaloMiniApp , setHideNewsFromZaloMiniApp ] = useState(false) 
+  const [hideNewsFromZaloMiniApp , setHideNewsFromZaloMiniApp ] = useState(true) 
 
   const LAST_UPDATE_NEWS = {}
   const lastUpdateNews = JSON.parse(localStorage.getItem('LAST_UPDATE_NEWS'))
@@ -107,7 +107,7 @@ const HomeLayout2 = (props) => {
                 lastNews_7: partnerUtilityNewsId
         } = LAST_UPDATE_DATA
 
-        setHideNewsFromZaloMiniApp(false)
+        setHideNewsFromZaloMiniApp(data?.HIDE_NEWS_FROM_ZALO_MINIAPP ? true : false)
 
         pushCacheDataIntoObj('GENERAL', generalNewsId, LAST_UPDATE_NEWS)
         pushCacheDataIntoObj('HIGHLIGHTS', highlightNewsId, LAST_UPDATE_NEWS)
