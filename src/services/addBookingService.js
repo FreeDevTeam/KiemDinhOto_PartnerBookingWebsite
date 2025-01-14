@@ -27,6 +27,22 @@ export default class BookingService {
       })
     })
   }
+  static async loginByApikey(data) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/PartnerAPI/AppUsers/user/loginByApikey',
+        data
+      }).then((result = {}) => {
+        const { statusCode, data, message, error } = result
+        if (statusCode === 200) {
+          return resolve({ isSuccess: true, data })
+        } else {
+          return resolve({ isSuccess: false, message, error })
+        }
+      })
+    })
+  }
   static async userCheckVehicleInfo(data = {}) {
     return new Promise((resolve) => {
       Request.send({

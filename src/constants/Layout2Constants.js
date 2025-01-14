@@ -302,6 +302,7 @@ export const BOOKING_LIST_BTN = [
     label: 'Tra cứu <br> phạt nguội',
     icon: <TraCuuPn></TraCuuPn>,
     link: `${process.env.REACT_APP_DEPLOY_URL}/kiemtraphatnguoi?isEmbeddedView=true`,
+    token: true,
   },
   {
     label: 'Thay đổi <br> thông tin xe',

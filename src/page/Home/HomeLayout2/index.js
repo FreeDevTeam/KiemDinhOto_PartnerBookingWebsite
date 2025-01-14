@@ -19,19 +19,18 @@ import HomeRecruitment from '../HomeRecruitment'
 import PartnerPromotionNew from '../PartnerPromotionNew'
 import useWindowDimensions from '../../../hooks/window-dimensions'
 import BookingService from './../../../services/addBookingService'
-const filter = {
-  limit: 5,
-  filter: {
-    stationStatus: 1,
-    stationType:1
-  }
-}
+import { useGlobalContext } from '../../../context/GlobalContext'
+import JWT_DECODE from 'jwt-decode'
+import { PATH } from '../../../constants/router'
+
 const HomeLayout2 = (props) => {
   const { introduction } = props
   const history = useHistory();
+  const location = useLocation()
   const [hotNews, setHotNews] = useState([])
   const [driverAmenities, setDriverAmenities] = useState(CONVENIENCE_DRIVERS_BTN)
   const [governmentAgency, setGovernmentAgency] = useState(GOVERNMENT_BTN)
+  const [userToken, setUserToken] = useState(location?.state?.token || localStorage.getItem('userToken') || '')
   const [stationNewsPartnerPromotion, setStationNewsPartnerPromotion] = useState([])
   const [stationNewsPromotion, setStationNewsPromotion] = useState([])
   const [expertNews, setExpertNews] = useState([])
@@ -60,7 +59,6 @@ const HomeLayout2 = (props) => {
     BookingService.getMetaData({}).then((result) => {
       const { statusCode,data } = result
       if(statusCode==200){
-        console.log(data?.HIDE_NEWS_FROM_ZALO_MINIAPP);
         setHideNewsFromZaloMiniApp(data?.HIDE_NEWS_FROM_ZALO_MINIAPP ? true : false)
       }else{
         setHideNewsFromZaloMiniApp(false)
@@ -233,6 +231,9 @@ const HomeLayout2 = (props) => {
     setTimeout(() => {
       fetchData()
     }, 200);
+    if(!userToken){
+      history.push(PATH.LOGIN)
+    }
     setTimeout(async() =>  {
       await getExpertNews()
       await getRecruitmentListNew()
@@ -256,7 +257,11 @@ const HomeLayout2 = (props) => {
   }, []);
   const handleReturnLink=()=>{
     if(dataBtn?.link){
-      return dataBtn?.link
+      if(dataBtn.token){
+        return dataBtn?.link + `&token=${userToken}`
+      }else{
+        return dataBtn?.link
+      }
     }else{
       if((dataBtn?.linkNavigation).slice(0, 7).includes("http") ){
         return dataBtn?.linkNavigation
