@@ -20,18 +20,17 @@ import PartnerPromotionNew from '../PartnerPromotionNew'
 import useWindowDimensions from '../../../hooks/window-dimensions'
 import BookingService from './../../../services/addBookingService'
 import { type } from '@testing-library/user-event/dist/type'
-const filter = {
-  limit: 5,
-  filter: {
-    stationStatus: 1,
-    stationType:1
-  }
-}
+import { useGlobalContext } from '../../../context/GlobalContext'
+import JWT_DECODE from 'jwt-decode'
+import { PATH } from '../../../constants/router'
+
 
 const HomeLayout2 = (props) => {
+  const location = useLocation()
   const { introduction } = props
   const history = useHistory();
   const [hotNews, setHotNews] = useState([])
+  const [userToken, setUserToken] = useState(location?.state?.token || localStorage.getItem('userToken') || '')
   const [driverAmenities, setDriverAmenities] = useState(CONVENIENCE_DRIVERS_BTN)
   const [governmentAgency, setGovernmentAgency] = useState(GOVERNMENT_BTN)
   const [stationNewsPartnerPromotion, setStationNewsPartnerPromotion] = useState([])
@@ -306,6 +305,9 @@ const HomeLayout2 = (props) => {
     setTimeout(() => {
       fetchData()
     }, 200);
+    if(!userToken){
+      history.push(PATH.LOGIN)
+    }
     setTimeout(async() =>  {
       await getMetaData()
       await getExpertNews()
@@ -328,7 +330,11 @@ const HomeLayout2 = (props) => {
 
   const handleReturnLink=()=>{
     if(dataBtn?.link){
-      return dataBtn?.link
+      if(dataBtn.token){
+        return dataBtn?.link + `&token=${userToken}`
+      }else{
+        return dataBtn?.link
+      }
     }else{
       if((dataBtn?.linkNavigation).slice(0, 7).includes("http") ){
         return dataBtn?.linkNavigation

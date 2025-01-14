@@ -7,6 +7,7 @@ const BookingInsuranceSaladin = React.lazy(() => import('./page/BookingInsurance
 const BookingPartnerIframe = React.lazy(() => import('./page/Booking/index'))
 const BookingHistory = React.lazy(() => import('./page/BookingHistory/index'))
 const HomePage = React.lazy(() => import('./page/Home/HomeLayout2/index'))
+const HomePageLogin = React.lazy(() => import('./page/Login/index'))
 const ResetPassword = React.lazy(() => import('./page/ResetPassword'))
 const MyBookingHistory = React.lazy(() => import('./page/MyBookingHistory/index'))
 const BookingDetail = React.lazy(() => import('./page/BookingDetail/index'))
@@ -31,6 +32,11 @@ export const ROUTERS = {
     homePage: {
         path: PATH.HOME,
         component: HomePage,
+        isZaloApp: 1
+    },
+    homeLogin: {
+        path: PATH.LOGIN,
+        component: HomePageLogin,
         isZaloApp: 1
     },
     bookingDetail: {
