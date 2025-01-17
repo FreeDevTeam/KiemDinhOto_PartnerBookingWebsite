@@ -20,11 +20,13 @@ import PartnerPromotionNew from '../PartnerPromotionNew'
 import useWindowDimensions from '../../../hooks/window-dimensions'
 import BookingService from './../../../services/addBookingService'
 import { PATH } from '../../../constants/router'
+import { useGlobalContext } from '../../../context/GlobalContext'
 
 
 const HomeLayout2 = (props) => {
   const location = useLocation()
   const { introduction } = props
+  const { handleZaloAuthorize,globalState } = useGlobalContext();
   const history = useHistory();
   const [hotNews, setHotNews] = useState([])
   const [userToken, setUserToken] = useState(location?.state?.token || localStorage.getItem('userToken') || '')
@@ -65,10 +67,10 @@ const HomeLayout2 = (props) => {
       ? false
       : !id.includes(lastId);
 
-    id.push(lastId)
+    id?.push(lastId)
 
     obj[`${typeOfNews}_NEWS`] = { 
-      id: id.filter((element, index) => id.indexOf(element) === index),
+      id: id?.filter((element, index) => id.indexOf(element) === index),
       shouldFetch 
     }
 
@@ -227,7 +229,6 @@ const HomeLayout2 = (props) => {
     shouldFetch ? await NewService.userGetLatestNew().then((result) => {
       if (result) {
         setListNews(result.data)
-        console.log(result.data)
         setLocalStorage('GENERAL', pushStationNewsIdIntoArr(result.data), result.data)
       }
     }) : setListNews(JSON.parse(localStorage.getItem('LAST_GENERAL_NEWS_DATA')))
@@ -302,6 +303,9 @@ const HomeLayout2 = (props) => {
     setTimeout(() => {
       fetchData()
     }, 200);
+    if(!globalState?.isAuthorize){
+      handleZaloAuthorize()
+    }
     if(!userToken){
       history.push(PATH.LOGIN)
     }

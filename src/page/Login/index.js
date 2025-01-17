@@ -18,10 +18,10 @@ const HomeLogin = (props) => {
     }
     BookingService.loginByApikey(value).then((result) => {
       const { isSuccess, data } = result
-      console.log(result);
       if (isSuccess) {
         let usertoken= data?.token
         localStorage.setItem('userToken',usertoken)
+        localStorage.setItem('appUserId',data?.appUserId)
         history.push('/',usertoken)
       } else {
         return
@@ -29,12 +29,11 @@ const HomeLogin = (props) => {
     })
   }
   useEffect(() => {
-    if(globalState?.phoneNumber && !firstLoading){
-      console.log('chạy');
+    if(globalState?.phoneNumber){
       loginByApikey()
       setFirstLoading(true)
     }
-  }, [firstLoading]);
+  }, []);
 
 
   return (

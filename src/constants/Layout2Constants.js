@@ -51,7 +51,7 @@ const EpassLogo = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4
 const DatXeLogo = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4,display:'inline'}} src={DatXe}></img></div>
 const TuDongBaoPN = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4,display:'inline'}} src={TuDongTBPN}></img></div>
 const TraCuuPn = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4,display:'inline'}} src={TraCuuPN}></img></div>
-
+let appUserId = localStorage.getItem('appUserId')
 export const BTN_LIST_SERVICE = [
   {
     label: 'Trung tâm <br> đăng kiểm',
@@ -63,6 +63,12 @@ export const BTN_LIST_SERVICE = [
     label: 'Cứu hộ <br> đăng kiểm',
     icon: <CuuHoIcon></CuuHoIcon>,
     link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.INSPECTION_RESCUE}&name=cuuho&isEmbeddedView=true`,
+
+  },
+  {
+    label: 'Bảo hiểm',
+    icon: <GiaHanDangKiemIcon></GiaHanDangKiemIcon>,
+    link: `https://ttdk-sanbox-muabaohiem.service.makefamousapp.com?isEmbeddedView=1&appUserId=${appUserId}`,
   },
   {
     label: 'Hợp tác xã <br> vận tải',
