@@ -69,10 +69,10 @@ const HomeLayout2 = (props) => {
       ? false
       : !id.includes(lastId);
 
-    id.push(lastId)
+    id?.push(lastId)
 
     obj[`${typeOfNews}_NEWS`] = { 
-      id: id.filter((element, index) => id.indexOf(element) === index),
+      id: id?.filter((element, index) => id.indexOf(element) === index),
       shouldFetch 
     }
 
@@ -231,7 +231,6 @@ const HomeLayout2 = (props) => {
     shouldFetch ? await NewService.userGetLatestNew().then((result) => {
       if (result) {
         setListNews(result.data)
-        console.log(result.data)
         setLocalStorage('GENERAL', pushStationNewsIdIntoArr(result.data), result.data)
       }
     }) : setListNews(JSON.parse(localStorage.getItem('LAST_GENERAL_NEWS_DATA')))
