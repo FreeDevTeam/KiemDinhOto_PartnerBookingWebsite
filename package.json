@@ -45,7 +45,11 @@
     "formatAll": "./node_modules/.bin/prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\" & ./node_modules/.bin/copyright-header copyright-header --fix --copyrightHolder 'TORITI LIMITED 2022'",
     "format": "./node_modules/.bin/prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "autobuild": "npx @chaunnt/reactjs_buildpackageandnotify",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "zaloMiniApp": "REACT_APP_ENV=zaloMiniApp npm run start-env",
+    "start-env": "sh -ac '. ${REACT_APP_ENV}.env; react-scripts start'",
+    "buildZaloMiniApp": "REACT_APP_ENV=zaloMiniApp npm run build-env",
+    "build-env": "sh -ac '. ${REACT_APP_ENV}.env; npm run deploy-zalo-app'"
   },
   "eslintConfig": {
     "extends": [

@@ -49,7 +49,7 @@ const logger = {
 
 async function deployToZalo() {
   let envConfig = {}
-  fs.readFileSync(__dirname + '/.env', { encoding: 'utf-8' })
+  fs.readFileSync(__dirname + '/zaloMiniApp.env', { encoding: 'utf-8' })
     .split('\n')
     .forEach((envVariable) => {
       let _item = envVariable.trim()
