@@ -39,11 +39,11 @@ export async function getZaloUserPhone() {
     try {
       const { userInfo } = await new Promise((resolve, reject) => {
         zaloAPI.getUserInfo({
+          autoRequestPermission:true,
           success: resolve,
           fail: reject
         });
       });
-  
       if (userInfo) {
         if (userInfo.name === 'User Name') {
           return '';
@@ -55,10 +55,37 @@ export async function getZaloUserPhone() {
       }
     } catch (error) {
       console.error("Error:", error);
-      throw new Error("Truy vấn số tên thất bại");
+      throw new Error("Truy vấn tên thất bại");
     }
   };
-  
+  export const getZaloAuthorize = async () => {
+    try {
+      await new Promise((resolve, reject) => {
+        zaloAPI.authorize({ scopes: ["scope.userInfo", "scope.userPhonenumber"] });
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      throw new Error("Truy vấn tên thất bại");
+    }
+  };
+  export const getSettingZalo = async () => {
+    try {
+      const { authSetting } = await new Promise((resolve, reject) => {
+        zaloAPI.getSetting({
+          success: resolve,
+          fail: reject
+        });
+      });
+      if (authSetting) {
+        return authSetting;
+      }else{
+        return null
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      throw new Error("Truy vấn tên thất bại");
+    }
+  };
   export const openChatScreen = async ({
     id,
     message = "",

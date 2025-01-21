@@ -1,6 +1,6 @@
 import { Button, Modal } from 'antd';
 import React, { createContext, useState } from 'react';
-import { getZaloUserName, getZaloUserPhone } from '../helper/zaloSDK';
+import { getSettingZalo, getZaloAuthorize, getZaloUserName, getZaloUserPhone } from '../helper/zaloSDK';
 import { ReactComponent as WarningIcon } from '../assets/icons/warning.svg'
 
 const GlobalContext = createContext();
@@ -36,15 +36,16 @@ const WarningNotify = ({ isModalOpen, onClose, onConfirm }) => {
 }
 
 export const GlobalProvider = ({ children }) => {
+    let isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE
     const [globalState, setGlobalState] = useState({
         phoneNumber: "",
         userName: "",
-        isZaloApp: process.env.REACT_APP_ZALO_AUTH_ENABLE
+        isZaloApp: isZaloApp,
+        isAuthorize:false,
+        setting:undefined
     });
 
     const [openModal, setOpenModal] = useState(false);
-
-
     const updateGlobalState = (newValue) => {
         setGlobalState(newValue);
     };
@@ -54,15 +55,39 @@ export const GlobalProvider = ({ children }) => {
         await handleGetUserPhone()
     }
 
+    const handleZaloAuthorize = async () => {
+        if (process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1) {
+            try {
+                let setting = await getSettingZalo()
+                if(setting['scope.userPhonenumber'] && setting['scope.userInfo']){
+                    setGlobalState({
+                        ...globalState,
+                        isAuthorize:true
+                    })
+                }else{
+                    await getZaloAuthorize()
+                    setGlobalState({
+                        ...globalState,
+                        isAuthorize:true
+                    })
+                }
+            } catch (error) {
+                setOpenModal(true)
+                throw error
+            }
+        }
+    }
+
     const handleGetUserPhone = async () => {
         if (process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1) {
             try {
                 if (!globalState.phoneNumber) {
                     const phoneNumber = await getZaloUserPhone()
-                    updateGlobalState({
+                    setGlobalState({
                         ...globalState,
                         phoneNumber
                     })
+                    return phoneNumber
                 }
             } catch (error) {
                 setOpenModal(true)
@@ -77,10 +102,11 @@ export const GlobalProvider = ({ children }) => {
             try {
                 if (!globalState.userName) {
                     const userName = await getZaloUserName()
-                    updateGlobalState({
+                    setGlobalState({
                         ...globalState,
                         userName
                     })
+                    return userName
                 }
 
             } catch (error) {
@@ -91,7 +117,7 @@ export const GlobalProvider = ({ children }) => {
     }
 
     return (
-        <GlobalContext.Provider value={{ setGlobalState,globalState, updateGlobalState, handleGetUserPhone, handleGetUserName }}>
+        <GlobalContext.Provider value={{ setGlobalState,globalState, updateGlobalState, handleGetUserPhone, handleGetUserName, handleZaloAuthorize }}>
             {children}
             <WarningNotify isModalOpen={openModal} onConfirm={handleConfirm} onClose={() => setOpenModal(false)} />
         </GlobalContext.Provider>
