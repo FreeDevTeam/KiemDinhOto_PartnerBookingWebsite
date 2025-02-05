@@ -1,0 +1,88 @@
+.popup-booking{
+  .ant-modal-body {
+    max-height: 50vh;
+    overflow: auto;
+    max-width: 100%;
+    padding: 0 10px;
+  }
+  .ant-modal-header{
+    padding: 16px 10px;
+  }
+  .ant-modal-footer{
+    border-top:1px solid var(--gray-color);
+    text-align:center;
+    padding: 5px 10px;
+  }
+  .btn-ok{
+    background: var(--transparent-color) !important;
+    border: none;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+}
+.popup-message .ant-modal-close{
+  display: block !important;
+}
+
+.list-items{
+  padding: 6px;
+  border-bottom: 1px solid #e4e4e4 !important;
+  cursor: pointer;
+  background-color: var(--background-color);
+}
+.disabled-item{
+  cursor: no-drop;
+  opacity: 0.8;
+}
+.ant-modal-close-x {
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+}
+@media (max-width: 1280px){
+  .popup-booking{
+    margin: 0;
+    padding: 0;
+    max-width: 100vw !important;
+    .ant-modal-body {
+      max-height:none;
+      min-height: 85vh;
+      height: 100%;
+      overflow: auto;
+      max-width: 100%;
+      padding: 0 10px;
+    }
+  }
+}
+
+//BasicTablePaging css
+.input_paging{
+  width: 80px !important;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.bg_left{
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
+}
+.disable-item{
+  opacity: 0.5;
+}
+
+.bg_right{
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 10px;
+}

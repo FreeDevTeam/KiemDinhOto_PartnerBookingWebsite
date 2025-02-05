@@ -137,7 +137,7 @@ const BookingDetail = ({
   }
 
   return (
-    <div className="detail-sche" style={{ maxWidth: 480, margin: 'auto', padding: '10px' }}>
+    <div className="detail-sche" style={{ maxWidth: 600, margin: 'auto', padding: '10px' }}>
       {isHeader && <div className="heads">
         Thông tin lịch hẹn
       </div>}

@@ -85,7 +85,7 @@ const HomeLayout2 = (props) => {
   const pushStationNewsIdIntoArr = (dataArray) => {
     const result = []
 
-    dataArray.forEach((el) => {
+    dataArray?.forEach((el) => {
       result.push(el.stationNewsId)
     })
 

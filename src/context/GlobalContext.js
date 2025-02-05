@@ -38,8 +38,8 @@ const WarningNotify = ({ isModalOpen, onClose, onConfirm }) => {
 export const GlobalProvider = ({ children }) => {
     let isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE
     const [globalState, setGlobalState] = useState({
-        phoneNumber: "",
-        userName: "",
+        phoneNumber: "0356256256",
+        userName: "test",
         isZaloApp: isZaloApp,
         isAuthorize:false,
         setting:undefined

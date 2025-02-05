@@ -14,7 +14,6 @@ const MyBookingHistory = () => {
     setLoading(true)
     handleGetUserPhone().then(data => {
       setLoading(false)
-
     }).catch(err => {
       setLoading(false)
     })
@@ -24,7 +23,7 @@ const MyBookingHistory = () => {
   return (
     <div className="w-100" style={{ minHeight: '100vh', maxWidth: 600, margin: 'auto' }}>
       <div className="bookingHistory-main" style={{ padding: "20px 15px 20px 15px" }}>
-        <div style={{ padding: '10px 12px' }}>
+        <div style={{ padding: '10px 0px 15px' }}>
           <DefaultButton
             colorType="dark"
             title="+ Đặt lịch hẹn"

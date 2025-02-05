@@ -327,6 +327,12 @@ export const BOOKING_LIST_BTN = [
     link: `${PATH.BOOKING}?scheduleType=22`,
     unOpen: true,
   },
+  {
+    label: 'Danh sách <br> lịch hẹn',
+    icon: <HuongDanDKIcon></HuongDanDKIcon>,
+    link: `/my-booking-history`,
+    unOpen: true,
+  },
   //tạm ẩn
   // {
   //   label: 'Nộp phí <br> đường bộ',
