@@ -605,6 +605,8 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
       vehicleSubCategory: values.vehicleSubCategory,
       vehicleSubType: values.vehicleSubType,
       certificateSeries: values.certificateSeries,
+      referUserId:localStorage.getItem('partnerReferUserId') || undefined,
+      referStationId:localStorage.getItem('partnerReferStationId') || undefined,
     }
     Object.keys(newData).forEach((key) => {
       if (newData[key] === "") {
