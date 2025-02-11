@@ -138,10 +138,10 @@ const BookingDetail = ({
 
   return (
     <div className="detail-sche" style={{ maxWidth: 600, margin: 'auto', padding: '10px' }}>
-      {isHeader && <div className="heads">
+     {isHeader && <div className="heads" style={{borderRadius:'30px 30px 0 0',padding:''}}>
         Thông tin lịch hẹn
       </div>}
-      <div className="content">
+      <div className="content" style={{padding: '15px 10px 30px',backgroundColor:'#e6f7ff',borderRadius:'0 0 20px 20px'}}>
         <div className="box">
           <div className="title-i">Nơi đặt chỗ</div>
           <div className="text-i">
@@ -281,7 +281,7 @@ const BookingDetail = ({
       </div>
       {scheduleInformation?.CustomerScheduleStatus !== 20 ?
         <div className="w-100 d-flex justify-content-center">
-          <Button className="cancel-schedule" type="primary" onClick={() => { setIsModal(true) }} size="larger">
+          <Button className="cancel-schedule d-flex justify-content-center align-items-center" type="primary" onClick={() => { setIsModal(true) }} size="larger" style={{width: '100%',padding: '20px',borderRadius:'6px',marginTop:'30px'}}>
             Hủy lịch hẹn
           </Button>
         </div>

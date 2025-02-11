@@ -150,10 +150,10 @@ function BookingHistoryList({ loading, setLoading, phoneNumber }) {
     filter: {
       phone: phoneNumber
     },
-    order: {
-      key: "createdAt",
-      value: "desc"
-    }
+    // order: {
+    //   key: "createdAt",
+    //   value: "desc"
+    // }
   }
 
   const history = useHistory()
