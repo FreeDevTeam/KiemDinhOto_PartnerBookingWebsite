@@ -22,6 +22,24 @@ function CheckVihcle() {
   const [form] = Form.useForm()
   const apikey= CheckApiKey()
   const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1
+  const searchparam = location.search
+  const params = new URLSearchParams(searchparam)
+  const [referUserId,setReferUserId] = useState(params.get('referUserId'))
+  const [referStationId,setReferStationId] = useState(params.get('referStationId'))
+
+  useEffect(() => {
+      if(referUserId){
+          localStorage.setItem('partnerReferUserId',referUserId)
+      }else{
+          localStorage.removeItem('partnerReferUserId')
+      }
+      if(referStationId){
+          localStorage.setItem('partnerReferStationId',referStationId)
+      }else{
+          localStorage.removeItem('partnerReferStationId')
+      }
+  }, [referUserId,referStationId]);
+
   const onFinish = (values) => {
     setIsLoading(true)
     let data={
