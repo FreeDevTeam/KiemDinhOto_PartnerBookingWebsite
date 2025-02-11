@@ -38,9 +38,22 @@ const L2FunctionButtonList = (props) => {
           <div className={`card-slider layout1-btn-booking-section slider-list-btn ${className}`}>
             <Slider ref={sliderRef} {...settings}>
               {list.map((element, key) => {
+                if(element?.isZaloLink){
+                  return(
+                    <div key={key} className="layout1-btn-booking-item">
+                      <a href={element?.link}>
+                        {element.icon ? element.icon : (
+                          <img style={{width:'40px',height:'40px',borderRadius:'4px',display:'inline'}} className='mb-2' src={element?.imageUrl} alt="" />
+                        )}
+                      </a>
+                      <div className='text-small' style={{height: 44, transform: "translateY(-50%)",marginTop:'1rem' }} dangerouslySetInnerHTML={{ __html: element.label || element?.title }}></div>
+                    </div>
+                  )
+                }
+
                 if(element?.unOpen){
                   return(
-                    <div className="layout1-btn-booking-item" onClick={() => element?.disable ? '' : handleRouter(element?.link || element?.linkNavigation)}>
+                    <div key={key} className="layout1-btn-booking-item" onClick={() => element?.disable ? '' : handleRouter(element?.link || element?.linkNavigation)}>
                       {element.icon ? element.icon : (
                         <img style={{width:'40px',height:'40px',borderRadius:'4px',display:'inline'}} className='mb-2' src={element?.imageUrl} alt="" />
                       )}
@@ -49,7 +62,7 @@ const L2FunctionButtonList = (props) => {
                   )
                 }else{
                   return(
-                    <div className="layout1-btn-booking-item" onClick={()=>element?.disable ? '' : handleClick(element)}>
+                    <div key={key} className="layout1-btn-booking-item" onClick={()=>element?.disable ? '' : handleClick(element)}>
                       {element.icon ? element.icon : (
                         <img style={{width:'40px',height:'40px',borderRadius:'4px',display:'inline'}} className='mb-2' src={element?.imageUrl} alt="" />
                       )}
@@ -63,9 +76,22 @@ const L2FunctionButtonList = (props) => {
         ):(
           <div className={`layout1-btn-booking-section d-flex ai-c ${className}`} style={{ flexWrap: 'wrap'}}>
             {list.map((element, key) => {
+              if(element?.isZaloLink){
+                return(
+                  <div key={key} className="layout1-btn-booking-item">
+                    <a href={element?.link}>
+                      {element.icon ? element.icon : (
+                        <img style={{width:'40px',height:'40px',borderRadius:'4px',display:'inline'}} className='mb-2' src={element?.imageUrl} alt="" />
+                      )}
+                    </a>
+                    <div className='text-small' style={{height: 44, transform: "translateY(-50%)",marginTop:'1rem' }} dangerouslySetInnerHTML={{ __html: element.label || element?.title }}></div>
+                  </div>
+                )
+              }
+
               if(element?.unOpen){
                 return(
-                  <div className="layout1-btn-booking-item" onClick={() => element?.disable ? '' : handleRouter(element?.link || element?.linkNavigation)}>
+                  <div key={key} className="layout1-btn-booking-item" onClick={() => element?.disable ? '' : handleRouter(element?.link || element?.linkNavigation)}>
                     {element.icon ? element.icon : (
                       <img style={{width:'40px',height:'40px',borderRadius:'4px'}} className='mb-2' src={element?.imageUrl} alt="" />
                     )}
@@ -74,7 +100,7 @@ const L2FunctionButtonList = (props) => {
                 )
               }else{
                 return(
-                  <div className="layout1-btn-booking-item" onClick={()=>element?.disable ? '' : handleClick(element)}>
+                  <div key={key} className="layout1-btn-booking-item" onClick={()=>element?.disable ? '' : handleClick(element)}>
                     {element.icon ? element.icon : (
                       <img style={{width:'40px',height:'40px',borderRadius:'4px'}} className='mb-2' src={element?.imageUrl} alt="" />
                     )}
