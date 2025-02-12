@@ -70,7 +70,6 @@ export const BTN_LIST_SERVICE = [
     icon: <GiaHanDangKiemIcon></GiaHanDangKiemIcon>,
     //link: `https://ttdk-sanbox-muabaohiem.service.makefamousapp.com?isEmbeddedView=1&appUserId=${appUserId}`,
     link: 'https://zalo.me/s/3197301789570554227/',
-    isZaloLink: true
   },
   {
     label: 'Hợp tác xã <br> vận tải',
