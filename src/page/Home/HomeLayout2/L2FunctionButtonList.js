@@ -27,8 +27,16 @@ const L2FunctionButtonList = (props) => {
     rows: 2,
   }
   const handleClick=(element)=>{
-    setSheetVisible(true);
-    setDataBtn(element)
+    const link = element?.link
+    const isZaloLink = link.includes('zalo.me')
+
+    if (isZaloLink) {
+      setSheetVisible(false)
+      window.open(link, '_blank')
+    } else {
+      setSheetVisible(true);
+      setDataBtn(element)
+    }
   }
   const renderBtns = () => {
     return (
@@ -38,19 +46,6 @@ const L2FunctionButtonList = (props) => {
           <div className={`card-slider layout1-btn-booking-section slider-list-btn ${className}`}>
             <Slider ref={sliderRef} {...settings}>
               {list.map((element, key) => {
-                if(element?.isZaloLink){
-                  return(
-                    <div key={key} className="layout1-btn-booking-item">
-                      <a href={element?.link}>
-                        {element.icon ? element.icon : (
-                          <img style={{width:'40px',height:'40px',borderRadius:'4px',display:'inline'}} className='mb-2' src={element?.imageUrl} alt="" />
-                        )}
-                      </a>
-                      <div className='text-small' style={{height: 44, transform: "translateY(-50%)",marginTop:'1rem' }} dangerouslySetInnerHTML={{ __html: element.label || element?.title }}></div>
-                    </div>
-                  )
-                }
-
                 if(element?.unOpen){
                   return(
                     <div key={key} className="layout1-btn-booking-item" onClick={() => element?.disable ? '' : handleRouter(element?.link || element?.linkNavigation)}>
@@ -76,19 +71,6 @@ const L2FunctionButtonList = (props) => {
         ):(
           <div className={`layout1-btn-booking-section d-flex ai-c ${className}`} style={{ flexWrap: 'wrap'}}>
             {list.map((element, key) => {
-              if(element?.isZaloLink){
-                return(
-                  <div key={key} className="layout1-btn-booking-item">
-                    <a href={element?.link}>
-                      {element.icon ? element.icon : (
-                        <img style={{width:'40px',height:'40px',borderRadius:'4px',display:'inline'}} className='mb-2' src={element?.imageUrl} alt="" />
-                      )}
-                    </a>
-                    <div className='text-small' style={{height: 44, transform: "translateY(-50%)",marginTop:'1rem' }} dangerouslySetInnerHTML={{ __html: element.label || element?.title }}></div>
-                  </div>
-                )
-              }
-
               if(element?.unOpen){
                 return(
                   <div key={key} className="layout1-btn-booking-item" onClick={() => element?.disable ? '' : handleRouter(element?.link || element?.linkNavigation)}>
