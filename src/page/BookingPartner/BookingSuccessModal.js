@@ -2,8 +2,17 @@ import React, { useEffect, useState } from 'react'
 import { Modal, Button } from 'antd'
 import { ReactComponent as SuccessIcon } from './../../assets/icons/success.svg'
 import './index.scss'
-const BookingSuccess = ({ isModalOpen, onClose,setTabKey,setIsModalOpen }) => {
-
+import { SCHEDULE_TYPE } from '../../constants/serviceOption'
+const BookingSuccess = ({ isModalOpen, onClose,setTabKey,setIsModalOpen,scheduleType }) => {
+  const consultantTypes = [
+    SCHEDULE_TYPE.CONSULTANT_MAINTENANCE,
+    SCHEDULE_TYPE.CONSULTANT_INSURANCE,
+    SCHEDULE_TYPE.CONSULTANT_RENOVATION,
+    SCHEDULE_TYPE.VEHICLE_INSPECTION_CONSULTATION,
+    SCHEDULE_TYPE.TRAFFIC_FINE_CONSULTATION,
+    SCHEDULE_TYPE.CONSULTANT_TNDS_INSURANCE,
+  ]
+  const isConsultantType = consultantTypes.includes(scheduleType)
   const handleViewListBooking=()=>{
     setTimeout(() => {
       setTabKey()
@@ -23,6 +32,22 @@ const BookingSuccess = ({ isModalOpen, onClose,setTabKey,setIsModalOpen }) => {
               <div>Đặt lịch thành công</div>
             </div>
             <div>
+            {isConsultantType && (
+              <>
+            <p style={{ margin: '15px 0', fontSize: '16px' }}>
+                Bạn có thể tham khảo thông tin tại các nhóm, cộng đồng để có câu trả lời nhanh hơn
+                </p>
+                <Button 
+                    type="primary" 
+                    block
+                    onClick={() => window.open('https://www.facebook.com/groups/940007330455923', '_blank')}
+                    style={{ color:'white' }}
+                    className='login__button df'
+                >
+                  Tham gia cộng đồng đăng kiểm
+              </Button>
+              </>
+              )}
               {/* <Button className="login__button df" onClick={()=>handleViewListBooking()} type="primary" htmlType="submit" size="large">
                 Xem lịch hẹn
               </Button> */}

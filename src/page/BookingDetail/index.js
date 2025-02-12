@@ -288,7 +288,7 @@ const BookingDetail = ({
         : <></>
       }
       <Modal title="Hủy Lịch hẹn" open={isModal} onCancel={() => handleCancel()} className={`${isHeader ? '' : 'my-modal'} popup-cancel`}>
-        <div style={{ maxWidth: 600, margin: 'auto', padding: '0 30px', minHeight: '400px', paddingTop: 30 }}>
+        <div style={{ maxWidth: 600, margin: 'auto', padding: '0', minHeight: '400px', paddingTop: 10 }}>
           <div>
             <strong>Lý do huỷ lịch:</strong>
 

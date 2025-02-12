@@ -42,6 +42,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   const [listBookingDate, setListBookingDate] = useState([])
   const [licensePlateColor, setLicensePlateColor] = useState(PLATE_COLOR)
   const [scheduleTypes, setScheduleTypes] = useState([])
+  const [scheduleTypePopUp, setScheduleTypePopUp] = useState([])
   const [disableBookingDate, setDisableBookingDate] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -605,6 +606,8 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
       vehicleSubCategory: values.vehicleSubCategory,
       vehicleSubType: values.vehicleSubType,
       certificateSeries: values.certificateSeries,
+      referUserId:localStorage.getItem('partnerReferUserId') || undefined,
+      referStationId:localStorage.getItem('partnerReferStationId') || undefined,
     }
     Object.keys(newData).forEach((key) => {
       if (newData[key] === "") {
@@ -626,6 +629,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
         }, 500);
         } else {
           getScheduleDetail(data?.customerScheduleId)
+          setScheduleTypePopUp(newData.scheduleType)
           setTimeout(() => {
             setIsLoading(false)
           }, 500);
@@ -1512,7 +1516,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           Đặt lịch
         </Button>
       </div>
-      <BookingSuccess isModalOpen={isModalOpen} setTabKey={setTabKey} setIsModalOpen={setIsModalOpen} onClose={() => {
+      <BookingSuccess isModalOpen={isModalOpen} scheduleType={scheduleTypePopUp} setTabKey={setTabKey} setIsModalOpen={setIsModalOpen} onClose={() => {
         setIsModalOpen(false)
         // window.location.reload()}
         history.goBack()
