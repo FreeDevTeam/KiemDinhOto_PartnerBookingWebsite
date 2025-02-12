@@ -27,8 +27,16 @@ const L2FunctionButtonList = (props) => {
     rows: 2,
   }
   const handleClick=(element)=>{
-    setSheetVisible(true);
-    setDataBtn(element)
+    const link = element?.link
+    const isZaloLink = link.includes('zalo.me')
+
+    if (isZaloLink) {
+      setSheetVisible(false)
+      window.open(link, '_blank')
+    } else {
+      setSheetVisible(true);
+      setDataBtn(element)
+    }
   }
   const renderBtns = () => {
     return (
@@ -40,7 +48,7 @@ const L2FunctionButtonList = (props) => {
               {list.map((element, key) => {
                 if(element?.unOpen){
                   return(
-                    <div className="layout1-btn-booking-item" onClick={() => element?.disable ? '' : handleRouter(element?.link || element?.linkNavigation)}>
+                    <div key={key} className="layout1-btn-booking-item" onClick={() => element?.disable ? '' : handleRouter(element?.link || element?.linkNavigation)}>
                       {element.icon ? element.icon : (
                         <img style={{width:'40px',height:'40px',borderRadius:'4px',display:'inline'}} className='mb-2' src={element?.imageUrl} alt="" />
                       )}
@@ -49,7 +57,7 @@ const L2FunctionButtonList = (props) => {
                   )
                 }else{
                   return(
-                    <div className="layout1-btn-booking-item" onClick={()=>element?.disable ? '' : handleClick(element)}>
+                    <div key={key} className="layout1-btn-booking-item" onClick={()=>element?.disable ? '' : handleClick(element)}>
                       {element.icon ? element.icon : (
                         <img style={{width:'40px',height:'40px',borderRadius:'4px',display:'inline'}} className='mb-2' src={element?.imageUrl} alt="" />
                       )}
@@ -65,7 +73,7 @@ const L2FunctionButtonList = (props) => {
             {list.map((element, key) => {
               if(element?.unOpen){
                 return(
-                  <div className="layout1-btn-booking-item" onClick={() => element?.disable ? '' : handleRouter(element?.link || element?.linkNavigation)}>
+                  <div key={key} className="layout1-btn-booking-item" onClick={() => element?.disable ? '' : handleRouter(element?.link || element?.linkNavigation)}>
                     {element.icon ? element.icon : (
                       <img style={{width:'40px',height:'40px',borderRadius:'4px'}} className='mb-2' src={element?.imageUrl} alt="" />
                     )}
@@ -74,7 +82,7 @@ const L2FunctionButtonList = (props) => {
                 )
               }else{
                 return(
-                  <div className="layout1-btn-booking-item" onClick={()=>element?.disable ? '' : handleClick(element)}>
+                  <div key={key} className="layout1-btn-booking-item" onClick={()=>element?.disable ? '' : handleClick(element)}>
                     {element.icon ? element.icon : (
                       <img style={{width:'40px',height:'40px',borderRadius:'4px'}} className='mb-2' src={element?.imageUrl} alt="" />
                     )}
