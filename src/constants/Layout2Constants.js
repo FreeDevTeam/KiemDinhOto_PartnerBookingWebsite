@@ -67,13 +67,6 @@ export const BTN_LIST_SERVICE = [
 
   },
   {
-    label: 'Bảo hiểm',
-    icon: <GiaHanDangKiemIcon></GiaHanDangKiemIcon>,
-    link: isZaloApp 
-      ? 'https://zalo.me/s/3197301789570554227/' 
-      : `https://ttdk-sanbox-muabaohiem.service.makefamousapp.com?isEmbeddedView=1&appUserId=${appUserId}` 
-  },
-  {
     label: 'Hợp tác xã <br> vận tải',
     icon: <HoptacxaIcon></HoptacxaIcon>,
     link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.TRANSPORT_COOPERATIVE}&name=htx&isEmbeddedView=true`,
@@ -335,6 +328,13 @@ export const BOOKING_LIST_BTN = [
     icon: <HuongDanDKIcon></HuongDanDKIcon>,
     link: `/my-booking-history`,
     unOpen: true,
+  },
+  {
+    label: 'Bảo hiểm',
+    icon: <GiaHanDangKiemIcon></GiaHanDangKiemIcon>,
+    link: isZaloApp 
+      ? 'https://zalo.me/s/3197301789570554227/' 
+      : `https://ttdk-sanbox-muabaohiem.service.makefamousapp.com?isEmbeddedView=1&appUserId=${appUserId}` 
   },
   //tạm ẩn
   // {
