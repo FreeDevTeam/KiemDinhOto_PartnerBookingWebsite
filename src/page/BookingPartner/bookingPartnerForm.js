@@ -118,7 +118,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
       stationsId: Number(params.get('stationsId')) || localBookingData?.stationsId?.stationsId ,
       vehicleType:Number(dataBookingParam?.vehicleType) || VEHICLE_SUB_TYPE[0].vehicleType,
       licensePlateColor: Number(dataBookingParam?.licensePlateColor) || Number(params.get('licensePlateColor')),
-      scheduleType: Number(dataBookingParam?.scheduleType) || Number(params.get('scheduleType')),
+      scheduleType:Number(params.get('scheduleType')) || Number(dataBookingParam?.scheduleType),
       vehicleSubType:Number(params.get('vehicleSubType')) || localBookingData?.vehicleSubType || VEHICLE_SUB_TYPE[0].value,
       vehicleSubCategory: Number(params.get('vehicleSubCategory')) || localBookingData?.vehicleSubCategory || VIHCLE_CATEGORY_OTO[0].value,
       vntId: params.get('vntId') || localBookingData?.vntId,
