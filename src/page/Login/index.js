@@ -8,7 +8,7 @@ import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 const HomeLogin = (props) => {
   const history = useHistory()
-  const { globalState } = useGlobalContext();
+  const { handleGetUserPhone, globalState } = useGlobalContext();
   const [firstLoading, setFirstLoading] = useState(false)
 
   const loginByApikey = () => {
@@ -29,11 +29,15 @@ const HomeLogin = (props) => {
     })
   }
   useEffect(() => {
-    if(globalState?.phoneNumber){
+    if(globalState?.phoneNumber && !firstLoading){
       loginByApikey()
       setFirstLoading(true)
-    }
-  }, []);
+    }else{
+      handleGetUserPhone().then(data => {
+        loginByApikey()
+        setFirstLoading(true)
+    })}
+  }, [firstLoading]);
 
 
   return (

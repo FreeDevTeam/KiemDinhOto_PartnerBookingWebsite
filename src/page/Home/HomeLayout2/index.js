@@ -24,10 +24,10 @@ import { useGlobalContext } from '../../../context/GlobalContext'
 
 
 const HomeLayout2 = (props) => {
-  const location = useLocation()
   const { introduction } = props
   const { handleZaloAuthorize,globalState } = useGlobalContext();
   const history = useHistory();
+  const location = useLocation()
   const [hotNews, setHotNews] = useState([])
   const [userToken, setUserToken] = useState(location?.state?.token || localStorage.getItem('userToken') || '')
   const [driverAmenities, setDriverAmenities] = useState(CONVENIENCE_DRIVERS_BTN)

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { banner1, banner2, banner3, banner4, banner5, carImage, motoImage } from '../../assets/img'
 import { Carousel, notification } from 'antd'
 import './index.scss'
@@ -44,12 +44,35 @@ export default function HomePage() {
     },
   ]
   const history = useHistory()
-  const { handleGetUserPhone } = useGlobalContext();
+  const { handleGetUserPhone,handleGetUserName } = useGlobalContext();
+  const [isVisible, setIsVisible] = useState(false)
+
   const handleRouter = async (path) => {
     handleGetUserPhone().then(data => {
       history.push(path)
     })
   }
+  const handleGetUserInfor = async () => {
+    try {
+      handleGetUserName()
+    } catch (error) {
+      
+    }
+    try {
+      await handleGetUserPhone()
+    } catch (error) {
+      setIsVisible(false)
+      notification.error({
+        message: "Có lỗi phát sinh. Vui lòng thử lại."
+      })
+    }
+    setIsVisible(false)
+  }
+
+  useEffect(() => {
+    setIsVisible(true)
+    handleGetUserInfor()
+  }, [])
   return (
     <div
       className="home-page"
