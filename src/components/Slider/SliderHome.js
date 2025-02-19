@@ -7,7 +7,7 @@ import BasicPlaceholder from './../BasicComponent/BasicPlaceholder';
 export const SliderHome = (props) => {
 	const settingSilde = {
 		dots: true,
-		infinite: true,
+		infinite: false,
 		speed: 500,
 		className: props?.center ? "center":'',
     centerMode: props?.center ? true: false,
