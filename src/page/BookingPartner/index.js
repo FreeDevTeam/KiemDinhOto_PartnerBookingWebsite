@@ -49,7 +49,9 @@ function BookingPartner() {
     const scheduleType = Number(splitSearchParam[splitSearchParam.length - 1])
     const title = SCHEDULE_TYPE.find((item) => item.value === scheduleType)?.label
 
-    return title
+    return title === undefined 
+      ? 'ĐẶT LỊCH ĐĂNG KIỂM' 
+      : title?.toUpperCase()
   }
 
   return (
