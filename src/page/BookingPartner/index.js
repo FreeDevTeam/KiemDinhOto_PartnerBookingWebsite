@@ -9,6 +9,7 @@ import { ReactComponent as LogoTTDK } from './../../assets/icons/Logo.svg'
 import { TTDK_PARTNER } from '../../components/BasicComponent/CheckLogoPartner'
 import { getZaloUserName, getZaloUserPhone } from '../../helper/zaloSDK'
 import { useGlobalContext } from '../../context/GlobalContext'
+import { SCHEDULE_TYPE } from '../../constants/global'
 function BookingPartner() {
   const { globalState, handleGetUserPhone, handleGetUserName, setGlobalState } = useGlobalContext();
   const [isVisible, setIsVisible] = useState(false)
@@ -42,6 +43,17 @@ function BookingPartner() {
     setIsVisible(true)
     handleGetUserInfor()
   }, [])
+
+  const getTitleName = (searchParam) => {
+    const splitSearchParam = searchParam?.split('=')
+    const scheduleType = Number(splitSearchParam[splitSearchParam.length - 1])
+    const title = SCHEDULE_TYPE.find((item) => item.value === scheduleType)?.label
+
+    return title === undefined 
+      ? 'ĐẶT LỊCH ĐĂNG KIỂM' 
+      : title?.toUpperCase()
+  }
+
   return (
     <>
       {apikey ?
@@ -65,7 +77,7 @@ function BookingPartner() {
                     <div className="partner-select">
                       <Tabs activeKey={tabKey}>
                         <Tabs.TabPane tab="Đặt lịch" key="booking"> */}
-                  <div className='booking-title title-small'>ĐẶT LỊCH ĐĂNG KIỂM</div>
+                  <div className='booking-title title-small'>{getTitleName(searchparam)}</div>
                   <div className='mt-4'>
                     <BookingPartnerForm zaloUserPhone={globalState.phoneNumber} zaloUserName={globalState.userName} setTabKey={setTabKey} form={form} />
                   </div>
