@@ -8,5 +8,7 @@ export const PATH = {
     MY_BOOKING_HYSTORY: '/my-booking-history',
     BOOKING_HYSTORY: '/booking-history',
     BOOKING_DETAIL: '/booking-detail/:customerScheduleId',
+    PARTNER_GUIDE: '/partner-guide-link',
+    PERSONAL_GUIDE: '/personal-guide-link',
 
 }

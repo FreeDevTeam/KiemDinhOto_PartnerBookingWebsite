@@ -11,6 +11,8 @@ const HomePageLogin = React.lazy(() => import('./page/Login/index'))
 const ResetPassword = React.lazy(() => import('./page/ResetPassword'))
 const MyBookingHistory = React.lazy(() => import('./page/MyBookingHistory/index'))
 const BookingDetail = React.lazy(() => import('./page/BookingDetail/index'))
+const PartnerGuide = React.lazy(() => import('./page/Guide/partnerGuide'))
+const PersonalGuide = React.lazy(() => import('./page/Guide/personalGuide'))
 
 const BookingType=process.env.REACT_APP_BHTNDS
 
@@ -79,6 +81,16 @@ export const ROUTERS = {
         path: PATH.BOOKING_HYSTORY,
         component: BookingHistory,
         isZaloApp: 0
+    },
+    partnerGuide: {
+        path: PATH.PARTNER_GUIDE,
+        component:PartnerGuide,
+        isZaloApp: 0,
+    },
+    personalGuide: {
+        path: PATH.PERSONAL_GUIDE,
+        component:PersonalGuide,
+        isZaloApp: 0,
     },
     // bookingPartnerIframe: {
     //     path: PATH.BOOKING_PARTNER_IFRAME,

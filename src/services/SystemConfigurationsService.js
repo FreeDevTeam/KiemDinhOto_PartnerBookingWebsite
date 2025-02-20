@@ -5,7 +5,7 @@ export default class SystemConfigurationsService {
     return new Promise(resolve => {
       Request.send({
         method: 'POST',
-        path: '/SystemConfigurations/user/getPublicSystemConfigurations',
+        path: '/PartnerAPI/SystemConfigurations/user/getPublicSystemConfigurations',
         data: { ...data },
         query: null,
         headers: {
