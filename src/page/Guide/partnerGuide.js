@@ -22,7 +22,6 @@ function PartnerGuide() {
     })
   }
   useEffect(() => {
-    console.log('chajy');
     fetchData()
   }, []);
 
@@ -37,7 +36,7 @@ function PartnerGuide() {
 
   return (
     <>
-
+    
     </>
   )
 }
