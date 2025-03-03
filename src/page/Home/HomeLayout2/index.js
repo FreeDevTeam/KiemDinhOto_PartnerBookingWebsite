@@ -305,9 +305,7 @@ const HomeLayout2 = (props) => {
       fetchData()
       setFirtLoadding(false)
     }, 300);
-    if(!globalState?.isAuthorize){
-      handleZaloAuthorize()
-    }
+
     if(!userToken){
       history.push(PATH.LOGIN)
     }

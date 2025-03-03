@@ -6,12 +6,16 @@ import Slider from 'react-slick'
 import useWindowDimensions from '../../../hooks/window-dimensions'
 
 const L2FunctionButtonList = (props) => {
+  const { handleZaloAuthorize,globalState } = useGlobalContext();
   const {setSheetVisible, setDataBtn,slider}=props
   const { list ,title,className } = props
   const history = useHistory()
   const { handleGetUserPhone } = useGlobalContext();
   const handleRouter = async (path) => {
-    handleGetUserPhone().then(data => {
+    if(!globalState?.isAuthorize){
+      await handleZaloAuthorize()
+    }
+    await handleGetUserPhone().then(data => {
       history.push(path)
     })
   }
@@ -26,16 +30,19 @@ const L2FunctionButtonList = (props) => {
     slidesToScroll: smallMobile ? 3 : 4,
     rows: 2,
   }
-  const handleClick=(element)=>{
+  const handleClick= async (element)=>{
+    if(!globalState?.isAuthorize){
+      await handleZaloAuthorize()
+    }
     const link = element?.link
     const isZaloLink = link.includes('zalo.me')
 
     if (isZaloLink) {
-      setSheetVisible(false)
+      await setSheetVisible(false)
       window.open(link, '_blank')
     } else {
-      setSheetVisible(true);
-      setDataBtn(element)
+      await setSheetVisible(true);
+      await setDataBtn(element)
     }
   }
   const renderBtns = () => {

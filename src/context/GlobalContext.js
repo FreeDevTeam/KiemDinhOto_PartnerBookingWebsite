@@ -53,7 +53,9 @@ export const GlobalProvider = ({ children }) => {
 
     const handleConfirm = async () => {
         setOpenModal(false)
-        await handleGetUserPhone()
+        await setTimeout(() => {
+            handleZaloAuthorize()
+        }, 300);
     }
 
     const handleZaloAuthorize = async () => {
