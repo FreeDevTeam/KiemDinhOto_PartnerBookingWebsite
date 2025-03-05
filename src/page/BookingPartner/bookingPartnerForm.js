@@ -22,6 +22,7 @@ import BookingDatePicker from '../../components/BookingDatePicker'
 import BookingHoursPicker from '../../components/BookingHoursPicker'
 import ModalPaymentQR from '../../components/ModalPaymentQR/ModalPaymentQR'
 import { numberWithSeparator } from '../../helper/numberWithSeparator'
+import { optionServiceType } from '../../constants/serviceOption'
 
 function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   const isZaloApp = (process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1)
@@ -56,6 +57,10 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   const [requireScheduleTime, setRequireScheduleTime] = useState(1)
   const [bookingConfig, setBookingConfig] = useState({})
   const [vehicleSubCategoryOptions, setVehicleSubCategoryOptions] = useState([])
+  // Nhả thêm
+  const [serviceTypes, setServiceTypes] = useState([])
+  const [servicesByStations, setServicesByStations] = useState([])
+  // Kết thúc
   const [dateFilter, setDateFilter] = useState({
     stationsId: null,
     startDate: moment().format(DATE_DISPLAY_FORMAT),
@@ -887,6 +892,32 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     setBookingData(newData)
     form.setFieldsValue(newData)
   }
+
+  const getServiceByStation = (stationsId) =>{
+    BookingService.getListStationService({filter:{stationsId:36}}).then((result)=>{
+      const {data, isSuccess} = result
+      if(isSuccess && data && data?.data.length > 0){
+        console.log("cóa")
+        setServiceTypes(() => {
+          const apiServiceTypes = data?.data?.map(item => item.serviceType) || []; // Lấy danh sách serviceType từ API
+          const filteredOptions = optionServiceType.filter(option => 
+            apiServiceTypes.includes(option.value) // Lọc các mục có value trùng serviceType
+          );
+          return filteredOptions;
+        });
+        setServicesByStations(()=>{
+          const newValues = data?.data.map((item)=>({
+            label: item.serviceName,
+            value: item.serviceId
+          }))
+          return newValues
+        })
+      }
+    }).catch((error)=>{
+      setErrorMessage('Lấy thông tin dịch vụ thất bại.')
+      setIsModalErrOpen(true)
+    })
+  }
   
   useEffect(() => {
     getDataLocal()
@@ -1003,6 +1034,11 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
       name="booking"
       layout="vertical"
       initialValues={{}}
+      onValuesChange={(changedValues, allValues) => {
+        if(changedValues?.stationsId){
+          getServiceByStation(changedValues?.stationsId)
+        }
+      }}
       form={form}
       onFinish={(values) => { onFinish(values) }}>
       {() => (
@@ -1404,6 +1440,60 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
                   dateSchedule: null,
                   time: null
                 })
+              }}
+            />
+          </Form.Item>
+        </span>
+      )}
+      <Form.Item label="Loại dịch vụ" name="serviceType" rules={[
+        {
+          required: true,
+          message: 'Vui lòng chọn loại dịch vụ'
+        }
+      ]} hidden={dataBookingParam?.visible_StationArea === 'true' || dataBookingParam?.visible_StationArea === null ? false : true}>
+        <SelectAntd
+          className="cs-select ant-custom booking-input"
+          filterOption={(input, option) => {
+            return xoa_dau((option?.value ?? '').toLowerCase()).includes(xoa_dau(input.toLowerCase()))
+          }}
+          showSearch
+          disabled={!bookingData?.vntId || isVisible.stationsId}
+          // defaultValue={dataBookingParam?.vntId || dataLocal?.vntId}
+          onChange={(values) => {
+          }}
+          placeholder="Vui lòng chọn khu vực"
+          styles={customStyles}
+          options={serviceTypes}
+        />
+      </Form.Item>
+      {requireScheduleStation == '1' && (
+        <span id="service">
+          <Form.Item
+            label="Chọn dịch vụ"
+            name="service"
+            rules={[
+              {
+                required: requireScheduleStation == '1' ? true : false,
+                message: 'Vui lòng nhập'
+              }
+            ]}
+            hidden={dataBookingParam?.visible_StationsCode === 'true' || dataBookingParam?.visible_StationsCode === null ? false : true}
+            >
+            <SelectAntd
+              className="cs-select ant-custom booking-input"
+              isSearchable={true}
+              size="middle"
+              placeholder="Vui lòng chọn dịch vụ"
+              style={{
+                customStyles,
+                ...{
+                  lineHeight: 48
+                }
+              }}
+              options={servicesByStations}
+              menuPlacement="top"
+              disabled={!bookingData?.vntId || isVisible.stationsId}
+              onChange={(values) => {
               }}
             />
           </Form.Item>
