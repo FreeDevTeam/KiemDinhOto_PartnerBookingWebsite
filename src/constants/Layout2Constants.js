@@ -52,6 +52,7 @@ const DatXeLogo = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4
 const TuDongBaoPN = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4,display:'inline'}} src={TuDongTBPN}></img></div>
 const TraCuuPn = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4,display:'inline'}} src={TraCuuPN}></img></div>
 let appUserId = localStorage.getItem('appUserId')
+let token = localStorage.getItem('userToken')
 const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1
 export const BTN_LIST_SERVICE = [
   {
@@ -334,7 +335,9 @@ export const BOOKING_LIST_BTN = [
     icon: <GiaHanDangKiemIcon></GiaHanDangKiemIcon>,
     link: isZaloApp 
       ? 'https://zalo.me/s/3197301789570554227/' 
-      : `https://ttdk-sanbox-muabaohiem.service.makefamousapp.com?isEmbeddedView=1&appUserId=${appUserId}` 
+      : process.env.REACT_APP_RUNTIME_MODE == 'production' 
+        ? `https://baohiem.ttdk.com.vn?&appUserId=${appUserId}&token=${token}` 
+        : `https://ttdk-sanbox-muabaohiem.service.makefamousapp.com?isEmbeddedView=1&appUserId=${appUserId}&token=${token}`,
   },
   //tạm ẩn
   // {

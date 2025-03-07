@@ -73,10 +73,7 @@ const getAreaByIP = () => {
       }
       return banners;
     };
-
-    SystemConfigurationsService.getPublicSystemConfigurations({}).then((res) => {
-      setIsLoading(false);
-    })
+    setIsLoading(false);
   }
 
   const getNews = () =>{
