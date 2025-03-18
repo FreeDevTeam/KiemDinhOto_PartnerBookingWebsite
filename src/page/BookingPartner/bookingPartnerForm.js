@@ -1184,11 +1184,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
         hidden={dataBookingParam?.visible_phoneNumber === 'true' || dataBookingParam?.visible_phoneNumber === null ? false : true}
         rules={[
           {
-            required: !isZaloApp,
-            message: 'Vui lòng nhập số điện thoại'
-          },
-          {
-            required: dataBookingParam?.require_phoneNumber === 'false' ? false : true,
+            required: !isZaloApp || dataBookingParam?.require_phoneNumber !== 'false',
             message: 'Vui lòng nhập số điện thoại'
           },
           {
