@@ -84,7 +84,10 @@ const ModalPaymentQR = ({ open, onClose, driver, onRefresh, method }) => {
                                         <span className="modal-payment-qr-content-title">Nội dung</span>
 
                                         <div className="d-flex align-items-start gap-2 w-100">
-                                            <span className="word-break-all text-blue-ribbon text-left"><b>{qr?.paymentContent || ''}</b></span>
+                                            <div className="text-left w-100">
+                                                <div className="word-break-all text-blue-ribbon text-left"><b>{qr?.paymentContent || ''}</b></div>
+                                                <div className="text-danger">Vui lòng ghi đúng nội dung chuyển khoản</div>
+                                            </div>
                                             <CopyOutlined onClick={() => copyToClipboard(qr?.paymentContent || '')} />
                                         </div>
                                     </div>
