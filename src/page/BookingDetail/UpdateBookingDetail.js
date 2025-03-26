@@ -11,19 +11,20 @@ import moment from 'moment'
 import Select from 'react-select'
 import { PLATE_COLOR, SCHEDULE_TYPE, VEHICLE_SUB_CATEGORY, VEHICLE_SUB_TYPE, VIHCLE_CATEGORY_BUS, VIHCLE_CATEGORY_GROUP, VIHCLE_CATEGORY_MOOC, VIHCLE_CATEGORY_OTO, VIHCLE_CATEGORY_PICKUP, VIHCLE_CATEGORY_SPECIALIZED, VIHCLE_CATEGORY_TRUCK, VIHCLE_TYPES } from '../../constants/global'
 import { SCHEDULE_ERROR } from '../../constants/errorMessage'
-import PopupMessage from './PopupMessage'
-import BookingSuccess from './BookingSuccessModal'
 import { useLocation, useHistory } from 'react-router-dom'
 import AreaByIP from '../../services/getAreaByIP'
 import addKeyLocalStorage from '../../helper/localStorage'
-import { validatorPlateNumber } from './../../helper/validatorPlateNumber'
+import { validatorPlateNumber } from '../../helper/validatorPlateNumber'
 import { ReactComponent as LogoTTDK } from './../../assets/icons/Logo.svg'
 import BookingDatePicker from '../../components/BookingDatePicker'
 import BookingHoursPicker from '../../components/BookingHoursPicker'
 import ModalPaymentQR from '../../components/ModalPaymentQR/ModalPaymentQR'
 import { numberWithSeparator } from '../../helper/numberWithSeparator'
+import PopupMessage from '../BookingPartner/PopupMessage'
+import BookingSuccess from '../BookingPartner/BookingSuccessModal'
 
-function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
+function UpdateBookingDetail({ setTabKey, zaloUserName,zaloUserPhone}) {
+  const [form] = Form.useForm()
   const isZaloApp = (process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1)
   const location = useLocation();
   const history = useHistory();
@@ -555,37 +556,6 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
       }
     })
   }
-  useEffect(()=>{
-    //chạy function lấy giờ hẹn đầu tiên sau khi lấy được ngày hẹn
-    getHoursBooking()
-  },[selectedBookingHour])
-  useEffect(()=>{
-    //chạy function lấy ngày hẹn đầu tiên sau khi lấy được trung tâm
-    getDateBooking()
-  },[selectedBookingDate])
-  useEffect(()=>{
-    //chạy function lấy trạm đầu tiên sau khi lấy được khu vực theo IP
-    getStationBooking()
-  },[selectedBookingStation])
-
-  const getScheduleDetail=(value)=>{
-    BookingService.getScheduleDetail({
-      customerScheduleId:value,
-    }).then((res) => {
-      if(res?.data){
-        res.data.runTime = new Date();
-        res.data.order.totalAmount = scheduleTypes.find(item=>item?.value == res?.data?.scheduleType)?.priceTTDK || 0
-        setScheduleDetail(res?.data);
-        if(res?.data?.order?.totalAmount){
-          setIsModalOpen(false)
-          setOpen(true)
-          return
-        }else{
-          setIsModalOpen(true)
-        }
-      } 
-    })
-  }
 
   const onFinish = (values) => {
     setIsVisible(false)
@@ -628,7 +598,6 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           setIsLoading(false)
         }, 500);
         } else {
-          getScheduleDetail(data?.customerScheduleId)
           setScheduleTypePopUp(newData.scheduleType)
           setTimeout(() => {
             setIsLoading(false)
@@ -668,7 +637,6 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
         }, 500);
         } else {
           // if(adviseSchedule){
-          //   getScheduleDetail(data[0])
           //   setTimeout(() => {
           //     setIsLoading(false)
           //   }, 500);
@@ -999,6 +967,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   }, [zaloUserName, form])
 
   return (
+    <div className="detail-sche" style={{ maxWidth: 600, margin: 'auto', padding: '10px' }}>
     <Form
       name="booking"
       layout="vertical"
@@ -1009,7 +978,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
          <div>
       <Form.Item
         name="fullnameSchedule"
-        label="Họ và tên chủ xe a"
+        label="Họ và tên chủ xe"
         rules={[
           {
             required: dataBookingParam?.require_firstName === 'false' ? false : true,
@@ -1553,7 +1522,8 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     </div>
     )}
     </Form>
+    </div>
   )
 }
 
-export default BookingPartnerForm
+export default UpdateBookingDetail

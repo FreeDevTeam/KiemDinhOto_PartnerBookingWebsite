@@ -13,6 +13,7 @@ const MyBookingHistory = React.lazy(() => import('./page/MyBookingHistory/index'
 const BookingDetail = React.lazy(() => import('./page/BookingDetail/index'))
 const PartnerGuide = React.lazy(() => import('./page/Guide/partnerGuide'))
 const PersonalGuide = React.lazy(() => import('./page/Guide/personalGuide'))
+const UpdateBookingDetail = React.lazy(() => import('./page/BookingDetail/UpdateBookingDetail'))
 
 const BookingType=process.env.REACT_APP_BHTNDS
 
@@ -45,6 +46,11 @@ export const ROUTERS = {
         path: PATH.BOOKING_DETAIL,
         component: BookingDetail,
         isZaloApp: 1
+    },
+    updateBooking: {
+        path: PATH.BOOKING_UPDATE,
+        component: UpdateBookingDetail,
+        isZaloApp: 1,
     },
     checkVihcleZalo: {
         path: PATH.CHECK_VIHCLE,

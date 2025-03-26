@@ -77,7 +77,7 @@ function BookingPartner() {
                     <div className="partner-select">
                       <Tabs activeKey={tabKey}>
                         <Tabs.TabPane tab="Đặt lịch" key="booking"> */}
-                  <div className='booking-title title-small'>{getTitleName(searchparam)}</div>
+                  {/* <div className='booking-title title-small'>{getTitleName(searchparam)}</div> */}
                   <div className='mt-4'>
                     <BookingPartnerForm zaloUserPhone={globalState.phoneNumber} zaloUserName={globalState.userName} setTabKey={setTabKey} form={form} />
                   </div>
