@@ -20,6 +20,7 @@ function BookingPartner() {
   const searchparam = location.search
   const params = new URLSearchParams(searchparam)
   let partner = params.get('partner')?.toLowerCase()
+  const isWebView = params.get('isWebView')
   let apikey = CheckApiKey()
 
   const handleGetUserInfor = async () => {
@@ -77,7 +78,9 @@ function BookingPartner() {
                     <div className="partner-select">
                       <Tabs activeKey={tabKey}>
                         <Tabs.TabPane tab="Đặt lịch" key="booking"> */}
-                  <div className='booking-title title-small'>{getTitleName(searchparam)}</div>
+                  {
+                    Number(isWebView) !== 1 ? <div className='booking-title title-small'>{getTitleName(searchparam)}</div> : null
+                  }
                   <div className='mt-4'>
                     <BookingPartnerForm zaloUserPhone={globalState.phoneNumber} zaloUserName={globalState.userName} setTabKey={setTabKey} form={form} />
                   </div>
