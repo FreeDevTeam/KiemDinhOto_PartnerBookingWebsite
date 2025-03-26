@@ -9,7 +9,7 @@ import { ReactComponent as LogoTTDK } from './../../assets/icons/Logo.svg'
 import { TTDK_PARTNER } from '../../components/BasicComponent/CheckLogoPartner'
 import { getZaloUserName, getZaloUserPhone } from '../../helper/zaloSDK'
 import { useGlobalContext } from '../../context/GlobalContext'
-import { SCHEDULE_TYPE } from '../../constants/global'
+import { SCHEDULE_TYPE, WEBVIEW_TYPES } from '../../constants/global'
 function BookingPartner() {
   const { globalState, handleGetUserPhone, handleGetUserName, setGlobalState } = useGlobalContext();
   const [isVisible, setIsVisible] = useState(false)
@@ -79,7 +79,7 @@ function BookingPartner() {
                       <Tabs activeKey={tabKey}>
                         <Tabs.TabPane tab="Đặt lịch" key="booking"> */}
                   {
-                    Number(isWebView) !== 1 ? <div className='booking-title title-small'>{getTitleName(searchparam)}</div> : null
+                    Number(isWebView) !== WEBVIEW_TYPES.WEBVIEW ? <div className='booking-title title-small'>{getTitleName(searchparam)}</div> : null
                   }
                   <div className='mt-4'>
                     <BookingPartnerForm zaloUserPhone={globalState.phoneNumber} zaloUserName={globalState.userName} setTabKey={setTabKey} form={form} />
