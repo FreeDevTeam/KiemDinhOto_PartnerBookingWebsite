@@ -849,6 +849,4 @@ export const TTDK_INSURANCE_PARTNER = {
 
 export const WEBVIEW_TYPES = {
   WEBVIEW: 1,
-  ZALO: 2,
-  ZALO_MINI_APP: 3
 }
