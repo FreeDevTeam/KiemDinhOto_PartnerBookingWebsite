@@ -6,7 +6,7 @@ import './index.scss'
 import LoadingPopup from '../LoadingPopup'
 
 const HOURS_LIST_DEFAULT = [
- {label: "7h30-9h00",scheduleTime:""}, {label:"9h30-11h30",scheduleTime:""}, {label:"13h30-15h00",scheduleTime:""}, {label:"15h30-17h00",scheduleTime:""}
+//  {label: "7h30-9h00",scheduleTime:""}, {label:"9h30-11h30",scheduleTime:""}, {label:"13h30-15h00",scheduleTime:""}, {label:"15h30-17h00",scheduleTime:""}
 ]
 
 export default function BookingHoursPicker({
