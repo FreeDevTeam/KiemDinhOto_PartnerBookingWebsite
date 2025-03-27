@@ -279,7 +279,7 @@ const BookingDetail = ({
         {contentHeader}
         <a target="_blank" style={{ marginTop: '1rem' }} href="https://youtu.be/mpIQeRGv3Lg?feature=shared" className="mgt-15 d-block">Xem thêm hướng dẫn quy trình đăng kiểm</a>
       </div>
-      {scheduleInformation?.CustomerScheduleStatus !== 20 ?
+      {scheduleInformation?.CustomerScheduleStatus !== 20 && scheduleInformation?.CustomerScheduleStatus !== 30  ?
         <div className="w-100 d-flex justify-content-center" style={{gap:"2em"}}>
           <Button className="cancel-schedule d-flex justify-content-center align-items-center" type="primary" onClick={() => { setIsModal(true) }} size="larger" style={{width: '100%',padding: '20px',borderRadius:'6px',marginTop:'30px'}}>
             Hủy lịch hẹn

@@ -47,7 +47,6 @@ export default function BookingDatePicker({
   }
 
   const decreaseMonth = () => {
-    console.log("1")
     const checkCurrentMonth = moment(currentMonth, DATE_DISPLAY_FORMAT).subtract(1, 'months')
     if (checkCurrentMonth.isSameOrBefore(moment(), 'month')) {
       setCurrentMonth(moment())
@@ -55,7 +54,6 @@ export default function BookingDatePicker({
   }
 
   const increaseMonth = () => {
-    console.log("2")
     setCurrentMonth(moment(currentMonth, DATE_DISPLAY_FORMAT).startOf('month').add(1, 'months'))
   }
 
