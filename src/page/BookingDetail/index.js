@@ -284,8 +284,15 @@ const BookingDetail = ({
           <Button className="cancel-schedule d-flex justify-content-center align-items-center" type="primary" onClick={() => { setIsModal(true) }} size="larger" style={{width: '100%',padding: '20px',borderRadius:'6px',marginTop:'30px'}}>
             Hủy lịch hẹn
           </Button>
-          <Button className="d-flex justify-content-center align-items-center" type="primary" onClick={() => { setIsModal(true) }} size="larger" style={{width: '100%',padding: '20px',borderRadius:'6px',marginTop:'30px'}}>
-            Sửa
+          <Button className="d-flex justify-content-center align-items-center" type="primary" 
+            onClick={() => { history.push({
+            pathname: `/booking-update/${scheduleInformation?.customerScheduleId}`,
+            state: { data: scheduleInformation }
+            })}}
+            size="larger"
+            style={{width: '100%',padding: '20px',borderRadius:'6px',marginTop:'30px'}}
+            >
+              Sửa
           </Button>
         </div>
         : <></>
