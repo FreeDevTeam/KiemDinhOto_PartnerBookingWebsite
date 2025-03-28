@@ -28,8 +28,11 @@ const BookingSuccess = ({ isModalOpen, onClose,setTabKey,setIsModalOpen,schedule
         <div className={'register app-container'} style={{ maxWidth: 600, margin: 'auto', padding:15}}>
           <div className="register-success text-center">
             <SuccessIcon className={'text-center'} />
-            <div className="login__title mgt-40">
-              <div>Đặt lịch thành công</div>
+            <div className='mb-4'>
+              <div className="login__title mb-2">
+                <div>Đặt lịch thành công</div>
+              </div>
+              <div>Thông tin đã được chuyển đến tư vấn viên của chúng tôi. Nhân viên tư vấn sẽ sớm liên hệ lại để hỗ trợ tư vấn cho bạn.</div>
             </div>
             <div>
             {isConsultantType && (
