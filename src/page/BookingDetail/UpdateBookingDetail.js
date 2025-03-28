@@ -22,24 +22,22 @@ import BookingDatePicker from '../../components/BookingDatePicker'
 import BookingHoursPicker from '../../components/BookingHoursPicker'
 import ModalPaymentQR from '../../components/ModalPaymentQR/ModalPaymentQR'
 import { numberWithSeparator } from '../../helper/numberWithSeparator'
-import CustomerScheduleService from '../../services/customerScheduleService'
 
 function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
   const [form] = Form.useForm()
   const isZaloApp = (process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1)
   const location = useLocation();
+  const history = useHistory();
   const dataDetail = location?.state?.data
   const token = location?.state?.token
-  const history = useHistory();
   const dataVihcle=location.state || {}
   const searchparam = location.search
   const params = new URLSearchParams(searchparam)
-  const dataLocal=JSON.parse(localStorage.getItem(addKeyLocalStorage('bookingData')))
   const [customerParam, setCustomerParam] = useState({filter: {} })
   const [errorMessage, setErrorMessage] = useState('')
   const [isModalErrOpen, setIsModalErrOpen] = useState(false)
   const [bookingData, setBookingData] = useState({})
-  const [localBookingData, setLocalBookingData] = useState(dataLocal)
+  const [localBookingData, setLocalBookingData] = useState(dataDetail)
   const [listStation, setListStation] = useState([])
   const [listBookingTime, setListBookingTime] = useState([])
   const [listStationArea, setListStationArea] = useState([])
@@ -76,20 +74,20 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
   const [open, setOpen] = useState(false)
   const [scheduleDetail, setScheduleDetail] = useState(null);
   let getParamData ={
-    licensePlates: dataDetail?.licensePlates,
-    phone: dataDetail?.phone,
+    licensePlates:dataDetail?.licensePlates,
+    phone:dataDetail?.phone,
     fullnameSchedule:dataDetail?.fullnameSchedule,
     email:dataDetail?.email,
-    dateSchedule: dataDetail?.dateSchedule,
-    time: dataDetail?.time,
+    dateSchedule:dataDetail?.dateSchedule,
+    time: {scheduleTime: dataDetail?.time},
     stationsId: dataDetail?.stationsId,
-    vehicleType:dataDetail?.vehicleType,
-    licensePlateColor:dataDetail?.licensePlateColor,
-    scheduleType: dataDetail?.scheduleType,
-    vehicleSubType:dataDetail?.vehicleSubType,
-    vehicleSubCategory: dataDetail?.vehicleSubCategory,
+    vehicleType: Number(dataDetail?.vehicleType),
+    licensePlateColor: Number(dataDetail?.licensePlateColor),
+    scheduleType: Number(dataDetail?.scheduleType),
+    vehicleSubType: Number(dataDetail?.vehicleSubType) || VEHICLE_SUB_TYPE[0].value,
+    vehicleSubCategory: Number(dataDetail?.vehicleSubCategory) || VIHCLE_CATEGORY_OTO[0].value,
     vntId: dataDetail?.stationArea,
-    certificateSeries: dataDetail?.certificateSeries ,
+    certificateSeries: dataDetail?.certificateSeries,
     visible_StationArea : (params.get('visible_StationArea')),
     visible_StationsCode : (params.get('visible_StationsCode')),
     visible_firstName : (params.get('visible_firstName')),
@@ -113,20 +111,20 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
     setIsLoadDataLocal(false)
     setDataBookingParam({
       ...bookingData,
-      licensePlates: dataDetail?.licensePlates,
-      phone: dataDetail?.phone,
-      fullnameSchedule:dataDetail?.fullnameSchedule,
-      email:dataDetail?.email,
-      dateSchedule: dataDetail?.dateSchedule,
-      time: dataDetail?.time,
-      stationsId: dataDetail?.stationsId,
-      vehicleType:dataDetail?.vehicleType,
-      licensePlateColor:dataDetail?.licensePlateColor,
-      scheduleType: dataDetail?.scheduleType,
-      vehicleSubType:dataDetail?.vehicleSubType,
-      vehicleSubCategory: dataDetail?.vehicleSubCategory,
-      vntId: dataDetail?.stationArea,
-      certificateSeries: dataDetail?.certificateSeries ,
+      licensePlates:dataVihcle?.vehicleIdentity || localBookingData?.licensePlates || params.get('licensePlates'),
+      phone: zaloUserPhone || localBookingData?.phone || params.get('phone'),
+      fullnameSchedule: zaloUserName || localBookingData?.fullnameSchedule || params.get('name'),
+      email: localBookingData?.email || params.get('email'),
+      dateSchedule: localBookingData?.dateSchedule || params.get('dateSchedule'),
+      time: localBookingData?.time?.scheduleTime || params.get('time'),
+      stationsId: Number(params.get('stationsId')) || localBookingData?.stationsId?.stationsId ,
+      vehicleType:Number(dataBookingParam?.vehicleType) || VEHICLE_SUB_TYPE[0].vehicleType,
+      licensePlateColor: Number(dataBookingParam?.licensePlateColor) || Number(params.get('licensePlateColor')),
+      scheduleType:Number(params.get('scheduleType')) || Number(dataBookingParam?.scheduleType),
+      vehicleSubType:Number(params.get('vehicleSubType')) || localBookingData?.vehicleSubType || VEHICLE_SUB_TYPE[0].value,
+      vehicleSubCategory: Number(params.get('vehicleSubCategory')) || localBookingData?.vehicleSubCategory || VIHCLE_CATEGORY_OTO[0].value,
+      vntId: params.get('vntId') || localBookingData?.vntId,
+      certificateSeries:dataVihcle?.certificateSeries ||  localBookingData?.certificateSeries || params.get('certificateSeries'),
       visible_StationArea : (params.get('visible_StationArea')),
       visible_StationsCode : (params.get('visible_StationsCode')),
       visible_firstName : (params.get('visible_firstName')),
@@ -166,9 +164,9 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
           // setIsModalErrOpen(true)
         }else{
           let tmp = data || []
-          if (tmp.length > 0 && bookingConfig.length>0) {
+          if (tmp.length > 0) {
             tmp.forEach((element) => {
-              let stationStatus=bookingData?.stationsId?.stationStatus || dataLocal?.stationsId?.stationStatus
+              let stationStatus=bookingData?.stationsId?.stationStatus
               if(stationStatus){
                 element.disabled = element.scheduleTimeStatus == 0
               };
@@ -196,7 +194,7 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
           }
         }
       })
-      .catch((error) => {
+      .catch(() => {
         setErrorMessage('Lấy thông tin giờ hẹn thất bại.')
         setIsModalErrOpen(true)
         setLoadingHoursPicker(false)
@@ -339,9 +337,9 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
       ...dateFilter,
       stationsId: null,
     })
-    if(dataLocal?.stationsId){
-      const stationSelected = dataLocal?.stationsId
-      setBookingConfig(JSON.parse(stationSelected?.stationBookingConfig))
+    if(dataDetail?.stationsId){
+      const stationSelected = dataDetail?.stationsId
+      // setBookingConfig(JSON.parse(stationSelected?.stationBookingConfig))
     }
     setListBookingDate([])
     form.setFieldsValue({
@@ -355,14 +353,6 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
       dateSchedule: null,
       time: null
     }))
-    let localData={
-      ...dataLocal,
-      stationsId:null,
-      dateSchedule:  null,
-      time: null
-    }
-    localStorage.setItem(addKeyLocalStorage('bookingData'), JSON.stringify(localData))
-
     //thực hiện for để lấy giá trị thỏa mãn
     for(let i =0;i<listStation?.length;i++){
       if(listStation[i].stationStatus){
@@ -375,7 +365,6 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
         const stationSelected = listStation[i]
         setBookingConfig(JSON.parse(stationSelected?.stationBookingConfig))
         //lưu dữ liệu thỏa mãn vào local
-        saveDataLocal('stationsId',listStation[i])
         //setDateFilter để chạy api lấy ngày đầu tiên
         setDateFilter({
           ...dateFilter,
@@ -396,18 +385,11 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
       dateSchedule: null,
       time: null
     }))
-    let localData={
-      ...dataLocal,
-      dateSchedule: null,
-      time: null
-    }
-    localStorage.setItem(addKeyLocalStorage('bookingData'), JSON.stringify(localData))
-    if (listBookingDate?.length > 0 && dataLocal?.stationsId) {
+    if (listBookingDate?.length > 0 && dataDetail?.stationsId) {
       for (let i = 0; i < listBookingDate?.length; i++) {
         if (listBookingDate[i].scheduleDateStatus) {
           handleFillValues('dateSchedule', listBookingDate[i].scheduleDate, listBookingDate[i].scheduleDate)
           //lưu dữ liệu thỏa mãn vào local
-          saveDataLocal('dateSchedule', listBookingDate[i].scheduleDate)
           const stationsId = bookingData?.stationsId?.stationsId
           //gọi api lấy giờ hẹn
           if (stationsId && bookingData) {
@@ -437,17 +419,10 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
     form.setFieldsValue({
       time: null
     })
-    let localData={
-      ...dataLocal,
-      time: null
-    }
-    localStorage.setItem(addKeyLocalStorage('bookingData'), JSON.stringify(localData))
     if (listBookingTime?.length > 0) {
       for (let i = 0; i < listBookingTime?.length; i++) {
         if (!listBookingTime[i].disabled) {
           handleFillValues('time', listBookingTime[i].scheduleTime, listBookingTime[i])
-          //lưu dữ liệu thỏa mãn vào local
-          saveDataLocal('time',listBookingTime[i].scheduleTime)
           return
         }
       }
@@ -461,14 +436,6 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
         stationArea:data.stationArea
       }
     })
-    let localData={
-      ...dataLocal,
-      vntId:data.stationArea,
-      stationsId:null,
-      dateSchedule: null,
-      time: null,
-    }
-    localStorage.setItem(addKeyLocalStorage('bookingData'), JSON.stringify(localData))
   }
   const handleFillDataArea=(data)=>{
     setBookingData((prev)=>({
@@ -495,7 +462,7 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
           handleFillDataArea(data.stationArea)
           handleSaveArea(data)
         }else{
-          let vntId = params.get('vntId') || dataLocal?.vntId || undefined
+          let vntId = dataDetail?.stationArea
           handleFillDataArea(vntId)
           if(vntId){
             getStations({
@@ -504,26 +471,10 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
               }
             })
           }
-          if(!dataLocal?.vntId){
-            let localData={
-              ...dataLocal,
-              vntId:vntId,
-              stationsId:null,
-              dateSchedule: null,
-              time: null,
-            }
-            localStorage.setItem(addKeyLocalStorage('bookingData'), JSON.stringify(localData))
-          }else{
             setBookingData((prev)=>({
               ...prev,
-              vntId:vntId || dataLocal?.vntId,
+              vntId: dataDetail?.stationArea,
             }))
-            let localData={
-              ...dataLocal,
-              vntId:vntId || dataLocal?.vntId,
-            }
-            localStorage.setItem(addKeyLocalStorage('bookingData'), JSON.stringify(localData))
-          }
         }
       }
       return result
@@ -552,7 +503,7 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
         }
         newValues.push(value)
         setScheduleTypes(newValues)
-        handleCheckReq(bookingData?.scheduleType || dataLocal?.scheduleType || Number(params.get('scheduleType')) || SCHEDULE_TYPE[0].value,newValues)
+        handleCheckReq(bookingData?.scheduleType, SCHEDULE_TYPE)
       })
       }else{
         setScheduleTypes(SCHEDULE_TYPE)
@@ -592,28 +543,113 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
   }
 
   const onFinish = (values) => {
-    const data = {
-      id: dataDetail?.customerScheduleId,
-        data: {
-          stationsId: values?.stationsId,
-          dateSchedule: values?.dateSchedule,
-          time: values?.time?.scheduleTime,
-          confirmStatus: 1,
-          scheduleNote: "Khách hàng đã xác nhận"
-        },
+    setIsVisible(false)
+    setIsLoading(true)
+    let adviseSchedule=Object.values(scheduleTypes).find(item=>item?.value== bookingData?.scheduleType)?.scheduleCategory == '2'
+    const newData = {
+      licensePlates: values.licensePlates.toUpperCase(),
+      phone: values.phone,
+      fullnameSchedule: values.fullnameSchedule.trim(),
+      email: values.email,
+      dateSchedule: adviseSchedule ? undefined : values.dateSchedule,
+      time: adviseSchedule? undefined : values?.time?.scheduleTime,
+      stationsId:adviseSchedule ? undefined : values.stationsId,
+      vehicleType: bookingData.vehicleType,
+      licensePlateColor: values.licensePlateColor,
+      notificationMethod: 'SMS',
+      scheduleType: values.scheduleType,
+      vehicleSubCategory: values.vehicleSubCategory,
+      vehicleSubType: values.vehicleSubType,
+      certificateSeries: values.certificateSeries,
+      referUserId:localStorage.getItem('partnerReferUserId') || undefined,
+      referStationId:localStorage.getItem('partnerReferStationId') || undefined,
     }
-    CustomerScheduleService.userUpdateSchedule(data,token).then((res) => {
-      if(res?.issSuccess){
-        setIsLoading(true)
-        getScheduleDetail(dataDetail?.customerScheduleId)
+    Object.keys(newData).forEach((key) => {
+      if (newData[key] === "") {
+        delete newData[key];
+      }})
+    if(adviseSchedule){
+      BookingService.createConsultantSchedule(newData).then((result) => {
+        const { error: rsMess, statusCode, data } = result
+        if (statusCode != 200) {
+          setIsModalErrOpen(true)
+          if (Object.keys(SCHEDULE_ERROR).includes(rsMess)) {
+            setErrorMessage(SCHEDULE_ERROR[rsMess])
+          } else {
+            setErrorMessage(SCHEDULE_ERROR.INVALID_REQUEST)
+          }
+        setIsVisible(false)
         setTimeout(() => {
           setIsLoading(false)
-        }, 1000);
-      }else{
-        setErrorMessage(SCHEDULE_ERROR[res?.statusCode])
-        setIsModalErrOpen(true)
-      }
-    })
+        }, 500);
+        } else {
+          getScheduleDetail(data?.customerScheduleId)
+          setScheduleTypePopUp(newData.scheduleType)
+          setTimeout(() => {
+            setIsLoading(false)
+          }, 500);
+          if(data.paymentUrl && data.paymentUrl?.length > 0){
+            setTimeout(() => {
+              window.open(data.paymentUrl, '_blank')
+            }, 500);
+          }
+          setIsModalOpen(true)
+          localStorage.removeItem(addKeyLocalStorage('bookingData'))
+          setTimeout(() => {
+            setBookingData({})
+            form.resetFields();
+            form.setFieldsValue({
+              vntId:null,
+              dateSchedule: null,
+              time: null,
+              stationsId: null
+            })
+          }, 500);
+        }
+      })
+    }else{
+      BookingService.createSchedule(newData).then((result) => {
+        const { error: rsMess, statusCode, data } = result
+        if (statusCode != 200) {
+          setIsModalErrOpen(true)
+          if (Object.keys(SCHEDULE_ERROR).includes(rsMess)) {
+            setErrorMessage(SCHEDULE_ERROR[rsMess])
+          } else {
+            setErrorMessage(SCHEDULE_ERROR.INVALID_REQUEST)
+          }
+        setIsVisible(false)
+        setTimeout(() => {
+          setIsLoading(false)
+        }, 500);
+        } else {
+          // if(adviseSchedule){
+          //   getScheduleDetail(data[0])
+          //   setTimeout(() => {
+          //     setIsLoading(false)
+          //   }, 500);
+          //   if(data.paymentUrl && data.paymentUrl?.length > 0){
+          //     setTimeout(() => {
+          //       window.open(data.paymentUrl, '_blank')
+          //     }, 500);
+          //   }
+          // }else{
+            setIsModalOpen(true)
+          // }
+          localStorage.removeItem(addKeyLocalStorage('bookingData'))
+          setTimeout(() => {
+            setBookingData({})
+            form.resetFields();
+            form.setFieldsValue({
+              vntId:null,
+              dateSchedule: null,
+              time: null,
+              stationsId: null
+            })
+          }, 500);
+        }
+      })
+    }
+    setIsVisible(true)
   }
 
 
@@ -785,20 +821,11 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
         ...prev,
         vehicleSubCategory: vehicleSubCategory||options[0].value,
       }));
-      saveDataLocal('vehicleSubCategory',vehicleSubCategory ||options[0].value)
       form.setFieldsValue({
         vehicleSubCategory: vehicleSubCategory||options[0].value,
       })
     }
-    setVehicleSubCategoryOptions(options);
-  }
-  const saveDataLocal=(key,value)=>{
-    let data = JSON.parse(localStorage.getItem(addKeyLocalStorage('bookingData')))
-    let localData={
-      ...data,
-      [key]:value
-    }
-    localStorage.setItem(addKeyLocalStorage('bookingData'), JSON.stringify(localData))
+      setVehicleSubCategoryOptions(options);
   }
   
   const handleFillData=()=>{
@@ -841,26 +868,14 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
         vehicleType: dataBookingParam?.vehicleType
       })
     }
-    if(!dataLocal?.vehicleSubType){
-      handleCategory(dataDetail?.vehicleSubType || VEHICLE_SUB_TYPE[0].value)
-      let localData={
-        ...dataLocal,
-        vehicleSubCategory:dataBookingParam?.vehicleSubCategory || VIHCLE_CATEGORY_OTO[0].value,
-        vehicleSubType:dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0].value,
-        vehicleType: Number(dataBookingParam?.vehicleType)|| VEHICLE_SUB_TYPE[0].vehicleType,
-      }
-      localStorage.setItem(addKeyLocalStorage('bookingData'), JSON.stringify(localData))
-    } else{
-      handleCategory(dataDetail?.vehicleSubType)
-    }
+    handleCategory(dataDetail?.vehicleSubType)
     if(Number(params.get('vehicleSubType')) !== 0){
-      // handleCategory(Number(params.get('vehicleSubType')))
-      handleCategory(Number(dataDetail?.vehicleSubType))
+      handleCategory(Number(params.get('vehicleSubType')))
     } 
   }, [])
   useEffect(()=>{
     handleFillData()
-    handleCheckReq(bookingData?.scheduleType || dataLocal?.scheduleType || Number(params.get('scheduleType')) || SCHEDULE_TYPE[0].value,SCHEDULE_TYPE)
+    handleCheckReq(bookingData?.scheduleType, SCHEDULE_TYPE)
   },[isLoadDataLocal])
 
   // fix antd select label
@@ -887,15 +902,6 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
     }
   },[dataBookingParam])
 
-  useEffect(() => {
-    if (isZaloApp) {
-      form.setFieldsValue({
-        "phone": zaloUserPhone,
-      })
-      saveDataLocal('phone', zaloUserPhone)
-    }
-  }, [zaloUserPhone, form])
-
   const handleCheckReq=(values,arrayCheck)=>{
     for(let i=0;i<arrayCheck.length;i++){
       if(arrayCheck[i].value==values){
@@ -909,30 +915,20 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
   const onClose=()=>{
     setOpen(false)
   }
-  // useEffect(() => {
-  //   if (isZaloApp) {
-  //     form.setFieldsValue({
-  //       "fullnameSchedule": zaloUserName,
-  //     })
-  //     saveDataLocal('fullnameSchedule', zaloUserName)
-  //   }
-  // }, [zaloUserName, form])
 
   return (
     <div className="detail-sche" style={{ maxWidth: 600, margin: 'auto', padding: '10px' }}>
     <Form
       name="booking"
       layout="vertical"
-      initialValues={{
-        fullnameSchedule: dataDetail?.fullnameSchedule,
-      }}
+      initialValues={{}}
       form={form}
       onFinish={(values) => { onFinish(values) }}>
       {() => (
          <div>
       <Form.Item
         name="fullnameSchedule"
-        label="Họ và tên chủ xe"
+        label="Họ và tên chủ xe a"
         rules={[
           {
             required: dataBookingParam?.require_firstName === 'false' ? false : true,
@@ -946,8 +942,9 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
         hidden={dataBookingParam?.visible_firstName === 'true' || dataBookingParam?.visible_firstName === null ? false : true}
       >
         <Input
-          disabled={true}
+          defaultValue={dataBookingParam?.fullnameSchedule}
           className="login__input booking-input"
+          placeholder="Nguyễn Văn a"
           type="text"
           size="large"
         />
@@ -980,15 +977,13 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
         ]}
       >
         <Input
-          defaultValue={isZaloApp ? zaloUserPhone : dataBookingParam?.phone || dataLocal?.phone}
+          defaultValue={dataBookingParam?.phone}
           className="login__input booking-input"
           placeholder="Nhập số điện thoại"
           type="text"
           size="large"
           disabled={isZaloApp}
-          onInput={(e) => {
-            saveDataLocal('phone', e.target.value)
-          }} />
+           />
       </Form.Item>
 
       <Form.Item
@@ -1002,7 +997,6 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
         ]}>
         <div className="login__input__icon">
         <SelectAntd
-            disabled={true}
             className="cs-select ant-custom booking-input"
             isSearchable={true}
             placeholder="Vui lòng chọn mục đích đặt lịch"
@@ -1012,21 +1006,6 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
             menuPlacement="top"
             value={bookingData.scheduleType}
             // disabled={!bookingData.stationsId}
-            onChange={(values) => {
-              if(!isZaloApp){
-                saveDataLocal('scheduleType',values)
-              }else{
-                localStorage.removeItem('bookingData')
-              }
-              form.setFieldsValue({
-                scheduleType:values,
-              })
-              handleCheckReq(values,scheduleTypes)
-              setBookingData({
-                ...bookingData,
-                scheduleType:values,
-              })
-            }}
           />
         </div>
       </Form.Item>
@@ -1043,18 +1022,14 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
           }
           ]}>
         <div className="login__input__icon">
-          <Input defaultValue={dataBookingParam?.licensePlates?.toUpperCase() || dataLocal?.licensePlates?.toUpperCase()} 
+          <Input defaultValue={dataBookingParam?.licensePlates?.toUpperCase()} 
             className="login__input booking-input" 
             style={{textTransform:'uppercase'}} 
             placeholder="59B16856" 
             type="text" 
             size="large"
             readOnly = {dataVihcle?.vehicleIdentity}
-            disabled={true}
-            onInput={(e)=>{
-              e.target.value = e.target.value.toUpperCase().replace(/\s/g, '')
-              saveDataLocal('licensePlates',e.target.value)
-            }} />
+             />
         </div>
       </Form.Item>
       <Form.Item
@@ -1073,22 +1048,11 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
             isSearchable={true}
             placeholder="Vui lòng chọn màu biển số"
             styles={customStyles}
-            disabled={true}
             options={licensePlateColor}
             value={bookingData.licensePlateColor}
             menuPlacement="top"
             defaultValue={Number(dataBookingParam?.licensePlateColor) || PLATE_COLOR[0].value}
             isOptionDisabled={(option) => option.disabled}
-            onChange={(values) => {
-              saveDataLocal('licensePlateColor',values)
-              form.setFieldsValue({
-              licensePlateColor:values,
-              })
-              setBookingData({
-                ...bookingData,
-                licensePlateColor:values,
-              })
-            }}
           />
         </div>
       </Form.Item>
@@ -1106,40 +1070,10 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
               }
             ]}>
             <SelectAntd
-                disabled={true}
                 className='cs-select ant-custom booking-input'
                 options={VEHICLE_SUB_TYPE}
                 defaultValue={Number(dataBookingParam?.vehicleSubType)|| VEHICLE_SUB_TYPE[0].value}
                 value={bookingData.vehicleSubType}
-                onChange={(values,vehicletype) => {
-                  let data = JSON.parse(localStorage.getItem(addKeyLocalStorage('bookingData')))
-                  let localData={
-                    ...data,
-                    vehicleSubType:values,
-                    vehicleType: vehicletype.vehicleType,
-                    dateSchedule:null,
-                    time:null,
-                  }
-                  localStorage.setItem(addKeyLocalStorage('bookingData'), JSON.stringify(localData))
-                  handleCategory(values,null)
-                  form.setFieldsValue({
-                    vehicleType: vehicletype.vehicleType,
-                    vehicleSubType: values,
-                    dateSchedule:null,
-                    time:null,
-                  })
-                  setBookingData({
-                    ...bookingData,
-                    vehicleType: vehicletype.vehicleType,
-                    vehicleSubType: values,
-                    dateSchedule:null,
-                    time:null,
-                  })
-                  setDateFilter({
-                    ...dateFilter,
-                    vehicleType: vehicletype.vehicleType,
-                  })
-                }}
               />
           </Form.Item>
         </Col>
@@ -1149,6 +1083,7 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
             className="radio-label"
             label="Phân loại"
             name="vehicleSubCategory"
+            hidden={dataBookingParam?.visible_vehicleSubCategory === 'true' || dataBookingParam?.visible_vehicleSubCategory === null ? false : true}
             rules={[
               {
                 required: dataBookingParam?.require_vehicleSubCategory === 'true' ? true : false,
@@ -1157,25 +1092,10 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
             ]}
             >
             <SelectAntd
-              disabled={true}
               className='cs-select ant-custom booking-input'
               options={vehicleSubCategoryOptions}
               defaultValue={Number(dataBookingParam?.vehicleSubCategory)|| vehicleSubCategoryOptions[0].label}
               value={bookingData.vehicleSubCategory}
-              onChange={(values) => {
-                saveDataLocal('vehicleSubCategory',values)
-                form.setFieldsValue({
-                    vehicleSubCategory: values,
-                    dateSchedule:null,
-                    time:null,
-                  })
-                  setBookingData({
-                    ...bookingData,
-                    vehicleSubCategory: values,
-                    dateSchedule:null,
-                    time:null,
-                  })
-              }}
             />
           </Form.Item>
         </Col>
@@ -1209,18 +1129,13 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
           },
         ]}>
         <Input
-          disabled={true}
           className="login__input"
-          defaultValue={ dataBookingParam?.certificateSeries || dataLocal?.certificateSeries}
+          defaultValue={ dataBookingParam?.certificateSeries}
           placeholder="Ví dụ: KA-7461980"
           type="text"
           style={{textTransform:'uppercase'}}
           size="large"
           readOnly = {dataVihcle?.certificateSeries}
-          onInput={(event) => {
-            event.target.value = event.target.value.toUpperCase().replace(/\s/g, '')
-            saveDataLocal('certificateSeries',event.target.value)
-          }}
         />
       </Form.Item>
       <Form.Item label="Khu vực" name="vntId" rules={[]} hidden={dataBookingParam?.visible_StationArea === 'true' || dataBookingParam?.visible_StationArea === null ? false : true}>
@@ -1231,7 +1146,6 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
           }}
           showSearch
           disabled={!bookingData.vehicleSubType}
-          // defaultValue={dataBookingParam?.vntId || dataLocal?.vntId}
           onChange={(values) => {
             let data = JSON.parse(localStorage.getItem(addKeyLocalStorage('bookingData')))
             let localData={
@@ -1303,12 +1217,6 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
               options={listStation}
               menuPlacement="top"
               disabled={!bookingData?.vntId || isVisible.stationsId}
-              // value={listStation?.filter(op => op.stationsId === dataBookingParam?.stationsId || dataLocal?.stationsId?.stationsId)}
-              // value={73}
-              // defaultValue={{
-              //   label : "2914D",
-              //   value : 73
-              // }}
               onChange={(values) => {
                 form.setFieldsValue({
                   dateSchedule: null,
@@ -1321,7 +1229,6 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
                 })
                 const stationSelected = listStation?.find((e) => e.stationsId == values)
                 setBookingConfig(JSON.parse(stationSelected?.stationBookingConfig))
-                saveDataLocal('stationsId',stationSelected)
                 setBookingData({
                   ...bookingData,
                   stationsId: stationSelected,
@@ -1355,10 +1262,8 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
                   endDate: moment(selectedMonth).endOf('months').format(DATE_DISPLAY_FORMAT),
                 })
               }}
-              selectedDate={form.getFieldValue('dateSchedule') || dataDetail?.dateSchedule}
+              selectedDate={form.getFieldValue('dateSchedule')}
               setSelectedDate={(values) => {
-                saveDataLocal('dateSchedule',values)
-                saveDataLocal('time',null)
                 form.setFieldsValue({
                   dateSchedule:values,
                   time: null
@@ -1400,26 +1305,44 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
                 form.setFieldsValue({
                   ["time"]: values
                 })
-                saveDataLocal('time',values)
                 setBookingData({
                   ...bookingData,
                   time: values.scheduleTime
                 })
               }}
-              selectedTime={form.getFieldValue('time') || {scheduleTime: dataDetail?.time }}
+              selectedTime={form.getFieldValue('time')}
               bookingConfig={bookingConfig}
             />
         </Form.Item>
       )}
       <div className="w-100 d-flex justify-content-center mgt-40">
         <Button className="login__button df" type="primary" htmlType="submit" size="large">
-          Cập nhật
+          Đặt lịch
         </Button>
       </div>
       <BookingSuccess isModalOpen={isModalOpen} scheduleType={scheduleTypePopUp} setTabKey={setTabKey} setIsModalOpen={setIsModalOpen} onClose={() => {
         setIsModalOpen(false)
+        // window.location.reload()}
         history.goBack()
         }}></BookingSuccess>
+      <ModalPaymentQR
+        open={open}
+        onClose={() => {
+            onClose();
+        }}
+        driver={{
+          totalPay: scheduleDetail?.order?.totalAmount,
+          formatedTotalPay: numberWithSeparator(scheduleDetail?.order?.totalAmount),
+          qr: scheduleDetail?.paymentQR?.bankQR,
+          expiredInMinutes: 10,
+          runTime: new Date(),
+          status: scheduleDetail?.order?.paymentStatus
+        }}
+        onRefresh={() => {
+          setScheduleDetail({ ...scheduleDetail, runTime: new Date() });
+        }}
+        method={'bank'}
+      />
       {isModalErrOpen &&
         <PopupMessage isModalOpen={isModalErrOpen} onClose={() => {setIsModalErrOpen(false)}} text={errorMessage} ></PopupMessage>
       }
