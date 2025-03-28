@@ -72,7 +72,7 @@ const BookingDetail = ({
     }
   }
 
-
+console.log("scheduleInformation",scheduleInformation)
   const enablePaymentMethods = scheduleInformation?.station?.stationPayments ? scheduleInformation?.station?.stationPayments.split(',') : [];
   const ENABLE_PAYMENT_GATEWAY =
     process.env.REACT_APP_ENABLE_PAYMENT * 1 === 1 &&
@@ -283,6 +283,8 @@ const BookingDetail = ({
       </div>
       {scheduleInformation?.CustomerScheduleStatus !== 20 && scheduleInformation?.CustomerScheduleStatus !== 30  ?
         <div className="w-100 d-flex justify-content-center" style={{gap:"2em"}}>
+          {scheduleInformation?.confirmStatus === 0 ? (
+            <>
           <Button className="cancel-schedule d-flex justify-content-center align-items-center" type="primary" onClick={() => { setIsModal(true) }} size="larger" style={{width: '100%',padding: '20px',borderRadius:'6px',marginTop:'30px'}}>
             Hủy lịch hẹn
           </Button>
@@ -296,6 +298,8 @@ const BookingDetail = ({
             >
               Sửa
           </Button>
+            </>
+          ):(null)}
         </div>
         : <></>
       }
