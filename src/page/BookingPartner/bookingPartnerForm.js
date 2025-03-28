@@ -155,8 +155,6 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     setIsVisible((prev) => ({ ...prev, time: true }))
     setLoadingHoursPicker(true)
     setSelectedBookingHour(false)
-    console.log("params",params)
-    console.log("bookingConfig",bookingConfig)
     BookingService.getBookingHours(params)
       .then((data) => {
         if(data.statusCode == 505){
