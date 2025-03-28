@@ -72,7 +72,6 @@ const BookingDetail = ({
     }
   }
 
-console.log("scheduleInformation",scheduleInformation)
   const enablePaymentMethods = scheduleInformation?.station?.stationPayments ? scheduleInformation?.station?.stationPayments.split(',') : [];
   const ENABLE_PAYMENT_GATEWAY =
     process.env.REACT_APP_ENABLE_PAYMENT * 1 === 1 &&
