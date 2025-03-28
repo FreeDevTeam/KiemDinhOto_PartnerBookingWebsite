@@ -22,12 +22,14 @@ import BookingDatePicker from '../../components/BookingDatePicker'
 import BookingHoursPicker from '../../components/BookingHoursPicker'
 import ModalPaymentQR from '../../components/ModalPaymentQR/ModalPaymentQR'
 import { numberWithSeparator } from '../../helper/numberWithSeparator'
+import CustomerScheduleService from '../../services/customerScheduleService'
 
 function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
   const [form] = Form.useForm()
   const isZaloApp = (process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1)
   const location = useLocation();
   const dataDetail = location?.state?.data
+  const token = location?.state?.token
   const history = useHistory();
   const dataVihcle=location.state || {}
   const searchparam = location.search
@@ -590,113 +592,28 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
   }
 
   const onFinish = (values) => {
-    setIsVisible(false)
-    setIsLoading(true)
-    let adviseSchedule=Object.values(scheduleTypes).find(item=>item?.value== bookingData?.scheduleType)?.scheduleCategory == '2'
-    const newData = {
-      licensePlates: values.licensePlates.toUpperCase(),
-      phone: values.phone,
-      fullnameSchedule: values.fullnameSchedule.trim(),
-      email: values.email,
-      dateSchedule: adviseSchedule ? undefined : values.dateSchedule,
-      time: adviseSchedule? undefined : values?.time?.scheduleTime,
-      stationsId:adviseSchedule ? undefined : values.stationsId,
-      vehicleType: bookingData.vehicleType,
-      licensePlateColor: values.licensePlateColor,
-      notificationMethod: 'SMS',
-      scheduleType: values.scheduleType,
-      vehicleSubCategory: values.vehicleSubCategory,
-      vehicleSubType: values.vehicleSubType,
-      certificateSeries: values.certificateSeries,
-      referUserId:localStorage.getItem('partnerReferUserId') || undefined,
-      referStationId:localStorage.getItem('partnerReferStationId') || undefined,
+    const data = {
+      id: dataDetail?.customerScheduleId,
+        data: {
+          stationsId: values?.stationsId,
+          dateSchedule: values?.dateSchedule,
+          time: values?.time?.scheduleTime,
+          confirmStatus: 1,
+          scheduleNote: "Khách hàng đã xác nhận"
+        },
     }
-    Object.keys(newData).forEach((key) => {
-      if (newData[key] === "") {
-        delete newData[key];
-      }})
-    if(adviseSchedule){
-      BookingService.createConsultantSchedule(newData).then((result) => {
-        const { error: rsMess, statusCode, data } = result
-        if (statusCode != 200) {
-          setIsModalErrOpen(true)
-          if (Object.keys(SCHEDULE_ERROR).includes(rsMess)) {
-            setErrorMessage(SCHEDULE_ERROR[rsMess])
-          } else {
-            setErrorMessage(SCHEDULE_ERROR.INVALID_REQUEST)
-          }
-        setIsVisible(false)
+    CustomerScheduleService.userUpdateSchedule(data,token).then((res) => {
+      if(res?.issSuccess){
+        setIsLoading(true)
+        getScheduleDetail(dataDetail?.customerScheduleId)
         setTimeout(() => {
           setIsLoading(false)
-        }, 500);
-        } else {
-          getScheduleDetail(data?.customerScheduleId)
-          setScheduleTypePopUp(newData.scheduleType)
-          setTimeout(() => {
-            setIsLoading(false)
-          }, 500);
-          if(data.paymentUrl && data.paymentUrl?.length > 0){
-            setTimeout(() => {
-              window.open(data.paymentUrl, '_blank')
-            }, 500);
-          }
-          setIsModalOpen(true)
-          localStorage.removeItem(addKeyLocalStorage('bookingData'))
-          setTimeout(() => {
-            setBookingData({})
-            form.resetFields();
-            form.setFieldsValue({
-              vntId:null,
-              dateSchedule: null,
-              time: null,
-              stationsId: null
-            })
-          }, 500);
-        }
-      })
-    }else{
-      BookingService.createSchedule(newData).then((result) => {
-        const { error: rsMess, statusCode, data } = result
-        if (statusCode != 200) {
-          setIsModalErrOpen(true)
-          if (Object.keys(SCHEDULE_ERROR).includes(rsMess)) {
-            setErrorMessage(SCHEDULE_ERROR[rsMess])
-          } else {
-            setErrorMessage(SCHEDULE_ERROR.INVALID_REQUEST)
-          }
-        setIsVisible(false)
-        setTimeout(() => {
-          setIsLoading(false)
-        }, 500);
-        } else {
-          // if(adviseSchedule){
-          //   getScheduleDetail(data[0])
-          //   setTimeout(() => {
-          //     setIsLoading(false)
-          //   }, 500);
-          //   if(data.paymentUrl && data.paymentUrl?.length > 0){
-          //     setTimeout(() => {
-          //       window.open(data.paymentUrl, '_blank')
-          //     }, 500);
-          //   }
-          // }else{
-            setIsModalOpen(true)
-          // }
-          localStorage.removeItem(addKeyLocalStorage('bookingData'))
-          setTimeout(() => {
-            setBookingData({})
-            form.resetFields();
-            form.setFieldsValue({
-              vntId:null,
-              dateSchedule: null,
-              time: null,
-              stationsId: null
-            })
-          }, 500);
-        }
-      })
-    }
-    setIsVisible(true)
+        }, 1000);
+      }else{
+        setErrorMessage(SCHEDULE_ERROR[res?.statusCode])
+        setIsModalErrOpen(true)
+      }
+    })
   }
 
 

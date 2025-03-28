@@ -29,6 +29,8 @@ const BookingDetail = ({
   isHeader = true
 }) => {
   const { customerScheduleId } = useParams()
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = localStorage.getItem('token') || urlParams.get('token');
   let wab = []
   const [scheduleInformation, setScheduleInformation] = useState([])
   const [isModal, setIsModal] = useState(false)
@@ -287,7 +289,7 @@ const BookingDetail = ({
           <Button className="d-flex justify-content-center align-items-center" type="primary" 
             onClick={() => { history.push({
             pathname: `/booking-update/${scheduleInformation?.customerScheduleId}`,
-            state: { data: scheduleInformation }
+            state: { data: scheduleInformation, token: token }
             })}}
             size="larger"
             style={{width: '100%',padding: '20px',borderRadius:'6px',marginTop:'30px'}}
