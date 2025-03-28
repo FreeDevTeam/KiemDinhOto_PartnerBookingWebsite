@@ -27,7 +27,7 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
   const [form] = Form.useForm()
   const isZaloApp = (process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1)
   const location = useLocation();
-  const dataDetail = location.state.data
+  const dataDetail = location?.state?.data
   const history = useHistory();
   const dataVihcle=location.state || {}
   const searchparam = location.search
@@ -925,7 +925,7 @@ function UpdateBookingDetail({setTabKey, zaloUserName,zaloUserPhone}) {
       })
     }
     if(!dataLocal?.vehicleSubType){
-      handleCategory(VEHICLE_SUB_TYPE[0].value)
+      handleCategory(dataDetail?.vehicleSubType || VEHICLE_SUB_TYPE[0].value)
       let localData={
         ...dataLocal,
         vehicleSubCategory:dataBookingParam?.vehicleSubCategory || VIHCLE_CATEGORY_OTO[0].value,
