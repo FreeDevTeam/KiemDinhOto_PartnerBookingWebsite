@@ -120,7 +120,7 @@ export const SCHEDULE_TYPE = [
   { value : 3, label: 'Nộp hồ sơ xe mới'},
   { value : 4, label: 'Thay đổi thông tin xe'},
   { value : 7, label: 'Tư vấn bảo dưỡng'},
-  { value : 8, label: 'Tư bảo hiểm'},
+  { value : 8, label: 'Tư vấn bảo hiểm'},
   { value : 9, label: 'Tư vấn hoán cải'},
   { value : 10, label: 'Mất giấy đăng kiểm'},
   { value : 11, label: 'Cấp lại tem đăng kiểm'},
@@ -137,7 +137,7 @@ export const SCHEDULE_TYPE = [
   { value : 22, label: 'Gia hạn BH TNDS'},
   { value : 23, label: 'Nộp hồ sơ xe mới (Ngoài giờ HC)'},
   { value : 24, label: 'Đăng kiểm xe (Ngoài giờ HC)'},
-
+  { value : 25, label: 'Tư vấn bồi thường bảo hiểm'},
 ]
 export const SCHEDULE_TITLE = {
   [SCHEDULE_TYPE.VEHICLE_INSPECTION]: {
@@ -845,4 +845,8 @@ export const TTDK_INSURANCE_PARTNER = {
     ),
 
   },
+}
+
+export const WEBVIEW_TYPES = {
+  WEBVIEW: 1,
 }
