@@ -1009,7 +1009,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
          <div>
       <Form.Item
         name="fullnameSchedule"
-        label="Họ và tên chủ xe a"
+        label="Họ và tên chủ xe"
         rules={[
           {
             required: dataBookingParam?.require_firstName === 'false' ? false : true,
