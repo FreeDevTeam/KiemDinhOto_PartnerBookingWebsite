@@ -1034,7 +1034,6 @@ function UpdateBookingDetail({ setTabKey}) {
                     time: null
                   })
                   const stationsId = bookingData?.stationsId?.stationsId
-                  console.log("stationsId", stationsId)
                   if (stationsId && bookingData) {
                     getBookingHours({
                       stationsId: stationsId,
