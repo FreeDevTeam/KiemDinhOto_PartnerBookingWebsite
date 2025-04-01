@@ -26,6 +26,13 @@ import { useDispatch } from 'react-redux'
 import BookingService from './services/addBookingService';
 export const baseName = IS_ZALO_MINI_APP ? `/zapps/${process.env.REACT_APP_ZMP_APP_ID}` : '/'
 function App() {
+  // Kiểm tra xem có APIKey trong URL không cho tính năng tự động đặt lịch
+  const urlParams = new URLSearchParams(window.location.search);
+  const apiKey = urlParams.get('apikey') || undefined;
+  if(apiKey) {
+    localStorage.setItem('apiKey', apiKey)
+  }
+
   const dispatch = useDispatch()
   const themeApp = process.env.REACT_APP_THEME_NAME
   const setThemeApp = () => {

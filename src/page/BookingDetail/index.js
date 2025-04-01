@@ -30,7 +30,8 @@ const BookingDetail = ({
 }) => {
   const { customerScheduleId } = useParams()
   const urlParams = new URLSearchParams(window.location.search);
-  const token = localStorage.getItem('token') || urlParams.get('token');
+  const scheduleHash = localStorage.getItem('scheduleHash') || urlParams.get('scheduleHash');
+  const apikey = localStorage.getItem('apiKey') || urlParams.get('apikey');
   let wab = []
   const [scheduleInformation, setScheduleInformation] = useState([])
   const [isModal, setIsModal] = useState(false)
@@ -50,7 +51,7 @@ const BookingDetail = ({
     if ((reasonNoteCancelSchedule || reasonRateCancelSchedule) !== null) {
       setIsModal(true)
       BookingService.cancelBooking({
-        customerScheduleId: customerScheduleId,
+        customerScheduleId: customerScheduleId || scheduleInformation?.customerScheduleId,
         reason: reasonNoteCancelSchedule || reasonRateCancelSchedule
       }).then((result) => {
         const { isSuccess, data } = result
@@ -92,7 +93,6 @@ const BookingDetail = ({
   if (dataTime) {
     wab = JSON.parse(scheduleInformation?.station?.stationWorkTimeConfig)
   }
-
   const getScheduleDetail = () => {
     BookingService.getBookingDetail(customerScheduleId).then((result) => {
       const { isSuccess, message, data } = result
@@ -104,8 +104,23 @@ const BookingDetail = ({
     })
   }
   useEffect(() => {
-    getScheduleDetail()
-  }, [customerScheduleId])
+    if(scheduleHash){
+      BookingService.findByHash({scheduleHash:scheduleHash}).then((result) => {
+        const { isSuccess, message, data } = result
+        if (!isSuccess || !data) {
+          return
+        } else {
+          setScheduleInformation(data)
+        }
+      })
+    }
+    else{
+      if(customerScheduleId) {
+        getScheduleDetail()
+      }
+    }
+  }, [customerScheduleId,scheduleHash])
+
   const history = useHistory()
   const BindPlate = ({ type, number }) => {
     const colors = {
@@ -288,10 +303,12 @@ const BookingDetail = ({
             Hủy lịch hẹn
           </Button>
           <Button className="d-flex justify-content-center align-items-center" type="primary" 
-            onClick={() => { history.push({
+            onClick={() => { 
+              history.push({
             pathname: `/booking-update/${scheduleInformation?.customerScheduleId}`,
-            state: { data: scheduleInformation, token: token }
-            })}}
+            state: { data: scheduleInformation }
+            })
+          }}
             size="larger"
             style={{width: '100%',padding: '20px',borderRadius:'6px',marginTop:'30px'}}
             >

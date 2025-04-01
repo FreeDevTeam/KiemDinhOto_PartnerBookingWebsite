@@ -47,11 +47,6 @@ export const ROUTERS = {
         component: BookingDetail,
         isZaloApp: 1
     },
-    updateBooking: {
-        path: PATH.BOOKING_UPDATE,
-        component: UpdateBookingDetail,
-        isZaloApp: 1,
-    },
     checkVihcleZalo: {
         path: PATH.CHECK_VIHCLE,
         component:CheckVihcle,
@@ -71,6 +66,11 @@ export const ROUTERS = {
         path: PATH.RESET_PASSWORD,
         component: ResetPassword,
         isZaloApp: 1
+    },
+    updateBookingOnMiniApp: {
+        path: PATH.BOOKING_UPDATE,
+        component: UpdateBookingDetail,
+        isZaloApp: 1,
     },
     // page on web
     checkVihcle: {
@@ -96,6 +96,16 @@ export const ROUTERS = {
     personalGuide: {
         path: PATH.PERSONAL_GUIDE,
         component:PersonalGuide,
+        isZaloApp: 0,
+    },
+    bookingDetailNoId: {
+        path: PATH.BOOKING_DETAIL_NO_ID,
+        component: BookingDetail,
+        isZaloApp: 0
+    },
+    updateBookingOnWeb: {
+        path: PATH.BOOKING_UPDATE,
+        component: UpdateBookingDetail,
         isZaloApp: 0,
     },
     // bookingPartnerIframe: {

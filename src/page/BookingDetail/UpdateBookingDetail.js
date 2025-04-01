@@ -44,7 +44,7 @@ function UpdateBookingDetail({ setTabKey}) {
   const location = useLocation()
   const history = useHistory()
   const dataDetail = location?.state?.data
-  const token = location?.state?.token
+  const apikey = location?.state?.apikey
   const dataVihcle = location.state || {}
   const searchparam = location.search
   const params = new URLSearchParams(searchparam)
@@ -306,6 +306,7 @@ function UpdateBookingDetail({ setTabKey}) {
       dateSchedule: null,
       time: null
     }))
+
     //thực hiện for để lấy giá trị thỏa mãn
     for (let i = 0; i < listStation?.length; i++) {
       if (listStation[i].stationStatus) {
@@ -350,22 +351,38 @@ function UpdateBookingDetail({ setTabKey}) {
           }
           //lưu dữ liệu thỏa mãn vào local
           const stationsId = bookingData?.stationsId
-          //gọi api lấy giờ hẹn
-          if(Object.keys(stationsId).length > 0 && bookingData){
-            getBookingHours({
-              stationsId: stationsId?.stationsId,
-              date: listBookingDate[i].scheduleDate,
-              vehicleType: bookingData.vehicleType
-            })
-          }
-          else if(stationsId && bookingData) {
-            //chạy api lấy danh sách giờ hẹn
+          if(stationsId){
             getBookingHours({
               stationsId: stationsId,
               date: listBookingDate[i].scheduleDate,
               vehicleType: bookingData.vehicleType
             })
           }
+          if(stationsId?.stationsId){
+            getBookingHours({
+              stationsId: stationsId?.stationsId,
+              date: listBookingDate[i].scheduleDate,
+              vehicleType: bookingData.vehicleType
+            })
+          }
+          // gọi api lấy giờ hẹn
+          // if(stationsId){
+          //   if(Object.keys(stationsId).length > 0 && bookingData){
+          //     getBookingHours({
+          //       stationsId: stationsId?.stationsId,
+          //       date: listBookingDate[i].scheduleDate,
+          //       vehicleType: bookingData.vehicleType
+          //     })
+          //   }
+          //   else if(stationsId && bookingData) {
+          //     //chạy api lấy danh sách giờ hẹn
+          //     getBookingHours({
+          //       stationsId: stationsId,
+          //       date: listBookingDate[i].scheduleDate,
+          //       vehicleType: bookingData.vehicleType
+          //     })
+          //   }
+          // }
           return
         }
       }
@@ -505,7 +522,7 @@ function UpdateBookingDetail({ setTabKey}) {
         scheduleNote: 'Khách hàng đã xác nhận lịch hẹn!'
       }
     }
-    CustomerScheduleService.userUpdateSchedule(dataPayload,token).then((response)=>{
+    CustomerScheduleService.userUpdateSchedule(dataPayload).then((response)=>{
       const {issSuccess} = response
       if(issSuccess) {
         // setIsLoading(false)
@@ -997,7 +1014,7 @@ function UpdateBookingDetail({ setTabKey}) {
                     setBookingConfig(JSON.parse(stationSelected?.stationBookingConfig))
                     setBookingData({
                       ...bookingData,
-                      stationsId: stationSelected,
+                      stationsId: stationSelected?.stationsId,
                       dateSchedule: null,
                       time: null
                     })
