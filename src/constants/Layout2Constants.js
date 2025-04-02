@@ -411,7 +411,7 @@ export const HOT_SERVICES = [
   {
     label: 'Mua BH <br> vật chất xe',
     icon: <GiaHanDangKiemIcon></GiaHanDangKiemIcon>,
-    link: `https://ttdk.partner.saladin.vn/mua-bao-hiem-vat-chat-toan-dien-xe-oto/thong-tin-xe`,
+    link: `${PATH.BOOKING}?scheduleType=8`,
   },
   {
     label: 'Bảo dưỡng xe',
