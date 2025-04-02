@@ -159,7 +159,7 @@ function BookingHistoryList({ loading, setLoading, phoneNumber }) {
   const history = useHistory()
   const [filter, setFilter] = useState(DEFAULT_FILTER)
   const [dataList, setDataList] = useState({ data: [], total: 0 })
-
+  const [resultAfterAPIText, setResultAfterAPIText] = useState('')
   useEffect(() => {
     if (phoneNumber) {
       getData({
@@ -177,10 +177,17 @@ function BookingHistoryList({ loading, setLoading, phoneNumber }) {
       const { isSuccess, message, data } = result
       setLoading(false)
       if (!isSuccess || !data) {
+        setResultAfterAPIText("Không có dữ liệu")
         return
       } else {
+        if(data?.total === 0) {
+          setResultAfterAPIText("Bạn chưa có lịch hẹn nào")
+        }
         setDataList(data)
       }
+    }).catch((err) => {
+      setLoading(false)
+      setResultAfterAPIText("Không có dữ liệu")
     })
   }
 
@@ -204,7 +211,7 @@ function BookingHistoryList({ loading, setLoading, phoneNumber }) {
   return (
     <div>
       <div>
-        {dataList?.data.map((element, index) => {
+        {dataList?.data&&dataList?.data?.length>0 ? dataList?.data.map((element, index) => {
           return (
             <ScheduleItem
               key={index}
@@ -215,8 +222,12 @@ function BookingHistoryList({ loading, setLoading, phoneNumber }) {
               scheduleHash={element.scheduleHash}
             />
           )
-        })
-        }
+        }) :(
+            <div className='d-flex justify-content-center align-items-center'>
+              {resultAfterAPIText}
+          </div>
+        )
+      }
       </div>
       <div className="" style={{ maxWidth: 600, margin: 'auto', width: '100%', marginBottom: '60px' }}>
       {dataList?.data?.length > 0 && (
