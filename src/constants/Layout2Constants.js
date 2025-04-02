@@ -389,12 +389,12 @@ export const INSPECTION_SERVICES = [
     link: `${PATH.BOOKING}?scheduleType=24`,
     unOpen: true,
   },
-  {
-    label: 'Tra cứu <br> cảnh báo ĐK',
-    icon: <TraCuuPn></TraCuuPn>,
-    link: `${PATH.BOOKING}?scheduleType=15`,
-    unOpen: true,
-  },
+  // {
+  //   label: 'Tra cứu <br> cảnh báo ĐK',
+  //   icon: <TraCuuPn></TraCuuPn>,
+  //   link: `${PATH.BOOKING}?scheduleType=15`,
+  //   unOpen: true,
+  // },
   {
     label: 'Hỗ trợ xử lý <br> phạt nguội',
     icon: <XuLyPN></XuLyPN>,
