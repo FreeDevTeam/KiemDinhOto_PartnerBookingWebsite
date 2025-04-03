@@ -368,8 +368,11 @@ export const INSPECTION_SERVICES = [
   {
     label: 'Tư vấn BH <br> TNDS xe ô tô',
     icon: <TuVanBaoHiemIcon></TuVanBaoHiemIcon>,
-    link: `${PATH.BOOKING}?scheduleType=14`,
-    unOpen: true,
+    // link: `${PATH.BOOKING}?scheduleType=14`,
+    link: process.env.REACT_APP_RUNTIME_MODE == 'production' 
+    ? `https://baohiem.ttdk.com.vn?&appUserId=${appUserId}&token=${token}` 
+    : `https://ttdk-sanbox-muabaohiem.service.makefamousapp.com?isEmbeddedView=1&appUserId=${appUserId}&token=${token}`,
+    unOpen: false,
   },
   {
     label: 'Tư vấn ĐK <br> xe định kỳ',
@@ -406,7 +409,11 @@ export const HOT_SERVICES = [
   {
     label: 'Mua bảo hiểm TNDS',
     icon: <TramBDIcon></TramBDIcon>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/doi-tac-bao-hiem/saladin-bao-hiem-toan-dien?isEmbeddedView=true`,
+    // link: `${process.env.REACT_APP_DEPLOY_URL}/doi-tac-bao-hiem/saladin-bao-hiem-toan-dien?isEmbeddedView=true`,
+    link: process.env.REACT_APP_RUNTIME_MODE == 'production' 
+    ? `https://baohiem.ttdk.com.vn?&appUserId=${appUserId}&token=${token}` 
+    : `https://ttdk-sanbox-muabaohiem.service.makefamousapp.com?isEmbeddedView=1&appUserId=${appUserId}&token=${token}`,
+    unOpen: false,
   },
   {
     label: 'Mua BH <br> vật chất xe',
