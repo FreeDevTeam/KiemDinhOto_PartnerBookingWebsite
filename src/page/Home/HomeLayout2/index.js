@@ -57,7 +57,7 @@ const HomeLayout2 = (props) => {
   const [isLoading , setIsLoading] = useState(false);
   const [listNews , setListNews ] = useState([]) 
   const [hideNewsFromZaloMiniApp , setHideNewsFromZaloMiniApp ] = useState(true) 
-  const [isZaloApp, setIsZaloApp] = useState(false)
+  const [isZaloShowStationList, setIsZaloShowStationList] = useState(false)
   const LAST_UPDATE_NEWS = {}
   const lastUpdateNews = JSON.parse(localStorage.getItem('LAST_UPDATE_NEWS'))
 
@@ -297,11 +297,20 @@ const HomeLayout2 = (props) => {
       }
     }) : setStationNewsPromotion(JSON.parse(localStorage.getItem('LAST_PROMOTION_NEWS_DATA')))
   }
-  useEffect(() => {
-    setIsZaloApp(()=>{
-      const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1
-      return isZaloApp
+
+  const getZaloDisplayStationListSetting = async () => {
+    SystemConfigurationsService.getZaloDisplayStationList().then((res) => {
+      if(res) {
+        setIsZaloShowStationList(true)
+      }
+      else{
+        setIsZaloShowStationList(false)
+      }
     })
+  }
+  
+  useEffect(() => {
+    getZaloDisplayStationListSetting()
     getHomePageConfig(1)
     getHomePageConfig(2)
     setTimeout(() => {
@@ -400,7 +409,7 @@ const HomeLayout2 = (props) => {
                 </div>
               )
             )}
-            {!isZaloApp && ( //Nếu không phải là zalo mini app thì mới hiện lên
+            {isZaloShowStationList && ( //Nếu không phải là zalo mini app thì mới hiện lên
               <L2FunctionButtonList setSheetVisible={setSheetVisible} slider={true} setDataBtn={setDataBtn} list={BTN_LIST_SERVICE} title={'Điểm dịch vụ đề xuất'}></L2FunctionButtonList>
             )}
             {!hideNewsFromZaloMiniApp && (
