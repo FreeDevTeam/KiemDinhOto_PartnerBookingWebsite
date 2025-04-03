@@ -42,7 +42,6 @@ const HomeLayout2 = (props) => {
   const [bottomBanner, setBottomBanner] = useState([]);
   const { height, width } = useWindowDimensions()
   const mobile= width < 580
-
   const [paramsFilter, setParamsFilter] = useState({
     filter: {
       configCategory:1
@@ -58,7 +57,7 @@ const HomeLayout2 = (props) => {
   const [isLoading , setIsLoading] = useState(false);
   const [listNews , setListNews ] = useState([]) 
   const [hideNewsFromZaloMiniApp , setHideNewsFromZaloMiniApp ] = useState(true) 
-
+  const [isZaloApp, setIsZaloApp] = useState(false)
   const LAST_UPDATE_NEWS = {}
   const lastUpdateNews = JSON.parse(localStorage.getItem('LAST_UPDATE_NEWS'))
 
@@ -299,6 +298,10 @@ const HomeLayout2 = (props) => {
     }) : setStationNewsPromotion(JSON.parse(localStorage.getItem('LAST_PROMOTION_NEWS_DATA')))
   }
   useEffect(() => {
+    setIsZaloApp(()=>{
+      const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1
+      return isZaloApp
+    })
     getHomePageConfig(1)
     getHomePageConfig(2)
     setTimeout(() => {
@@ -397,7 +400,9 @@ const HomeLayout2 = (props) => {
                 </div>
               )
             )}
-            <L2FunctionButtonList setSheetVisible={setSheetVisible} slider={true} setDataBtn={setDataBtn} list={BTN_LIST_SERVICE} title={'Điểm dịch vụ đề xuất'}></L2FunctionButtonList>
+            {!isZaloApp && ( //Nếu không phải là zalo mini app thì mới hiện lên
+              <L2FunctionButtonList setSheetVisible={setSheetVisible} slider={true} setDataBtn={setDataBtn} list={BTN_LIST_SERVICE} title={'Điểm dịch vụ đề xuất'}></L2FunctionButtonList>
+            )}
             {!hideNewsFromZaloMiniApp && (
               <div className='layout2-bg mb-4'>
                 {listNews?.length > 0 && (
