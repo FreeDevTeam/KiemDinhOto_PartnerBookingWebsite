@@ -419,6 +419,7 @@ export const HOT_SERVICES = [
     label: 'Mua BH <br> vật chất xe',
     icon: <GiaHanDangKiemIcon></GiaHanDangKiemIcon>,
     link: `${PATH.BOOKING}?scheduleType=8`,
+    unOpen: true,
   },
   {
     label: 'Bảo dưỡng xe',
