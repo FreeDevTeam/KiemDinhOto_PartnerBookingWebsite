@@ -138,6 +138,7 @@ export const SCHEDULE_TYPE = [
   { value : 23, label: 'Nộp hồ sơ xe mới (Ngoài giờ HC)'},
   { value : 24, label: 'Đăng kiểm xe (Ngoài giờ HC)'},
   { value : 25, label: 'Tư vấn bồi thường bảo hiểm'},
+  { value : 26, label: 'Tư vấn sức khỏe lái xe'},
 ]
 export const SCHEDULE_TITLE = {
   [SCHEDULE_TYPE.VEHICLE_INSPECTION]: {
