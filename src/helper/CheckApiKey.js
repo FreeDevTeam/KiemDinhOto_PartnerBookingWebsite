@@ -13,7 +13,6 @@ export const CheckApiKey = () => {
   if (_TTDKMiniAppKey) {
     return (apikey = _TTDKMiniAppKey)
   } else {
-    return apikey = localStorage.getItem('API_KEY')
-    // return (apikey = params.get('apikey'))
+    return (apikey = params.get('apikey'))
   }
 }

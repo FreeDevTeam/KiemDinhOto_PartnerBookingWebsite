@@ -24,7 +24,6 @@ import { fillterRoutes } from './router';
 import { setMetaData } from "./actions";
 import { useDispatch } from 'react-redux'
 import BookingService from './services/addBookingService';
-import SystemConfigurationsService from './services/SystemConfigurationsService';
 export const baseName = IS_ZALO_MINI_APP ? `/zapps/${process.env.REACT_APP_ZMP_APP_ID}` : '/'
 function App() {
   const dispatch = useDispatch()
@@ -42,24 +41,8 @@ function App() {
       dispatch(setMetaData(data))
     })
   }
-  
-  const handleCheckApiKey = ()=>{
-    const API_KEY = process.env.REACT_APP_BOOKING_API_KEY
-    if(!API_KEY){
-      // const domain = 'dangkiem1406D.ttdk.com.vn' // dùng cho trường hợp localhost
-      const domain = window.location.origin.split('//')[1] // dùng cho trường hợp dev
-      SystemConfigurationsService.getApiKeyByDomain({domain}).then(result => {
-        if(result){
-          const enableApiKey = result[0]?.apiKeyEnable
-          enableApiKey && result[0]?.apiKey && localStorage.setItem('API_KEY', result[0]?.apiKey)
-        }
-      })
-    }
-  }
-
   useLayoutEffect(() => {
     fetchListMetaData()
-    handleCheckApiKey()
     const loadingScreen = document.querySelector('.splash-screen-loading');
     if (loadingScreen) {
       loadingScreen.style.display = 'none';

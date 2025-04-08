@@ -22,7 +22,6 @@ import BookingDatePicker from '../../components/BookingDatePicker'
 import BookingHoursPicker from '../../components/BookingHoursPicker'
 import ModalPaymentQR from '../../components/ModalPaymentQR/ModalPaymentQR'
 import { numberWithSeparator } from '../../helper/numberWithSeparator'
-import { optionServiceType } from '../../constants/serviceOption'
 
 function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   const isZaloApp = (process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1)
@@ -57,12 +56,6 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   const [requireScheduleTime, setRequireScheduleTime] = useState(1)
   const [bookingConfig, setBookingConfig] = useState({})
   const [vehicleSubCategoryOptions, setVehicleSubCategoryOptions] = useState([])
-  // Nhả thêm
-  const [serviceTypes, setServiceTypes] = useState([])
-  const [servicesByStations, setServicesByStations] = useState([])
-  const [allservicesByStations, setAllServicesByStations] = useState([])
-  const [selectedtation, setSelectedtation] = useState({})
-  // Kết thúc
   const [dateFilter, setDateFilter] = useState({
     stationsId: null,
     startDate: moment().format(DATE_DISPLAY_FORMAT),
@@ -562,60 +555,6 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
       }
     })
   }
-
-  const handleChangeServicesByType = (listService,type) =>{
-    const servicesByType = listService.filter(item => item.serviceType === type)
-    setServicesByStations(servicesByType)
-    const serviceId = servicesByType[0].value
-    handleFillValues('serviceId', serviceId, serviceId)
-  }
-
-  const handleGetStationsServices = (stationsId) => {
-    BookingService.getListStationService({"filter":{"stationsId": stationsId}}).then((result)=>{
-      const {data, isSuccess} = result
-      if(isSuccess && data?.data){
-        // Hiển thị phần loại dịch vụ
-        const serviceTypesList = data?.data.map((item)=>{
-          const foundOptionType = optionServiceType.find(option => option.value === item.serviceType)
-          return foundOptionType
-        })
-        const selectedServiceType = dataLocal?.serviceType || dataBookingParam?.serviceType || serviceTypesList[0]
-        handleFillValues('serviceType', selectedServiceType, selectedServiceType)
-        setServiceTypes(serviceTypesList)
-
-        // Lấy ra danh sách dịch vụ theo trạm
-        const allServices = data?.data.map((item)=>({
-          label:item.serviceName,
-          value:item.stationServicesId,
-          serviceType:item.serviceType,
-          price:item?.servicePrice
-        }))
-        setAllServicesByStations(allServices)
-
-        // Lọc dịch vụ theo loại
-        const servicesByType = data?.data.filter(item => item.serviceType === selectedServiceType.value)
-        setServicesByStations(()=>{
-          const servicesAfterFilter = servicesByType.map((item)=>({
-            label:item.serviceName,
-            value:item.stationServicesId,
-            serviceType:item.serviceType,
-            price:item?.servicePrice
-          }))
-          const serviceId = dataLocal?.serviceId || dataBookingParam?.serviceId || servicesAfterFilter[0]?.value
-          const serviceDefault = servicesAfterFilter.find(item => item.value === serviceId)
-          handleFillValues('serviceId', serviceDefault, serviceId)
-          return servicesAfterFilter
-        })
-        // // Ban đầu đã lấy ra được danh sách rồi ==> lọc ra theo serviceType ==> Theo local trước nếu ko có thì mặc định là [0]
-        // const serviceType = dataLocal?.serviceType
-        // // Nếu đã có serviceType thì lọc ra theo serviceType
-        //   // Nếu chưa có serviceType thì lọc ra theo serviceType mặc định là [0]
-        //  const servicesByType = servicesBeforeFilterByType.filter(item => item.serviceType === optionServiceType[0].value)
-        //  return setServicesByStations(servicesByType)
-      }
-    })
-  }
-
   useEffect(()=>{
     //chạy function lấy giờ hẹn đầu tiên sau khi lấy được ngày hẹn
     getHoursBooking()
@@ -627,56 +566,6 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   useEffect(()=>{
     //chạy function lấy trạm đầu tiên sau khi lấy được khu vực theo IP
     getStationBooking()
-  },[selectedBookingStation])
-    //Chạy function lấy serviceType theo trung tâm
-  useEffect(()=>{
-    if(selectedBookingStation){
-      const station_id = form.getFieldValue('stationsId')
-      handleGetStationsServices(station_id)
-      // BookingService.getListStationService({"filter":{"stationsId": station_id}}).then((result)=>{
-      //   const {data, isSuccess} = result
-      //   if(isSuccess && data?.data){
-      //     // Hiển thị phần loại dịch vụ
-      //     const serviceTypesList = data?.data.map((item)=>{
-      //       const foundOptionType = optionServiceType.find(option => option.value === item.serviceType)
-      //       return foundOptionType
-      //     })
-      //     const selectedServiceType = dataLocal?.serviceType || dataBookingParam?.serviceType || serviceTypesList[0]
-      //     handleFillValues('serviceType', selectedServiceType, selectedServiceType)
-      //     setServiceTypes(serviceTypesList)
-  
-      //     // Lấy ra danh sách dịch vụ theo trạm
-      //     const allServices = data?.data.map((item)=>({
-      //       label:item.serviceName,
-      //       value:item.stationServicesId,
-      //       serviceType:item.serviceType,
-      //       price:item?.servicePrice
-      //     }))
-      //     setAllServicesByStations(allServices)
-  
-      //     // Lọc dịch vụ theo loại
-      //     const servicesByType = data?.data.filter(item => item.serviceType === selectedServiceType.value)
-      //     setServicesByStations(()=>{
-      //       const servicesAfterFilter = servicesByType.map((item)=>({
-      //         label:item.serviceName,
-      //         value:item.stationServicesId,
-      //         serviceType:item.serviceType,
-      //         price:item?.servicePrice
-      //       }))
-      //       const serviceId = dataLocal?.serviceId || dataBookingParam?.serviceId || servicesAfterFilter[0]?.value
-      //       const serviceDefault = servicesAfterFilter.find(item => item.value === serviceId)
-      //       handleFillValues('serviceId', serviceDefault, serviceId)
-      //       return servicesAfterFilter
-      //     })
-      //     // // Ban đầu đã lấy ra được danh sách rồi ==> lọc ra theo serviceType ==> Theo local trước nếu ko có thì mặc định là [0]
-      //     // const serviceType = dataLocal?.serviceType
-      //     // // Nếu đã có serviceType thì lọc ra theo serviceType
-      //     //   // Nếu chưa có serviceType thì lọc ra theo serviceType mặc định là [0]
-      //     //  const servicesByType = servicesBeforeFilterByType.filter(item => item.serviceType === optionServiceType[0].value)
-      //     //  return setServicesByStations(servicesByType)
-      //   }
-      // })
-    }
   },[selectedBookingStation])
 
   const getScheduleDetail=(value)=>{
@@ -703,7 +592,6 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     setIsLoading(true)
     let adviseSchedule=Object.values(scheduleTypes).find(item=>item?.value== bookingData?.scheduleType)?.scheduleCategory == '2'
     const newData = {
-      stationServicesList:[values.serviceId],
       licensePlates: values.licensePlates.toUpperCase(),
       phone: values.phone,
       fullnameSchedule: values.fullnameSchedule.trim(),
@@ -999,31 +887,6 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     setBookingData(newData)
     form.setFieldsValue(newData)
   }
-
-  const getServiceByStation = (stationsId) =>{
-    BookingService.getListStationService({filter:{stationsId:36}}).then((result)=>{
-      const {data, isSuccess} = result
-      if(isSuccess && data && data?.data.length > 0){
-        setServiceTypes(() => {
-          const apiServiceTypes = data?.data?.map(item => item.serviceType) || []; // Lấy danh sách serviceType từ API
-          const filteredOptions = optionServiceType.filter(option => 
-            apiServiceTypes.includes(option.value) // Lọc các mục có value trùng serviceType
-          );
-          return filteredOptions;
-        });
-        setServicesByStations(()=>{
-          const newValues = data?.data.map((item)=>({
-            label: item.serviceName,
-            value: item.serviceId
-          }))
-          return newValues
-        })
-      }
-    }).catch((error)=>{
-      setErrorMessage('Lấy thông tin dịch vụ thất bại.')
-      setIsModalErrOpen(true)
-    })
-  }
   
   useEffect(() => {
     getDataLocal()
@@ -1140,14 +1003,6 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
       name="booking"
       layout="vertical"
       initialValues={{}}
-      onValuesChange={(changedValues, allValues) => {
-        if(changedValues?.serviceType){
-          handleChangeServicesByType(allservicesByStations,changedValues?.serviceType)
-        }
-        if(changedValues?.stationsId){
-          handleGetStationsServices(changedValues?.stationsId)
-        }
-      }}
       form={form}
       onFinish={(values) => { onFinish(values) }}>
       {() => (
@@ -1184,7 +1039,11 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
         hidden={dataBookingParam?.visible_phoneNumber === 'true' || dataBookingParam?.visible_phoneNumber === null ? false : true}
         rules={[
           {
-            required: !isZaloApp || dataBookingParam?.require_phoneNumber !== 'false',
+            required: !isZaloApp,
+            message: 'Vui lòng nhập số điện thoại'
+          },
+          {
+            required: dataBookingParam?.require_phoneNumber === 'false' ? false : true,
             message: 'Vui lòng nhập số điện thoại'
           },
           {
@@ -1547,87 +1406,6 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
                 })
               }}
             />
-          </Form.Item>
-        </span>
-      )}
-      <Form.Item label="Loại dịch vụ" name="serviceType" rules={[
-        {
-          required: true,
-          message: 'Vui lòng chọn loại dịch vụ'
-        }
-      ]} hidden={dataBookingParam?.visible_StationArea === 'true' || dataBookingParam?.visible_StationArea === null ? false : true}>
-        <SelectAntd
-          className="cs-select ant-custom booking-input"
-          filterOption={(input, option) => {
-            return xoa_dau((option?.value ?? '').toLowerCase()).includes(xoa_dau(input.toLowerCase()))
-          }}
-          showSearch
-          disabled={!bookingData?.vntId || isVisible.stationsId}
-          // defaultValue={dataBookingParam?.vntId || dataLocal?.vntId}
-          onChange={(values,option) => {
-            form.setFieldsValue({
-              serviceType: values
-            })
-            setBookingData({
-              ...bookingData,
-              serviceType: values
-            })
-            saveDataLocal('serviceType',values)
-          }}
-          placeholder="Vui lòng chọn khu vực"
-          styles={customStyles}
-          options={serviceTypes}
-        />
-      </Form.Item>
-      {requireScheduleStation == '1' && (
-        <span id="service">
-          <Form.Item
-            label="Chọn dịch vụ"
-            name="serviceId"
-            rules={[
-              {
-                required: requireScheduleStation == '1' ? true : false,
-                message: 'Vui lòng nhập'
-              }
-            ]}
-            hidden={dataBookingParam?.visible_StationsCode === 'true' || dataBookingParam?.visible_StationsCode === null ? false : true}
-            >
-            <SelectAntd
-              className="cs-select ant-custom booking-input"
-              isSearchable={true}
-              size="middle"
-              // placeholder="Vui lòng chọn dịch vụ"
-              style={{
-                customStyles,
-                ...{
-                  lineHeight: 48
-                }
-              }}
-              // options={servicesByStations}
-              menuPlacement="top"
-              disabled={!bookingData?.vntId || isVisible.stationsId}
-              onChange={(values) => {
-                form.setFieldsValue({
-                  serviceId: values
-                })
-                setBookingData({
-                  ...bookingData,
-                  serviceId: values
-                })
-                saveDataLocal('serviceId',values)
-              }}
-            >
-              {
-                servicesByStations.length > 0 && servicesByStations.map((item) => (
-                  <SelectAntd.Option key={item.value} value={item.value}>
-                    <div className='d-flex'>
-                      <span>{item.label}</span>
-                      <span>{item.price} đ</span>
-                    </div>
-                  </SelectAntd.Option>
-                ))
-              }
-            </SelectAntd>
           </Form.Item>
         </span>
       )}

@@ -126,7 +126,7 @@ export const SCHEDULE_TYPE = [
   { value : 11, label: 'Cấp lại tem đăng kiểm'},
   { value : 12, label: 'Tư vấn đăng kiểm xe'},
   { value : 13, label: 'Tư vấn xử lý phạt nguội'},
-  { value : 14, label: 'Tư vấn bảo hiểm vật chất xe ô tô'},
+  { value : 14, label: 'Tư vấn bảo hiểm TNDS xe ô tô'},
   { value : 15, label: 'Tra cứu cảnh báo đăng kiểm'},
   { value : 16, label: 'Hỗ trợ xử lý phạt nguội'},
   { value : 17, label: 'Gia hạn định vị'},

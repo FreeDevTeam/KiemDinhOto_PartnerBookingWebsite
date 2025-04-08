@@ -21,21 +21,4 @@ export default class SystemConfigurationsService {
       })
     })
   }
-  static async getApiKeyByDomain(data) {
-    return new Promise(resolve => {
-      Request.send({
-        method: 'POST',
-        path: '/PartnerAPI/PartnerAPIKey/user/getApiKeyByDomain',
-        data: { ...data },
-        query: null,
-      }).then((result = {}) => {
-        const { statusCode, data } = result
-        if (statusCode === 200) {
-          return resolve(data)
-        } else {
-          return resolve(null)
-        }
-      })
-    })
-  }
 }
