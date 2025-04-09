@@ -334,9 +334,12 @@ export const BOOKING_LIST_BTN = [
   {
     label: 'Bảo hiểm',
     icon: <GiaHanDangKiemIcon></GiaHanDangKiemIcon>,
-    link: isZaloApp 
-      ? 'https://zalo.me/s/3197301789570554227/' 
-      : process.env.REACT_APP_RUNTIME_MODE == 'production' 
+    // link: isZaloApp 
+    //   ? 'https://zalo.me/s/3197301789570554227/' 
+    //   : process.env.REACT_APP_RUNTIME_MODE == 'production' 
+    //     ? `https://baohiem.ttdk.com.vn?&appUserId=${appUserId}&token=${token}` 
+    //     : `https://ttdk-sanbox-muabaohiem.service.makefamousapp.com?isEmbeddedView=1&appUserId=${appUserId}&token=${token}`,
+        link: process.env.REACT_APP_RUNTIME_MODE == 'production' 
         ? `https://baohiem.ttdk.com.vn?&appUserId=${appUserId}&token=${token}` 
         : `https://ttdk-sanbox-muabaohiem.service.makefamousapp.com?isEmbeddedView=1&appUserId=${appUserId}&token=${token}`,
   },
