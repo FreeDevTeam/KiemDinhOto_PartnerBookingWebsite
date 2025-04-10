@@ -36,6 +36,8 @@ export default class SystemConfigurationsService {
           return resolve(null)
         }
       })
+    })
+  }
 
   static async getZaloDisplayStationList() {
     return new Promise(resolve => {
