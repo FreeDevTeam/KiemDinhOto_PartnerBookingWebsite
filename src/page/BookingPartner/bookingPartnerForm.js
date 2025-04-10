@@ -1001,7 +1001,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   }
 
   const getServiceByStation = (stationsId) =>{
-    BookingService.getListStationService({filter:{stationsId:36}}).then((result)=>{
+    BookingService.getListStationService({filter:{stationsId:stationsId}}).then((result)=>{
       const {data, isSuccess} = result
       if(isSuccess && data && data?.data.length > 0){
         setServiceTypes(() => {
