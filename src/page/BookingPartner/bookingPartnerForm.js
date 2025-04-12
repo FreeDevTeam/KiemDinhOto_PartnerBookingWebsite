@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Form, Input, Button, Select as SelectAntd, Row, Col, Spin } from 'antd'
+import { Form, Input, Button, Select as SelectAntd, Row, Col, Spin, notification } from 'antd'
 import BookingService from '../../services/addBookingService'
 import { WarningOutlined } from '@ant-design/icons'
 import { xoa_dau } from '../../helper/common'
@@ -62,6 +62,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   const [servicesByStations, setServicesByStations] = useState([])
   const [allservicesByStations, setAllServicesByStations] = useState([])
   const [selectedtation, setSelectedtation] = useState({})
+  const [orderId, setOrderId] = useState('')
   // Kết thúc
   const [dateFilter, setDateFilter] = useState({
     stationsId: null,
@@ -703,7 +704,6 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     setIsLoading(true)
     let adviseSchedule=Object.values(scheduleTypes).find(item=>item?.value== bookingData?.scheduleType)?.scheduleCategory == '2'
     const newData = {
-      stationServicesList:[values.serviceId],
       licensePlates: values.licensePlates.toUpperCase(),
       phone: values.phone,
       fullnameSchedule: values.fullnameSchedule.trim(),
@@ -740,6 +740,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           setIsLoading(false)
         }, 500);
         } else {
+          setOrderId(data?.customerScheduleId)
           getScheduleDetail(data?.customerScheduleId)
           setScheduleTypePopUp(newData.scheduleType)
           setTimeout(() => {
@@ -765,6 +766,8 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
         }
       })
     }else{
+      // Nếu là lịch hẹn thì thêm serviceId vào data
+      newData["stationServicesList"] = [values.serviceId]
       BookingService.createSchedule(newData).then((result) => {
         const { error: rsMess, statusCode, data } = result
         if (statusCode != 200) {
@@ -779,35 +782,58 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           setIsLoading(false)
         }, 500);
         } else {
-          // if(adviseSchedule){
-          //   getScheduleDetail(data[0])
-          //   setTimeout(() => {
-          //     setIsLoading(false)
-          //   }, 500);
-          //   if(data.paymentUrl && data.paymentUrl?.length > 0){
-          //     setTimeout(() => {
-          //       window.open(data.paymentUrl, '_blank')
-          //     }, 500);
-          //   }
-          // }else{
+          // Kiểm tra nếu GTELPAY_MINI_APP = 1 thì mở cổng thanh toán của GTELPAY
+          const isOpenInGETELPAY = process.env.GTELPAY_MINI_APP || '0'
+          if(isOpenInGETELPAY == "1"&&data.length>0){
+            setOrderId(data[0])
+          }
+          else{
             setIsModalOpen(true)
-          // }
-          localStorage.removeItem(addKeyLocalStorage('bookingData'))
-          setTimeout(() => {
-            setBookingData({})
-            form.resetFields();
-            form.setFieldsValue({
-              vntId:null,
-              dateSchedule: null,
-              time: null,
-              stationsId: null
-            })
-          }, 500);
+            localStorage.removeItem(addKeyLocalStorage('bookingData'))
+            setTimeout(() => {
+              setBookingData({})
+              form.resetFields();
+              form.setFieldsValue({
+                vntId:null,
+                dateSchedule: null,
+                time: null,
+                stationsId: null
+              })
+            }, 500);
+          }
         }
       })
     }
     setIsVisible(true)
   }
+
+  useEffect(() => {
+    if (!orderId) return;
+
+    // Tạo đối tượng <script>
+    const script = document.createElement('script');
+    script.src = '../../helper/gtelpaysdk.js'; 
+
+    script.onload = () => {
+      if (window.GtelPayJSBridge?.call) {
+        window.GtelPayJSBridge.showLoadingIndicator();
+        window.GtelPayJSBridge.payOrder({ order_id: orderId });
+        window.GtelPayJSBridge.hideLoadingIndicator();
+      } else {
+        notification.error({
+          message: 'Tạo giao dịch thất bại',
+        });
+      }
+
+      document.body.removeChild(script);
+    };
+
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, [orderId]);
 
 
   useEffect(() => {
