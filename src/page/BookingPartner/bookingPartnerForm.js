@@ -817,7 +817,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     script.onload = () => {
       if (window.GtelPayJSBridge?.call) {
         window.GtelPayJSBridge.showLoadingIndicator();
-        window.GtelPayJSBridge.payOrder({ order_id: orderId });
+        window.GtelPayJSBridge.payOrder({ order_id: 'sandboxOS2025041100076637' });
         window.GtelPayJSBridge.hideLoadingIndicator();
       } else {
         notification.error({
