@@ -851,3 +851,9 @@ export const TTDK_INSURANCE_PARTNER = {
 export const WEBVIEW_TYPES = {
   WEBVIEW: 1,
 }
+
+export const PAYMENT_TYPE = {
+  ATM_BANK:'1',
+  MOMO_BANK:'2',
+  GTEL_PAY: '3',
+}

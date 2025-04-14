@@ -594,4 +594,21 @@ export default class BookingService {
       })
     })
   }
+
+  static async createPayment(data = {}) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/PartnerAPI/CustomerSchedule/user/createPayment',
+        data
+      }).then((result = {}) => {
+        const { statusCode, data, message } = result
+        if (statusCode === 200) {
+          return resolve({ isSuccess: true, data })
+        } else {
+          return resolve({ isSuccess: false, message })
+        }
+      })
+    })
+  }
 }

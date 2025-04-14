@@ -9,7 +9,7 @@ import queryString from 'query-string'
 import _ from 'lodash'
 import moment from 'moment'
 import Select from 'react-select'
-import { PLATE_COLOR, SCHEDULE_TYPE, VEHICLE_SUB_CATEGORY, VEHICLE_SUB_TYPE, VIHCLE_CATEGORY_BUS, VIHCLE_CATEGORY_GROUP, VIHCLE_CATEGORY_MOOC, VIHCLE_CATEGORY_OTO, VIHCLE_CATEGORY_PICKUP, VIHCLE_CATEGORY_SPECIALIZED, VIHCLE_CATEGORY_TRUCK, VIHCLE_TYPES } from '../../constants/global'
+import { PAYMENT_TYPE, PLATE_COLOR, SCHEDULE_TYPE, VEHICLE_SUB_CATEGORY, VEHICLE_SUB_TYPE, VIHCLE_CATEGORY_BUS, VIHCLE_CATEGORY_GROUP, VIHCLE_CATEGORY_MOOC, VIHCLE_CATEGORY_OTO, VIHCLE_CATEGORY_PICKUP, VIHCLE_CATEGORY_SPECIALIZED, VIHCLE_CATEGORY_TRUCK, VIHCLE_TYPES } from '../../constants/global'
 import { SCHEDULE_ERROR } from '../../constants/errorMessage'
 import PopupMessage from './PopupMessage'
 import BookingSuccess from './BookingSuccessModal'
@@ -740,7 +740,18 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           setIsLoading(false)
         }, 500);
         } else {
-          setOrderId(data?.customerScheduleId)
+          BookingService.createPayment({
+            customerScheduleId: data?.customerScheduleId,
+            paymentMethodType: PAYMENT_TYPE.GTEL_PAY,
+          }
+          ).then((result) => {
+            if(result?.statusCode == 200){
+              const {data} = result
+              const isOpenInGETELPAY = process.env.MINIAPP_GTELPAY || '0'
+              if(isOpenInGETELPAY == "1" && data?.inAppGtelOrderId){
+                setOrderId(data.inAppGtelOrderId)
+              }}
+          })
           getScheduleDetail(data?.customerScheduleId)
           setScheduleTypePopUp(newData.scheduleType)
           setTimeout(() => {
@@ -782,25 +793,33 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           setIsLoading(false)
         }, 500);
         } else {
+          BookingService.createPayment({
+              customerScheduleId: data[0],
+              stationServicesList: newData["stationServicesList"],
+              paymentMethodType: PAYMENT_TYPE.GTEL_PAY
+            }
+          ).then((result) => {
+            const {data} = result
+            const isOpenInGETELPAY = process.env.MINIAPP_GTELPAY || '0'
+            if(isOpenInGETELPAY == "1" && data?.inAppGtelOrderId){
+              setOrderId(data.inAppGtelOrderId)
+            }
+            else{
+              setIsModalOpen(true)
+              localStorage.removeItem(addKeyLocalStorage('bookingData'))
+              setTimeout(() => {
+                setBookingData({})
+                form.resetFields();
+                form.setFieldsValue({
+                  vntId:null,
+                  dateSchedule: null,
+                  time: null,
+                  stationsId: null
+                })
+              }, 500);
+            }
+          })
           // Kiểm tra nếu GTELPAY_MINI_APP = 1 thì mở cổng thanh toán của GTELPAY
-          const isOpenInGETELPAY = process.env.GTELPAY_MINI_APP || '0'
-          if(isOpenInGETELPAY == "1"&&data.length>0){
-            setOrderId(data[0])
-          }
-          else{
-            setIsModalOpen(true)
-            localStorage.removeItem(addKeyLocalStorage('bookingData'))
-            setTimeout(() => {
-              setBookingData({})
-              form.resetFields();
-              form.setFieldsValue({
-                vntId:null,
-                dateSchedule: null,
-                time: null,
-                stationsId: null
-              })
-            }, 500);
-          }
         }
       })
     }
@@ -817,7 +836,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     script.onload = () => {
       if (window.GtelPayJSBridge?.call) {
         window.GtelPayJSBridge.showLoadingIndicator();
-        window.GtelPayJSBridge.payOrder({ order_id: 'sandboxOS2025041100076637' });
+        window.GtelPayJSBridge.payOrder({ order_id: orderId });
         window.GtelPayJSBridge.hideLoadingIndicator();
       } else {
         notification.error({
@@ -1027,12 +1046,12 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   }
 
   const getServiceByStation = (stationsId) =>{
-    BookingService.getListStationService({filter:{stationsId:36}}).then((result)=>{
+    BookingService.getListStationService({filter:{stationsId:stationsId}}).then((result)=>{
       const {data, isSuccess} = result
       if(isSuccess && data && data?.data.length > 0){
         setServiceTypes(() => {
           const apiServiceTypes = data?.data?.map(item => item.serviceType) || []; // Lấy danh sách serviceType từ API
-          const filteredOptions = optionServiceType.filter(option => 
+          const filteredOptions = optionServiceType.filter(option =>
             apiServiceTypes.includes(option.value) // Lọc các mục có value trùng serviceType
           );
           return filteredOptions;
@@ -1290,11 +1309,11 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           }
           ]}>
         <div className="login__input__icon">
-          <Input defaultValue={dataBookingParam?.licensePlates?.toUpperCase() || dataLocal?.licensePlates?.toUpperCase()} 
-            className="login__input booking-input" 
-            style={{textTransform:'uppercase'}} 
-            placeholder="59B16856" 
-            type="text" 
+          <Input defaultValue={dataBookingParam?.licensePlates?.toUpperCase() || dataLocal?.licensePlates?.toUpperCase()}
+            className="login__input booking-input"
+            style={{textTransform:'uppercase'}}
+            placeholder="59B16856"
+            type="text"
             size="large"
             readOnly = {dataVihcle?.vehicleIdentity}
             onInput={(e)=>{
@@ -1600,7 +1619,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
             })
             saveDataLocal('serviceType',values)
           }}
-          placeholder="Vui lòng chọn khu vực"
+          placeholder="Vui lòng chọn loại dịch vụ"
           styles={customStyles}
           options={serviceTypes}
         />
