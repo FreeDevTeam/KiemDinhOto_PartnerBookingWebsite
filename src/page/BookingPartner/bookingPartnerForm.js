@@ -747,7 +747,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           ).then((result) => {
             if(result?.statusCode == 200){
               const {data} = result
-              const isOpenInGETELPAY = process.env.MINIAPP_GTELPAY || '0'
+              const isOpenInGETELPAY = process.env.REACT_APP_MINIAPP_GTELPAY
               if(isOpenInGETELPAY == "1" && data?.inAppGtelOrderId){
                 setOrderId(data.inAppGtelOrderId)
               }}
@@ -794,13 +794,14 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
         }, 500);
         } else {
           BookingService.createPayment({
-              customerScheduleId: data[0],
+              // customerScheduleId: data[0],
+              customerScheduleId: 85,
               stationServicesList: newData["stationServicesList"],
               paymentMethodType: PAYMENT_TYPE.GTEL_PAY
             }
           ).then((result) => {
             const {data} = result
-            const isOpenInGETELPAY = process.env.MINIAPP_GTELPAY || '0'
+            const isOpenInGETELPAY = process.env.REACT_APP_MINIAPP_GTELPAY
             if(isOpenInGETELPAY == "1" && data?.inAppGtelOrderId){
               setOrderId(data.inAppGtelOrderId)
             }
@@ -827,32 +828,22 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   }
 
   useEffect(() => {
-    if (!orderId) return;
+    // Hiện loading khi component mount
+    window.GtelPayJSBridge?.showLoadingIndicator()
 
-    // Tạo đối tượng <script>
-    const script = document.createElement('script');
-    script.src = '../../helper/gtelpaysdk.js'; 
-
-    script.onload = () => {
-      if (window.GtelPayJSBridge?.call) {
-        window.GtelPayJSBridge.showLoadingIndicator();
-        window.GtelPayJSBridge.payOrder({ order_id: orderId });
-        window.GtelPayJSBridge.hideLoadingIndicator();
-      } else {
-        notification.error({
-          message: 'Tạo giao dịch thất bại',
-        });
+    // Giả lập thanh toán sau 1 giây
+    setTimeout(() => {
+      const order = {
+        orderId: orderId,
       }
+      window.GtelPayJSBridge?.payOrder(order)
 
-      document.body.removeChild(script);
-    };
-
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, [orderId]);
+      // Ẩn loading sau đó
+      setTimeout(() => {
+        window.GtelPayJSBridge?.hideLoadingIndicator()
+      }, 1000)
+    }, 1000)
+  }, [orderId])
 
 
   useEffect(() => {
