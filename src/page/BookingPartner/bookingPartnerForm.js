@@ -23,6 +23,7 @@ import BookingHoursPicker from '../../components/BookingHoursPicker'
 import ModalPaymentQR from '../../components/ModalPaymentQR/ModalPaymentQR'
 import { numberWithSeparator } from '../../helper/numberWithSeparator'
 import { optionServiceType } from '../../constants/serviceOption'
+import Gtel from "../../helper/gtelpaysdk"
 
 function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   const isZaloApp = (process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1)
@@ -798,7 +799,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           const isOpenInGETELPAY = process.env.REACT_APP_MINIAPP_GTELPAY
           if(isOpenInGETELPAY == '1') {
             BookingService.createPayment({
-              customerScheduleId: 85,
+              customerScheduleId: data[0],
               stationServicesList: newData["stationServicesList"],
               paymentMethodType: PAYMENT_TYPE.GTEL_PAY
             }
@@ -829,7 +830,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   useEffect(() => {
     // Hiện loading khi component mount
     if(!orderId || orderId == '') return
-    window.GtelPayJSBridge?.payOrder({"order_id":orderId})
+    Gtel.GtelPayJSBridge?.payOrder({"order_id":orderId})
   }, [orderId])
 
 
