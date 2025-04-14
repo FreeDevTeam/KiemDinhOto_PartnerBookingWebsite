@@ -794,7 +794,6 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
         }, 500);
         } else {
           BookingService.createPayment({
-              // customerScheduleId: data[0],
               customerScheduleId: 85,
               stationServicesList: newData["stationServicesList"],
               paymentMethodType: PAYMENT_TYPE.GTEL_PAY
