@@ -740,18 +740,20 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           setIsLoading(false)
         }, 500);
         } else {
-          BookingService.createPayment({
-            customerScheduleId: data?.customerScheduleId,
-            paymentMethodType: PAYMENT_TYPE.GTEL_PAY,
+          const isOpenInGETELPAY = process.env.REACT_APP_MINIAPP_GTELPAY
+          if(isOpenInGETELPAY == '1') {
+            BookingService.createPayment({
+              customerScheduleId: data?.customerScheduleId,
+              paymentMethodType: PAYMENT_TYPE.GTEL_PAY,
+            }
+            ).then((result) => {
+              if(result?.statusCode == 200){
+                const {data} = result
+                if(data?.inAppGtelOrderId){
+                  setOrderId(data.inAppGtelOrderId)
+                }}
+            })
           }
-          ).then((result) => {
-            if(result?.statusCode == 200){
-              const {data} = result
-              const isOpenInGETELPAY = process.env.REACT_APP_MINIAPP_GTELPAY
-              if(isOpenInGETELPAY == "1" && data?.inAppGtelOrderId){
-                setOrderId(data.inAppGtelOrderId)
-              }}
-          })
           getScheduleDetail(data?.customerScheduleId)
           setScheduleTypePopUp(newData.scheduleType)
           setTimeout(() => {
@@ -793,33 +795,31 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           setIsLoading(false)
         }, 500);
         } else {
-          BookingService.createPayment({
+          const isOpenInGETELPAY = process.env.REACT_APP_MINIAPP_GTELPAY
+          if(isOpenInGETELPAY == '1') {
+            BookingService.createPayment({
               customerScheduleId: 85,
               stationServicesList: newData["stationServicesList"],
               paymentMethodType: PAYMENT_TYPE.GTEL_PAY
             }
           ).then((result) => {
             const {data} = result
-            const isOpenInGETELPAY = process.env.REACT_APP_MINIAPP_GTELPAY
-            if(isOpenInGETELPAY == "1" && data?.inAppGtelOrderId){
+            if(data?.inAppGtelOrderId){
               setOrderId(data.inAppGtelOrderId)
             }
-            else{
-              setIsModalOpen(true)
-              localStorage.removeItem(addKeyLocalStorage('bookingData'))
-              setTimeout(() => {
-                setBookingData({})
-                form.resetFields();
-                form.setFieldsValue({
-                  vntId:null,
-                  dateSchedule: null,
-                  time: null,
-                  stationsId: null
-                })
-              }, 500);
-            }
-          })
-          // Kiểm tra nếu GTELPAY_MINI_APP = 1 thì mở cổng thanh toán của GTELPAY
+          })}
+          setIsModalOpen(true)
+          localStorage.removeItem(addKeyLocalStorage('bookingData'))
+          setTimeout(() => {
+            setBookingData({})
+            form.resetFields();
+            form.setFieldsValue({
+              vntId:null,
+              dateSchedule: null,
+              time: null,
+              stationsId: null
+            })
+          }, 500);
         }
       })
     }
