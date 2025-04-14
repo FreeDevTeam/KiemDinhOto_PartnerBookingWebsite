@@ -829,20 +829,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   useEffect(() => {
     // Hiện loading khi component mount
     if(!orderId || orderId == '') return
-    window.GtelPayJSBridge?.showLoadingIndicator()
-
-    // Giả lập thanh toán sau 1 giây
-    setTimeout(() => {
-      const order = {
-        orderId: orderId,
-      }
-      window.GtelPayJSBridge?.payOrder(order)
-
-      // Ẩn loading sau đó
-      setTimeout(() => {
-        window.GtelPayJSBridge?.hideLoadingIndicator()
-      }, 1000)
-    }, 1000)
+    window.GtelPayJSBridge?.payOrder({"order_id":orderId})
   }, [orderId])
 
 
