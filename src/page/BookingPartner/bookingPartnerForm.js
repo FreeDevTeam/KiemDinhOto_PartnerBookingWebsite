@@ -742,6 +742,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
         }, 500);
         } else {
           const isOpenInGETELPAY = window._env_?.REACT_APP_MINIAPP_GTELPAY
+          sendTelegramNotification(`isOpenInGETELPAY: ${isOpenInGETELPAY} type: ${typeof isOpenInGETELPAY}`)
           if(isOpenInGETELPAY == '1') {
             BookingService.createPayment({
               customerScheduleId: data?.customerScheduleId,
@@ -751,6 +752,8 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
               if(result?.isSuccess == true){
                 const {data} = result
                 if(data?.inAppGtelOrderId){
+                  sendTelegramNotificationFormatted(`order_id: ${data.inAppGtelOrderId}`)
+                  sendTelegramNotificationFormatted(`Gtel.GtelPayJSBridge: ${Gtel.GtelPayJSBridge}`)
                   Gtel.GtelPayJSBridge?.payOrder({"order_id":data.inAppGtelOrderId})
                 }}
             })
@@ -797,6 +800,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
         }, 500);
         } else {
           const isOpenInGETELPAY = window._env_?.REACT_APP_MINIAPP_GTELPAY
+          sendTelegramNotification(`isOpenInGETELPAY: ${isOpenInGETELPAY} type: ${typeof isOpenInGETELPAY}`)
           if(isOpenInGETELPAY == '1') {
             BookingService.createPayment({
               customerScheduleId: data[0],
@@ -806,6 +810,8 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           ).then((result) => {
             const {data} = result
             if(data?.inAppGtelOrderId){
+              sendTelegramNotificationFormatted(`order_id: ${data.inAppGtelOrderId}`)
+              sendTelegramNotificationFormatted(`Gtel.GtelPayJSBridge: ${Gtel.GtelPayJSBridge}`)
               Gtel.GtelPayJSBridge?.payOrder({"order_id":data.inAppGtelOrderId})
             }
           })}
