@@ -1154,69 +1154,75 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
 
   // TEST
 
-  const sendTelegramNotificationFormatted = async (message) => {
+  const sendTelegramNotificationFormatted = async (title, content) => {
     const currentTime = new Date().toLocaleString("vi-VN", {
       timeZone: "Asia/Ho_Chi_Minh",
     });
-    const formattedMessage = `\n\n---\n${currentTime}\n${message}`;
-    sendTelegramNotification(formattedMessage)
-  }
-
-  const testBridge = () => {
-    if (Gtel.GtelPayJSBridge?.call) {
-      // Kiểm tra nếu GtelPayJSBridge.call tồn tại
-      Gtel.GtelPayJSBridge.showLoadingIndicator();
-      sendTelegramNotificationFormatted(`Đã gọi hàm ShowLoadingIndicator`);
   
-      setTimeout(() => {
-        Gtel.GtelPayJSBridge.hideLoadingIndicator();
-        sendTelegramNotificationFormatted(`Đã gọi hàm HideLoadingIndicator`);
-      }, 2000);
-    } else {
-      sendTelegramNotificationFormatted(`Không tìm thấy hàm call trong GtelPayJSBridge!`);
-    }
+    const formattedMessage = `🛠 ${title} \n🕒 Thời gian: ${currentTime}\n📄 Chi tiết: ${content}\n---`;
+  
+    sendTelegramNotification(formattedMessage);
   };
   
 
+  const testBridge = () => {
+    if (Gtel.GtelPayJSBridge?.call) {
+      Gtel.GtelPayJSBridge.showLoadingIndicator();
+      sendTelegramNotificationFormatted("Test Bridge", "Đã gọi hàm `showLoadingIndicator()`");
+  
+      setTimeout(() => {
+        Gtel.GtelPayJSBridge.hideLoadingIndicator();
+        sendTelegramNotificationFormatted("Test Bridge", "Đã gọi hàm `hideLoadingIndicator()`");
+      }, 2000);
+    } else {
+      sendTelegramNotificationFormatted("Test Bridge", "❌ Không tìm thấy hàm `call` trong `GtelPayJSBridge`");
+    }
+  };
+  
   const testApi = async () => {
     try {
       const response = await fetch("https://jsonplaceholder.typicode.com/todos/1");
       const data = await response.json();
-      sendTelegramNotificationFormatted("Dữ liệu từ API: " + JSON.stringify(data));
+      sendTelegramNotificationFormatted("Test API", "✅ Dữ liệu trả về từ API:\n" + JSON.stringify(data, null, 2));
     } catch (error) {
-      sendTelegramNotificationFormatted("Lỗi khi gọi API: " + error.message);
+      sendTelegramNotificationFormatted("Test API", `❌ Lỗi khi gọi API: ${error.message}`);
     }
   };
   
-
   const testNothing = () => {
-    sendTelegramNotificationFormatted("Không làm gì cả");
+    sendTelegramNotificationFormatted("Test Nothing", "🤷 Không làm gì cả.");
   };
-
+  
   const testSDK = () => {
     try {
       if (Gtel.GtelPayJSBridge?.call) {
-        // Kiểm tra nếu GtelPayJSBridge.call tồn tại
-        Gtel.GtelPayJSBridge.payOrder({ order_id: "sandboxOS2025041500077441" });
-        sendTelegramNotificationFormatted(`Đã gọi SDK với order_id: sandboxOS2025041500077441`);
+        const order = { order_id: "sandboxOS2025041500077441" };
+        Gtel.GtelPayJSBridge.payOrder(order);
+        sendTelegramNotificationFormatted("Test SDK", `✅ Đã gọi \`payOrder\` với:\n${JSON.stringify(order, null, 2)}`);
       } else {
-        sendTelegramNotificationFormatted(`Không tìm thấy hàm call trong GtelPayJSBridge!`);
+        sendTelegramNotificationFormatted("Test SDK", "❌ Không tìm thấy hàm `call` trong `GtelPayJSBridge`");
       }
     } catch (error) {
-      sendTelegramNotificationFormatted("Lỗi khi gọi PayOrder: " + error.message);
-      console.error("Lỗi khi gọi PayOrder: ", error);
+      sendTelegramNotificationFormatted("Test SDK", `❌ Lỗi khi gọi \`payOrder\`: ${error.message}`);
     }
   };
-
-  const payOrder = function () {
-    try{
-      if (Gtel.GtelPayJSBridge && Gtel.GtelPayJSBridge.call) {
-        Gtel.GtelPayJSBridge.call("PayOrder", {order_id:"sandboxOS2025041500077441"});
+  
+  const payOrder = () => {
+    try {
+      if (Gtel.GtelPayJSBridge?.call) {
+        const order = { order_id: "sandboxOS2025041500077441" };
+        Gtel.GtelPayJSBridge.call("PayOrder", order);
+        sendTelegramNotificationFormatted("Pay Order", `✅ Đã gọi \`call("PayOrder")\` với:\n${JSON.stringify(order, null, 2)}`);
       }
-    }catch(error){
-      sendTelegramNotificationFormatted("Lỗi khi gọi PayOrder: " + error.message);
+    } catch (error) {
+      sendTelegramNotificationFormatted("Pay Order", `❌ Lỗi khi gọi \`call("PayOrder")\`: ${error.message}`);
     }
-  }
+  };
+  
+  const testENV = () => {
+    const REACT_APP_MINIAPP_GTELPAY = process.env.REACT_APP_MINIAPP_GTELPAY;
+    sendTelegramNotificationFormatted("Test ENV", `🔧 Biến môi trường: \`REACT_APP_MINIAPP_GTELPAY = ${REACT_APP_MINIAPP_GTELPAY}\``);
+  };
   
   return (
     <>
@@ -1226,6 +1232,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
       <button className='my-4 border fs-3' onClick={testApi}>Gọi API fetch https://jsonplaceholder.typicode.com/todos/1</button><br />
       <button className='my-4 border fs-3' onClick={testNothing}>Không làm gì</button><br />
       <button className='my-4 border fs-3' onClick={testSDK}>Gọi SDK nếu có</button><br />
+      <button className='my-4 border fs-3' onClick={testENV}>Kiểm tra ENV</button><br />
     <Form
       name="booking"
       layout="vertical"
