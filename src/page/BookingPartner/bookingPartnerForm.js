@@ -63,7 +63,6 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   const [servicesByStations, setServicesByStations] = useState([])
   const [allservicesByStations, setAllServicesByStations] = useState([])
   const [selectedtation, setSelectedtation] = useState({})
-  const [orderId, setOrderId] = useState('')
   // Kết thúc
   const [dateFilter, setDateFilter] = useState({
     stationsId: null,
@@ -751,7 +750,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
               if(result?.isSuccess == true){
                 const {data} = result
                 if(data?.inAppGtelOrderId){
-                  setOrderId(data.inAppGtelOrderId)
+                  Gtel.GtelPayJSBridge?.payOrder({"order_id":data.inAppGtelOrderId})
                 }}
             })
           }
@@ -806,7 +805,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           ).then((result) => {
             const {data} = result
             if(data?.inAppGtelOrderId){
-              setOrderId(data.inAppGtelOrderId)
+              Gtel.GtelPayJSBridge?.payOrder({"order_id":data.inAppGtelOrderId})
             }
           })}
           setIsModalOpen(true)
@@ -826,13 +825,6 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     }
     setIsVisible(true)
   }
-
-  useEffect(() => {
-    // Hiện loading khi component mount
-    if(!orderId || orderId == '') return
-    Gtel.GtelPayJSBridge?.payOrder({"order_id":orderId})
-  }, [orderId])
-
 
   useEffect(() => {
     if (dateFilter.vehicleType && dateFilter.stationsId) {
