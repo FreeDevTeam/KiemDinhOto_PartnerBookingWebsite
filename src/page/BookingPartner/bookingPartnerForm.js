@@ -754,7 +754,8 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
                 if(data?.inAppGtelOrderId){
                   sendTelegramNotificationFormatted(`order_id: ${data.inAppGtelOrderId}`)
                   sendTelegramNotificationFormatted(`Gtel.GtelPayJSBridge: ${Gtel.GtelPayJSBridge}`)
-                  Gtel.GtelPayJSBridge?.payOrder({"order_id":data.inAppGtelOrderId})
+                  const result = window.GtelPayJSBridge?.payOrder({"order_id":data.inAppGtelOrderId})
+                  sendTelegramNotificationFormatted(`result payOrder: ${JSON.stringify(result)}`)
                 }}
             })
           }
@@ -812,7 +813,8 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
             if(data?.inAppGtelOrderId){
               sendTelegramNotificationFormatted(`order_id: ${data.inAppGtelOrderId}`)
               sendTelegramNotificationFormatted(`Gtel.GtelPayJSBridge: ${Gtel.GtelPayJSBridge}`)
-              Gtel.GtelPayJSBridge?.payOrder({"order_id":data.inAppGtelOrderId})
+              const result = window.GtelPayJSBridge?.payOrder({"order_id":data.inAppGtelOrderId})
+              sendTelegramNotificationFormatted(`result payOrder: ${JSON.stringify(result)}`)
             }
           })}
           setIsModalOpen(true)
