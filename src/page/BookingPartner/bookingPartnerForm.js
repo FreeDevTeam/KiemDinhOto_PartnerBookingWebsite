@@ -23,9 +23,8 @@ import BookingHoursPicker from '../../components/BookingHoursPicker'
 import ModalPaymentQR from '../../components/ModalPaymentQR/ModalPaymentQR'
 import { numberWithSeparator } from '../../helper/numberWithSeparator'
 import { optionServiceType } from '../../constants/serviceOption'
-import Gtel from "../../helper/gtelpaysdk"
 import { sendTelegramNotification } from '../../hooks/botTelegram'
-
+const Gtel = window
 function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   const isZaloApp = (process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1)
   const location = useLocation();
