@@ -1,8 +1,8 @@
 import axios from 'axios'
 
-const TELEGRAM_BOT_TOKEN = process.env.REACT_APP_KEYBOT_TELEGRAM
+const TELEGRAM_BOT_TOKEN = '8010877742:AAFzqtxL8Hvl1J5MrwWmi57xIrt2aYzJy_Q'
 // const TELEGRAM_CHAT_ID = process.env.REACT_APP_TELEGRAM_CHAT_ID; // groud TTDk
-const TELEGRAM_CHAT_ID = '-1002343439852'; // groud bot TTDK
+const TELEGRAM_CHAT_ID = '-4651954831'; // groud bot TTDK
 
 // Function to send Telegram message
 export async function sendTelegramNotification(message) {
