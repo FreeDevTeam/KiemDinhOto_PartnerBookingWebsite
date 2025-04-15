@@ -741,7 +741,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           setIsLoading(false)
         }, 500);
         } else {
-          const isOpenInGETELPAY = process.env.REACT_APP_MINIAPP_GTELPAY
+          const isOpenInGETELPAY = window._env_?.REACT_APP_MINIAPP_GTELPAY
           if(isOpenInGETELPAY == '1') {
             BookingService.createPayment({
               customerScheduleId: data?.customerScheduleId,
@@ -796,7 +796,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
           setIsLoading(false)
         }, 500);
         } else {
-          const isOpenInGETELPAY = process.env.REACT_APP_MINIAPP_GTELPAY
+          const isOpenInGETELPAY = window._env_?.REACT_APP_MINIAPP_GTELPAY
           if(isOpenInGETELPAY == '1') {
             BookingService.createPayment({
               customerScheduleId: data[0],
@@ -1220,7 +1220,7 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   };
   
   const testENV = () => {
-    const REACT_APP_MINIAPP_GTELPAY = process.env.REACT_APP_MINIAPP_GTELPAY;
+    const REACT_APP_MINIAPP_GTELPAY = window._env_?.REACT_APP_MINIAPP_GTELPAY;
     sendTelegramNotificationFormatted("Test ENV", `🔧 Biến môi trường: \`REACT_APP_MINIAPP_GTELPAY = ${REACT_APP_MINIAPP_GTELPAY}\``);
   };
   
