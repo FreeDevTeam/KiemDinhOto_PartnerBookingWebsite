@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Form, Input, Button, Select as SelectAntd, Row, Col, Spin, notification } from 'antd'
+import SHA256 from 'crypto-js/sha256';
 import BookingService from '../../services/addBookingService'
 import { WarningOutlined } from '@ant-design/icons'
 import { xoa_dau } from '../../helper/common'
@@ -110,8 +111,27 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
     require_vehicleSubType : (params.get('require_vehicleSubType')),
     require_certificateSeries : (params.get('require_certificateSeries')),
   }
+
+  const defaultValues = {
+    vehicleType: VEHICLE_SUB_TYPE[0].vehicleType,
+    licensePlateColor: PLATE_COLOR[0].value,
+    scheduleType: SCHEDULE_TYPE[0].value,
+    vehicleSubType: VEHICLE_SUB_TYPE[0].value,
+    vehicleSubCategory: VIHCLE_CATEGORY_OTO[0].value,
+  };
+
   //lấy data từ local nếu ko có thì lấy từ param
-  const [dataBookingParam, setDataBookingParam] = useState(getParamData)
+  const [dataBookingParam, setDataBookingParam] = useState(()=>{
+    if(window?._env_?.REACT_APP_MINIAPP_GTELPAY == '1'){
+      getParamData = Object.fromEntries(
+        Object.keys(getParamData).map(key => {
+          return [key, defaultValues.hasOwnProperty(key) ? defaultValues[key] : null];
+        }))
+      return getParamData
+    }
+    return getParamData
+  })
+
   const getDataLocal= ()=>{
     setIsLoadDataLocal(false)
     setDataBookingParam({
@@ -1045,55 +1065,77 @@ function BookingPartnerForm({form, setTabKey, zaloUserName,zaloUserPhone}) {
   }
   
   useEffect(() => {
-    getDataLocal()
-    getMetaData()
-    // setTimeout(() => {
-    //   getAreaByIP()
-    // }, 500);
-    if(dataBookingParam?.vntId){
-      getStations({
-        filter: {
-          stationArea: dataBookingParam?.vntId
-        }
+    const checksum = params.get('checksum') || undefined; 
+    const apikey = params.get('apikey') || undefined;
+    const name = params.get('name') || undefined;
+    const phone = params.get('phone') || undefined;
+    const raw = `apikey=${apikey}&name=${name}&phone=${phone}&key=${process.env.REACT_APP_CHECKSUM_SECRET_KEY}`;
+    const expectedChecksum = SHA256(raw).toString();
+    if (checksum === expectedChecksum) {
+      getDataLocal()
+      getMetaData()
+      // setTimeout(() => {
+      //   getAreaByIP()
+      // }, 500);
+      if(dataBookingParam?.vntId){
+        getStations({
+          filter: {
+            stationArea: dataBookingParam?.vntId
+          }
+        })
+      } else {
+        getAreaByIP()
+      }
+      if (!bookingData?.vntId && !bookingData?.stationsId && !bookingData?.dateSchedule && !bookingData?.time) {
+        setTimeout(() => {
+          getStationAreas()
+        }, 500);
+      } else {
+        setBookingData({ ...bookingData })
+      }
+      setDateFilter({
+        ...dateFilter,
+        vehicleType: Number(dataBookingParam?.vehicleType)||  VEHICLE_SUB_TYPE[0].vehicleType,
+        stationsId: dataBookingParam?.stationsId || localBookingData?.stationsId?.stationsId,
       })
-    } else {
+      if (dataBookingParam.stationsId && bookingData) {
+        getBookingHours({
+          stationsId: dataBookingParam?.stationsId,
+          date: dataBookingParam?.dateSchedule,
+          vehicleType: dataBookingParam?.vehicleType
+        })
+      }
+      if(!dataLocal?.vehicleSubType){
+        handleCategory(VEHICLE_SUB_TYPE[0].value)
+        let localData={
+          ...dataLocal,
+          vehicleSubCategory:dataBookingParam?.vehicleSubCategory || VIHCLE_CATEGORY_OTO[0].value,
+          vehicleSubType:dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0].value,
+          vehicleType: Number(dataBookingParam?.vehicleType)|| VEHICLE_SUB_TYPE[0].vehicleType,
+        }
+        localStorage.setItem(addKeyLocalStorage('bookingData'), JSON.stringify(localData))
+      } else{
+        handleCategory(dataLocal?.vehicleSubType)
+      }
+      if(Number(params.get('vehicleSubType')) !== 0){
+        handleCategory(Number(params.get('vehicleSubType')))
+      } 
+    } 
+    else{
+      getMetaData()
       getAreaByIP()
-    }
-    if (!bookingData?.vntId && !bookingData?.stationsId && !bookingData?.dateSchedule && !bookingData?.time) {
       setTimeout(() => {
         getStationAreas()
       }, 500);
-    } else {
-      setBookingData({ ...bookingData })
-    }
-    setDateFilter({
-      ...dateFilter,
-      vehicleType: Number(dataBookingParam?.vehicleType)||  VEHICLE_SUB_TYPE[0].vehicleType,
-      stationsId: dataBookingParam?.stationsId || localBookingData?.stationsId?.stationsId,
-    })
-    if (dataBookingParam.stationsId && bookingData) {
-      getBookingHours({
-        stationsId: dataBookingParam?.stationsId,
-        date: dataBookingParam?.dateSchedule,
-        vehicleType: dataBookingParam?.vehicleType
+      setDateFilter({
+        ...dateFilter,
+        vehicleType: Number(dataBookingParam?.vehicleType)||  VEHICLE_SUB_TYPE[0].vehicleType,
+        stationsId: dataBookingParam?.stationsId || localBookingData?.stationsId?.stationsId,
       })
-    }
-    if(!dataLocal?.vehicleSubType){
       handleCategory(VEHICLE_SUB_TYPE[0].value)
-      let localData={
-        ...dataLocal,
-        vehicleSubCategory:dataBookingParam?.vehicleSubCategory || VIHCLE_CATEGORY_OTO[0].value,
-        vehicleSubType:dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0].value,
-        vehicleType: Number(dataBookingParam?.vehicleType)|| VEHICLE_SUB_TYPE[0].vehicleType,
-      }
-      localStorage.setItem(addKeyLocalStorage('bookingData'), JSON.stringify(localData))
-    } else{
-      handleCategory(dataLocal?.vehicleSubType)
     }
-    if(Number(params.get('vehicleSubType')) !== 0){
-      handleCategory(Number(params.get('vehicleSubType')))
-    } 
   }, [])
+
   useEffect(()=>{
     handleFillData()
     handleCheckReq(bookingData?.scheduleType || dataLocal?.scheduleType || Number(params.get('scheduleType')) || SCHEDULE_TYPE[0].value,SCHEDULE_TYPE)
