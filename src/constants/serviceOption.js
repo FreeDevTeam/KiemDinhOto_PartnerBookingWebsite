@@ -37,7 +37,6 @@ export const SCHEDULE_TITLE = {
     title: 'Đăng kiểm xe mới',
     subTitle: 'Dành cho khách hàng đăng kiểm lần đầu - không mang phương tiện đến trạm đăng kiểm'
   },
-  // },
   [SCHEDULE_TYPE.CHANGE_REGISTATION]: {
     title: 'Thay đổi thông tin xe',
     subTitle: 'Dành cho khách hàng muốn đổi mục đích sử dụng phương tiện, hoặc đổi thông tin chủ sở hữu xe, biển số xe'
@@ -50,7 +49,96 @@ export const SCHEDULE_TITLE = {
     title: 'Thanh toán phí bảo hiểm',
     subTitle: 'Dành cho khách hàng muốn thanh toán phí bảo hiểm'
   },
+  [SCHEDULE_TYPE.REGISTER_EPASS_TAG]: {
+    title: 'Đăng ký dán thẻ EPASS',
+    subTitle: 'Dành cho khách hàng muốn dán thẻ thu phí không dừng EPASS cho xe'
+  },
+  [SCHEDULE_TYPE.REGISTER_NEW_VEHICLE]: {
+    title: 'Nộp hồ sơ xe mới',
+    subTitle: 'Dành cho khách hàng muốn nộp hồ sơ xe mới trước khi đăng kiểm'
+  },
+  [SCHEDULE_TYPE.CONSULTANT_MAINTENANCE]: {
+    title: 'Tư vấn bảo dưỡng',
+    subTitle: 'Dành cho khách hàng muốn được tư vấn bảo dưỡng xe định kỳ hoặc theo nhu cầu'
+  },
+  [SCHEDULE_TYPE.CONSULTANT_INSURANCE]: {
+    title: 'Tư vấn bảo hiểm',
+    subTitle: 'Dành cho khách hàng cần tư vấn về các loại bảo hiểm xe'
+  },
+  [SCHEDULE_TYPE.CONSULTANT_RENOVATION]: {
+    title: 'Tư vấn hoán cải',
+    subTitle: 'Dành cho khách hàng muốn hoán cải kết cấu phương tiện'
+  },
+  [SCHEDULE_TYPE.LOST_REGISTRATION_PAPER]: {
+    title: 'Mất giấy đăng kiểm',
+    subTitle: 'Dành cho khách hàng bị mất giấy đăng kiểm và cần hỗ trợ cấp lại'
+  },
+  [SCHEDULE_TYPE.REISSUE_INSPECTION_STICKER]: {
+    title: 'Cấp lại tem đăng kiểm',
+    subTitle: 'Dành cho khách hàng cần xin cấp lại tem đăng kiểm đã mất hoặc hư hỏng'
+  },
+  [SCHEDULE_TYPE.VEHICLE_INSPECTION_CONSULTATION]: {
+    title: 'Tư vấn đăng kiểm xe',
+    subTitle: 'Dành cho khách hàng muốn được tư vấn trước khi đưa xe đi đăng kiểm'
+  },
+  [SCHEDULE_TYPE.TRAFFIC_FINE_CONSULTATION]: {
+    title: 'Tư vấn phạt nguội',
+    subTitle: 'Dành cho khách hàng cần tư vấn xử lý các lỗi vi phạm phạt nguội'
+  },
+  [SCHEDULE_TYPE.CONSULTANT_TNDS_INSURANCE]: {
+    title: 'Tư vấn BH vật chất xe',
+    subTitle: 'Dành cho khách hàng cần tư vấn bảo hiểm vật chất xe ô tô'
+  },
+  [SCHEDULE_TYPE.AUTO_NOTIFY_VIOLATION]: {
+    title: 'Tra cứu cảnh báo đăng kiểm',
+    subTitle: 'Dành cho khách hàng muốn biết xe có vi phạm hoặc bị từ chối đăng kiểm không'
+  },
+  [SCHEDULE_TYPE.SUPPORT_FINE_RESOLUTION]: {
+    title: 'Hỗ trợ xử lý phạt nguội',
+    subTitle: 'Dành cho khách hàng cần hỗ trợ giải quyết các lỗi vi phạm giao thông chưa xử lý'
+  },
+  [SCHEDULE_TYPE.GPS_RENEWAL]: {
+    title: 'Gia hạn định vị',
+    subTitle: 'Dành cho khách hàng muốn gia hạn dịch vụ định vị GPS trên xe'
+  },
+  [SCHEDULE_TYPE.BUSINESS_VEHICLE_BADGE_RENEWAL]: {
+    title: 'Gia hạn phù hiệu xe KD',
+    subTitle: 'Dành cho khách hàng cần gia hạn phù hiệu xe kinh doanh vận tải'
+  },
+  [SCHEDULE_TYPE.TRAINING_CERTIFICATE_RENEWAL]: {
+    title: 'Gia hạn giấy tập huấn',
+    subTitle: 'Dành cho tài xế cần gia hạn giấy chứng nhận tập huấn'
+  },
+  [SCHEDULE_TYPE.DASHCAM_RENEWAL]: {
+    title: 'Gia hạn camera hành trình',
+    subTitle: 'Dành cho khách hàng muốn gia hạn lưu trữ hoặc dịch vụ camera hành trình'
+  },
+  [SCHEDULE_TYPE.REGISTER_VETC_TAG]: {
+    title: 'Đăng ký dán thẻ VETC',
+    subTitle: 'Dành cho khách hàng muốn dán thẻ thu phí không dừng VETC cho xe'
+  },
+  [SCHEDULE_TYPE.TNDS_INSURANCE_RENEWAL]: {
+    title: 'Gia hạn BH TNDS',
+    subTitle: 'Dành cho khách hàng muốn gia hạn bảo hiểm trách nhiệm dân sự bắt buộc'
+  },
+  [SCHEDULE_TYPE.OFF_HOUR_NEW_VEHICLE_REGISTER]: {
+    title: 'Nộp hồ sơ xe mới (ngoài giờ HC)',
+    subTitle: 'Dành cho khách hàng cần hỗ trợ nộp hồ sơ xe mới ngoài giờ hành chính'
+  },
+  [SCHEDULE_TYPE.OFF_HOUR_VEHICLE_INSPECTION]: {
+    title: 'Đăng kiểm xe (ngoài giờ HC)',
+    subTitle: 'Dành cho khách hàng cần đăng kiểm xe ngoài giờ hành chính'
+  },
+  [SCHEDULE_TYPE.CONSULTANT_INSURANCE_COMPENSATION]: {
+    title: 'Tư vấn bồi thường bảo hiểm',
+    subTitle: 'Dành cho khách hàng cần hỗ trợ làm hồ sơ bồi thường bảo hiểm'
+  },
+  [SCHEDULE_TYPE.CONSULTANT_DRIVER_HEALTH]: {
+    title: 'Tư vấn sức khỏe lái xe',
+    subTitle: 'Dành cho tài xế cần tư vấn, khám sức khỏe để lái xe theo quy định'
+  },
 }
+
 
 export const SCHEDULE_DATA = [
   {

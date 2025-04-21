@@ -54,4 +54,21 @@ export default class SystemConfigurationsService {
       })
     })
   }
+
+  static async getStationConfigByApiKey(data) {
+    return new Promise(resolve => {
+      Request.send({
+        method: 'POST',
+        path: '/PartnerAPI/StationServices/user/getStationConfigByApiKey',
+        data: { ...data },
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(data)
+        } else {
+          return resolve(null)
+        }
+      })
+    })
+  }
 }
