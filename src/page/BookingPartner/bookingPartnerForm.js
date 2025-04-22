@@ -624,6 +624,17 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
     }
   }, [dataBookingParam])
 
+  useEffect(() => {
+    if(isZaloApp){
+      form.setFieldValue('phone', zaloUserPhone)
+      form.setFieldValue('name', zaloUserName)
+      form.setFieldValue('vehicleSubType', dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
+      form.setFieldValue('scheduleType', dataBookingParam?.scheduleType || optionServiceType[0]?.value)
+      form.setFieldValue('licensePlateColor', dataBookingParam?.vehiclePlateColor || licensePlateColor[0]?.value)
+      form.setFieldValue('vehicleSubCategory', dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value)
+    }
+  },[isZaloApp])
+
   return (
     <div>
       <Form
@@ -631,16 +642,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
         layout="vertical"
         form={form}
         onFinish={onFinish}
-        initialValues={{
-          // name: dataBookingParam?.name || zaloUserName,
-          // phone: dataBookingParam?.phone || zaloUserPhone,
-          // vehicleSubType: dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value,
-          // scheduleType: dataBookingParam?.scheduleType || optionServiceType[0]?.value,
-          // licensePlateColor: dataBookingParam?.vehiclePlateColor || licensePlateColor[0]?.value,
-          // vntId: dataBookingParam?.vntId || listStationArea[0]?.value,
-          // vehicleSubCategory: dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
-          // certificateSeries: dataBookingParam?.certificateSeries || undefined
-        }}>
+        >
         {() => (
           <>
             <Form.Item
