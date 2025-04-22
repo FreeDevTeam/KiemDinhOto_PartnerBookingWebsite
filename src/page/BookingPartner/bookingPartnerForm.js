@@ -74,7 +74,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
 
   // Kiểm tra các biển trong ENV
   const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1 // ==> dùng cho miniApp
-  const MINIAPP_GTELPAY = true // dùng để tích hợp thanh toán qua GTELPAY
+  const MINIAPP_GTELPAY = window?._env_?.REACT_APP_MINIAPP_GTELPAY == '1' // dùng để tích hợp thanh toán qua GTELPAY
 
   // state này để lấy thông tin trên params và hiển thị cho lần đầu tiên
   const [dataBookingParam, setDataBookingParam] = useState({})
