@@ -30,6 +30,7 @@ import { DATE_DISPLAY_FORMAT } from '../../constants/dateFormats'
 import BookingDatePicker from '../../components/BookingDatePicker'
 import BookingHoursPicker from '../../components/BookingHoursPicker'
 import { SCHEDULE_ERROR } from '../../constants/errorMessage'
+import SystemConfigurationsService from '../../services/SystemConfigurationsService'
 const Gtel = window
 function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   const customStyles = {
@@ -54,7 +55,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   const [listStationArea, setListStationArea] = useState([])
   const [listStation, setListStation] = useState([])
   const [listBookingDate, setListBookingDate] = useState([])
-  const [stationBookingConfig, setStationBookingConfig] = useState('[]')
+  const [stationBookingConfig, setStationBookingConfig] = useState([])
   const [stationSelected, setStationSelected] = useState(null)
   const [isWorkdayLoading, setIsWorkdayLoading] = useState(false)
   const [workdaySelectedDate, setWorkdaySelectedDate] = useState(moment().format(DATE_DISPLAY_FORMAT))
@@ -94,6 +95,24 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
     const raw = `apikey=${apikey}&name=${name}&phone=${phone}&key=${process.env.REACT_APP_CHECKSUM_SECRET_KEY}`
     const expectedChecksum = SHA256(raw).toString()
     return expectedChecksum == checksum
+  }
+
+  const getStationConfigByApiKey = () => {
+    setIsLoading(true)
+    const paramsFromUrl = getQueryParams()
+    const apikey = paramsFromUrl?.apikey || localStorage.getItem('apiKey') || undefined
+    SystemConfigurationsService.getStationConfigByApiKey({ apiKey: apikey })
+      .then((result) => {
+        const stationMiniAppLink = JSON.parse(result[0]?.stationMiniAppLink || '[]')
+        setDataBookingParam(stationMiniAppLink)
+      })
+      .catch((err) => {
+        setErrorMessage('Lấy thông tin cấu hình thất bại.')
+        setIsModalErrOpen(true)
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
 
   const bookingConsultantSchedule = (values) => {
@@ -484,41 +503,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
     })
   }
 
-  const formItemInput = (data) => {
-    const {
-      required = false,
-      fieldName,
-      label,
-      regex = [],
-      hidden,
-      placeholder,
-      type,
-      disabled = false,
-      extra,
-      defaultValue,
-      readOnly,
-      onInput,
-      style,
-      className = 'login__input booking-input'
-    } = data
-
-    return (
-      <Form.Item required={required} name={fieldName} label={label} rules={regex} hidden={hidden} extra={extra}>
-        <Input
-          type={type}
-          size="large"
-          disabled={disabled}
-          placeholder={placeholder}
-          defaultValue={defaultValue}
-          readOnly={readOnly}
-          onInput={onInput}
-          style={style}
-          className={className}
-        />
-      </Form.Item>
-    )
-  }
-
   // FUNC: Băm url để lấy các params trên url và trả về dạng mảng có object là key và value
   function getQueryParams(options = {}) {
     if (typeof window !== 'undefined' && window.location && window.location.search) {
@@ -534,6 +518,14 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   // FUNC: fill value X vào field X của form
   const fillFormValue = (fieldName, value) => {
     form.setFieldsValue({ [fieldName]: value })
+  }
+
+  // function kiểm tra xem nên áp dụng trên URL hay từ DB
+  const determineDataSource = () => {
+    const paramsFromUrl = getQueryParams()
+    const paramsFromUrlKeys = Object.keys(paramsFromUrl)
+    const isUsingConfigMiniAppLinkInDb = paramsFromUrlKeys.length === 1 && paramsFromUrlKeys[0] === 'apikey' ? true : false // nếu chỉ có API Key thì lấy trong DB
+    return isUsingConfigMiniAppLinkInDb
   }
 
   // ------------USE EFFECT------------------
@@ -563,7 +555,11 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       paramsFromUrl[key] = value
       fillFormValue(key, value)
     })
-    setDataBookingParam(paramsFromUrl)
+    if (determineDataSource()) {
+      getStationConfigByApiKey()
+    } else {
+      setDataBookingParam(paramsFromUrl)
+    }
 
     // xử lí state của scheduleTypes
     firstScheduleTypeHandler()
@@ -613,6 +609,19 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
         stationsId: dataBookingParam?.stationsId
       })
     }
+    if (dataBookingParam && Object.keys(dataBookingParam).length > 0) {
+      form.setFieldsValue({
+        name: dataBookingParam.name || zaloUserName,
+        phone: dataBookingParam.phone || zaloUserPhone,
+        vehicleSubType: dataBookingParam.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value,
+        scheduleType: dataBookingParam.scheduleType || optionServiceType[0]?.value,
+        licensePlateColor: dataBookingParam.vehiclePlateColor || licensePlateColor[0]?.value,
+        vntId: dataBookingParam.vntId || listStationArea[0]?.value,
+        vehicleSubCategory: dataBookingParam.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
+        certificateSeries: dataBookingParam.certificateSeries || undefined,
+        licensePlates: dataBookingParam.licensePlates || undefined,
+      })
+    }
   }, [dataBookingParam])
 
   return (
@@ -623,14 +632,14 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
         form={form}
         onFinish={onFinish}
         initialValues={{
-          name: dataBookingParam?.name || zaloUserName,
-          phone: dataBookingParam?.phone || zaloUserPhone,
-          vehicleSubType: dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value,
-          scheduleType: dataBookingParam?.scheduleType || optionServiceType[0]?.value,
-          licensePlateColor: dataBookingParam?.vehiclePlateColor || licensePlateColor[0]?.value,
-          vntId: dataBookingParam?.vntId || listStationArea[0]?.value,
-          vehicleSubCategory: dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
-          certificateSeries: dataBookingParam?.certificateSeries || undefined
+          // name: dataBookingParam?.name || zaloUserName,
+          // phone: dataBookingParam?.phone || zaloUserPhone,
+          // vehicleSubType: dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value,
+          // scheduleType: dataBookingParam?.scheduleType || optionServiceType[0]?.value,
+          // licensePlateColor: dataBookingParam?.vehiclePlateColor || licensePlateColor[0]?.value,
+          // vntId: dataBookingParam?.vntId || listStationArea[0]?.value,
+          // vehicleSubCategory: dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
+          // certificateSeries: dataBookingParam?.certificateSeries || undefined
         }}>
         {() => (
           <>
@@ -648,7 +657,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                 }
               ]}
               hidden={dataBookingParam?.visible_firstName === false}>
-              <Input className="login__input booking-input" placeholder="Nguyễn Văn a" type="text" size="large" />
+              <Input className="login__input booking-input" placeholder="Nguyễn Văn An" type="text" size="large" />
             </Form.Item>
             <Form.Item
               name="phone"
@@ -690,33 +699,28 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                   styles={customStyles}
                   options={scheduleTypes}
                   menuPlacement="top"
+                  onChange={(values, scheduleType) => {
+                    setScheduleCategory(scheduleType?.scheduleCategory)
+                  }}
                 />
               </div>
             </Form.Item>
 
-            {formItemInput({
-              required: true,
-              fieldName: 'licensePlates',
-              label: 'Biển số xe',
-              regex: [
+            <Form.Item
+              name="licensePlates"
+              label="Biển số xe"
+              required
+              rules={[
                 {
                   required: dataBookingParam?.require_vehicleIdentity === true,
                   validator(_, value) {
                     return validatorPlateNumber(value?.toUpperCase())
                   }
                 }
-              ],
-              hidden: dataBookingParam?.visible_vehicleIdentity === false,
-              placeholder: '59B16856',
-              type: 'text',
-              style: { textTransform: 'uppercase' },
-              onInput: (e) => {
-                e.target.value = e.target.value.toUpperCase().replace(/\s/g, '')
-              },
-              onchange: (e) => {
-                form.setFieldValue('licensePlates', e.target.value.toUpperCase().replace(/\s/g, ''))
-              }
-            })}
+              ]}
+              hidden={dataBookingParam?.visible_vehicleIdentity === false}>
+              <Input className="login__input booking-input" placeholder="59B16856" type="text" size="large" />
+            </Form.Item>
 
             <Form.Item
               name="licensePlateColor"
