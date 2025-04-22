@@ -273,7 +273,7 @@ export default class BookingService {
     return new Promise((resolve) => {
       Request.send({
         method: 'POST',
-        path: '/SystemConfigurations/getMetaData',
+        path: '/PartnerAPI/SystemConfigurations/getMetaData',
         data: data
       }).then((result = {}) => {
         const { statusCode, data } = result
