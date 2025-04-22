@@ -541,6 +541,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       getStationAreas()
     }, 1500)
     const paramsFromUrl = getQueryParams()
+    handleCategory(paramsFromUrl?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
     let isValid = null
 
     if (MINIAPP_GTELPAY) {
@@ -565,7 +566,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
     // xử lí state của scheduleTypes
     firstScheduleTypeHandler()
     setLicensePlateColor(PLATE_COLOR)
-    handleCategory(paramsFromUrl?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
   }, [])
 
   useEffect(() => {
