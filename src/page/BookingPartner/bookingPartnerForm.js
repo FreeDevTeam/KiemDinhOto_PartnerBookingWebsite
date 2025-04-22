@@ -97,6 +97,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   }
 
   const bookingConsultantSchedule = (values) => {
+    setIsLoading(true)
     BookingService.createConsultantSchedule(values)
       .then((result) => {
         const { error: rsMess, statusCode, data } = result
@@ -135,6 +136,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   }
 
   const createBookingSchedule = (values) => {
+    setIsLoading(true)
     BookingService.createSchedule(values)
       .then((result) => {
         const { error: rsMess, statusCode, data } = result
