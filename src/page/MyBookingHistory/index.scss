@@ -229,3 +229,14 @@
 
   }
 }
+
+.nav-tabs .nav-link {
+  border: none;
+  font-size: 16px;
+  padding: 0.75rem 1.5rem;
+  transition: background-color 0.3s;
+}
+
+.nav-tabs .nav-link.active {
+  border-bottom: var(--primary-button-color) 2px solid;
+}
