@@ -65,7 +65,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
     stationsId: null,
     startDate: moment().format(DATE_DISPLAY_FORMAT),
     endDate: moment().endOf('month').format(DATE_DISPLAY_FORMAT),
-    vehicleType: null
+    vehicleType: VEHICLE_SUB_TYPE[0]?.vehicleType
   })
 
   // khai báo các biến cho toàn trang
@@ -192,13 +192,10 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   }
 
   const handleFillStationDateTime = () => {
-    const vntId = form.getFieldValue('vntId')
     const stationsId = form.getFieldValue('stationsId')
-    const vehicleType = form.getFieldValue('vehicleSubType')
     setWorkdayFilter({
       ...workdayFilter,
-      stationsId: stationsId,
-      vehicleType: vehicleType
+      stationsId: stationsId
     })
   }
 
@@ -412,6 +409,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
           callback(stationList)
         } else {
           setListStation(stationList)
+          setStationSelected(stationList[0])
           form.setFieldValue('stationsId', stationList[0]?.stationsId)
         }
       })
@@ -518,36 +516,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       </Form.Item>
     )
   }
-  const formSelectItem = ({
-    fieldName,
-    label,
-    regex = [],
-    hidden = false,
-    placeholder,
-    disabled = false,
-    styles = {},
-    options,
-    onChange,
-    extra,
-    required = false,
-    defaultValue = null
-  }) => (
-    <Form.Item name={fieldName} label={label} required={required} extra={extra} rules={regex} hidden={hidden}>
-      <div className="login__input__icon">
-        <SelectAntd
-          defaultValue={defaultValue}
-          disabled={disabled}
-          className="cs-select ant-custom booking-input"
-          isSearchable
-          placeholder={placeholder}
-          styles={styles}
-          options={options}
-          menuPlacement="top"
-          onChange={onChange}
-        />
-      </div>
-    </Form.Item>
-  )
 
   // FUNC: Băm url để lấy các params trên url và trả về dạng mảng có object là key và value
   function getQueryParams(options = {}) {
@@ -568,11 +536,19 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
 
   // ------------USE EFFECT------------------
   useEffect(() => {
-    getStationAreas()
     getMetaData()
-    
+    setTimeout(() => {
+      getStationAreas()
+    }, 1500)
     const paramsFromUrl = getQueryParams()
-    if ((!paramsFromUrl && !MINIAPP_GTELPAY)||(MINIAPP_GTELPAY&&!CheckSum())) return
+    let isValid = null
+
+    if (MINIAPP_GTELPAY) {
+      isValid = CheckSum()
+    } else {
+      isValid = paramsFromUrl ? true : false
+    }
+    if (isValid === false) return
     Object.keys(paramsFromUrl).map((key) => {
       let value = paramsFromUrl[key]
       if (key !== 'phone') {
@@ -584,7 +560,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       paramsFromUrl[key] = value
       fillFormValue(key, value)
     })
-    console.table('paramsFromUrl', paramsFromUrl)
     setDataBookingParam(paramsFromUrl)
 
     // xử lí state của scheduleTypes
@@ -651,7 +626,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
           vehicleSubType: dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value,
           scheduleType: dataBookingParam?.scheduleType || optionServiceType[0]?.value,
           licensePlateColor: dataBookingParam?.vehiclePlateColor || licensePlateColor[0]?.value,
-          vntId: dataBookingParam?.vntId || listStationArea[0]?.value
+          vntId: dataBookingParam?.vntId || listStationArea[0]?.value,
+          vehicleSubCategory: dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
+          certificateSeries: dataBookingParam?.certificateSeries || undefined
         }}>
         {() => (
           <>
@@ -692,26 +669,28 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
               <Input className="login__input booking-input" placeholder="Nhập số điện thoại" type="text" size="large" disabled={isZaloApp} />
             </Form.Item>
 
-            {formSelectItem({
-              defaultValue: dataBookingParam?.serviceType || optionServiceType[0]?.value,
-              required: true,
-              fieldName: 'scheduleType',
-              label: 'Mục đích đặt hẹn',
-              regex: [
+            <Form.Item
+              name="scheduleType"
+              label="Mục đích đặt hẹn"
+              required
+              rules={[
                 {
                   required: true,
                   message: 'Vui lòng chọn mục đích đặt lịch'
                 }
-              ],
-              hidden: dataBookingParam?.visible_scheduleType === false,
-              placeholder: 'Vui lòng chọn mục đích đặt lịch',
-              type: 'select',
-              options: scheduleTypes,
-              onChange: (values, option) => {
-                setScheduleCategory(option?.scheduleCategory)
-                form.setFieldValue('scheduleType', values)
-              }
-            })}
+              ]}>
+              <div className="login__input__icon">
+                <SelectAntd
+                  defaultValue={dataBookingParam?.scheduleType || optionServiceType[0]?.value}
+                  className="cs-select ant-custom booking-input"
+                  isSearchable={true}
+                  placeholder="Vui lòng chọn mục đích đặt lịch"
+                  styles={customStyles}
+                  options={scheduleTypes}
+                  menuPlacement="top"
+                />
+              </div>
+            </Form.Item>
 
             {formItemInput({
               required: true,
@@ -737,26 +716,31 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
               }
             })}
 
-            {formSelectItem({
-              defaultValue: dataBookingParam?.vehiclePlateColor || licensePlateColor[0]?.value,
-              required: true,
-              fieldName: 'licensePlateColor',
-              label: 'Màu biển số',
-              regex: [
+            <Form.Item
+              name="licensePlateColor"
+              label="Màu biển số"
+              hidden={dataBookingParam?.visible_scheduleType === false}
+              rules={[
                 {
                   required: dataBookingParam?.require_vehiclePlateColor === true,
                   message: 'Vui lòng chọn màu biển số'
                 }
-              ],
-              hidden: dataBookingParam?.visible_scheduleType === false,
-              placeholder: 'Vui lòng chọn màu biển số',
-              type: 'select',
-              options: licensePlateColor,
-              styles: customStyles,
-              onChange: (values) => {
-                form.setFieldValue('licensePlateColor', values)
-              }
-            })}
+              ]}>
+              <div className="login__input__icon">
+                <SelectAntd
+                  defaultValue={dataBookingParam?.vehiclePlateColor || licensePlateColor[0]?.value}
+                  className="cs-select ant-custom booking-input"
+                  isSearchable={true}
+                  placeholder="Vui lòng chọn màu biển số"
+                  styles={customStyles}
+                  options={licensePlateColor}
+                  menuPlacement="top"
+                  onChange={(values) => {
+                    form.setFieldValue('licensePlateColor', values)
+                  }}
+                />
+              </div>
+            </Form.Item>
             <Row className="justify-content-between">
               <Col span={11}>
                 <Form.Item
