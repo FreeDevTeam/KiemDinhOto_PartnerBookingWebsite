@@ -644,6 +644,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
         onFinish={onFinish}
         initialValues={{
           scheduleType: dataBookingParam?.scheduleType || optionServiceType[0]?.value,
+          licensePlateColor: dataBookingParam?.vehiclePlateColor || licensePlateColor[0]?.value,
+          vehicleSubCategory: dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
+          vehicleSubType: dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value,
         }}
         >
         {() => (
@@ -725,7 +728,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                 }
               ]}
               hidden={dataBookingParam?.visible_vehicleIdentity === false}>
-              <Input className="login__input booking-input" placeholder="59B16856" type="text" size="large" />
+              <Input className="login__input booking-input" placeholder="59B16856" type="text" size="large" 
+                onInput={(e)=>{e.target.value = e.target.value.toUpperCase().replace(/\s/g, '')}} />
             </Form.Item>
 
             <Form.Item
