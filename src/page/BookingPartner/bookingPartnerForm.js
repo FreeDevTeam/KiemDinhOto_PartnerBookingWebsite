@@ -642,6 +642,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
         layout="vertical"
         form={form}
         onFinish={onFinish}
+        initialValues={{
+          scheduleType: dataBookingParam?.scheduleType || optionServiceType[0]?.value,
+        }}
         >
         {() => (
           <>
@@ -703,6 +706,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                   menuPlacement="top"
                   onChange={(values, scheduleType) => {
                     setScheduleCategory(scheduleType?.scheduleCategory)
+                    form.setFieldValue('scheduleType', values)
                   }}
                 />
               </div>
