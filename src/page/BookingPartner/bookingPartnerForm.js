@@ -646,7 +646,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
           scheduleType: dataBookingParam?.scheduleType || optionServiceType[0]?.value,
           licensePlateColor: dataBookingParam?.vehiclePlateColor || licensePlateColor[0]?.value,
           vehicleSubCategory: dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
-          vehicleSubType: dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value,
+          vehicleSubType: dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value
         }}
         >
         {() => (
