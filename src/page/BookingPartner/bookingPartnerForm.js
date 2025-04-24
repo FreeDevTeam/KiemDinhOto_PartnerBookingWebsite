@@ -9,7 +9,7 @@ import PopupMessage from './PopupMessage'
 import { changeTime } from '../../helper/changeTime'
 import { ReactComponent as LogoTTDK } from './../../assets/icons/Logo.svg'
 import { validatorPlateNumber } from './../../helper/validatorPlateNumber'
-import { optionServiceType, SCHEDULE_TITLE, SCHEDULE_TYPE } from '../../constants/serviceOption'
+import { optionServiceType, SCHEDULE_TITLE, SCHEDULE_TYPE_MINIAPP } from '../../constants/serviceOption'
 import {
   PAYMENT_TYPE,
   PLATE_COLOR,
@@ -241,11 +241,11 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
           }))
           setScheduleTypes(newValues)
         } else {
-          setScheduleTypes(SCHEDULE_TYPE)
+          firstScheduleTypeHandler()
         }
       })
       .catch((err) => {
-        setScheduleTypes(SCHEDULE_TYPE)
+        firstScheduleTypeHandler()
       })
   }
 
@@ -492,11 +492,11 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
 
   const firstScheduleTypeHandler = () => {
     setScheduleTypes(() => {
-      const data = Object.keys(SCHEDULE_TYPE).map((key) => {
+      const data = Object.keys(SCHEDULE_TYPE_MINIAPP).map((key) => {
         return {
           key: key,
-          value: SCHEDULE_TYPE[key],
-          label: SCHEDULE_TITLE[SCHEDULE_TYPE[key]].title
+          value: SCHEDULE_TYPE_MINIAPP[key],
+          label: SCHEDULE_TITLE[SCHEDULE_TYPE_MINIAPP[key]].title
         }
       })
       return data
