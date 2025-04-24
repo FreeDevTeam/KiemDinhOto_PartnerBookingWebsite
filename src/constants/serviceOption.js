@@ -13,7 +13,7 @@ export const SCHEDULE_TYPE = {
   REISSUE_INSPECTION_STICKER: 11, // Cấp lại tem đăng kiểm
   VEHICLE_INSPECTION_CONSULTATION: 12, // Tư vấn đăng kiểm xe
   TRAFFIC_FINE_CONSULTATION: 13, // Tư vấn xử lý phạt nguội
-  CONSULTANT_TNDS_INSURANCE: 14, // Tư vấn bảo hiểm TNDS xe ô tô
+  CONSULTANT_TNDS_INSURANCE: 14, // Tư vấn bảo hiểm vật chất xe ô tô
   AUTO_NOTIFY_VIOLATION: 15, // Tra cứu cảnh báo đăng kiểm
   SUPPORT_FINE_RESOLUTION: 16, // Hỗ trợ xử lý phạt nguội
   GPS_RENEWAL: 17, // Gia hạn định vị

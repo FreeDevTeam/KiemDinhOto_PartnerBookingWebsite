@@ -689,7 +689,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
               ]}>
               <Input className="login__input booking-input" placeholder="Nhập số điện thoại" type="text" size="large" disabled={isZaloApp} />
             </Form.Item>
-
             <Form.Item
               name="scheduleType"
               label="Mục đích đặt hẹn"

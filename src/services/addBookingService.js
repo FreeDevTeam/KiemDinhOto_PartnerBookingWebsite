@@ -612,3 +612,4 @@ export default class BookingService {
     })
   }
 }
+
