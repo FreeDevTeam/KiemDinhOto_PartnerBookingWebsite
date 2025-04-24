@@ -603,9 +603,11 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
 
   useEffect(() => {
     if (dataBookingParam?.vehicleSubType) {
+      handleCategory(dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value) // Phân loại
+      const vehicleType = VEHICLE_SUB_TYPE.find((item) => item.value === dataBookingParam?.vehicleSubType) // loại phương tiện
       setWorkdayFilter({
         ...workdayFilter,
-        vehicleType: dataBookingParam?.vehicleSubType,
+        vehicleType: vehicleType?.vehicleType,
         stationsId: dataBookingParam?.stationsId
       })
     }
