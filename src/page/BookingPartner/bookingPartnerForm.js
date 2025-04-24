@@ -50,7 +50,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   // state dùng cho form
   const [scheduleCategory, setScheduleCategory] = useState(1)
   const [scheduleTypes, setScheduleTypes] = useState([])
-  const [licensePlateColor, setLicensePlateColor] = useState(PLATE_COLOR)
+  const [licensePlateColorList, setLicensePlateColorList] = useState(PLATE_COLOR)
   const [vehicleSubCategoryOptions, setVehicleSubCategoryOptions] = useState([])
   const [listStationArea, setListStationArea] = useState([])
   const [listStation, setListStation] = useState([])
@@ -563,7 +563,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
 
     // xử lí state của scheduleTypes
     firstScheduleTypeHandler()
-    setLicensePlateColor(PLATE_COLOR)
+    setLicensePlateColorList(PLATE_COLOR)
   }, [])
 
   useEffect(() => {
@@ -617,7 +617,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
         phone: dataBookingParam.phone || zaloUserPhone,
         vehicleSubType: dataBookingParam.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value,
         scheduleType: dataBookingParam.scheduleType || optionServiceType[0]?.value,
-        licensePlateColor: dataBookingParam.vehiclePlateColor || licensePlateColor[0]?.value,
+        licensePlateColor: dataBookingParam.licensePlateColor || licensePlateColorList[0]?.value,
         vntId: dataBookingParam.vntId || listStationArea[0]?.value,
         vehicleSubCategory: dataBookingParam.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
         certificateSeries: dataBookingParam.certificateSeries || undefined,
@@ -632,7 +632,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       form.setFieldValue('name', zaloUserName)
       form.setFieldValue('vehicleSubType', dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
       form.setFieldValue('scheduleType', dataBookingParam?.scheduleType || optionServiceType[0]?.value)
-      form.setFieldValue('licensePlateColor', dataBookingParam?.vehiclePlateColor || licensePlateColor[0]?.value)
+      form.setFieldValue('licensePlateColor', dataBookingParam?.licensePlateColor || licensePlateColorList[0]?.value)
       form.setFieldValue('vehicleSubCategory', dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value)
     }
   },[isZaloApp])
@@ -646,7 +646,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
         onFinish={onFinish}
         initialValues={{
           scheduleType: dataBookingParam?.scheduleType || optionServiceType[0]?.value,
-          licensePlateColor: dataBookingParam?.vehiclePlateColor || licensePlateColor[0]?.value,
+          licensePlateColor: dataBookingParam?.licensePlateColor || licensePlateColorList[0]?.value,
           vehicleSubCategory: dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
           vehicleSubType: dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value
         }}
@@ -700,7 +700,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                   message: 'Vui lòng chọn mục đích đặt lịch'
                 }
               ]}>
-              <div className="login__input__icon">
                 <SelectAntd
                   defaultValue={dataBookingParam?.scheduleType || optionServiceType[0]?.value}
                   className="cs-select ant-custom booking-input"
@@ -714,7 +713,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                     form.setFieldValue('scheduleType', values)
                   }}
                 />
-              </div>
             </Form.Item>
 
             <Form.Item
@@ -744,20 +742,18 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                   message: 'Vui lòng chọn màu biển số'
                 }
               ]}>
-              <div className="login__input__icon">
                 <SelectAntd
-                  defaultValue={dataBookingParam?.vehiclePlateColor || licensePlateColor[0]?.value}
+                  defaultValue={dataBookingParam?.licensePlateColor || licensePlateColorList[0]?.value}
                   className="cs-select ant-custom booking-input"
                   isSearchable={true}
                   placeholder="Vui lòng chọn màu biển số"
                   styles={customStyles}
-                  options={licensePlateColor}
+                  options={licensePlateColorList}
                   menuPlacement="top"
                   onChange={(values) => {
                     form.setFieldValue('licensePlateColor', values)
                   }}
                 />
-              </div>
             </Form.Item>
             <Row className="justify-content-between">
               <Col span={11}>
