@@ -161,7 +161,7 @@ const BookingDetail = ({
         <div className="box">
           <div className="title-i">Nơi đặt chỗ</div>
           <div className="text-i">
-            {scheduleInformation?.station?.stationsName} - {scheduleInformation?.station?.stationsAddress}
+            {scheduleInformation?.stationsName} - {scheduleInformation?.stationsAddress} - {scheduleInformation?.stationArea}
           </div>
         </div>
         <div className="d-flex j-sb mgt-15">
