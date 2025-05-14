@@ -61,6 +61,7 @@ function UpdateBookingDetail({}) {
   const [workdaySelectedDate, setWorkdaySelectedDate] = useState(moment().format(DATE_DISPLAY_FORMAT))
   const [loadingHoursPicker, setLoadingHoursPicker] = useState(false)
   const [listBookingTime, setListBookingTime] = useState([])
+  const [minMonthAvailable, setMinMonthAvailable] = useState(moment().format(DATE_DISPLAY_FORMAT))
 
   const [workdayFilter, setWorkdayFilter] = useState({
     stationsId: null,
@@ -417,6 +418,39 @@ function UpdateBookingDetail({}) {
     form.setFieldsValue({ [fieldName]: value })
   }
 
+    //function lấy ra ngày đầu tiên có lịch làm
+  async function findFirstAvailableDateRange(baseDateFilter) {
+    let current = moment() // ngày hiện tại
+    const endLimit = moment().add(1, 'year').endOf('year') // 31/12 năm sau
+
+    while (current.isSameOrBefore(endLimit, 'month')) {
+      const startDate = current.startOf('month').format('DD/MM/YYYY')
+      const endDate = current.endOf('month').format('DD/MM/YYYY')
+
+      const requestParams = {
+        ...baseDateFilter,
+        startDate,
+        endDate
+      }
+
+      try {
+        const data = await BookingService.getBookingDate(requestParams)
+        const validDates = data?.filter((d) => d.scheduleDateStatus === 1) || []
+        if (validDates.length > 0) {
+          setMinMonthAvailable(requestParams.startDate)
+          return requestParams
+        }
+      } catch (err) {
+        console.error(`Lỗi khi gọi API tháng ${current.format('MM/YYYY')}:`, err)
+        // Bạn có thể break nếu lỗi không thể phục hồi
+      }
+
+      current = current.add(1, 'month')
+    }
+
+    return null // Không tìm thấy tháng nào có ngày làm việc
+  }
+
   // ------------USE EFFECT------------------
   useEffect(() => {
     getMetaData()
@@ -444,14 +478,29 @@ function UpdateBookingDetail({}) {
     }
   }, [form.getFieldValue('vntId')])
 
-  useEffect(() => {
-    if (form.getFieldValue('stationsId')) {
-      setWorkdayFilter({
-        ...workdayFilter,
-        stationsId: form.getFieldValue('stationsId')
-      })
+useEffect(() => {
+  const fetchData = async () => {
+    // Lấy giá trị của stationsId từ form
+    const stationsId = form.getFieldValue('stationsId');
+
+    if (stationsId) {
+      try {
+        // Gọi hàm async để tìm tháng đầu tiên có lịch khả dụng
+        const result = await findFirstAvailableDateRange({ ...workdayFilter, stationsId });
+
+        // Nếu có kết quả, cập nhật lại workdayFilter
+        if (result) {
+          setWorkdayFilter(result);
+        }
+      } catch (err) {
+        console.error("Error fetching available date range:", err);
+      }
     }
-  }, [form.getFieldValue('stationsId')])
+  };
+
+  // Gọi hàm fetchData
+  fetchData();
+}, [form.getFieldValue('stationsId')]);
 
   useEffect(() => {
     if ((workdayFilter.vehicleType && workdayFilter.stationsId) || (workdayFilter.stationsId && form.getFieldValue('vehicleSubType'))) {
@@ -796,6 +845,7 @@ function UpdateBookingDetail({}) {
                       endDate: moment(selectedMonth).endOf('months').format(DATE_DISPLAY_FORMAT)
                     })
                   }}
+                  minAvailableMonth={minMonthAvailable} // Truyền giá trị hoặc mặc định tháng hiện tại
                 />
               </Form.Item>
             )}

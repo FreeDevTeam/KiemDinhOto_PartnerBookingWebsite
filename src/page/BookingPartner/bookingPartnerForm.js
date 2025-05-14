@@ -61,7 +61,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   const [workdaySelectedDate, setWorkdaySelectedDate] = useState(moment().format(DATE_DISPLAY_FORMAT))
   const [loadingHoursPicker, setLoadingHoursPicker] = useState(false)
   const [listBookingTime, setListBookingTime] = useState([])
-
+  const [minMonthAvailable, setMinMonthAvailable] = useState(moment().format(DATE_DISPLAY_FORMAT))
   const [workdayFilter, setWorkdayFilter] = useState({
     stationsId: null,
     startDate: moment().format(DATE_DISPLAY_FORMAT),
@@ -431,10 +431,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
         } else {
           setListStation(stationList)
           setStationSelected(stationList[0])
-          if(dataBookingParam?.stationsId){
+          if (dataBookingParam?.stationsId) {
             form.setFieldValue('stationsId', dataBookingParam?.stationsId)
-          }
-          else{
+          } else {
             form.setFieldValue('stationsId', stationList[0]?.stationsId)
           }
         }
@@ -533,6 +532,39 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
     return isUsingConfigMiniAppLinkInDb
   }
 
+  //function lấy ra ngày đầu tiên có lịch làm
+  async function findFirstAvailableDateRange(baseDateFilter) {
+    let current = moment() // ngày hiện tại
+    const endLimit = moment().add(1, 'year').endOf('year') // 31/12 năm sau
+
+    while (current.isSameOrBefore(endLimit, 'month')) {
+      const startDate = current.startOf('month').format('DD/MM/YYYY')
+      const endDate = current.endOf('month').format('DD/MM/YYYY')
+
+      const requestParams = {
+        ...baseDateFilter,
+        startDate,
+        endDate
+      }
+
+      try {
+        const data = await BookingService.getBookingDate(requestParams)
+        const validDates = data?.filter((d) => d.scheduleDateStatus === 1) || []
+        if (validDates.length > 0) {
+          setMinMonthAvailable(requestParams.startDate)
+          return requestParams
+        }
+      } catch (err) {
+        console.error(`Lỗi khi gọi API tháng ${current.format('MM/YYYY')}:`, err)
+        // Bạn có thể break nếu lỗi không thể phục hồi
+      }
+
+      current = current.add(1, 'month')
+    }
+
+    return null // Không tìm thấy tháng nào có ngày làm việc
+  }
+
   // ------------USE EFFECT------------------
   useEffect(() => {
     getMetaData()
@@ -581,14 +613,30 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
     }
   }, [form.getFieldValue('vntId')])
 
-  useEffect(() => {
-    if (form.getFieldValue('stationsId')) {
-      setWorkdayFilter({
-        ...workdayFilter,
-        stationsId: form.getFieldValue('stationsId')
-      })
+useEffect(() => {
+  const fetchData = async () => {
+    // Lấy giá trị của stationsId từ form
+    const stationsId = form.getFieldValue('stationsId');
+
+    if (stationsId) {
+      try {
+        // Gọi hàm async để tìm tháng đầu tiên có lịch khả dụng
+        const result = await findFirstAvailableDateRange({ ...workdayFilter, stationsId });
+
+        // Nếu có kết quả, cập nhật lại workdayFilter
+        if (result) {
+          setWorkdayFilter(result);
+        }
+      } catch (err) {
+        console.error("Error fetching available date range:", err);
+      }
     }
-  }, [form.getFieldValue('stationsId')])
+  };
+
+  // Gọi hàm fetchData
+  fetchData();
+}, [form.getFieldValue('stationsId')]); // Dependency array theo stationsId
+
 
   useEffect(() => {
     if ((workdayFilter.vehicleType && workdayFilter.stationsId) || (workdayFilter.stationsId && form.getFieldValue('vehicleSubType'))) {
@@ -626,13 +674,13 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
         vntId: dataBookingParam.vntId || listStationArea[0]?.value,
         vehicleSubCategory: dataBookingParam.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
         certificateSeries: dataBookingParam.certificateSeries || undefined,
-        licensePlates: dataBookingParam.licensePlates || undefined,
+        licensePlates: dataBookingParam.licensePlates || undefined
       })
     }
   }, [dataBookingParam])
 
   useEffect(() => {
-    if(isZaloApp){
+    if (isZaloApp) {
       form.setFieldValue('phone', zaloUserPhone)
       form.setFieldValue('name', zaloUserName)
       form.setFieldValue('vehicleSubType', dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
@@ -640,7 +688,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       form.setFieldValue('licensePlateColor', dataBookingParam?.licensePlateColor || licensePlateColorList[0]?.value)
       form.setFieldValue('vehicleSubCategory', dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value)
     }
-  },[isZaloApp])
+  }, [isZaloApp])
 
   return (
     <div>
@@ -654,8 +702,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
           licensePlateColor: dataBookingParam?.licensePlateColor || licensePlateColorList[0]?.value,
           vehicleSubCategory: dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
           vehicleSubType: dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value
-        }}
-        >
+        }}>
         {() => (
           <>
             <Form.Item
@@ -705,19 +752,19 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                   message: 'Vui lòng chọn mục đích đặt lịch'
                 }
               ]}>
-                <SelectAntd
-                  defaultValue={dataBookingParam?.scheduleType || optionServiceType[0]?.value}
-                  className="cs-select ant-custom booking-input"
-                  isSearchable={true}
-                  placeholder="Vui lòng chọn mục đích đặt lịch"
-                  styles={customStyles}
-                  options={scheduleTypes}
-                  menuPlacement="top"
-                  onChange={(values, scheduleType) => {
-                    setScheduleCategory(scheduleType?.scheduleCategory)
-                    form.setFieldValue('scheduleType', values)
-                  }}
-                />
+              <SelectAntd
+                defaultValue={dataBookingParam?.scheduleType || optionServiceType[0]?.value}
+                className="cs-select ant-custom booking-input"
+                isSearchable={true}
+                placeholder="Vui lòng chọn mục đích đặt lịch"
+                styles={customStyles}
+                options={scheduleTypes}
+                menuPlacement="top"
+                onChange={(values, scheduleType) => {
+                  setScheduleCategory(scheduleType?.scheduleCategory)
+                  form.setFieldValue('scheduleType', values)
+                }}
+              />
             </Form.Item>
 
             <Form.Item
@@ -733,8 +780,15 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                 }
               ]}
               hidden={dataBookingParam?.visible_vehicleIdentity === false}>
-              <Input className="login__input booking-input" placeholder="59B16856" type="text" size="large" 
-                onInput={(e)=>{e.target.value = e.target.value.toUpperCase().replace(/\s/g, '')}} />
+              <Input
+                className="login__input booking-input"
+                placeholder="59B16856"
+                type="text"
+                size="large"
+                onInput={(e) => {
+                  e.target.value = e.target.value.toUpperCase().replace(/\s/g, '')
+                }}
+              />
             </Form.Item>
 
             <Form.Item
@@ -747,18 +801,18 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                   message: 'Vui lòng chọn màu biển số'
                 }
               ]}>
-                <SelectAntd
-                  defaultValue={dataBookingParam?.licensePlateColor || licensePlateColorList[0]?.value}
-                  className="cs-select ant-custom booking-input"
-                  isSearchable={true}
-                  placeholder="Vui lòng chọn màu biển số"
-                  styles={customStyles}
-                  options={licensePlateColorList}
-                  menuPlacement="top"
-                  onChange={(values) => {
-                    form.setFieldValue('licensePlateColor', values)
-                  }}
-                />
+              <SelectAntd
+                defaultValue={dataBookingParam?.licensePlateColor || licensePlateColorList[0]?.value}
+                className="cs-select ant-custom booking-input"
+                isSearchable={true}
+                placeholder="Vui lòng chọn màu biển số"
+                styles={customStyles}
+                options={licensePlateColorList}
+                menuPlacement="top"
+                onChange={(values) => {
+                  form.setFieldValue('licensePlateColor', values)
+                }}
+              />
             </Form.Item>
             <Row className="justify-content-between">
               <Col span={11}>
@@ -921,6 +975,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                       endDate: moment(selectedMonth).endOf('months').format(DATE_DISPLAY_FORMAT)
                     })
                   }}
+                  minAvailableMonth={minMonthAvailable} // Truyền giá trị hoặc mặc định tháng hiện tại
                 />
               </Form.Item>
             )}
