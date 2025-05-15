@@ -36,7 +36,8 @@ export default function BookingDatePicker({
   bookingConfig =[],
   currentMonth,
   setCurrentMonth,
-  loading= false
+  loading= false,
+  minAvailableMonth = moment().format(DATE_DISPLAY_FORMAT)
 }) {
   const disablePickDate = disabled || !listBookingDate?.length
   const handlePickDate = (date) => {
@@ -92,7 +93,7 @@ const listDateData = listBookingDate
         <div>
           <Button
             icon={<LeftOutlined className="booking-date-picker__day--text" />}
-            disabled={disabled ? true : moment(currentMonth, DATE_DISPLAY_FORMAT).isSameOrBefore(moment(), 'month')}
+    disabled={disabled ? true : moment(currentMonth, DATE_DISPLAY_FORMAT).isSameOrBefore(moment(minAvailableMonth,DATE_DISPLAY_FORMAT), 'month')}
             onClick={decreaseMonth}
           />
           <span className="booking-date-picker__day--text ms-2 me-2">
