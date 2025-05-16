@@ -145,9 +145,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
             window.open(paymentUrl, '_blank')
           }, 500)
         }
-        setTimeout(() => {
-          form.resetFields()
-        }, 500)
+        form.resetFields(['name', 'phone', 'licensePlates', 'certificateSeries', 'dateSchedule', 'time'])
       })
       .finally(() => {
         setIsLoading(false)
@@ -179,9 +177,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
           })
         }
         setIsModalOpen(true)
-        setTimeout(() => {
-          form.resetFields()
-        }, 500)
+        form.resetFields(['name', 'phone', 'licensePlates', 'certificateSeries', 'dateSchedule', 'time'])
       })
       .finally(() => {
         setIsLoading(false)
@@ -194,7 +190,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       phone: values.phone,
       fullnameSchedule: values.name,
       email: values.email,
-      dateSchedule: values?.dateSchedule,
+      dateSchedule: workdaySelectedDate,
       time: values?.time?.scheduleTime,
       stationsId: values.stationsId,
       vehicleType: values.vehicleSubType,
@@ -210,6 +206,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
     if (scheduleCategory === SCHEDULE_BOOKING_TYPE.SCHEDULE) {
       createBookingSchedule(data)
     }
+    getBookingDate()
   }
 
   const handleFillStationDateTime = () => {
@@ -637,6 +634,7 @@ useEffect(() => {
   fetchData();
 }, [form.getFieldValue('stationsId')]); // Dependency array theo stationsId
 
+
   useEffect(() => {
     if ((workdayFilter.vehicleType && workdayFilter.stationsId) || (workdayFilter.stationsId && form.getFieldValue('vehicleSubType'))) {
       getBookingDate()
@@ -673,13 +671,13 @@ useEffect(() => {
         vntId: dataBookingParam.vntId || listStationArea[0]?.value,
         vehicleSubCategory: dataBookingParam.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
         certificateSeries: dataBookingParam.certificateSeries || undefined,
-        licensePlates: dataBookingParam.licensePlates || undefined,
+        licensePlates: dataBookingParam.licensePlates || undefined
       })
     }
   }, [dataBookingParam])
 
   useEffect(() => {
-    if(isZaloApp){
+    if (isZaloApp) {
       form.setFieldValue('phone', zaloUserPhone)
       form.setFieldValue('name', zaloUserName)
       form.setFieldValue('vehicleSubType', dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
@@ -687,7 +685,7 @@ useEffect(() => {
       form.setFieldValue('licensePlateColor', dataBookingParam?.licensePlateColor || licensePlateColorList[0]?.value)
       form.setFieldValue('vehicleSubCategory', dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value)
     }
-  },[isZaloApp])
+  }, [isZaloApp])
 
   return (
     <div>
@@ -701,8 +699,7 @@ useEffect(() => {
           licensePlateColor: dataBookingParam?.licensePlateColor || licensePlateColorList[0]?.value,
           vehicleSubCategory: dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
           vehicleSubType: dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value
-        }}
-        >
+        }}>
         {() => (
           <>
             <Form.Item
@@ -741,6 +738,7 @@ useEffect(() => {
               ]}>
               <Input className="login__input booking-input" placeholder="Nhập số điện thoại" type="text" size="large" disabled={isZaloApp} />
             </Form.Item>
+
             <Form.Item
               name="scheduleType"
               label="Mục đích đặt hẹn"
@@ -751,19 +749,19 @@ useEffect(() => {
                   message: 'Vui lòng chọn mục đích đặt lịch'
                 }
               ]}>
-                <SelectAntd
-                  defaultValue={dataBookingParam?.scheduleType || optionServiceType[0]?.value}
-                  className="cs-select ant-custom booking-input"
-                  isSearchable={true}
-                  placeholder="Vui lòng chọn mục đích đặt lịch"
-                  styles={customStyles}
-                  options={scheduleTypes}
-                  menuPlacement="top"
-                  onChange={(values, scheduleType) => {
-                    setScheduleCategory(scheduleType?.scheduleCategory)
-                    form.setFieldValue('scheduleType', values)
-                  }}
-                />
+              <SelectAntd
+                defaultValue={dataBookingParam?.scheduleType || optionServiceType[0]?.value}
+                className="cs-select ant-custom booking-input"
+                isSearchable={true}
+                placeholder="Vui lòng chọn mục đích đặt lịch"
+                styles={customStyles}
+                options={scheduleTypes}
+                menuPlacement="top"
+                onChange={(values, scheduleType) => {
+                  setScheduleCategory(scheduleType?.scheduleCategory)
+                  form.setFieldValue('scheduleType', values)
+                }}
+              />
             </Form.Item>
 
             <Form.Item
@@ -800,18 +798,18 @@ useEffect(() => {
                   message: 'Vui lòng chọn màu biển số'
                 }
               ]}>
-                <SelectAntd
-                  defaultValue={dataBookingParam?.licensePlateColor || licensePlateColorList[0]?.value}
-                  className="cs-select ant-custom booking-input"
-                  isSearchable={true}
-                  placeholder="Vui lòng chọn màu biển số"
-                  styles={customStyles}
-                  options={licensePlateColorList}
-                  menuPlacement="top"
-                  onChange={(values) => {
-                    form.setFieldValue('licensePlateColor', values)
-                  }}
-                />
+              <SelectAntd
+                defaultValue={dataBookingParam?.licensePlateColor || licensePlateColorList[0]?.value}
+                className="cs-select ant-custom booking-input"
+                isSearchable={true}
+                placeholder="Vui lòng chọn màu biển số"
+                styles={customStyles}
+                options={licensePlateColorList}
+                menuPlacement="top"
+                onChange={(values) => {
+                  form.setFieldValue('licensePlateColor', values)
+                }}
+              />
             </Form.Item>
             <Row className="justify-content-between">
               <Col span={11}>
@@ -961,7 +959,10 @@ useEffect(() => {
                 ]}>
                 <BookingDatePicker
                   selectedDate={workdaySelectedDate}
-                  setSelectedDate={setWorkdaySelectedDate}
+                  setSelectedDate={(date)=>{
+                    setWorkdaySelectedDate(date)
+                    // form.setFieldValue('dateSchedule', date)
+                  }}
                   disabled={listBookingDate.length === 0}
                   listBookingDate={listBookingDate}
                   bookingConfig={stationBookingConfig}
