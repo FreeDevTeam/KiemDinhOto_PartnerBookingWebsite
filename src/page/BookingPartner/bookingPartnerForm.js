@@ -145,7 +145,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
             window.open(paymentUrl, '_blank')
           }, 500)
         }
-        form.resetFields(['name', 'phone', 'licensePlates', 'certificateSeries', 'time'])
+        form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
       })
       .finally(() => {
         setIsLoading(false)
@@ -177,7 +177,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
           })
         }
         setIsModalOpen(true)
-        form.resetFields(['name', 'phone', 'licensePlates', 'certificateSeries', 'time'])
+        form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
       })
       .finally(() => {
         setIsLoading(false)
