@@ -26,6 +26,7 @@ export const SCHEDULE_TYPE = {
   OFF_HOUR_VEHICLE_INSPECTION: 24, // Đăng kiểm xe (Ngoài giờ HC)
   CONSULTANT_INSURANCE_COMPENSATION: 25, // Tư vấn bồi thường bảo hiểm
   CONSULTANT_DRIVER_HEALTH: 26, // Tư vấn sức khỏe lái xe
+  E_TICKET_SALE: 27 // Bán vé điện tử
 }
 
 export const SCHEDULE_TYPE_MINIAPP = {
@@ -41,6 +42,7 @@ export const SCHEDULE_TYPE_MINIAPP = {
   CONSULTANT_RENOVATION: 9, // Đặt lịch tư vấn cải tạo xe
   LOST_REGISTRATION_PAPER: 10, // Mất giấy đăng kiểm
   REISSUE_INSPECTION_STICKER: 11, // Cấp lại tem đăng kiểm
+  E_TICKET_SALE: 27 // Bán vé điện tử
 }
 
 export const CONSULTANT_TYPE = {
@@ -51,7 +53,7 @@ export const CONSULTANT_TYPE = {
   CONSULTANT_TNDS_INSURANCE: 14, // Tư vấn bảo hiểm TNDS xe ô tô
   CONSULTANT_INSURANCE: 8, // Đặt lịch tư bảo hiểm vật chất xe ô tô
   CONSULTANT_RENOVATION: 9, // Đặt lịch tư vấn cải tạo xe
-  CONSULTANT_DRIVER_HEALTH: 26, // Tư vấn sức khỏe lái xe
+  CONSULTANT_DRIVER_HEALTH: 26 // Tư vấn sức khỏe lái xe
 }
 
 export const SCHEDULE_TITLE = {
@@ -163,8 +165,11 @@ export const SCHEDULE_TITLE = {
     title: 'Tư vấn sức khỏe lái xe',
     subTitle: 'Dành cho tài xế cần tư vấn, khám sức khỏe để lái xe theo quy định'
   },
+  [SCHEDULE_TYPE.E_TICKET_SALE]: {
+    title: 'Bán vé điện tử',
+    subTitle: 'Dành cho khách hàng muốn mua vé điện tử cho các dịch vụ liên quan đến giao thông'
+  }
 }
-
 
 export const SCHEDULE_DATA = [
   {
@@ -176,149 +181,159 @@ export const SCHEDULE_DATA = [
     id: SCHEDULE_TYPE.CHANGE_REGISTATION,
     ...SCHEDULE_TITLE[SCHEDULE_TYPE.CHANGE_REGISTATION],
     icon: require('../assets/icons/Isolation_Mode.png')
-  },
+  }
 ]
 
 export const optionServiceType = [
   {
     value: 1,
-    label: 'Tra cứu phạt nguội',
+    label: 'Tra cứu phạt nguội'
   },
   {
     value: 2,
-    label: 'Dán thẻ VETC',
+    label: 'Dán thẻ VETC'
   },
   {
     value: 3,
-    label: 'Đóng phí phạt nguội',
+    label: 'Đóng phí phạt nguội'
   },
   {
     value: 4,
-    label: 'Gia hạn bảo hiểm TNDS',
+    label: 'Gia hạn bảo hiểm TNDS'
   },
   {
     value: 5,
-    label: 'Tư vấn hoán cải',
+    label: 'Tư vấn hoán cải'
   },
   {
     value: 6,
-    label: 'Đóng phí VETC',
+    label: 'Đóng phí VETC'
   },
   {
     value: 7,
-    label: 'Gia hạn BH thân vỏ',
+    label: 'Gia hạn BH thân vỏ'
   },
   {
     value: 8,
-    label: 'Bảo dưỡng, sửa chữa xe cơ giới',
+    label: 'Bảo dưỡng, sửa chữa xe cơ giới'
   },
   {
     value: 9,
-    label: 'Đăng kiểm xe cơ giới',
+    label: 'Đăng kiểm xe cơ giới'
   },
   {
     value: 10,
-    label: 'Nạp tiền ePass',
+    label: 'Nạp tiền ePass'
   },
   {
     value: 11,
-    label: 'Cứu hộ xe bị hư hỏng',
+    label: 'Cứu hộ xe bị hư hỏng'
   },
   {
     value: 12,
-    label: 'Tự động thông báo phạt nguội',
+    label: 'Tự động thông báo phạt nguội'
   },
   {
     value: 13,
-    label: 'Đăng kiểm xe cũ',
+    label: 'Đăng kiểm xe cũ'
   },
   {
     value: 14,
-    label: 'Nộp hồ sơ xe mới',
+    label: 'Nộp hồ sơ xe mới'
   },
   {
     value: 15,
-    label: 'Đổi mục đích sử dụng, đổi chủ, đổi thông tin hồ sơ',
+    label: 'Đổi mục đích sử dụng, đổi chủ, đổi thông tin hồ sơ'
   },
   {
     value: 16,
-    label: 'Thanh toán phí đường bộ',
+    label: 'Thanh toán phí đường bộ'
   },
   {
     value: 17,
-    label: 'Đặt lịch tư vấn bảo dưỡng',
+    label: 'Đặt lịch tư vấn bảo dưỡng'
   },
   {
     value: 18,
-    label: 'Đặt lịch tư vấn bảo hiểm',
+    label: 'Đặt lịch tư vấn bảo hiểm'
   },
   {
     value: 19,
-    label: 'Mất giấy đăng kiểm',
+    label: 'Mất giấy đăng kiểm'
   },
   {
     value: 20,
-    label: 'Cấp lại tem đăng kiểm',
+    label: 'Cấp lại tem đăng kiểm'
   },
   {
     value: 21,
-    label: 'Tư vấn đăng kiểm xe',
+    label: 'Tư vấn đăng kiểm xe'
   },
   {
     value: 22,
-    label: 'Tư vấn xử lý phạt nguội',
+    label: 'Tư vấn xử lý phạt nguội'
   },
   {
     value: 23,
-    label: 'Tư vấn bảo hiểm vật chất xe ô tô',
+    label: 'Tư vấn bảo hiểm vật chất xe ô tô'
   },
   {
     value: 24,
-    label: 'Tra cứu cảnh báo đăng kiểm',
+    label: 'Tra cứu cảnh báo đăng kiểm'
   },
   {
     value: 25,
-    label: 'Hỗ trợ xử lý phạt nguội',
+    label: 'Hỗ trợ xử lý phạt nguội'
   },
   {
     value: 26,
-    label: 'Gia hạn định vị',
+    label: 'Gia hạn định vị'
   },
   {
     value: 27,
-    label: 'Gia hạn phù hiệu xe kinh doanh',
+    label: 'Gia hạn phù hiệu xe kinh doanh'
   },
   {
     value: 28,
-    label: 'Gia hạn giấy tập huấn',
+    label: 'Gia hạn giấy tập huấn'
   },
   {
     value: 29,
-    label: 'Gia hạn camera hành trình',
+    label: 'Gia hạn camera hành trình'
   },
   {
     value: 30,
-    label: 'Gia hạn BH TNDS',
+    label: 'Gia hạn BH TNDS'
   },
   {
     value: 31,
-    label: 'Nộp hồ sơ xe mới (Ngoài giờ HC)',
+    label: 'Nộp hồ sơ xe mới (Ngoài giờ HC)'
   },
   {
     value: 32,
-    label: 'Đăng kiểm xe (Ngoài giờ HC)',
+    label: 'Đăng kiểm xe (Ngoài giờ HC)'
   },
   {
     value: 33,
-    label: 'Khám sức khỏe lái xe',
+    label: 'Khám sức khỏe lái xe'
   },
   {
     value: 34,
-    label: 'Tư vấn bồi thường bảo hiểm',
+    label: 'Tư vấn bồi thường bảo hiểm'
+  }
+]
+
+export const E_TICKET_SALE_OPTIONS = [
+  {
+    value: 36,
+    label: 'Vé vào cổng'
   },
-];
-
-
-
-
-
+  {
+    value: 37,
+    label: 'Vé cầu'
+  },
+  {
+    value: 38,
+    label: 'Vé lượt'
+  }
+]
