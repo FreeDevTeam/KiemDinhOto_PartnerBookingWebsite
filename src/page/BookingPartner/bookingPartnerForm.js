@@ -214,8 +214,10 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       scheduleType: values.scheduleType,
       vehicleSubType: values.vehicleSubType,
       vehicleSubCategory: values.vehicleSubCategory,
-      certificateSeries: values.certificateSeries,
-      stationServicesList: [values.serviceId] || []
+      certificateSeries: values.certificateSeries
+    }
+    if (values.serviceId) {
+      data.stationServicesList = [values.serviceId]
     }
     if (scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT) {
       bookingConsultantSchedule(data)
@@ -674,7 +676,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
     if (form.getFieldValue('stationsId')) {
       getStationServices(form.getFieldValue('stationsId')).then((services) => {
         const allowedValues = E_TICKET_SALE_OPTIONS.map((option) => option.value)
-        const filteredServices = services.filter((service) => allowedValues.includes(service.value))
+        const allowedLabels = E_TICKET_SALE_OPTIONS.map((option) => option.label)
+        const filteredServices = services.filter((service) => allowedValues.includes(service.value) || allowedLabels.includes(service.label))
         setETicketOptions(filteredServices)
       })
     }
