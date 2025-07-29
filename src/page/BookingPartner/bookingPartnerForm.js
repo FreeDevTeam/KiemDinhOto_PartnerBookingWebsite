@@ -76,7 +76,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   const [listBookingTime, setListBookingTime] = useState([])
   const [minMonthAvailable, setMinMonthAvailable] = useState(moment().format(DATE_DISPLAY_FORMAT))
   const [showServiceType, setShowServiceType] = useState(false)
-  const [ETicketOptions, setETicketOptions] = useState(E_TICKET_SALE_OPTIONS)
+  const [ETicketOptions, setETicketOptions] = useState([])
   const [workdayFilter, setWorkdayFilter] = useState({
     stationsId: null,
     startDate: moment().format(DATE_DISPLAY_FORMAT),
@@ -503,7 +503,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       .finally(() => {})
   }
 
-  async function getStationServices(stationsId) {
+  async function getStationServices(              stationsId) {
     try {
       const response = await BookingService.getListStationService({ filter: { stationsId: stationsId } })
       if (response?.isSuccess) {
