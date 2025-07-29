@@ -609,12 +609,10 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
     return new Promise((resolve) => {
       SystemConfigurationsService.getStationByApiKey(apiKey)
         .then((result = {}) => {
-          const { statusCode, data } = result
-          if (statusCode === 200) {
-            return resolve(data)
-          } else {
+          if (!result) {
             return resolve(null)
           }
+          return resolve(result)
         })
         .catch(() => {
           return resolve(null)
