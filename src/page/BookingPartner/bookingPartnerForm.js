@@ -503,7 +503,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       .finally(() => {})
   }
 
-  async function getStationServices(              stationsId) {
+  async function getStationServices(stationsId) {
     try {
       const response = await BookingService.getListStationService({ filter: { stationsId: stationsId } })
       if (response?.isSuccess) {
@@ -603,6 +603,23 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
     }
 
     return null // Không tìm thấy tháng nào có ngày làm việc
+  }
+
+  async function getStationByApiKey(apiKey) {
+    return new Promise((resolve) => {
+      SystemConfigurationsService.getStationByApiKey(apiKey)
+        .then((result = {}) => {
+          const { statusCode, data } = result
+          if (statusCode === 200) {
+            return resolve(data)
+          } else {
+            return resolve(null)
+          }
+        })
+        .catch(() => {
+          return resolve(null)
+        })
+    })
   }
 
   // ------------USE EFFECT------------------
@@ -762,6 +779,21 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       showAreaField: showStationField || showDateField || showTimeField
     }
   }, [form.getFieldValue('scheduleType'), scheduleTypes])
+
+  useEffect(() => {
+    if (scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT) {
+      getStationByApiKey(dataBookingParam?.apikey || localStorage.getItem('apiKey')).then((station) => {
+        if (station) {
+          getStationServices(station?.stationsId).then((services) => {
+            const allowedValues = E_TICKET_SALE_OPTIONS.map((option) => option.value)
+            const allowedLabels = E_TICKET_SALE_OPTIONS.map((option) => option.label)
+            const filteredServices = services.filter((service) => allowedValues.includes(service.value) || allowedLabels.includes(service.label))
+            setETicketOptions(filteredServices)
+          })
+        }
+      })
+    }
+  }, [scheduleCategory])
 
   return (
     <div className="position-relative">

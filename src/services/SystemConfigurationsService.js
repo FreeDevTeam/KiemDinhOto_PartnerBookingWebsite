@@ -1,16 +1,16 @@
-import Request from "./request";
+import Request from './request'
 
 export default class SystemConfigurationsService {
   static async getPublicSystemConfigurations(data, newToken) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       Request.send({
         method: 'POST',
         path: '/PartnerAPI/SystemConfigurations/user/getPublicSystemConfigurations',
         data: { ...data },
         query: null,
         headers: {
-          Authorization: `Bearer ` + newToken,
-        },
+          Authorization: `Bearer ` + newToken
+        }
       }).then((result = {}) => {
         const { statusCode, data } = result
         if (statusCode === 200) {
@@ -22,13 +22,13 @@ export default class SystemConfigurationsService {
     })
   }
   static async getApiKeyByDomain(data) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       Request.send({
         method: 'POST',
         path: '/PartnerAPI/PartnerAPIKey/user/getApiKeyByDomain',
         data: { ...data },
         query: null
-    }).then((result = {}) => {
+      }).then((result = {}) => {
         const { statusCode, data } = result
         if (statusCode === 200) {
           return resolve(data)
@@ -40,10 +40,10 @@ export default class SystemConfigurationsService {
   }
 
   static async getZaloDisplayStationList() {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       Request.send({
         method: 'POST',
-        path: '/PartnerAPI/SystemConfigurations/user/getZaloDisplayStationList',
+        path: '/PartnerAPI/SystemConfigurations/user/getZaloDisplayStationList'
       }).then((result = {}) => {
         const { statusCode, data } = result
         if (statusCode === 200) {
@@ -56,11 +56,31 @@ export default class SystemConfigurationsService {
   }
 
   static async getStationConfigByApiKey(data) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       Request.send({
         method: 'POST',
         path: '/PartnerAPI/StationServices/user/getStationConfigByApiKey',
-        data: { ...data },
+        data: { ...data }
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(data)
+        } else {
+          return resolve(null)
+        }
+      })
+    })
+  }
+
+  static async getStationByApiKey(apiKey) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/PartnerAPI/StationServices/user/getStationByApiKey',
+        data: { apiKey },
+        headers: {
+          apikey: apiKey || ''
+        }
       }).then((result = {}) => {
         const { statusCode, data } = result
         if (statusCode === 200) {
