@@ -78,9 +78,6 @@ export default class SystemConfigurationsService {
         method: 'POST',
         path: '/PartnerAPI/StationServices/user/getStationByApiKey',
         data: { apiKey },
-        headers: {
-          apikey: apiKey || ''
-        }
       }).then((result = {}) => {
         const { statusCode, data } = result
         if (statusCode === 200) {
