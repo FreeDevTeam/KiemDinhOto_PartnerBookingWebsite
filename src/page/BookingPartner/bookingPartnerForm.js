@@ -623,40 +623,41 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
 
   // ------------USE EFFECT------------------
   useEffect(() => {
-    getMetaData()
-    setTimeout(() => {
-      getStationAreas()
-    }, 1500)
-    const paramsFromUrl = getQueryParams()
-    handleCategory(paramsFromUrl?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
-    let isValid = null
+    const init = async () => {
+      await getMetaData()
+      await getStationAreas()
+      const paramsFromUrl = getQueryParams()
+      handleCategory(paramsFromUrl?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
+      let isValid = null
 
-    if (MINIAPP_GTELPAY) {
-      isValid = CheckSum()
-    } else {
-      isValid = paramsFromUrl ? true : false
+      if (MINIAPP_GTELPAY) {
+        isValid = CheckSum()
+      } else {
+        isValid = paramsFromUrl ? true : false
+      }
+      if (isValid === false) return
+      Object.keys(paramsFromUrl).map((key) => {
+        let value = paramsFromUrl[key]
+        if (key !== 'phone') {
+          value = stringToRealValue(paramsFromUrl[key])
+        }
+        if (key === 'phone' && (value === 'null' || value === 'undefined' || value === 'NaN')) {
+          value = null
+        }
+        paramsFromUrl[key] = value
+        fillFormValue(key, value)
+      })
+      // if (determineDataSource()) {
+      getStationConfigByApiKey(paramsFromUrl)
+      // } else {
+      //   setDataBookingParam(paramsFromUrl)
+      // }
+
+      // xử lí state của scheduleTypes
+      firstScheduleTypeHandler()
+      setLicensePlateColorList(PLATE_COLOR)
     }
-    if (isValid === false) return
-    Object.keys(paramsFromUrl).map((key) => {
-      let value = paramsFromUrl[key]
-      if (key !== 'phone') {
-        value = stringToRealValue(paramsFromUrl[key])
-      }
-      if (key === 'phone' && (value === 'null' || value === 'undefined' || value === 'NaN')) {
-        value = null
-      }
-      paramsFromUrl[key] = value
-      fillFormValue(key, value)
-    })
-    // if (determineDataSource()) {
-    getStationConfigByApiKey(paramsFromUrl)
-    // } else {
-    //   setDataBookingParam(paramsFromUrl)
-    // }
-
-    // xử lí state của scheduleTypes
-    firstScheduleTypeHandler()
-    setLicensePlateColorList(PLATE_COLOR)
+    init()
   }, [])
 
   useEffect(() => {
