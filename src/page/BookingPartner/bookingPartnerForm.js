@@ -490,18 +490,20 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   }
 
   function getStationAreas() {
-    BookingService.getStationAreaList()
+    return BookingService.getStationAreaList()
       .then((data) => {
         if (data?.statusCode === 505) {
-          return
+          return null
         }
-        setListStationArea(data?.data)
+        // Lưu vào localStorage
+        localStorage.setItem('stationAreas', JSON.stringify(data?.data))
+        return data?.data
       })
       .catch((error) => {
         setErrorMessage('Lấy thông tin khu vực thất bại.')
         setIsModalErrOpen(true)
+        return null
       })
-      .finally(() => {})
   }
 
   async function getStationServices(stationsId) {
@@ -625,38 +627,38 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   useEffect(() => {
     const init = async () => {
       await getMetaData()
-      await getStationAreas()
+
+      // Check localStorage trước
+      const cached = localStorage.getItem('stationAreas')
+      if (cached) {
+        setListStationArea(JSON.parse(cached))
+      } else {
+        const areas = await getStationAreas()
+        if (areas) {
+          setListStationArea(areas)
+        }
+      }
+
       const paramsFromUrl = getQueryParams()
       handleCategory(paramsFromUrl?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
-      let isValid = null
-
-      if (MINIAPP_GTELPAY) {
-        isValid = CheckSum()
-      } else {
-        isValid = paramsFromUrl ? true : false
-      }
+      let isValid = MINIAPP_GTELPAY ? CheckSum() : !!paramsFromUrl
       if (isValid === false) return
-      Object.keys(paramsFromUrl).map((key) => {
+
+      Object.keys(paramsFromUrl).forEach((key) => {
         let value = paramsFromUrl[key]
-        if (key !== 'phone') {
-          value = stringToRealValue(paramsFromUrl[key])
-        }
+        if (key !== 'phone') value = stringToRealValue(value)
         if (key === 'phone' && (value === 'null' || value === 'undefined' || value === 'NaN')) {
           value = null
         }
         paramsFromUrl[key] = value
         fillFormValue(key, value)
       })
-      // if (determineDataSource()) {
-      getStationConfigByApiKey(paramsFromUrl)
-      // } else {
-      //   setDataBookingParam(paramsFromUrl)
-      // }
 
-      // xử lí state của scheduleTypes
+      getStationConfigByApiKey(paramsFromUrl)
       firstScheduleTypeHandler()
       setLicensePlateColorList(PLATE_COLOR)
     }
+
     init()
   }, [])
 
