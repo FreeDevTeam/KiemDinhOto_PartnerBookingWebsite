@@ -66,7 +66,7 @@ function UpdateBookingDetail({}) {
   const [minMonthAvailable, setMinMonthAvailable] = useState(moment().format(DATE_DISPLAY_FORMAT))
 
   const [workdayFilter, setWorkdayFilter] = useState({
-    stationsId: null,
+    stationsId: dataDetail?.stationsId || null,
     startDate: moment().format(DATE_DISPLAY_FORMAT),
     endDate: moment().endOf('month').format(DATE_DISPLAY_FORMAT),
     vehicleType: VEHICLE_SUB_TYPE[0]?.vehicleType
@@ -735,7 +735,7 @@ function UpdateBookingDetail({}) {
                 showSearch
                 onChange={(values) => {
                   setDataBookingParam({ ...dataBookingParam, stationArea: values, stationsId: null })
-                  setFieldChanged({ ...fieldChanged, vntId: true })
+                  setFieldChanged({ ...fieldChanged, vntId: true, stationsId: true, dateSchedule: true})
                 }}
                 placeholder="Vui lòng chọn khu vực"
                 styles={customStyles}
@@ -768,7 +768,7 @@ function UpdateBookingDetail({}) {
                   menuPlacement="top"
                   onChange={(value) => {
                     setDataBookingParam({ ...dataBookingParam, stationsId: value })
-                    setFieldChanged({ ...fieldChanged, stationsId: true })
+                    setFieldChanged({ ...fieldChanged, stationsId: true, dateSchedule: true })
                   }}
                 />
               </Form.Item>
@@ -821,7 +821,7 @@ function UpdateBookingDetail({}) {
                   listBookingTime={listBookingTime}
                   loading={loadingHoursPicker}
                   setSelectedTime={(values) => {
-                    setDataBookingParam({ ...dataBookingParam, time: values })
+                    setDataBookingParam({ ...dataBookingParam, time: values?.scheduleTime })
                   }}
                   selectedTime={{ scheduleTime: dataBookingParam?.time }}
                   bookingConfig={stationBookingConfig}
