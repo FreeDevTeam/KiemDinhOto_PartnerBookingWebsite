@@ -341,9 +341,11 @@ function UpdateBookingDetail({}) {
 
         if (typeof callback === 'function') {
           callback(stationList)
+          console.log(111)
         } else {
+          console.log("stationList")
           setListStation(stationList)
-          setStationSelected(stationList[0])
+          // setStationSelected(stationList[0])
           form.setFieldValue('stationsId', stationList[0]?.stationsId)
         }
       })
@@ -533,6 +535,8 @@ function UpdateBookingDetail({}) {
   }, [workdaySelectedDate, stationSelected])
 
   useEffect(() => {
+    console.log("workdaySelectedDate", workdaySelectedDate)
+    console.log("stationSelected", stationSelected)
     if (dataBookingParam?.vehicleSubType) {
       handleCategory(dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value) // Phân loại
       const vehicleType = VEHICLE_SUB_TYPE.find((item) => item.value === dataBookingParam?.vehicleSubType) // loại phương tiện
@@ -549,12 +553,11 @@ function UpdateBookingDetail({}) {
         vehicleSubType: dataBookingParam.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value,
         scheduleType: dataBookingParam.scheduleType || optionServiceType[0]?.value,
         licensePlateColor: dataBookingParam.licensePlateColor || licensePlateColorList[0]?.value,
-        vntId: dataBookingParam.vntId || listStationArea[0]?.value,
         vehicleSubCategory: dataBookingParam.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
         certificateSeries: dataBookingParam.certificateSeries || undefined,
         licensePlates: dataBookingParam.licensePlates || undefined,
         vntId: dataBookingParam.stationArea || undefined,
-        stationsId: dataBookingParam.stationsId || undefined
+        stationsId: stationSelected?.stationsId || dataBookingParam.stationsId || undefined
       })
     }
   }, [workdaySelectedDate, stationSelected])
@@ -798,7 +801,7 @@ function UpdateBookingDetail({}) {
                 onChange={(values) => {
                   setDataBookingParam({
                     ...dataBookingParam,
-                    vntId: values
+                    stationArea: values
                   })
                   handleFillStationDateTime()
                 }}
