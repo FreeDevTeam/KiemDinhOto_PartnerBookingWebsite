@@ -503,7 +503,8 @@ function UpdateBookingDetail({}) {
         licensePlates: dataBookingParam.licensePlates || undefined,
         vntId: dataBookingParam.stationArea || undefined,
         stationsId: dataBookingParam.stationsId || undefined,
-        time: dataBookingParam.time || undefined
+        time: dataBookingParam.time || undefined,
+        dateSchedule: dataBookingParam.dateSchedule || undefined
       })
     }
   }, [dataBookingParam])
