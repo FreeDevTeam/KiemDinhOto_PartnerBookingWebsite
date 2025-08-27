@@ -156,7 +156,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
           })
         }
         setScheduleTypePopUp(values.scheduleType)
-        setIsModalOpen(true)
+        if (!MINIAPP_GTELPAY) {
+          setIsModalOpen(true)
+        }
         if (paymentUrl?.length > 0) {
           setTimeout(() => {
             window.open(paymentUrl, '_blank')
@@ -193,7 +195,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
             }
           })
         }
-        setIsModalOpen(true)
+        if (!MINIAPP_GTELPAY) {
+          setIsModalOpen(true)
+        }
         form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
       })
       .finally(() => {
