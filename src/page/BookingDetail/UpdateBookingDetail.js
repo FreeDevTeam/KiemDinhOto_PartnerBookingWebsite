@@ -341,9 +341,7 @@ function UpdateBookingDetail({}) {
 
         if (typeof callback === 'function') {
           callback(stationList)
-          console.log(111)
         } else {
-          console.log("stationList")
           setListStation(stationList)
           // setStationSelected(stationList[0])
           form.setFieldValue('stationsId', stationList[0]?.stationsId)
@@ -535,8 +533,6 @@ function UpdateBookingDetail({}) {
   }, [workdaySelectedDate, stationSelected])
 
   useEffect(() => {
-    console.log("workdaySelectedDate", workdaySelectedDate)
-    console.log("stationSelected", stationSelected)
     if (dataBookingParam?.vehicleSubType) {
       handleCategory(dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value) // Phân loại
       const vehicleType = VEHICLE_SUB_TYPE.find((item) => item.value === dataBookingParam?.vehicleSubType) // loại phương tiện
