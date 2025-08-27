@@ -32,6 +32,7 @@ const BookingDetail = ({
   const urlParams = new URLSearchParams(window.location.search);
   const scheduleHash = localStorage.getItem('schedulehash') || urlParams.get('schedulehash');
   const apikey = localStorage.getItem('apiKey') || urlParams.get('apikey');
+  localStorage.setItem('apiKey', apikey);
   let wab = []
   const [scheduleInformation, setScheduleInformation] = useState([])
   const [isModal, setIsModal] = useState(false)
