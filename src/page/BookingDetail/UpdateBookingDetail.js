@@ -528,6 +528,8 @@ useEffect(() => {
       })
     }
     if (dataBookingParam && Object.keys(dataBookingParam).length > 0) {
+      console.log("dataBookingParam.vntId", dataBookingParam.vntId)
+      console.log(" listStationArea[0]?.value", listStationArea[0]?.value)
       form.setFieldsValue({
         name: dataBookingParam.fullnameSchedule,
         phone: dataBookingParam.phone,
@@ -779,6 +781,10 @@ useEffect(() => {
                 className="cs-select ant-custom booking-input"
                 showSearch
                 onChange={(values) => {
+                  setDataBookingParam({
+                    ...dataBookingParam,
+                    vntId: values
+                  })
                   handleFillStationDateTime()
                 }}
                 placeholder="Vui lòng chọn khu vực"
