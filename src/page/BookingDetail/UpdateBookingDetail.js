@@ -45,8 +45,8 @@ function UpdateBookingDetail({}) {
 
   // state dùng cho form
   const location = useLocation()
-  const apikey = location?.state?.apikey
   const dataDetail = location?.state?.data
+  console.log("dataDetail", dataDetail)
   const [form] = Form.useForm()
   const [scheduleCategory, setScheduleCategory] = useState(1)
   const [scheduleTypes, setScheduleTypes] = useState([])
@@ -528,8 +528,9 @@ useEffect(() => {
       })
     }
     if (dataBookingParam && Object.keys(dataBookingParam).length > 0) {
-      console.log("dataBookingParam.vntId", dataBookingParam.vntId)
-      console.log(" listStationArea[0]?.value", listStationArea[0]?.value)
+      console.log(dataBookingParam.vntId)
+      // console.log("dataBookingParam.vntId", dataBookingParam.vntId)
+      // console.log(" listStationArea[0]?.value", listStationArea[0]?.value)
       form.setFieldsValue({
         name: dataBookingParam.fullnameSchedule,
         phone: dataBookingParam.phone,
@@ -539,7 +540,9 @@ useEffect(() => {
         vntId: dataBookingParam.vntId || listStationArea[0]?.value,
         vehicleSubCategory: dataBookingParam.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
         certificateSeries: dataBookingParam.certificateSeries || undefined,
-        licensePlates: dataBookingParam.licensePlates || undefined
+        licensePlates: dataBookingParam.licensePlates || undefined,
+        vntId: dataBookingParam.stationArea || undefined, //2222
+        stationsId: dataBookingParam.stationsId || undefined,
       })
     }
   }, [workdaySelectedDate, stationSelected])
