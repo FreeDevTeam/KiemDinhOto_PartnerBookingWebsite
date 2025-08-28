@@ -94,7 +94,7 @@ function UpdateBookingDetail({}) {
       data: {
         stationsId: values?.stationsId,
         dateSchedule: values?.dateSchedule,
-        time: values?.time?.scheduleTime,
+        time: values?.time,
         confirmStatus: 1,
         scheduleNote: 'Khách hàng đã xác nhận lịch hẹn!'
       }
