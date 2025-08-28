@@ -142,7 +142,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
           setErrorMessage(SCHEDULE_ERROR[rsMess] || SCHEDULE_ERROR.INVALID_REQUEST)
           return
         }
-        const { customerScheduleId, paymentUrl } = data
+        const { paymentUrl } = data
+        const customerScheduleId = data?.[0]
         // Gọi API thanh toán nếu ở môi trường GTEL
         if (MINIAPP_GTELPAY) {
           BookingService.createPayment({
@@ -846,7 +847,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   }, [form.getFieldValue('scheduleType'), scheduleTypes])
 
   useEffect(() => {
-    console.log('form.getFieldValue ', form.getFieldValue('scheduleType'))
     if (form.getFieldValue('scheduleType') === SCHEDULE_TYPE_MINIAPP.E_TICKET_SALE) {
       if (scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT) {
         getStationByApiKey(dataBookingParam?.apikey || localStorage.getItem('apiKey')).then((station) => {
