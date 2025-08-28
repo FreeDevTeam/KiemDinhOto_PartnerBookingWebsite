@@ -619,11 +619,11 @@ export default class BookingService {
         path: '/PartnerAPI/Order/user/createOrderSchedule',
         data
       }).then((result = {}) => {
-        const { statusCode, data, message } = result
+        const { statusCode, data } = result
         if (statusCode === 200) {
-          return resolve({ isSuccess: true, data })
+          return resolve(result)
         } else {
-          return resolve({ isSuccess: false, message })
+          return resolve(result)
         }
       })
     })
