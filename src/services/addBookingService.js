@@ -611,5 +611,21 @@ export default class BookingService {
       })
     })
   }
-}
 
+  static async createOrderSchedule(data = {}) {
+        return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/PartnerAPI/Order/user/createOrderSchedule',
+        data
+      }).then((result = {}) => {
+        const { statusCode, data, message } = result
+        if (statusCode === 200) {
+          return resolve({ isSuccess: true, data })
+        } else {
+          return resolve({ isSuccess: false, message })
+        }
+      })
+    })
+  }
+}
