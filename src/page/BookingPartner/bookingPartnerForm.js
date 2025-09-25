@@ -972,7 +972,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                 isSearchable={true}
                 placeholder="Vui lòng chọn mục đích đặt lịch"
                 styles={customStyles}
-                options={scheduleTypes}
+                options={[scheduleTypes?.length > 0 ? scheduleTypes[0] : [optionServiceType]].flat()}
                 menuPlacement="top"
                 onChange={(values, scheduleType) => {
                   setScheduleCategory(scheduleType?.scheduleCategory)
