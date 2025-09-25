@@ -856,4 +856,5 @@ export const PAYMENT_TYPE = {
   ATM_BANK:'1',
   MOMO_BANK:'2',
   GTEL_PAY: '3',
+  ZALO_PAY: '4',
 }

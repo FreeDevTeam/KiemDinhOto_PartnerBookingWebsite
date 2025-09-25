@@ -93,7 +93,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
 
   // Kiểm tra các biển trong ENV
   const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1 // ==> dùng cho miniApp
-  const MINIAPP_ZALOPAY = window?._env_?.REACT_APP_MINIAPP_ZALOPAY == '1' // dùng để tích hợp thanh toán qua GTELPAY
+  // const MINIAPP_ZALOPAY = window?._env_?.REACT_APP_MINIAPP_ZALOPAY == '1' // dùng để tích hợp thanh toán qua ZALOPAY
+  const MINIAPP_ZALOPAY = true // dùng để tích hợp thanh toán qua ZALOPAY
 
   // state này để lấy thông tin trên params và hiển thị cho lần đầu tiên
   const [dataBookingParam, setDataBookingParam] = useState({})
@@ -132,6 +133,33 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       })
   }
 
+  const handlePaymentInZaloPay = async (app_id, zp_trans_token) => {
+    return window.zlpSdk.Payment.startCashier({
+      orders: [
+        {
+          order_type: 1,
+          order: {
+            app_id: app_id,
+            zp_trans_token: zp_trans_token
+          }
+        }
+      ],
+      callback: (data) => {
+        switch (data.payment_event) {
+          case 'PAYMENT_COMPLETED':
+            // onOpen()
+            break
+          case 'PAYMENT_CANCEL':
+            // onOpen()
+            break
+          default:
+            console.log('Unhandled event:', data)
+            break
+        }
+      }
+    })
+  }
+
   const GtelBookingConsultantSchedule = (values) => {
     setIsLoading(true)
     BookingService.createOrderSchedule(values)
@@ -150,9 +178,10 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
             customerScheduleId,
             paymentMethodType: PAYMENT_TYPE.GTEL_PAY
           }).then((result) => {
-            const orderId = result?.data?.inAppGtelOrderId
-            if (result?.isSuccess && orderId) {
-              Gtel.GtelPayJSBridge?.payOrder({ order_id: orderId })
+            const app_id = result?.data?.app_id
+            const zp_trans_token = result?.data?.zp_trans_token
+            if (result?.isSuccess && app_id && zp_trans_token) {
+              handlePaymentInZaloPay(app_id, zp_trans_token)
             }
           })
         }
@@ -184,11 +213,12 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
         if (MINIAPP_ZALOPAY) {
           BookingService.createPayment({
             customerScheduleId,
-            paymentMethodType: PAYMENT_TYPE.GTEL_PAY
+            paymentMethodType: PAYMENT_TYPE.ZALO_PAY
           }).then((result) => {
-            const orderId = result?.data?.inAppGtelOrderId
-            if (result?.isSuccess && orderId) {
-              Gtel.GtelPayJSBridge?.payOrder({ order_id: orderId })
+            const app_id = result?.data?.app_id
+            const zp_trans_token = result?.data?.zp_trans_token
+            if (result?.isSuccess && app_id && zp_trans_token) {
+              handlePaymentInZaloPay(app_id, zp_trans_token)
             }
           })
         }
