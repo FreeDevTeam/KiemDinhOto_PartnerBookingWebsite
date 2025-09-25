@@ -146,7 +146,9 @@ export const GlobalProvider = ({ children }) => {
     return (
         <GlobalContext.Provider value={{ setGlobalState,globalState, updateGlobalState, handleGetUserPhone, handleGetUserName, handleZaloAuthorize, handleFollowOA }}>
             {children}
+        {(process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1 ) && (
             <WarningNotify isModalOpen={openModal} onConfirm={handleConfirm} onClose={() => setOpenModal(false)} />
+        )}
         </GlobalContext.Provider>
     );
 };
