@@ -301,7 +301,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
               </div>
             )
           }))
-          console.log('newValues', newValues)
           setScheduleTypes(newValues)
 
           const scheduleTypeWithParams = newValues.find((item) => item.value === +form.getFieldValue('scheduleType'))
