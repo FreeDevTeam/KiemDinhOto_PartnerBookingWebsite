@@ -41,7 +41,7 @@ ENV REACT_APP_ENCRYPT_SECRET_KEY=${REACT_APP_ENCRYPT_SECRET_KEY}
 RUN npm run buildForZaloMiniApp
 
 # deploy to zalo mini app
-RUN npm deploy-zalo-app
+RUN npm run deploy-zalo-app
 
 # PROD environment
 # Create image based on the official NGINX image from dockerhub
