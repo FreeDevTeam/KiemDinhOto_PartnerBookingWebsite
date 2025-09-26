@@ -19,7 +19,7 @@ import {
   VIHCLE_CATEGORY_OTO,
   VIHCLE_CATEGORY_PICKUP,
   VIHCLE_CATEGORY_SPECIALIZED,
-  VIHCLE_CATEGORY_TRUCK,
+  VIHCLE_CATEGORY_TRUCK
 } from '../../constants/global'
 import BookingService from '../../services/addBookingService'
 import { DATE_DISPLAY_FORMAT } from '../../constants/dateFormats'
@@ -301,6 +301,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
               </div>
             )
           }))
+          console.log('newValues', newValues)
           setScheduleTypes(newValues)
 
           const scheduleTypeWithParams = newValues.find((item) => item.value === +form.getFieldValue('scheduleType'))
@@ -650,42 +651,52 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   // ------------USE EFFECT------------------
   useEffect(() => {
     const init = async () => {
-      await getPublicPaymentMethod()
-      await getMetaData()
-
-      // Check localStorage trước
-      const cached = localStorage.getItem('stationAreas')
-      if (cached) {
-        setListStationArea(JSON.parse(cached))
-      } else {
-        const areas = await getStationAreas()
-        if (areas) {
-          setListStationArea(areas)
-        }
-      }
-
-      const paramsFromUrl = getQueryParams()
-      handleCategory(paramsFromUrl?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
-      // let isValid = MINIAPP_ZALOPAY ? CheckSum() : !!paramsFromUrl
-      // if (isValid === false) return
-
-      Object.keys(paramsFromUrl).forEach((key) => {
-        let value = paramsFromUrl[key]
-        if (key !== 'phone') value = stringToRealValue(value)
-        if (key === 'phone' && (value === 'null' || value === 'undefined' || value === 'NaN')) {
-          value = null
-        }
-        paramsFromUrl[key] = value
-        fillFormValue(key, value)
-      })
-
-      getStationConfigByApiKey(paramsFromUrl)
-      firstScheduleTypeHandler()
-      setLicensePlateColorList(PLATE_COLOR)
+      await loadInitialData()
+      await loadStationAreas()
+      handleParams()
+      finalizeSetup()
     }
 
     init()
   }, [])
+
+  const loadInitialData = async () => {
+    const [meta, payment] = await Promise.all([getMetaData(), getPublicPaymentMethod()])
+    return { meta, payment }
+  }
+
+  const loadStationAreas = async () => {
+    const cached = localStorage.getItem('stationAreas')
+    if (cached) {
+      setListStationArea(JSON.parse(cached))
+    } else {
+      const areas = await getStationAreas()
+      if (areas) setListStationArea(areas)
+    }
+  }
+
+  const handleParams = () => {
+    const paramsFromUrl = getQueryParams()
+
+    handleCategory(paramsFromUrl?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
+
+    Object.entries(paramsFromUrl).forEach(([key, raw]) => {
+      let value = raw
+      if (key !== 'phone') value = stringToRealValue(raw)
+      if (key === 'phone' && ['null', 'undefined', 'NaN'].includes(raw)) {
+        value = null
+      }
+      paramsFromUrl[key] = value
+      fillFormValue(key, value)
+    })
+
+    getStationConfigByApiKey(paramsFromUrl)
+  }
+
+  const finalizeSetup = () => {
+    firstScheduleTypeHandler()
+    setLicensePlateColorList(PLATE_COLOR)
+  }
 
   useEffect(() => {
     if (form.getFieldValue('vntId')) {
