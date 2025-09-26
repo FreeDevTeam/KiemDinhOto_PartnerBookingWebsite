@@ -318,7 +318,7 @@ const HomeLayout2 = (props) => {
       setFirtLoadding(false)
     }, 300);
 
-    if(!userToken){
+    if(!userToken && Number(process.env.REACT_APP_ZALO_AUTH_ENABLE) * 1 === 1){
       history.push(PATH.LOGIN)
     }
     setTimeout(async() =>  {

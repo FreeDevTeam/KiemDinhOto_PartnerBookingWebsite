@@ -114,7 +114,7 @@ export const ROUTERS = {
     //     isZaloApp: false
     // },
 };
-const isZaloApp = process.env.REACT_APP_IS_ZALO_MINIAPP * 1
+const isZaloApp = Number(process.env.REACT_APP_IS_USING_ZALO_MINIAPP_UI) * 1
 export const fillterRoutes = Object.entries(ROUTERS)
     .filter(([key, route]) => route.isZaloApp === isZaloApp)
     .reduce((obj, [key, route]) => {
