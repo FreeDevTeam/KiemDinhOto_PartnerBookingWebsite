@@ -48,7 +48,8 @@ const logger = {
 }
 
 async function deployToZalo() {
-  let envConfig = {}
+  const envConfig = { ...process.env }; // lấy biến môi trường runtime trước (CapRover sẽ inject ở đây)
+
   fs.readFileSync(__dirname + '/.env', { encoding: 'utf-8' })
     .split('\n')
     .forEach((envVariable) => {
