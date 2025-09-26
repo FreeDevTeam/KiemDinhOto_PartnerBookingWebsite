@@ -261,7 +261,7 @@ export const PARTNER_BTN = {
   },
   ZALO:{
     name: 'ZALO',
-    partnerLandingPageUrl: 'https://zalo.me/s/1199840672744416551/',
+    partnerLandingPageUrl: 'https://zalo.me/s/2245717929865301987/',
     icon: (
       <div className='layout2-partner-logo'>
         <img className='layout2-partner-img' src={ZaloPartner}/>
