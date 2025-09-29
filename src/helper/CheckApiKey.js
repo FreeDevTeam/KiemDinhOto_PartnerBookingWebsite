@@ -5,8 +5,8 @@ export const CheckApiKey = () => {
   // const webSaladin = 'localhost'
 
   // if (searchParams.includes(webSaladin)) {
-    // return window.location.href = "https://saladin.ttdk.com.vn/booking?apikey=fe58f4e7-29ac-4ade-86b1-d51a3b0602a5"
-    // return window.location.href = "http://localhost:3000/booking?apikey=fe58f4e7-29ac-4ade-86b1-d51a3b0602a5"
+    // return window.location.href = "https://saladin.ttdk.com.vn/booking?apikey=03fb7757-5b0f-482a-8b66-db106404058b"
+    // return window.location.href = "http://localhost:3000/booking?apikey=03fb7757-5b0f-482a-8b66-db106404058b"
   // }
   let apikey
   const _TTDKMiniAppKey = process.env.REACT_APP_BOOKING_API_KEY

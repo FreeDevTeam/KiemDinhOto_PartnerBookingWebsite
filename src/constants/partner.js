@@ -40,7 +40,7 @@ export const PARTNER = {
   ZALO: {
     id: 4,
     name: 'ZALO',
-    partnerLandingPageUrl:'https://zalo.me/s/1199840672744416551/',
+    partnerLandingPageUrl:'https://zalo.me/s/2245717929865301987/',
     title: 'Zalo',
     image: ZaloPartner
   },
