@@ -650,10 +650,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   // ------------USE EFFECT------------------
   useEffect(() => {
     const init = async () => {
-      await loadInitialData()
-      await loadStationAreas()
-      handleParams()
-      finalizeSetup()
+      await Promise.all([loadInitialData(), loadStationAreas()])
+      await handleParams()
+      await finalizeSetup()
     }
 
     init()
