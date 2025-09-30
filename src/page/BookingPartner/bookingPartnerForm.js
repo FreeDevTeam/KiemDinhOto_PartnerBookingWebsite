@@ -755,7 +755,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   }, [workdaySelectedDate, stationSelected])
 
   useEffect(() => {
-    if (dataBookingParam?.vehicleSubType) {
+    if (dataBookingParam?.vehicleSubType || form.getFieldValue('vehicleSubType')) {
       handleCategory(dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value) // Phân loại
       const vehicleType = VEHICLE_SUB_TYPE.find((item) => item.value === dataBookingParam?.vehicleSubType) // loại phương tiện
       setWorkdayFilter({
