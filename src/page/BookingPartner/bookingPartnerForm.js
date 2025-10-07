@@ -498,7 +498,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
           const selectedStation = priorityStation || activeStations[0]
           setStationSelected(selectedStation?.stationsId)
           setWorkdaySelectedDate(undefined)
-          if (dataBookingParam?.stationsId) {
+
+          const hasStationIdByConfig = stationList?.find((item) => item?.stationsId === dataBookingParam?.stationsId)
+          if (dataBookingParam?.stationsId && hasStationIdByConfig) {
             setStationSelected(dataBookingParam?.stationsId)
             form.setFieldValue('stationsId', dataBookingParam?.stationsId)
           } else {
