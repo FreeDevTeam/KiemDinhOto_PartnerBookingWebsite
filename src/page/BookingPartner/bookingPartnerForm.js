@@ -776,7 +776,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
         vntId: dataBookingParam.vntId || listStationArea[0]?.value,
         vehicleSubCategory: dataBookingParam.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
         certificateSeries: dataBookingParam.certificateSeries || undefined,
-        licensePlates: dataBookingParam.licensePlates || undefined
+        licensePlates: dataBookingParam.licensePlates || undefined,
+        stationsId: dataBookingParam.stationsId || undefined
       })
     }
   }, [dataBookingParam])

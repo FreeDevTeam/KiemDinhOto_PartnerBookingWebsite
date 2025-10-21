@@ -79,10 +79,7 @@ function App() {
         theme.partnerColorButton = stationMiniAppLink?.partnerColorButton
         theme.partnerBackground = stationMiniAppLink?.partnerBackground?.[0]?.url
         theme.partnerColorGradient = stationMiniAppLink?.partnerColorGradient
-        await BookingService.getDetailStation({id: result?.[0]?.stationsId})
-        .then((res) => {
-          theme.stationsLogo= res.stationsLogo
-        })
+        theme.stationsLogo = result?.[0]?.stationsLogo
       })
       theme.apiKey = apiKey
       localStorage.setItem(addKeyLocalStorage('dataTheme'), JSON.stringify(theme))
