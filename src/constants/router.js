@@ -3,6 +3,7 @@ export const PATH = {
     LOGIN :"/login",
     CHECK_VIHCLE :"/check-vihcle",
     BOOKING: '/booking',
+    BOOKING_SERVICE: '/booking-service',
     BOOKING_PARTNER_IFRAME: '/booking-partner-iframe',
     RESET_PASSWORD: '/resetPassword',
     MY_BOOKING_HYSTORY: '/my-booking-history',

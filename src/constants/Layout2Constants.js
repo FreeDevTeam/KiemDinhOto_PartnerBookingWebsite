@@ -486,3 +486,37 @@ export const SECTION = {
   "6": "Tuyển dụng",
   "7": "Chuyên gia chia sẻ",
 }
+
+export const FEATURE_CARDS = {
+  VEHICLE_INSPECTION: {
+    key: 'vehicle-inspection',
+    icon: <DangKiemXeDinhKyIcon></DangKiemXeDinhKyIcon>,
+    title: 'Đăng kiểm xe',
+    subtitle: 'Đặt lịch đăng kiểm xe định kỳ, xe mới',
+    link: '/booking',
+    buttonNumber: 1
+  },
+  VEHICLE_INSURANCE: {
+    key: 'vehicle-insurance',
+    icon: <GiaHanBaoHiemTNDSIcon></GiaHanBaoHiemTNDSIcon>,
+    title: 'Bảo hiểm xe',
+    subtitle: 'Mua bảo hiểm, tư vấn, bồi thường bảo hiểm',
+    link: `/gia-han-bao-hiem-tnds`,
+    buttonNumber: 4
+  },  
+  TRAFFIC_VIOLATION_FINE: {
+    key: 'traffic-violation-fine',
+    icon: <TraCuuPn></TraCuuPn>,
+    title: 'Phạt nguội',
+    subtitle: 'Tra cứu, thông báo phạt nguội',
+    link: `/kiemtraphatnguoi`,
+    buttonNumber: 3
+  },
+  VEHICLE_REGISTRATION_INSPECTION: {
+    key: 'vehicle-registration-inspection',
+    icon: <TramBDIcon></TramBDIcon>,
+    title: 'Tư vấn hỗ trợ',
+    subtitle: 'Liên hệ trực tiếp với đội hỗ trợ khách hàng',
+    buttonNumber: 2
+  },
+}

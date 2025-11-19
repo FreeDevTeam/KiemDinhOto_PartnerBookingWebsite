@@ -8,6 +8,7 @@ const BookingPartnerIframe = React.lazy(() => import('./page/Booking/index'))
 const BookingHistory = React.lazy(() => import('./page/BookingHistory/index'))
 const HomePage = React.lazy(() => import('./page/Home/HomeLayout2/index'))
 const HomePageLogin = React.lazy(() => import('./page/Login/index'))
+const BookingService = React.lazy(() => import('./page/Home/HomeLayout2/BookingService'))
 const ResetPassword = React.lazy(() => import('./page/ResetPassword'))
 const MyBookingHistory = React.lazy(() => import('./page/MyBookingHistory/index'))
 const BookingDetail = React.lazy(() => import('./page/BookingDetail/index'))
@@ -42,6 +43,11 @@ export const ROUTERS = {
         component: HomePageLogin,
         isZaloApp: 1
     },
+    bookingService: {
+        path: PATH.BOOKING_SERVICE,
+        component: BookingService,
+        isZaloApp: 1
+    },
     bookingDetail: {
         path: PATH.BOOKING_DETAIL,
         component: BookingDetail,
@@ -73,8 +79,13 @@ export const ROUTERS = {
         isZaloApp: 1,
     },
     // page on web
-    checkVihcle: {
+    homePageWeb: {
         path: PATH.HOME,
+        component: HomePage,
+        isZaloApp: 0,
+    },
+    checkVihcle: {
+        path: PATH.CHECK_VIHCLE,
         component:CheckVihcle,
         isZaloApp: 0,
     },

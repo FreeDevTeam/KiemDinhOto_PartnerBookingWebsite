@@ -8,14 +8,16 @@ import NewService from './../../../services/addBookingService'
 import HomePartner from './../HomePartner'
 import L2FunctionButtonList from './L2FunctionButtonList'
 import L2HotNew from './L2HotNew'
+import L2MainButton from './L2MainButton'
 import {
   BOOKING_LIST_BTN,
   BTN_LIST_SERVICE,
   CONVENIENCE_DRIVERS_BTN,
-  GOVERNMENT_BTN,
+  SECTION,
   INSPECTION_SERVICES,
   HOT_SERVICES,
-  SECTION
+  GOVERNMENT_BTN,
+  PARTNER_BTN
 } from '../../../constants/Layout2Constants'
 import { useHistory, useLocation } from 'react-router-dom'
 import HomeNew from '../HomeNew'
@@ -41,7 +43,6 @@ const HomeLayout2 = (props) => {
   const [hotNews, setHotNews] = useState([])
   const [userToken, setUserToken] = useState(location?.state?.token || localStorage.getItem('userToken') || '')
   const [driverAmenities, setDriverAmenities] = useState(CONVENIENCE_DRIVERS_BTN)
-  const [governmentAgency, setGovernmentAgency] = useState(GOVERNMENT_BTN)
   const [stationNewsPartnerPromotion, setStationNewsPartnerPromotion] = useState([])
   const [stationNewsPromotion, setStationNewsPromotion] = useState([])
   const [expertNews, setExpertNews] = useState([])
@@ -72,6 +73,7 @@ const HomeLayout2 = (props) => {
   const LAST_UPDATE_NEWS = {}
   const lastUpdateNews = JSON.parse(localStorage.getItem('LAST_UPDATE_NEWS'))
   const [stationConfigs, setStationConfigs] = useState(undefined)
+  const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1
 
   const pushCacheDataIntoObj = (typeOfNews, lastId, obj) => {
     const id = JSON.parse(localStorage.getItem(`LAST_${typeOfNews}_NEWS_ID`)) || undefined
@@ -117,7 +119,7 @@ const HomeLayout2 = (props) => {
           lastNews_7: partnerUtilityNewsId
         } = LAST_UPDATE_DATA
 
-        setHideNewsFromZaloMiniApp(data?.HIDE_NEWS_FROM_ZALO_MINIAPP ? true : false)
+        setHideNewsFromZaloMiniApp(isZaloApp)
 
         pushCacheDataIntoObj('GENERAL', generalNewsId, LAST_UPDATE_NEWS)
         pushCacheDataIntoObj('HIGHLIGHTS', highlightNewsId, LAST_UPDATE_NEWS)
@@ -127,7 +129,7 @@ const HomeLayout2 = (props) => {
         pushCacheDataIntoObj('PARTNER_UTILITY', partnerUtilityNewsId, LAST_UPDATE_NEWS)
         pushCacheDataIntoObj('PARTNER_PROMOTION', partnerPromotionNewsId, LAST_UPDATE_NEWS)
       }else{
-        setHideNewsFromZaloMiniApp(false)
+        setHideNewsFromZaloMiniApp(isZaloApp)
       }
     })
   }
@@ -167,8 +169,14 @@ const HomeLayout2 = (props) => {
       ])
 
       if (centerBanner?.data?.length || systemBanner?.data?.length) {
-        centerBanner?.data?.length && setSetting((prev) => [...prev, ...centerBanner?.data])
-        systemBanner?.data?.length && setSetting((prev) => [...prev, ...systemBanner?.data])
+        const allBanners = []
+        if (centerBanner?.data?.length) {
+          allBanners.push(...centerBanner.data)
+        }
+        if (systemBanner?.data?.length) {
+          allBanners.push(...systemBanner.data)
+        }
+        setSetting(allBanners)
         setIsLoading(false)
         return
       }else{
@@ -296,17 +304,11 @@ const HomeLayout2 = (props) => {
           case 1:
             setDriverAmenities(data?.data);
             break;
-          case 2:
-            setGovernmentAgency(data?.data);
-            break;
         }
       } else {
         switch (params) {
           case 1:
             setDriverAmenities(CONVENIENCE_DRIVERS_BTN);
-            break;
-          case 2:
-            setGovernmentAgency(GOVERNMENT_BTN);
             break;
         }
       }
@@ -400,7 +402,6 @@ const HomeLayout2 = (props) => {
   useEffect(() => {
     getZaloDisplayStationListSetting()
     getHomePageConfig(1)
-    getHomePageConfig(2)
     fetchStationButtonConfig()
     setTimeout(() => {
       fetchData()
@@ -474,17 +475,19 @@ const HomeLayout2 = (props) => {
               
               <div>
                 <div className="booking-layout2 mb-4">
-                  <L2FunctionButtonList
+                  <L2MainButton 
                     setSheetVisible={setSheetVisible}
                     setDataBtn={setDataBtn}
-                    list={BOOKING_LIST_BTN}
-                    title={'Đặt lịch'}></L2FunctionButtonList>
-
-                  <L2FunctionButtonList
-                    setSheetVisible={setSheetVisible}
-                    setDataBtn={setDataBtn}
-                    list={INSPECTION_SERVICES}
-                    title={'Dịch vụ đăng kiểm'}></L2FunctionButtonList>
+                  />
+                  
+                  {!hideNewsFromZaloMiniApp && (
+                    <L2FunctionButtonList
+                      setSheetVisible={setSheetVisible}
+                      setDataBtn={setDataBtn}
+                      list={INSPECTION_SERVICES}
+                      title={'Dịch vụ đăng kiểm'}></L2FunctionButtonList>
+                  )}
+                  
                   {!hideNewsFromZaloMiniApp && (
                     <div className="layout2-bg mb-4">
                       {hotNews?.length > 0 && (
@@ -502,12 +505,15 @@ const HomeLayout2 = (props) => {
                       )}
                     </div>
                   )}
-                  <L2FunctionButtonList
-                    setSheetVisible={setSheetVisible}
-                    setDataBtn={setDataBtn}
-                    slider={HOT_SERVICES?.length > 9 || (mobile && HOT_SERVICES?.length > 7)}
-                    list={HOT_SERVICES}
-                    title={'Dịch vụ nổi bật'}></L2FunctionButtonList>
+                  
+                  {!hideNewsFromZaloMiniApp && (
+                    <L2FunctionButtonList
+                      setSheetVisible={setSheetVisible}
+                      setDataBtn={setDataBtn}
+                      slider={HOT_SERVICES?.length > 9 || (mobile && HOT_SERVICES?.length > 7)}
+                      list={HOT_SERVICES}
+                      title={'Dịch vụ nổi bật'}></L2FunctionButtonList>
+                  )}
                   {!hideNewsFromZaloMiniApp && stationNewsPartnerPromotion?.length > 0 && (
                     <div className="home-container mb-5 ">
                       <div className="d-flex justify-content-between align-items-center news-center">
@@ -533,95 +539,95 @@ const HomeLayout2 = (props) => {
                       </div>
                     </div>
                   )}
-                  {isZaloShowStationList && ( //Nếu không phải là zalo mini app thì mới hiện lên
-                    <L2FunctionButtonList
-                      setSheetVisible={setSheetVisible}
-                      slider={true}
-                      setDataBtn={setDataBtn}
-                      list={BTN_LIST_SERVICE}
-                      title={'Điểm dịch vụ đề xuất'}></L2FunctionButtonList>
-                  )}
+                  <L2FunctionButtonList
+                    setSheetVisible={setSheetVisible}
+                    slider={true}
+                    setDataBtn={setDataBtn}
+                    list={BTN_LIST_SERVICE}
+                    title={'Điểm dịch vụ đề xuất'}></L2FunctionButtonList>
+                  <div className="layout2-bg mb-4">
+                    {listNews?.length > 0 && (
+                      <div className="home-container mb-1 mt-1">
+                        <div className="d-flex justify-content-between align-items-center news-center">
+                          <div className="text-large title-homelayout" style={{ padding: '0 10px' }}>
+                            Tin tức
+                          </div>
+                          <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet('Tin tức', '/new')}>
+                            <a href="/" onClick={(e) => e.preventDefault()}>
+                              Xem tất cả
+                            </a>
+                          </div>
+                        </div>
+                        <div className="mobile-content">
+                          <HomeNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={listNews} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  {/* <L2FunctionButtonList
+                    setSheetVisible={setSheetVisible}
+                    setDataBtn={setDataBtn}
+                    slider={CONVENIENCE_DRIVERS_BTN?.length > 9 || (mobile && CONVENIENCE_DRIVERS_BTN?.length > 7)}
+                    list={CONVENIENCE_DRIVERS_BTN}
+                    title={'Tiện ích cho tài xế'}></L2FunctionButtonList> */}
                   {!hideNewsFromZaloMiniApp && (
-                    <div className="layout2-bg mb-4">
-                      {listNews?.length > 0 && (
-                        <div className="home-container mb-1 mt-1">
-                          <div className="d-flex justify-content-between align-items-center news-center">
-                            <div className="text-large title-homelayout" style={{ padding: '0 10px' }}>
-                              Tin tức
-                            </div>
-                            <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet('Tin tức', '/new')}>
+                    <div className=''>
+                      {partnerUtilityNews?.length > 0 &&
+                        <div className="home-container mb-5">
+                          <div className="d-flex justify-content-between align-items-center news-center" >
+                            <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Tiện ích từ đối tác</div>
+                            <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet('Tiện ích từ đối tác','/partner-news')}>
                               <a href="/" onClick={(e) => e.preventDefault()}>
                                 Xem tất cả
                               </a>
                             </div>
                           </div>
-                          <div className="mobile-content">
-                            <HomeNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={listNews} />
+                          <div className='mobile-content'>
+                            <PartnerPromotionNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={partnerUtilityNews?.slice(0,4)} />
                           </div>
                         </div>
-                      )}
+                      }
                     </div>
                   )}
                   {!hideNewsFromZaloMiniApp && (
                     <L2FunctionButtonList
                       setSheetVisible={setSheetVisible}
                       setDataBtn={setDataBtn}
-                      slider={CONVENIENCE_DRIVERS_BTN?.length > 9 || (mobile && CONVENIENCE_DRIVERS_BTN?.length > 7)}
-                      list={CONVENIENCE_DRIVERS_BTN}
-                      title={'Tiện ích cho tài xế'}></L2FunctionButtonList>
+                      list={GOVERNMENT_BTN}
+                      className="government-btn"
+                      title={'Cơ quan chính phủ'}></L2FunctionButtonList>
                   )}
-                  {/* <div className=''>
-              {partnerUtilityNews?.length > 0 &&
-                <div className="home-container mb-5">
-                  <div className="d-flex justify-content-between align-items-center news-center" >
-                  <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Tiện ích từ đối tác</div>
-                    <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet('Tiện ích từ đối tác','/partner-news')}>
-                      <a href="/" onClick={(e) => e.preventDefault()}>
-                        Xem tất cả
-                      </a>
+                </div>
+                  {!hideNewsFromZaloMiniApp && (
+                    <div className='mb-5'>
+                      <div className="home-container sation-slider">
+                        <div className="d-flex justify-content-between align-items-center news-center" >
+                          <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Đối tác</div>
+                          <div >
+                          </div>
+                        </div>
+                        <div className='mobile-content'>
+                          <HomePartner setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className='mobile-content'>
-                    <PartnerPromotionNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={partnerUtilityNews?.slice(0,4)} />
-                  </div>
-                </div>
-              }
-            </div> */}
-                  <L2FunctionButtonList
-                    setSheetVisible={setSheetVisible}
-                    setDataBtn={setDataBtn}
-                    list={GOVERNMENT_BTN}
-                    className="government-btn"
-                    title={'Cơ quan chính phủ'}></L2FunctionButtonList>
-                </div>
-                {/* <div className='mb-5'>
-              <div className="home-container sation-slider">
-                <div className="d-flex justify-content-between align-items-center news-center" >
-                  <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Đối tác</div>
-                  <div >
-                  </div>
-                </div>
-                <div className='mobile-content'>
-                  <HomePartner setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} />
-                </div>
-              </div>
-            </div> */}
+                  )}
                 <div>
-                  {/* {stationNewsPromotion?.length > 0 && (
-                <div className="home-container mb-5">
-                  <div className="d-flex justify-content-between align-items-center news-center" >
-                    <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Ưu đãi</div>
-                    <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Ưu đãi",'/station-news-promotion')}>
-                      <a href="/" onClick={(e) => e.preventDefault()}>
-                        Xem tất cả
-                      </a>
+                  {!hideNewsFromZaloMiniApp && stationNewsPromotion?.length > 0 && (
+                    <div className="home-container mb-5">
+                      <div className="d-flex justify-content-between align-items-center news-center" >
+                        <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Ưu đãi</div>
+                        <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Ưu đãi",'/station-news-promotion')}>
+                          <a href="/" onClick={(e) => e.preventDefault()}>
+                            Xem tất cả
+                          </a>
+                        </div>
+                      </div>
+                      <div className='mobile-content'>
+                        <HomeNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={stationNewsPromotion} linkDirectDetail = {"station-news-promotion-post"} showEye={false}/>
+                      </div>
                     </div>
-                  </div>
-                  <div className='mobile-content'>
-                    <HomeNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={stationNewsPromotion} linkDirectDetail = {"station-news-promotion-post"} showEye={false}/>
-                  </div>
-                </div>
-              )} */}
+                  )}
                   {!hideNewsFromZaloMiniApp && (
                     <>
                       <div className="layout2-bg">
@@ -645,7 +651,7 @@ const HomeLayout2 = (props) => {
                           </div>
                         )}
                       </div>
-                      {expertNews?.length > 0 && (
+                      {!hideNewsFromZaloMiniApp && expertNews?.length > 0 && (
                         <div className="home-container mb-5">
                           <div className="d-flex justify-content-between align-items-center news-center">
                             <div className="text-large title-homelayout" style={{ padding: '0 10px' }}>
