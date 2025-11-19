@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Form, Input, Button, Select as SelectAntd, Row, Col, Spin, Radio, Tag, DatePicker } from 'antd'
-import BookingService, { fetchMetadataWithCache } from '../../services/addBookingService'
+import BookingService from '../../services/addBookingService'
 import { WarningOutlined } from '@ant-design/icons'
 import { xoa_dau } from '../../helper/common'
 import { DATE_DISPLAY_FORMAT } from '../../constants/dateFormats'
@@ -264,7 +264,7 @@ function BookingInsurancePartnerForm({form, setTabKey, zaloUserName,zaloUserPhon
     })
   }
   const getMetaData = async() => {
-    await fetchMetadataWithCache().then((result) => {
+    await BookingService.getMetaData().then((result) => {
       const { statusCode,data } = result
       if(statusCode==200){
       let newValues=[]

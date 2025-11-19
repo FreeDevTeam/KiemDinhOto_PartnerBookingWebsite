@@ -20,7 +20,7 @@ import {
   VIHCLE_CATEGORY_SPECIALIZED,
   VIHCLE_CATEGORY_TRUCK
 } from '../../constants/global'
-import BookingService, { fetchMetadataWithCache } from '../../services/addBookingService'
+import BookingService from '../../services/addBookingService'
 import { DATE_DISPLAY_FORMAT } from '../../constants/dateFormats'
 
 import BookingDatePicker from '../../components/BookingDatePicker'
@@ -113,31 +113,32 @@ function UpdateBookingDetail({}) {
   }
 
   const getMetaData = () => {
-    fetchMetadataWithCache().then((result) => {
-      const { statusCode, data } = result
-      if (statusCode === 200 && data?.SCHEDULE_TYPE) {
-        const newValues = Object.values(data.SCHEDULE_TYPE).map((item) => ({
-          value: item.scheduleType,
-          requireScheduleDate: item?.requireScheduleDate,
-          requireScheduleStation: item?.requireScheduleStation,
-          requireScheduleTime: item?.requireScheduleTime,
-          scheduleCategory: item?.scheduleCategory,
-          priceTTDK: item?.priceTTDK,
-          disabled: !item.scheduleTypeEnable,
-          label: (
-            <div className="d-flex ai-c j-sb w-100">
-              <span className={item.scheduleTypeEnable ? '' : 'disable-item'}>{item.scheduleTypeName}</span>
-            </div>
-          )
-        }))
-        setScheduleTypes(newValues)
-      } else {
+    BookingService.getMetaData({})
+      .then((result) => {
+        const { statusCode, data } = result
+        if (statusCode === 200 && data?.SCHEDULE_TYPE) {
+          const newValues = Object.values(data.SCHEDULE_TYPE).map((item) => ({
+            value: item.scheduleType,
+            requireScheduleDate: item?.requireScheduleDate,
+            requireScheduleStation: item?.requireScheduleStation,
+            requireScheduleTime: item?.requireScheduleTime,
+            scheduleCategory: item?.scheduleCategory,
+            priceTTDK: item?.priceTTDK,
+            disabled: !item.scheduleTypeEnable,
+            label: (
+              <div className="d-flex ai-c j-sb w-100">
+                <span className={item.scheduleTypeEnable ? '' : 'disable-item'}>{item.scheduleTypeName}</span>
+              </div>
+            )
+          }))
+          setScheduleTypes(newValues)
+        } else {
+          firstScheduleTypeHandler()
+        }
+      })
+      .catch((err) => {
         firstScheduleTypeHandler()
-      }
-    })
-    .catch((err) => {
-      firstScheduleTypeHandler()
-    })
+      })
   }
 
   const getDisplayTextByScheduleTimeStatus = (element) => {

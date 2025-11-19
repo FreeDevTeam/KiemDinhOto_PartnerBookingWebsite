@@ -28,7 +28,7 @@ export default class SystemConfigurationsService {
         path: '/PartnerAPI/PartnerAPIKey/user/getApiKeyByDomain',
         data: { ...data },
         query: null
-      }).then((result = {}) => {
+    }).then((result = {}) => {
         const { statusCode, data } = result
         if (statusCode === 200) {
           return resolve(data)

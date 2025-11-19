@@ -4,11 +4,19 @@ import React, { useMemo, useState } from 'react'
 import * as sc from './../HomeLayout.styled'
 import './../index.scss'
 import { useEffect } from 'react'
-import NewService, { fetchMetadataWithCache } from './../../../services/addBookingService'
+import NewService from './../../../services/addBookingService'
 import HomePartner from './../HomePartner'
 import L2FunctionButtonList from './L2FunctionButtonList'
 import L2HotNew from './L2HotNew'
-import {BOOKING_LIST_BTN, BTN_LIST_SERVICE, CONVENIENCE_DRIVERS_BTN, GOVERNMENT_BTN, INSPECTION_SERVICES, HOT_SERVICES} from '../../../constants/Layout2Constants'
+import {
+  BOOKING_LIST_BTN,
+  BTN_LIST_SERVICE,
+  CONVENIENCE_DRIVERS_BTN,
+  GOVERNMENT_BTN,
+  INSPECTION_SERVICES,
+  HOT_SERVICES,
+  SECTION
+} from '../../../constants/Layout2Constants'
 import { useHistory, useLocation } from 'react-router-dom'
 import HomeNew from '../HomeNew'
 import SystemConfigurationsService from '../../../services/SystemConfigurationsService'
@@ -21,7 +29,9 @@ import useWindowDimensions from '../../../hooks/window-dimensions'
 import BookingService from './../../../services/addBookingService'
 import { PATH } from '../../../constants/router'
 import { useGlobalContext } from '../../../context/GlobalContext'
-
+import PopupSheetIframe from '../../../components/Popup/PopupSheetIframe'
+import MainLogo from '../../../components/MainLogo'
+import { Spin } from 'antd'
 
 const HomeLayout2 = (props) => {
   const { introduction } = props
@@ -39,6 +49,7 @@ const HomeLayout2 = (props) => {
   const [partnerUtilityNews, setPartnerUtilityNews] = useState([])
   const [setting, setSetting] = useState([]);
   const [firtLoadding, setFirtLoadding] = useState(true);
+  const [isLoadingAPI, setIsLoadingAPI] = useState(true);
   const [bottomBanner, setBottomBanner] = useState([]);
   const { height, width } = useWindowDimensions()
   const mobile= width < 580
@@ -60,6 +71,7 @@ const HomeLayout2 = (props) => {
   const [isZaloShowStationList, setIsZaloShowStationList] = useState(false)
   const LAST_UPDATE_NEWS = {}
   const lastUpdateNews = JSON.parse(localStorage.getItem('LAST_UPDATE_NEWS'))
+  const [stationConfigs, setStationConfigs] = useState(undefined)
 
   const pushCacheDataIntoObj = (typeOfNews, lastId, obj) => {
     const id = JSON.parse(localStorage.getItem(`LAST_${typeOfNews}_NEWS_ID`)) || undefined
@@ -69,9 +81,9 @@ const HomeLayout2 = (props) => {
 
     id?.push(lastId)
 
-    obj[`${typeOfNews}_NEWS`] = { 
+    obj[`${typeOfNews}_NEWS`] = {
       id: id?.filter((element, index) => id.indexOf(element) === index),
-      shouldFetch 
+      shouldFetch
     }
 
     localStorage.setItem(`LAST_UPDATE_NEWS`, JSON.stringify(obj))
@@ -92,17 +104,17 @@ const HomeLayout2 = (props) => {
     return result
   }
   const getMetaData = async () => {
-    await fetchMetadataWithCache().then((result) => {
+    await BookingService.getMetaData({}).then((result) => {
       const { statusCode,data } = result
       if(statusCode==200){
         const { LAST_UPDATE_DATA } = data
         const { lastNews_1: generalNewsId, 
-                lastNews_2: highlightNewsId, 
-                lastNews_3: promotionNewsId,
-                lastNews_4: recruitmentNewsId,
-                lastNews_5: expertNewsId, 
-                lastNews_6: partnerPromotionNewsId, 
-                lastNews_7: partnerUtilityNewsId
+          lastNews_2: highlightNewsId,
+          lastNews_3: promotionNewsId,
+          lastNews_4: recruitmentNewsId,
+          lastNews_5: expertNewsId,
+          lastNews_6: partnerPromotionNewsId,
+          lastNews_7: partnerUtilityNewsId
         } = LAST_UPDATE_DATA
 
         setHideNewsFromZaloMiniApp(data?.HIDE_NEWS_FROM_ZALO_MINIAPP ? true : false)
@@ -119,7 +131,7 @@ const HomeLayout2 = (props) => {
       }
     })
   }
-  const fetchData = () => {
+  const fetchData = async () => {
     setIsLoading(true);
     const clearBannerUrls = (banners) => {
       let arr=[]
@@ -133,15 +145,31 @@ const HomeLayout2 = (props) => {
       }
       return arr;
     };
-    NewService.getBannerStationsList({
-      filter: {
-          bannerSection:10,
-      },
-    }).then(res =>{
-      const {data}=res
-      if(data?.length > 0){
-        setSetting(data);
-        setIsLoading(false);
+
+    try {
+      const [systemBanner, centerBanner] = await Promise.all([
+        NewService.getBannerStationsList({
+          filter: {
+            bannerSection: 10
+          }
+        }),
+        NewService.getBannerCenterList({
+          filter: {
+            bannerSection: 10
+          },
+          skip: 0,
+          limit: 20,
+          order: {
+            key: 'createdAt',
+            value: 'desc'
+          }
+        })
+      ])
+
+      if (centerBanner?.data?.length || systemBanner?.data?.length) {
+        centerBanner?.data?.length && setSetting((prev) => [...prev, ...centerBanner?.data])
+        systemBanner?.data?.length && setSetting((prev) => [...prev, ...systemBanner?.data])
+        setIsLoading(false)
         return
       }else{
         SystemConfigurationsService.getPublicSystemConfigurations({}).then((res) => {
@@ -149,9 +177,10 @@ const HomeLayout2 = (props) => {
           setIsLoading(false);
         })
       }
-      setIsLoading(false);
-    })
-
+    } catch (error) {
+    } finally {
+      setIsLoading(false)
+    }
   }
   const getExpertNews = async () =>{
     const shouldFetch = lastUpdateNews === null ? true : lastUpdateNews['EXPERT_NEWS']?.shouldFetch
@@ -163,13 +192,13 @@ const HomeLayout2 = (props) => {
       "order": {
         "key": "ordinalNumber",
         "value": "asc"
-      }
+          }
     }
     ).then((result) => {
-      if (result) {
-        setExpertNews(result.data)
-        setLocalStorage('EXPERT', pushStationNewsIdIntoArr(result.data), result.data)
-      }
+          if (result) {
+            setExpertNews(result.data)
+            setLocalStorage('EXPERT', pushStationNewsIdIntoArr(result.data), result.data)
+          }
     }) : setExpertNews(JSON.parse(localStorage.getItem('LAST_EXPERT_NEWS_DATA')))
   }
   const getRecruitmentListNew = async () =>{
@@ -181,15 +210,15 @@ const HomeLayout2 = (props) => {
         "order": {
           "key": "ordinalNumber",
           "value": "asc"
-        }
-      }).then((result) => {
-      if (result) {
-        setRecruitmentList(result.data)
-        setLocalStorage('RECRUITMENT', pushStationNewsIdIntoArr(result.data), result.data)
-      }
+          }
+        }).then((result) => {
+          if (result) {
+            setRecruitmentList(result.data)
+            setLocalStorage('RECRUITMENT', pushStationNewsIdIntoArr(result.data), result.data)
+          }
     }) : setRecruitmentList(JSON.parse(localStorage.getItem('LAST_RECRUITMENT_NEWS_DATA')))
   }
-  const getStationNewsPartnerPromotion = async () =>{
+  const getStationNewsPartnerPromotion = async () => {
     const shouldFetch = lastUpdateNews === null ? true : lastUpdateNews['PARTNER_PROMOTION_NEWS'].shouldFetch
 
     shouldFetch ? await NewService.getPartnerPromotionNews({
@@ -198,17 +227,30 @@ const HomeLayout2 = (props) => {
         "order": {
           "key": "ordinalNumber",
           "value": "asc"
-        }
-      }).then((result) => {
-      if (result) {
-        setStationNewsPartnerPromotion(result.data)
-        setLocalStorage('PARTNER_PROMOTION', pushStationNewsIdIntoArr(result.data), result.data)
-      }
+          }
+        }).then((result) => {
+          if (result) {
+            setStationNewsPartnerPromotion(result.data)
+            setLocalStorage('PARTNER_PROMOTION', pushStationNewsIdIntoArr(result.data), result.data)
+          }
     }) : setStationNewsPartnerPromotion(JSON.parse(localStorage.getItem('LAST_PARTNER_PROMOTION_NEWS_DATA')))
   }
   const renderSlider = useMemo(() => {
-    return <div className='banner-Layout2'><SliderHome hideNewsFromZaloMiniApp={hideNewsFromZaloMiniApp} className={'layout2'} center setting={setting} isLoading={isLoading} /></div>
-  }, [setting , isLoading])
+    return (
+      <div className="banner-Layout2">
+        <SliderHome
+          hideNewsFromZaloMiniApp={hideNewsFromZaloMiniApp}
+          className={'layout2'}
+          center
+          setting={setting}
+          isLoading={isLoading}
+          setSheetVisible={setSheetVisible}
+          setDataBtn={setDataBtn}
+        />
+      </div>
+    )
+  }, [setting, isLoading])
+
   const renderBottomSlider = useMemo(() => {
     return <SliderHome hideNewsFromZaloMiniApp={hideNewsFromZaloMiniApp} className={'layout2 border-r'} setting={bottomBanner} isLoading={isLoading} />
   }, [])
@@ -217,20 +259,20 @@ const HomeLayout2 = (props) => {
     const shouldFetch = lastUpdateNews === null ? true : lastUpdateNews['HIGHLIGHTS_NEWS'].shouldFetch
 
     shouldFetch ? await NewService.userGetHotNewList().then((result) => {
-        if (result) {
-          setHotNews(result.data)
-          setLocalStorage('HIGHLIGHTS', pushStationNewsIdIntoArr(result.data), result.data)
-        }
+          if (result) {
+            setHotNews(result.data)
+            setLocalStorage('HIGHLIGHTS', pushStationNewsIdIntoArr(result.data), result.data)
+          }
       }) : setHotNews(JSON.parse(localStorage.getItem('LAST_HIGHLIGHTS_NEWS_DATA')))
   }
   const getListNews = async () => {
     const shouldFetch = lastUpdateNews === null ? true : lastUpdateNews['GENERAL_NEWS'].shouldFetch
 
     shouldFetch ? await NewService.userGetLatestNew().then((result) => {
-      if (result) {
-        setListNews(result.data)
-        setLocalStorage('GENERAL', pushStationNewsIdIntoArr(result.data), result.data)
-      }
+          if (result) {
+            setListNews(result.data)
+            setLocalStorage('GENERAL', pushStationNewsIdIntoArr(result.data), result.data)
+          }
     }) : setListNews(JSON.parse(localStorage.getItem('LAST_GENERAL_NEWS_DATA')))
   }
   const getHomePageConfig = async (params) => {
@@ -274,10 +316,10 @@ const HomeLayout2 = (props) => {
     const shouldFetch = lastUpdateNews === null ? true : lastUpdateNews['PARTNER_UTILITY_NEWS'].shouldFetch
 
     shouldFetch ? await NewService.userGetPartnerUtilityNews(4).then((result) => {
-      if (result) {
-        setPartnerUtilityNews(result.data)
-        setLocalStorage('PARTNER_UTILITY', pushStationNewsIdIntoArr(result.data), result.data)
-      }
+          if (result) {
+            setPartnerUtilityNews(result.data)
+            setLocalStorage('PARTNER_UTILITY', pushStationNewsIdIntoArr(result.data), result.data)
+          }
     }) : setPartnerUtilityNews(JSON.parse(localStorage.getItem('LAST_PARTNER_UTILITY_NEWS')))
   }
   const getStationNewsPromotion = async () =>{
@@ -289,12 +331,12 @@ const HomeLayout2 = (props) => {
         "order": {
           "key": "ordinalNumber",
           "value": "asc"
-        }
-      }).then((result) => {
-      if (result) {
-        setStationNewsPromotion(result.data)
-        setLocalStorage('PROMOTION', pushStationNewsIdIntoArr(result.data), result.data)
-      }
+          }
+        }).then((result) => {
+          if (result) {
+            setStationNewsPromotion(result.data)
+            setLocalStorage('PROMOTION', pushStationNewsIdIntoArr(result.data), result.data)
+          }
     }) : setStationNewsPromotion(JSON.parse(localStorage.getItem('LAST_PROMOTION_NEWS_DATA')))
   }
 
@@ -308,19 +350,66 @@ const HomeLayout2 = (props) => {
       }
     })
   }
-  
+
+  const fetchStationButtonConfig = async () => {
+    try {
+      const stationButtonConfig = await SystemConfigurationsService.getStationButtonConfig()
+      if (stationButtonConfig) {
+        const data = groupAndSortToArray(stationButtonConfig.data)
+        setStationConfigs(data)
+      }
+    } catch (error) {
+      setStationConfigs(null)
+    } finally {
+      setIsLoadingAPI(false)
+    }
+  }
+
+  function groupAndSortToArray(data) {
+    if (!data?.length) return null
+
+    const modifies = data.map((item) => ({
+      ...item,
+      unOpen: !/^https?:\/\//.test(item.linkNavigation)
+    }))
+
+    const grouped = modifies.reduce((acc, item) => {
+      const category = item.configCategory ?? 'default'
+      if (!acc[category]) acc[category] = []
+      acc[category].push(item)
+      return acc
+    }, {})
+
+    Object.keys(grouped).forEach((category) => {
+      grouped[category].sort((a, b) => a.displayPosition - b.displayPosition)
+    })
+
+    const sortedKeys = Object.keys(grouped).sort((a, b) => {
+      if (a === 'default') return -1
+      if (b === 'default') return 1
+      return Number(a) - Number(b)
+    })
+
+    const result = sortedKeys.map((key) => ({
+      [key]: grouped[key]
+    }))
+
+    return result
+  }
+
   useEffect(() => {
     getZaloDisplayStationListSetting()
     getHomePageConfig(1)
     getHomePageConfig(2)
+    fetchStationButtonConfig()
     setTimeout(() => {
       fetchData()
       setFirtLoadding(false)
     }, 300);
 
-    if(!userToken){
-      history.push(PATH.LOGIN)
-    }
+    // if(!userToken){
+    //   history.push(PATH.LOGIN)
+    // }
     setTimeout(async() =>  {
       await getMetaData()
       await getExpertNews()
@@ -364,77 +453,124 @@ const HomeLayout2 = (props) => {
     })
   }
 
+  if (isLoadingAPI) {
+    return (
+      <div className="loading">
+        <div className="text-center">
+          <MainLogo height={60} width={60}></MainLogo>
+          <Spin style={{ width: '100%' }} className="mt-3" />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <>
       <sc.Container>
         <PageLayout>{renderSlider}</PageLayout>
         <div className="more mt-3">
-        <div className='layout2-body' style={{ maxWidth: 600, margin: 'auto' }}>
-            <div className='booking-layout2'>
-              <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} list={BOOKING_LIST_BTN} title={'Đặt lịch'}></L2FunctionButtonList>
-            </div>
-            <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} list={INSPECTION_SERVICES} title={'Dịch vụ đăng kiểm'}></L2FunctionButtonList>
-            {!hideNewsFromZaloMiniApp && (
-              <div className='layout2-bg mb-4'>
-                {hotNews?.length > 0 &&
-                  <div style={{padding:'0 10px',marginBottom:'1.5rem'}}>
-                    <div className="d-flex justify-content-between align-items-center news-center" >
-                      <div className='text-large title-homelayout'>Nổi bật</div>
-                      <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Nổi bật",'/highlight-news')}>
-                        <a href="/" onClick={(e) => e.preventDefault()}>
-                          Xem tất cả
-                        </a>
+          <div className="layout2-body" style={{ maxWidth: 600, margin: 'auto' }}>
+            {!stationConfigs?.length ? (
+              
+              <div>
+                <div className="booking-layout2 mb-4">
+                  <L2FunctionButtonList
+                    setSheetVisible={setSheetVisible}
+                    setDataBtn={setDataBtn}
+                    list={BOOKING_LIST_BTN}
+                    title={'Đặt lịch'}></L2FunctionButtonList>
+
+                  <L2FunctionButtonList
+                    setSheetVisible={setSheetVisible}
+                    setDataBtn={setDataBtn}
+                    list={INSPECTION_SERVICES}
+                    title={'Dịch vụ đăng kiểm'}></L2FunctionButtonList>
+                  {!hideNewsFromZaloMiniApp && (
+                    <div className="layout2-bg mb-4">
+                      {hotNews?.length > 0 && (
+                        <div style={{ padding: '0 10px', marginBottom: '1.5rem' }}>
+                          <div className="d-flex justify-content-between align-items-center news-center">
+                            <div className="text-large title-homelayout">Nổi bật</div>
+                            <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet('Nổi bật', '/highlight-news')}>
+                              <a href="/" onClick={(e) => e.preventDefault()}>
+                                Xem tất cả
+                              </a>
+                            </div>
+                          </div>
+                          <L2HotNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} hotNew={hotNews} />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <L2FunctionButtonList
+                    setSheetVisible={setSheetVisible}
+                    setDataBtn={setDataBtn}
+                    slider={HOT_SERVICES?.length > 9 || (mobile && HOT_SERVICES?.length > 7)}
+                    list={HOT_SERVICES}
+                    title={'Dịch vụ nổi bật'}></L2FunctionButtonList>
+                  {!hideNewsFromZaloMiniApp && stationNewsPartnerPromotion?.length > 0 && (
+                    <div className="home-container mb-5 ">
+                      <div className="d-flex justify-content-between align-items-center news-center">
+                        <div className="text-large title-homelayout" style={{ padding: '0 10px' }}>
+                          Ưu đãi từ đối tác
+                        </div>
+                        <div
+                          className="d-flex mb-0 justify-content-end home-link"
+                          onClick={() => handleOpenSheet('Ưu đãi từ đối tác', '/station-newsPartner-promotion')}>
+                          <a href="/" onClick={(e) => e.preventDefault()}>
+                            Xem tất cả
+                          </a>
+                        </div>
+                      </div>
+                      <div className="mobile-content">
+                        <HomeNew
+                          setSheetVisible={setSheetVisible}
+                          setDataBtn={setDataBtn}
+                          listNews={stationNewsPartnerPromotion}
+                          linkDirectDetail={'station-news-Partner-promotion-post'}
+                          showEye={false}
+                        />
                       </div>
                     </div>
-                    <L2HotNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} hotNew={hotNews} />
-                  </div>
-                }
-              </div>
-            )}
-            <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} slider={HOT_SERVICES?.length > 9 || (mobile && HOT_SERVICES?.length > 7)} list={HOT_SERVICES} title={'Dịch vụ nổi bật'}></L2FunctionButtonList>
-            {!hideNewsFromZaloMiniApp && (
-              stationNewsPartnerPromotion?.length > 0 && (
-                <div className="home-container mb-5 ">
-                  <div className="d-flex justify-content-between align-items-center news-center" >
-                    <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Ưu đãi từ đối tác</div>
-                    <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Ưu đãi từ đối tác",'/station-newsPartner-promotion')}>
-                      <a href="/" onClick={(e) => e.preventDefault()}>
-                        Xem tất cả
-                      </a>
+                  )}
+                  {isZaloShowStationList && ( //Nếu không phải là zalo mini app thì mới hiện lên
+                    <L2FunctionButtonList
+                      setSheetVisible={setSheetVisible}
+                      slider={true}
+                      setDataBtn={setDataBtn}
+                      list={BTN_LIST_SERVICE}
+                      title={'Điểm dịch vụ đề xuất'}></L2FunctionButtonList>
+                  )}
+                  {!hideNewsFromZaloMiniApp && (
+                    <div className="layout2-bg mb-4">
+                      {listNews?.length > 0 && (
+                        <div className="home-container mb-1 mt-1">
+                          <div className="d-flex justify-content-between align-items-center news-center">
+                            <div className="text-large title-homelayout" style={{ padding: '0 10px' }}>
+                              Tin tức
+                            </div>
+                            <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet('Tin tức', '/new')}>
+                              <a href="/" onClick={(e) => e.preventDefault()}>
+                                Xem tất cả
+                              </a>
+                            </div>
+                          </div>
+                          <div className="mobile-content">
+                            <HomeNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={listNews} />
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                  <div className='mobile-content'>
-                    <HomeNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={stationNewsPartnerPromotion} linkDirectDetail = {"station-news-Partner-promotion-post"} showEye={false}/>
-                  </div>
-                </div>
-              )
-            )}
-            {isZaloShowStationList && ( //Nếu không phải là zalo mini app thì mới hiện lên
-              <L2FunctionButtonList setSheetVisible={setSheetVisible} slider={true} setDataBtn={setDataBtn} list={BTN_LIST_SERVICE} title={'Điểm dịch vụ đề xuất'}></L2FunctionButtonList>
-            )}
-            {!hideNewsFromZaloMiniApp && (
-              <div className='layout2-bg mb-4'>
-                {listNews?.length > 0 && (
-                  <div className="home-container mb-1 mt-1">
-                    <div className="d-flex justify-content-between align-items-center news-center" >
-                      <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Tin tức</div>
-                      <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Tin tức",'/new')}>
-                        <a href="/" onClick={(e) => e.preventDefault()}>
-                          Xem tất cả
-                        </a>
-                      </div>
-                    </div>
-                    <div className='mobile-content'>
-                      <HomeNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={listNews} />
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-            {!hideNewsFromZaloMiniApp && (
-              <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} slider={CONVENIENCE_DRIVERS_BTN?.length > 9 || (mobile && CONVENIENCE_DRIVERS_BTN?.length > 7)} list={CONVENIENCE_DRIVERS_BTN} title={'Tiện ích cho tài xế'}></L2FunctionButtonList>
-            )}
-            {/* <div className=''>
+                  )}
+                  {!hideNewsFromZaloMiniApp && (
+                    <L2FunctionButtonList
+                      setSheetVisible={setSheetVisible}
+                      setDataBtn={setDataBtn}
+                      slider={CONVENIENCE_DRIVERS_BTN?.length > 9 || (mobile && CONVENIENCE_DRIVERS_BTN?.length > 7)}
+                      list={CONVENIENCE_DRIVERS_BTN}
+                      title={'Tiện ích cho tài xế'}></L2FunctionButtonList>
+                  )}
+                  {/* <div className=''>
               {partnerUtilityNews?.length > 0 &&
                 <div className="home-container mb-5">
                   <div className="d-flex justify-content-between align-items-center news-center" >
@@ -451,8 +587,14 @@ const HomeLayout2 = (props) => {
                 </div>
               }
             </div> */}
-            <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} list={GOVERNMENT_BTN} className='government-btn' title={'Cơ quan chính phủ'}></L2FunctionButtonList>
-            {/* <div className='mb-5'>
+                  <L2FunctionButtonList
+                    setSheetVisible={setSheetVisible}
+                    setDataBtn={setDataBtn}
+                    list={GOVERNMENT_BTN}
+                    className="government-btn"
+                    title={'Cơ quan chính phủ'}></L2FunctionButtonList>
+                </div>
+                {/* <div className='mb-5'>
               <div className="home-container sation-slider">
                 <div className="d-flex justify-content-between align-items-center news-center" >
                   <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Đối tác</div>
@@ -464,8 +606,8 @@ const HomeLayout2 = (props) => {
                 </div>
               </div>
             </div> */}
-            <div>
-              {/* {stationNewsPromotion?.length > 0 && (
+                <div>
+                  {/* {stationNewsPromotion?.length > 0 && (
                 <div className="home-container mb-5">
                   <div className="d-flex justify-content-between align-items-center news-center" >
                     <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Ưu đãi</div>
@@ -480,97 +622,137 @@ const HomeLayout2 = (props) => {
                   </div>
                 </div>
               )} */}
-              {!hideNewsFromZaloMiniApp && (
-                <>
-                  <div className='layout2-bg'>
-                    {recruitmentList?.length > 0 && (
-                      <div className="home-container mb-1 mt-1">
-                        <div className="d-flex justify-content-between align-items-center news-center" >
-                          <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Tuyển dụng</div>
-                          <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Tuyển dụng",'/recruitment-news')}>
-                            <a href="/" onClick={(e) => e.preventDefault()}>
-                              Xem tất cả
-                            </a>
+                  {!hideNewsFromZaloMiniApp && (
+                    <>
+                      <div className="layout2-bg">
+                        {recruitmentList?.length > 0 && (
+                          <div className="home-container mb-1 mt-1">
+                            <div className="d-flex justify-content-between align-items-center news-center">
+                              <div className="text-large title-homelayout" style={{ padding: '0 10px' }}>
+                                Tuyển dụng
+                              </div>
+                              <div
+                                className="d-flex mb-0 justify-content-end home-link"
+                                onClick={() => handleOpenSheet('Tuyển dụng', '/recruitment-news')}>
+                                <a href="/" onClick={(e) => e.preventDefault()}>
+                                  Xem tất cả
+                                </a>
+                              </div>
+                            </div>
+                            <div className="mobile-content">
+                              <HomeRecruitment setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={recruitmentList.slice(0, 2)} />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      {expertNews?.length > 0 && (
+                        <div className="home-container mb-5">
+                          <div className="d-flex justify-content-between align-items-center news-center">
+                            <div className="text-large title-homelayout" style={{ padding: '0 10px' }}>
+                              Chuyên gia chia sẻ
+                            </div>
+                            <div
+                              className="d-flex mb-0 justify-content-end home-link"
+                              onClick={() => handleOpenSheet('Chuyên gia chia sẻ', '/expert-news')}>
+                              <a href="/" onClick={(e) => e.preventDefault()}>
+                                Xem tất cả
+                              </a>
+                            </div>
+                          </div>
+                          <div className="mobile-content">
+                            <HomeNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={expertNews} />
                           </div>
                         </div>
-                        <div className='mobile-content'>
-                          <HomeRecruitment setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={recruitmentList.slice(0,2)} />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  {expertNews?.length > 0 &&
-                    <div className="home-container mb-5">
-                      <div className="d-flex justify-content-between align-items-center news-center" >
-                        <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Chuyên gia chia sẻ</div>
-                        <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Chuyên gia chia sẻ",'/expert-news')}>
-                          <a href="/" onClick={(e) => e.preventDefault()}>
-                            Xem tất cả
-                          </a>
-                        </div>
-                      </div>
-                      <div className='mobile-content'>
-                        <HomeNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={expertNews} />
-                      </div>
-                    </div>
-                  }
-                </>
-              )}
-            </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div>
+                {stationConfigs
+                  .map((stationConfig) => {
+                    const [[key, items]] = Object.entries(stationConfig)
+                    switch (key) {
+                      case 'default':
+                        return (
+                          <L2FunctionButtonList
+                            setSheetVisible={setSheetVisible}
+                            setDataBtn={setDataBtn}
+                            list={items}
+                            title={SECTION['default']}
+                            isDefaultSection={true}></L2FunctionButtonList>
+                        )
+                      case '0':
+                        return (
+                          <L2FunctionButtonList
+                            setSheetVisible={setSheetVisible}
+                            setDataBtn={setDataBtn}
+                            list={items}
+                            title={SECTION['0']}></L2FunctionButtonList>
+                        )
+                      case '1':
+                        return (
+                          <L2FunctionButtonList
+                            setSheetVisible={setSheetVisible}
+                            setDataBtn={setDataBtn}
+                            list={items}
+                            title={SECTION['1']}></L2FunctionButtonList>
+                        )
+                      case '2':
+                        return (
+                          <L2FunctionButtonList
+                            setSheetVisible={setSheetVisible}
+                            setDataBtn={setDataBtn}
+                            list={items}
+                            title={SECTION['2']}></L2FunctionButtonList>
+                        )
+                      case '3':
+                        return (
+                          <L2FunctionButtonList
+                            setSheetVisible={setSheetVisible}
+                            setDataBtn={setDataBtn}
+                            list={items}
+                            title={SECTION['3']}></L2FunctionButtonList>
+                        )
+                      default:
+                        break
+                    }
+                  })
+                  .map((sc, index) => {
+                    if (index === 0) {
+                      return <div className="booking-layout2 mb-4">{sc}</div>
+                    }
+                    return sc
+                  })}
+              </div>
+            )}
             {bottomBanner?.length > 1 && <PageLayout>{renderBottomSlider}</PageLayout>}
-            {bottomBanner?.length == 1 && <div className={'layout2'}><img style={{borderRadius:'8px'}} src={bottomBanner[0]?.bannerImageUrl}></img></div>}
+            {bottomBanner?.length == 1 && (
+              <div className={'layout2'}>
+                <img style={{ borderRadius: '8px' }} src={bottomBanner[0]?.bannerImageUrl}></img>
+              </div>
+            )}
           </div>
         </div>
       </sc.Container>
       <div>
-        <Sheet
+        <PopupSheetIframe
           visible={sheetVisible}
           onClose={() => setSheetVisible(false)}
-          autoHeight
-          className='sheet-zalo'
-          mask={true}
-          swipeToClose
-        >
-          <Box p={4} className="custom-bottom-sheet" flex flexDirection="column">
-            <Box my={4}>
-              <Text.Title>{(dataBtn?.label)?.replaceAll('<br>','') || dataBtn?.title}</Text.Title>
-            </Box>
-            <Box className="bottom-sheet-body" style={{ overflowY: "auto"}}>
-              <iframe
-                src={handleReturnLink()}
-                width={"100%"}
-                style={{ minHeight: "70vh" }}
-                frameborder="0"
-              ></iframe>
-            </Box>
-          </Box>
-        </Sheet>
+          title={dataBtn?.label?.replaceAll('<br>', '') || dataBtn?.title}
+          iframeUrl={handleReturnLink()}
+        />
       </div>
-      <div className='hidden-pop'>
-        <Sheet
+      <div className="hidden-pop">
+        <PopupSheetIframe
           visible={firtLoadding}
           onClose={() => setFirtLoadding(false)}
-          autoHeight
-          className='sheet-zalo'
-          mask={true}
-          swipeToClose
-        >
-          <Box p={4} className="custom-bottom-sheet" flex flexDirection="column">
-            <Box my={4}>
-              <Text.Title>{(dataBtn?.label)?.replaceAll('<br>','') || dataBtn?.title}</Text.Title>
-            </Box>
-            <Box className="bottom-sheet-body" style={{ overflowY: "auto"}}>
-              <iframe
-                src={`${process.env.REACT_APP_DEPLOY_URL}/stations?type=3&name=Bảo%20dưỡng%20ô%20tô&isEmbeddedView=true`}
-                width={"100%"}
-                style={{ minHeight: "10vh" }}
-                frameborder="0"
-              ></iframe>
-            </Box>
-          </Box>
-        </Sheet>
+          title={dataBtn?.label?.replaceAll('<br>', '') || dataBtn?.title}
+          iframeUrl={`${process.env.REACT_APP_DEPLOY_URL}/stations?type=3&name=Bảo%20dưỡng%20ô%20tô&isEmbeddedView=true`}
+          styleCss={{ style: { minHeight: '10vh' } }}
+        />
       </div>
-
     </>
   )
 }

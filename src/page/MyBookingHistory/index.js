@@ -16,6 +16,7 @@ const MyBookingHistory = () => {
       setLoading(false)
     }).catch(err => {
       setLoading(false)
+      history.push('/')
     })
   }, [])
 

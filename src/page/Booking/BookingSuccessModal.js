@@ -8,10 +8,30 @@ import { useLocation } from 'react-router-dom'
 import { CheckApiKey } from '../../helper/CheckApiKey'
 
 const BookingSuccess = ({ isModalOpen, onClose, history, scheduleId,setStep,setIsModalOpen }) => {
+  const [isStationEnablePayment, setIsStationEnablePayment] = useState(false)
+  let apiKey = CheckApiKey()
   const handleClose = () => {
     setIsModalOpen(false)
     window.location.reload()
   }
+  useEffect(() => {
+    if (isModalOpen && process.env.REACT_APP_ENABLE_PAYMENT * 1 === 1) {
+      const stationsId = sessionStorage.getItem(STATION_SESSION_KEY)
+      BookingService.getDetailStation({
+        id: Number(stationsId)
+      }).then((res) => {
+        if (
+          res && res.enablePaymentGateway
+          && res.stationPayments.length > 0
+        ) {
+          !isStationEnablePayment && setIsStationEnablePayment(true)
+        } else {
+          isStationEnablePayment && setIsStationEnablePayment(false)
+        }
+      })
+    }
+  }, [isModalOpen])
+
 
   return (
     <>
@@ -23,7 +43,7 @@ const BookingSuccess = ({ isModalOpen, onClose, history, scheduleId,setStep,setI
         <div>
           {/* <Button
             className="login__button w-100 custom-df-btn light custom-btn"
-            onClick={() => history.push(`/booking-history?apikey=${apiKey}&name=${fullName}&phone=${phoneNumber}`)}
+            onClick={() => history.push(`/booking-history?apiKey=${apiKey}&name=${fullName}&phone=${phoneNumber}`)}
             style={{ marginTop: 8 }}
             size="large">
             Xem lịch hẹn

@@ -22,6 +22,7 @@ import { GlobalProvider } from './context/GlobalContext';
 import { fillterRoutes } from './router';
 import { setMetaData } from "./actions";
 import { useDispatch } from 'react-redux'
+import BookingService from './services/addBookingService';
 import SystemConfigurationsService from './services/SystemConfigurationsService';
 import { getQueryParams } from './page/BookingPartner/bookingPartnerForm';
 import addKeyLocalStorage from './helper/localStorage';
@@ -29,11 +30,12 @@ export const baseName = IS_ZALO_MINI_APP ? `/zapps/${process.env.REACT_APP_ZMP_A
 function App() {
   // Kiểm tra xem có APIKey trong URL không cho tính năng tự động đặt lịch
   const urlParams = new URLSearchParams(window.location.search);
-  const apiKey = urlParams.get('apikey') || process.env.REACT_APP_BOOKING_API_KEY || undefined;
+  const apiKey = urlParams.get('apiKey') || process.env.REACT_APP_BOOKING_API_KEY || undefined;
   if(apiKey) {
     localStorage.setItem('apiKey', apiKey)
   }
 
+  const dispatch = useDispatch()
   const themeApp = process.env.REACT_APP_THEME_NAME
   const setThemeApp = () => {
     document.querySelector('body').setAttribute('data-theme', themeApp)
@@ -41,6 +43,13 @@ function App() {
   useEffect(() => {
     setThemeApp()
   }, [])
+  function fetchListMetaData() {
+    BookingService.getMetaData({}).then(result => {
+      const { statusCode,data } = result
+      if(statusCode == 200)
+      dispatch(setMetaData(data))
+    })
+  }
   
   const handleCheckApiKey = ()=>{
     const API_KEY = process.env.REACT_APP_BOOKING_API_KEY
@@ -59,7 +68,7 @@ function App() {
   const getStationConfigByApiKeyAndSetTheme = async () => {
     const apiKeyLocal = (JSON.parse(localStorage.getItem(addKeyLocalStorage('dataTheme'))) || {})?.apiKey
     const params = getQueryParams()
-    const apiKey = params?.apikey || process.env.REACT_APP_BOOKING_API_KEY
+    const apiKey = params?.apiKey || process.env.REACT_APP_BOOKING_API_KEY
     if (apiKeyLocal !== apiKey || !apiKey) {
       localStorage.removeItem(addKeyLocalStorage('dataTheme'))
     }
@@ -79,6 +88,7 @@ function App() {
     }
 
   useLayoutEffect(() => {
+    fetchListMetaData()
     handleCheckApiKey()
     getStationConfigByApiKeyAndSetTheme()
     const loadingScreen = document.querySelector('.splash-screen-loading');

@@ -6,7 +6,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { CheckApiKey } from '../../helper/CheckApiKey'
 
 function BookingService({ setStep, setData, step }) {
-  let apikey = CheckApiKey()
+  let apiKey = CheckApiKey()
   const handleClick = useCallback(
     debounce((_item) => {
       if (_item.disabled) return
@@ -47,7 +47,7 @@ function BookingService({ setStep, setData, step }) {
         <Button
           className="login__button df mt-4 custom-default-btn"
           type="primary"
-          onClick={()=> history.push(`/booking-history?apikey=${apiKey}&name=${fullName}&phone=${phoneNumber}`)}
+          onClick={()=> history.push(`/booking-history?apiKey=${apiKey}&name=${fullName}&phone=${phoneNumber}`)}
           size="large"
         >
           Lịch hẹn

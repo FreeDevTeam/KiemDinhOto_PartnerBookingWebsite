@@ -2,12 +2,13 @@ import React, { useEffect, useState, memo } from 'react'
 import { Spin, Tag, Input } from 'antd'
 import { SCHEDULE_STATUS_3_0, VIHCLE_TYPES_STATE } from '../../constants/global'
 import _ from 'lodash'
-import BookingService, { fetchMetadataWithCache } from '../../services/addBookingService'
+import BookingService from '../../services/addBookingService'
 import { changeTime } from '../../helper/changeTime'
 import { useHistory, useLocation } from 'react-router-dom'
 import OtherVehicles from './../../assets/icons/otherVehicles.png'
 import Car from './../../assets/icons/car.png'
 import BasicTablePaging from '../../components/BasicComponent/BasicTablePaging'
+import useCommonData from '../../hooks/CommonData'
 import useWindowDimensions from '../../hooks/window-dimensions'
 import { isMobileDisplaySize } from '../../pageUtililiy/isMobileDisplaySize'
 const { TextArea } = Input
@@ -54,20 +55,7 @@ const ScheduleItem = ({
   chatLinkUserToEmployee
 }) => {
   const history = useHistory()
-  const [metaData, setMetaData] = useState({})
-
-  const getMetaData = () => {
-    fetchMetadataWithCache().then((result) => {
-      const { statusCode,data } = result
-      if(statusCode==200){
-        setMetaData(data)
-      }
-    })
-  }
-
-  useEffect(() => {
-    getMetaData()
-  }, [])
+  const { metaData } = useCommonData()
 
   const RetunStatus = ({ status }) => {
     let el = _.find(SCHEDULE_STATUS_3_0, { value: status })
@@ -109,7 +97,7 @@ const ScheduleItem = ({
             <span className="text-small me-1 scheduleItem-lable">Dịch vụ:</span>
             <div className="text-small scheduleItem-value scheduleItem-href d-inline">
               {
-                Object.values(metaData?.SCHEDULE_TYPE || {}).find(obj => obj?.scheduleType === scheduleType)?.scheduleTypeName || 'Đăng kiểm xe'
+                Object.values(metaData?.SCHEDULE_TYPE).find(obj => obj?.scheduleType === scheduleType)?.scheduleTypeName || 'Đăng kiểm xe'
               }
             </div>
           </div>
