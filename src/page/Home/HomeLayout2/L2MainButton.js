@@ -38,6 +38,23 @@ const L2MainButton = ({ onButtonClick, setSheetVisible, setDataBtn }) => {
         link: trafficUrl
       })
       setSheetVisible(true)
+    } else if (card.title === 'Tư vấn hỗ trợ') {
+      const contactHtml = `
+        <div class="contact-support-popup">
+          <div class="contact-container">
+            <div class="contact-title">Liên hệ hỗ trợ</div>
+            <div class="contact-info">
+              <div>Số điện thoại liên hệ:</div>
+              <div class="contact-phone">09xxxxxxxx</div>
+            </div>
+          </div>
+        </div>
+      `
+      setDataBtn({
+        label: 'Tư vấn hỗ trợ',
+        link: `data:text/html;charset=utf-8,${encodeURIComponent(contactHtml)}`
+      })
+      setSheetVisible(true)
     } else {
       if (onButtonClick) {
         onButtonClick(card)
@@ -46,7 +63,7 @@ const L2MainButton = ({ onButtonClick, setSheetVisible, setDataBtn }) => {
   }
 
   return (
-    <div className="four-button-feature">
+    <div className="main-button-feature">
       <div className="feature-cards-container">
         {featureCardsArray.map((card) => (
           <div

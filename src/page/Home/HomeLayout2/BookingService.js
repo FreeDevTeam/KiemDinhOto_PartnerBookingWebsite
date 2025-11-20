@@ -1,16 +1,14 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 import { IS_ZALO_MINI_APP } from '../../../constants/global'
 import { ReactComponent as DangKiemXeDinhKyIcon } from '../../../assets/Layout2Icons/L2dkxdk.svg'
 import { ReactComponent as DangKiemXeMoiIcon } from '../../../assets/Layout2Icons/L2dkxm.svg'
 import { ReactComponent as DangKiemXeCuIcon } from '../../../assets/Layout2Icons/L2dkxc.svg'
-import PopupContactInfo from '../../../components/Popup/PopupContactInfo'
 import '../index.scss'
 
 const BookingService = () => {
   const history = useHistory()
   const location = useLocation()
-  const [showContactPopup, setShowContactPopup] = useState(false)
 
   const bookingOptions = [
     {
@@ -50,7 +48,7 @@ const BookingService = () => {
         <div className="login__title__text" style={{ margin: '40px auto 12px', textAlign: 'center', fontSize: 22, fontWeight: 300, color: 'var(--primary-color)' }}>
           Đặt lịch hẹn
         </div>
-        <div style={{ textAlign: 'center', color: 'var(--primary-color)', marginBottom: 30, fontSize: 24, fontWeight: 1000 }}>
+        <div style={{ textAlign: 'center', color: 'var(--primary-color)', marginBottom: 30, fontSize: 24, fontWeight: 600 }}>
           VUI LÒNG CHỌN DỊCH VỤ ĐĂNG KIỂM
         </div>
 
@@ -69,28 +67,8 @@ const BookingService = () => {
               </div>
             </div>
           ))}
-          
-          <div className="booking-service-item" onClick={() => setShowContactPopup(true)}>
-            <div className="content-left">
-              <svg width="59" height="59" viewBox="0 0 59 59" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="29.5" cy="29.5" r="28.5" fill="var(--primary-color)" opacity="0.1"/>
-                <path d="M29 18C23.48 18 19 22.48 19 28C19 32.5 21.5 36.3 25.5 38.2V44L29 42L32.5 44V38.2C36.5 36.3 39 32.5 39 28C39 22.48 34.52 18 29 18Z" fill="var(--primary-color)"/>
-              </svg>
-            </div>
-            <div className="content-right">
-              <div className="title">Tư vấn hỗ trợ</div>
-              <div className="subTitle">Liên hệ trực tiếp với đội hỗ trợ khách hàng</div>
-            </div>
-            <div style={{display:'flex',justifyContent:'center',alignItems:'center'}}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-          </div>
         </div>
       </div>
-      
-      <PopupContactInfo visible={showContactPopup} onClose={() => setShowContactPopup(false)} phoneNumber="09xxxxxxxx" />
     </div>
   )
 }
