@@ -8,7 +8,7 @@ const BookingPartnerIframe = React.lazy(() => import('./page/Booking/index'))
 const BookingHistory = React.lazy(() => import('./page/BookingHistory/index'))
 const HomePage = React.lazy(() => import('./page/Home/HomeLayout2/index'))
 const HomePageLogin = React.lazy(() => import('./page/Login/index'))
-const BookingService = React.lazy(() => import('./page/Home/HomeLayout2/BookingService'))
+const BookingServiceSelection = React.lazy(() => import('./page/BookingServiceSelection/index'))
 const ResetPassword = React.lazy(() => import('./page/ResetPassword'))
 const MyBookingHistory = React.lazy(() => import('./page/MyBookingHistory/index'))
 const BookingDetail = React.lazy(() => import('./page/BookingDetail/index'))
@@ -44,8 +44,8 @@ export const ROUTERS = {
         isZaloApp: 1
     },
     bookingService: {
-        path: PATH.BOOKING_SERVICE,
-        component: BookingService,
+        path: PATH.BOOKING_SERVICE_SELECTION,
+        component: BookingServiceSelection,
         isZaloApp: 1
     },
     bookingDetail: {
@@ -125,7 +125,7 @@ export const ROUTERS = {
     //     isZaloApp: false
     // },
 };
-const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1
+const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE ? process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 : 0
 export const fillterRoutes = Object.entries(ROUTERS)
     .filter(([key, route]) => route.isZaloApp === isZaloApp)
     .reduce((obj, [key, route]) => {
