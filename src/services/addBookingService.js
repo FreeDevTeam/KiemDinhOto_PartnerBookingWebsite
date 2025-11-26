@@ -171,9 +171,9 @@ export default class BookingService {
         data: {
           skip: 0,
           limit: 10,
-          order: {
+          order:{
             key: 'ordinalNumber',
-            value: 'asc'
+              value:"asc"
           }
         }
       }).then((result = {}) => {
@@ -194,7 +194,7 @@ export default class BookingService {
         data: {
           skip: skip || 0,
           limit: 10,
-          stationsUrl: window.origin.split('://')[1]
+          stationsUrl: window.origin.split('://')[1],
         }
       }).then((result = {}) => {
         const { statusCode, data } = result
@@ -206,8 +206,7 @@ export default class BookingService {
       })
     })
   }
-  static async getPartnerPromotionNews(data = {}) {
-    // mặc định {} để có payload
+  static async getPartnerPromotionNews(data={}) { // mặc định {} để có payload
     return new Promise((resolve) => {
       Request.send({
         method: 'POST',
@@ -223,8 +222,7 @@ export default class BookingService {
       })
     })
   }
-  static async getPromotionNews(data = {}) {
-    // mặc định {} để có payload
+  static async getPromotionNews(data={}) { // mặc định {} để có payload
     return new Promise((resolve) => {
       Request.send({
         method: 'POST',
@@ -242,13 +240,13 @@ export default class BookingService {
   }
   static async getZaloUserPhoneNumber(headers) {
     return new Promise((resolve) => {
-      console.log('BookingService ~ returnnewPromise ~ headers:', headers)
+      console.log("BookingService ~ returnnewPromise ~ headers:", headers)
       Request.sendZaloMiniApp({
         method: 'GET',
         headers: headers
       }).then((result = {}) => {
         const { statusCode, data } = result
-        console.log('BookingService ~ returnnewPromise ~ result:', result)
+        console.log("BookingService ~ returnnewPromise ~ result:", result)
         if (statusCode === 200) {
           return resolve(result)
         } else {
@@ -337,6 +335,22 @@ export default class BookingService {
       })
     })
   }
+  static async getBannerCenterList(filter) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/SystemPromoBanners/partner/getStationBanners',
+        data: filter
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(data)
+        } else {
+          return resolve({})
+        }
+      })
+    })
+  }
   static async userGetPartnerUtilityNews(limit) {
     return new Promise((resolve) => {
       Request.send({
@@ -345,9 +359,9 @@ export default class BookingService {
         data: {
           skip: 0,
           limit: limit || 10,
-          order: {
+          order:{
             key: 'ordinalNumber',
-            value: 'asc'
+              value:"asc"
           }
         }
       }).then((result = {}) => {
@@ -368,9 +382,9 @@ export default class BookingService {
         data: data || {
           skip: 0,
           limit: 10,
-          order: {
+          order:{
             key: 'ordinalNumber',
-            value: 'asc'
+              value:"asc"
           }
         }
       }).then((result = {}) => {
@@ -524,7 +538,7 @@ export default class BookingService {
     })
   }
 
-  static async getBookingHistoryImport(data = {}, cancelEvent) {
+  static async getBookingHistoryImport(data = {} , cancelEvent) {
     return new Promise((resolve) => {
       Request.sendImportExport({
         method: 'POST',
@@ -617,7 +631,7 @@ export default class BookingService {
   }
 
   static async createOrderSchedule(data = {}) {
-    return new Promise((resolve) => {
+        return new Promise((resolve) => {
       Request.send({
         method: 'POST',
         path: '/PartnerAPI/Order/user/createOrderSchedule',
@@ -632,6 +646,7 @@ export default class BookingService {
       })
     })
   }
+
 }
 
 export async function fetchMetadataWithCache() {

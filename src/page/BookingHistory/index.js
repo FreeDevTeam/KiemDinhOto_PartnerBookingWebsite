@@ -15,7 +15,7 @@ const Notification = ({ history }) => {
   const params = new URLSearchParams(searchparam)
   const phoneNumber = params.get('phone') || ''
   const fullName = params.get('name') || ''
-  let apikey = CheckApiKey()
+  let apiKey = CheckApiKey()
   const handleSearch = (value) => {
     if (!value) {
       setSearch(undefined)
@@ -33,8 +33,8 @@ const Notification = ({ history }) => {
             colorType="dark"
             title="+ Đặt lịch hẹn"
             action={() => {
-              // history.push(`/booking-partner-iframe?apikey=${apikey}&name=${fullName}&phone=${phoneNumber}`)
-              history.push(`/?apikey=${apikey}&name=${fullName}&phone=${phoneNumber}`)
+              // history.push(`/booking-partner-iframe?apiKey=${apiKey}&name=${fullName}&phone=${phoneNumber}`)
+              history.push(`/?apiKey=${apiKey}&name=${fullName}&phone=${phoneNumber}`)
             }}
           />
           <div style={{ height: '40px' }} />

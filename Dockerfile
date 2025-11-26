@@ -57,8 +57,12 @@ COPY --from=builder /usr/src/app/build /usr/share/nginx/html
 COPY --from=builder /usr/src/app/ops/config/nginx.template.conf /etc/nginx/nginx.conf
 COPY --from=builder /usr/src/app/ops/config/default.template.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /usr/src/app/start-container.sh /etc/nginx/start-container.sh
+COPY --from=builder /usr/src/app/entrypoint.sh /etc/nginx/entrypoint.sh
+
 RUN chmod +x /etc/nginx/start-container.sh
+RUN chmod +x /etc/nginx/entrypoint.sh
 RUN mkdir -p /usr/share/nginx/html/media
 
+ENTRYPOINT ["/etc/nginx/entrypoint.sh"]
 ## Serve the app
 CMD [ "/bin/sh", "-c", "/etc/nginx/start-container.sh" ]

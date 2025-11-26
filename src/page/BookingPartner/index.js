@@ -11,41 +11,58 @@ import { useGlobalContext } from '../../context/GlobalContext'
 import { SCHEDULE_TYPE, WEBVIEW_TYPES } from '../../constants/global'
 import MainLogo from '../../components/MainLogo'
 import addKeyLocalStorage from '../../helper/localStorage'
+import { useHistory } from 'react-router-dom'
+
 function BookingPartner() {
-  const { globalState, handleGetUserPhone, handleGetUserName, setGlobalState } = useGlobalContext();
+  const { globalState, handleGetUserPhone, handleGetUserName, setGlobalState, handleZaloAuthorize } = useGlobalContext()
   const [isVisible, setIsVisible] = useState(false)
   const [nextTab, setNextTab] = useState('partner')
   const [tabKey, setTabKey] = useState()
   const [form] = Form.useForm()
-  const location = useLocation();
+  const location = useLocation()
   const searchparam = location.search
   const params = new URLSearchParams(searchparam)
   let partner = params.get('partner')?.toLowerCase()
   const isWebView = params.get('isWebView')
-  let apikey = CheckApiKey()
+  let apiKey = CheckApiKey()
   const localLogo = (JSON.parse(localStorage.getItem(addKeyLocalStorage('dataTheme'))) || {})?.stationsLogo
+  const history = useHistory()
+  const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1 // ==> dùng cho miniApp
 
 
   const handleGetUserInfor = async () => {
     try {
       handleGetUserName()
     } catch (error) {
-      
+
     }
     try {
       await handleGetUserPhone()
     } catch (error) {
       setIsVisible(false)
-      notification.error({
-        message: "Có lỗi phát sinh. Vui lòng thử lại."
-      })
+      // notification.error({
+      //   message: 'Có lỗi phát sinh. Vui lòng thử lại.'
+      // })
     }
     setIsVisible(false)
   }
 
   useEffect(() => {
-    setIsVisible(true)
-    handleGetUserInfor()
+    const loadZaloSDK = async () => {
+      try {
+        if (isZaloApp && !globalState?.isAuthorize) {
+          await handleZaloAuthorize()
+        }
+        if (isZaloApp) {
+          await handleGetUserInfor()
+        }
+      } catch (error) {
+        // Nếu user từ chối cấp quyền, zlsdk sẽ throw exception và quay về trang chủ
+        history.push('/')
+      }
+    }
+
+    loadZaloSDK()
   }, [])
 
   const getTitleName = (searchParam) => {
@@ -53,29 +70,29 @@ function BookingPartner() {
     const scheduleType = Number(splitSearchParam[splitSearchParam.length - 1])
     const title = SCHEDULE_TYPE.find((item) => item.value === scheduleType)?.label
     return "THÔNG TIN LỊCH HẸN"
-    // return title === undefined 
-    //   ? 'ĐẶT LỊCH ĐĂNG KIỂM' 
+    // return title === undefined
+    //   ? 'ĐẶT LỊCH ĐĂNG KIỂM'
     //   : title?.toUpperCase()
   }
 
   return (
     <>
-      {apikey ?
+      {apiKey ?
         (
           <div className={`partner app-container ${nextTab === 'otp' ? 'py-0 px-2' : 'pd-30-15'}`} style={{ maxWidth: 480, margin: 'auto', padding: '10px' }}>
-            {isVisible ? (
-              <div className="loading">
-                <Spin style={{ width: '100%' }} />
-              </div>
-            ) : (
-              <>
-                <div
-                  className={`
+          {isVisible ? (
+            <div className="loading">
+              <Spin style={{ width: '100%' }} />
+            </div>
+          ) : (
+            <>
+              <div
+                className={`
                 partner-container 
                 ${nextTab === 'partner' ? 'small' : 'full'}
                 ${nextTab === 'success' ? 'd-flex justify-content-center align-items-center' : ''}
                 `}>
-                  {/* <Tabs activeKey={nextTab}>
+                {/* <Tabs activeKey={nextTab}>
                 <Tabs.TabPane tab="" key="partner">
                   <div className="h-100">
                     <div className="partner-select">
@@ -85,9 +102,9 @@ function BookingPartner() {
                     Number(isWebView) !== WEBVIEW_TYPES.WEBVIEW ? <div className='booking-title title-normal'>{getTitleName(searchparam)}</div> : null
                   }
                   <div className='mt-4'>
-                    <BookingPartnerForm zaloUserPhone={globalState.phoneNumber} zaloUserName={globalState.userName} setTabKey={setTabKey} form={form} />
-                  </div>
-                  {/* </Tabs.TabPane>
+                  <BookingPartnerForm zaloUserPhone={globalState.phoneNumber} zaloUserName={globalState.userName} setTabKey={setTabKey} form={form} />
+                </div>
+                {/* </Tabs.TabPane>
                         <Tabs.TabPane tab="Lịch hẹn" key="bookingList">
                           <BookingPartnerHistory setTabKey={setTabKey} tabKey={tabKey} form={form} />
                         </Tabs.TabPane>
@@ -96,44 +113,44 @@ function BookingPartner() {
                   </div>
                 </Tabs.TabPane>
               </Tabs> */}
-                </div>
-                <div style={{ maxWidth: 600, margin: 'auto', padding: '30px 0', textAlign: 'center' }}>
-                  <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
-                    <MainLogo height={60} width={60}></MainLogo>
+              </div>
+              <div style={{ maxWidth: 600, margin: 'auto', padding: '30px 0', textAlign: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
+                  <MainLogo height={60} width={60}></MainLogo>
                     {TTDK_PARTNER.map(item => {
-                      if (item.name == partner) {
+                    if (item.name == partner) {
                         return (<div style={{ maxHeight: '58px',maxWidth:'150px' }}>
                           {item.icon}
                         </div>)
-                      }
-                    })}
-                  </div>
+                    }
+                  })}
+                </div>
                   {
                     !localLogo &&
                     <div style={{ color: 'var(--primary-button-color)', marginTop: '0.5rem' }}>Powered by TTDK</div>
                   }
-                </div>
-              </>
+              </div>
+            </>
             )
             }
-          </div>
+        </div>
         ) :
         (
-          <>
-            <LoadFormBookingFailed></LoadFormBookingFailed>
-            <div style={{ maxWidth: 600, margin: 'auto', padding: '30px 0', textAlign: 'center' }}>
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <>
+          <LoadFormBookingFailed></LoadFormBookingFailed>
+          <div style={{ maxWidth: 600, margin: 'auto', padding: '30px 0', textAlign: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
                 {TTDK_PARTNER.map(item => {
-                  if (item.name == partner) {
+                if (item.name == partner) {
                     return (<div style={{ maxHeight: '58px',maxWidth:'150px' }}>
                       {item.icon}
                     </div>)
-                  }
-                })}
-              </div>
-              <div style={{ color: 'var(--primary-button-color)', marginTop: '0.5rem' }}>Powered by TTDK</div>
+                }
+              })}
             </div>
-          </>
+            <div style={{ color: 'var(--primary-button-color)', marginTop: '0.5rem' }}>Powered by TTDK</div>
+          </div>
+        </>
         )
       }
     </>

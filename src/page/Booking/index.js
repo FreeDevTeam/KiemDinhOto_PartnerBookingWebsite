@@ -35,7 +35,7 @@ const StepBooking = ({ history, intl }) => {
   const location = useLocation();
   const searchparam = location.search
   const params = new URLSearchParams(searchparam)
-  let apikey = CheckApiKey()
+  let apiKey = CheckApiKey()
 
   const { state: dataCompleteForm, search } = useLocation();
   const [step, setStep] = useState('Service')
@@ -173,7 +173,7 @@ const StepBooking = ({ history, intl }) => {
 
   return (
     <>
-      {apikey ? 
+      {apiKey ? 
         (
           <div style={{ maxWidth: 600, margin: 'auto' }}>
             <div className="stepBooking-header">
