@@ -1,24 +1,8 @@
 import zaloAPI, { followOA } from "zmp-sdk";
 import BookingService from '../services/addBookingService';
 
-let isGettingPhone = false;
-
 export async function getZaloUserPhone() {
-    if (isGettingPhone) {
-        throw new Error("Already getting phone number");
-    }
-    isGettingPhone = true;
     try {
-      // Check permissions first
-      const setting = await getSettingZalo();
-      if (!setting || !setting['scope.userPhonenumber']) {
-        // Authorize if not granted
-        const authorized = await getZaloAuthorize();
-        if (!authorized) {
-          throw new Error("Authorization failed");
-        }
-      }
-
       const { token } = await new Promise((resolve, reject) => {
         zaloAPI.getPhoneNumber({
           success: resolve,
@@ -27,29 +11,27 @@ export async function getZaloUserPhone() {
       });
       if (token) {
         const accessToken = await zaloAPI.getAccessToken();
-        const data = {
+        const headers = {
           access_token: accessToken,
           code: token,
           secret_key: process.env.REACT_APP_ZALO_SECRECT_KEY,
         };
   
-        const result = await BookingService.getZaloUserPhoneNumber(data);
-        const { error, data: responseData } = result;
+        const result = await BookingService.getZaloUserPhoneNumber(headers);
+        const { error, data } = result;
         if (error) {
           throw new Error(error);
         }
-        if (responseData?.number) {
-          return "0" + responseData.number.slice(2);
+        if (data?.number) {
+          return "0" + data.number.slice(2);
   
         }
         return ""
       }
-      throw new Error("No token received");
+      throw new Error();
     } catch (error) {
       console.error("Error:", error);
       throw new Error("Truy vấn số điện thoại thất bại");
-    } finally {
-      isGettingPhone = false;
     }
   }
 
@@ -128,14 +110,5 @@ export async function getZaloUserPhone() {
       });
     } catch (error) {
       throw new Error("Mở cửa sổ chat thất bại");
-    }
-  };
-  export const openPhone = async (phoneNumber) => {
-    try {
-      await zaloAPI.openPhone({
-        phoneNumber: phoneNumber,
-      });
-    } catch (error) {
-      throw new Error("Mở cuộc gọi thất bại");
     }
   }

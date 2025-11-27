@@ -16,6 +16,7 @@ import './main.scss'
 import './dropDownCommon.scss'
 import { IS_ZALO_MINI_APP } from './constants/global';
 import Layout from './components/Layout';
+import Logo from './assets/MAINLOGO.png'
 import { PATH } from './constants/router';
 import { GlobalProvider } from './context/GlobalContext';
 import { fillterRoutes } from './router';

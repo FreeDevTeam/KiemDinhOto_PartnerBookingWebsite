@@ -28,6 +28,7 @@ import BookingDatePicker from '../../components/BookingDatePicker'
 import BookingHoursPicker from '../../components/BookingHoursPicker'
 import { SCHEDULE_ERROR } from '../../constants/errorMessage'
 import SystemConfigurationsService from '../../services/SystemConfigurationsService'
+import MainLogo from '../../components/MainLogo'
 import addKeyLocalStorage from '../../helper/localStorage'
 import PaymentService from '../../services/paymentService'
 
@@ -93,10 +94,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   const MINIAPP_ZALOPAY = window?._env_?.REACT_APP_MINIAPP_ZALOPAY == '1' // dùng để tích hợp thanh toán qua ZALOPAY
 
   // state này để lấy thông tin trên params và hiển thị cho lần đầu tiên
-  const [dataBookingParam, setDataBookingParam] = useState({
-    visible_StationArea: true,
-    visible_StationsCode: true
-  })
+  const [dataBookingParam, setDataBookingParam] = useState({})
 
   // state của các modal hiển thị thông báo
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -318,10 +316,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   }
 
   const onFinish = (values) => {
-    // Save phone to localStorage
-    if (values.phone) {
-      localStorage.setItem('phone', values.phone)
-    }
     const data = {
       licensePlates: values.licensePlates,
       phone: values.phone,
@@ -663,36 +657,10 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   const firstScheduleTypeHandler = () => {
     setScheduleTypes(() => {
       const data = Object.keys(SCHEDULE_TYPE_MINIAPP).map((key) => {
-        const value = SCHEDULE_TYPE_MINIAPP[key]
-        let requireScheduleStation = 0
-        let requireScheduleDate = 0
-        let requireScheduleTime = 0
-        let scheduleCategory = SCHEDULE_BOOKING_TYPE.SCHEDULE
-        if (value === 1 || value === 3 || value === 4) { // Đăng kiểm, nộp hồ sơ, đổi thông tin
-          requireScheduleStation = 1
-          requireScheduleDate = 1
-          requireScheduleTime = 1
-        } else if (value === 27) { // Bán vé
-          requireScheduleStation = 1
-          requireScheduleDate = 1
-          requireScheduleTime = 1
-        } else { // Tư vấn
-          scheduleCategory = SCHEDULE_BOOKING_TYPE.CONSULTANT
-        }
         return {
           key: key,
-          value: value,
-          requireScheduleStation,
-          requireScheduleDate,
-          requireScheduleTime,
-          scheduleCategory,
-          priceTTDK: 0,
-          disabled: false,
-          label: SCHEDULE_TITLE[value] ? (
-            <div className="d-flex ai-c j-sb w-100">
-              <span>{SCHEDULE_TITLE[value].title}</span>
-            </div>
-          ) : SCHEDULE_TITLE[SCHEDULE_TYPE_MINIAPP[key]]?.title || key
+          value: SCHEDULE_TYPE_MINIAPP[key],
+          label: SCHEDULE_TITLE[SCHEDULE_TYPE_MINIAPP[key]].title
         }
       })
       return data
@@ -881,13 +849,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
         stationsId: dataBookingParam.stationsId || undefined
       })
     }
-    // Load phone from localStorage if not set
-    if (!form.getFieldValue('phone')) {
-      const savedPhone = localStorage.getItem('phone')
-      if (savedPhone) {
-        form.setFieldValue('phone', savedPhone)
-      }
-    }
   }, [dataBookingParam])
 
   useEffect(() => {
@@ -1016,7 +977,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                 isSearchable={true}
                 placeholder="Vui lòng chọn mục đích đặt lịch"
                 styles={customStyles}
-                options={scheduleTypes?.length > 0 ? scheduleTypes : optionServiceType}
+                options={dataBookingParam?.scheduleType ? (scheduleTypes || optionServiceType)?.filter((item) => +item?.value === +dataBookingParam?.scheduleType ) : (scheduleTypes || optionServiceType)}
                 menuPlacement="top"
                 onChange={(values, scheduleType) => {
                   setScheduleCategory(scheduleType?.scheduleCategory)
@@ -1196,7 +1157,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                 required={dataBookingParam?.visible_StationArea !== false}
                 label="Khu vực"
                 name="vntId"
-                hidden={false}>
+                hidden={dataBookingParam?.visible_StationArea === false}>
                 <SelectAntd
                   className="cs-select ant-custom booking-input"
                   showSearch
@@ -1220,7 +1181,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                     message: 'Vui lòng nhập'
                   }
                 ]}
-                hidden={false}>
+                hidden={dataBookingParam?.visible_StationsCode === false}>
                 <SelectAntd
                   className="cs-select ant-custom booking-input"
                   isSearchable={true}
@@ -1330,6 +1291,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       {isLoading && (
         <div className="loading">
           <div className="text-center">
+            <MainLogo height={60} width={60}></MainLogo>
             <Spin style={{ width: '100%' }} className="mt-3" />
           </div>
         </div>

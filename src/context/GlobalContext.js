@@ -47,6 +47,9 @@ export const GlobalProvider = ({ children }) => {
     });
 
     const [openModal, setOpenModal] = useState(false);
+    const updateGlobalState = (newValue) => {
+        setGlobalState(newValue);
+    };
 
     const handleConfirm = async () => {
         setOpenModal(false)
@@ -60,23 +63,22 @@ export const GlobalProvider = ({ children }) => {
             try {
                 let setting = await getSettingZalo()
                 if(setting['scope.userPhonenumber'] && setting['scope.userInfo']){
-                    setGlobalState({
-                        ...globalState,
-                        isAuthorize:true
-                    })
+                    setGlobalState(prev => ({
+                        ...prev,
+                        isAuthorize: true
+                    }))
                 }else{
                     let authorUserInfo = await getZaloAuthorize()
                     if(authorUserInfo){
-                        setGlobalState({
-                            ...globalState,
-                            isAuthorize:true
-                        })
+                        setGlobalState(prev => ({
+                            ...prev,
+                            isAuthorize: true
+                        }))
                         handleGetUserName()
                     }
                 }
             } catch (error) {
-                setOpenModal(true)
-                throw error
+                throw error;
                 
             }
         }
@@ -87,15 +89,14 @@ export const GlobalProvider = ({ children }) => {
             try {
                 if (!globalState.phoneNumber) {
                     const phoneNumber = await getZaloUserPhone()
-                    setGlobalState({
-                        ...globalState,
+                    setGlobalState(prev => ({
+                        ...prev,
                         phoneNumber
-                    })
+                    }))
                     return phoneNumber
                 }
             } catch (error) {
-                setOpenModal(true)
-                throw error
+                throw error;
             }
         }
 
@@ -109,10 +110,10 @@ export const GlobalProvider = ({ children }) => {
                     handleFollowOA()
                 }
                 if (!globalState.userName) {
-                    setGlobalState({
-                        ...globalState,
+                    setGlobalState(prev => ({
+                        ...prev,
                         userName
-                    })
+                    }))
                     return userName
                 }
             } catch (error) {
@@ -127,10 +128,10 @@ export const GlobalProvider = ({ children }) => {
             try {
                 if (!globalState.followOA) {
                     const followOA = await followOAZalo()
-                    setGlobalState({
-                        ...globalState,
+                    setGlobalState(prev => ({
+                        ...prev,
                         followOA
-                    })
+                    }))
                     return followOA
                 }
 
@@ -142,7 +143,7 @@ export const GlobalProvider = ({ children }) => {
     }
 
     return (
-        <GlobalContext.Provider value={{ setGlobalState,globalState, handleGetUserPhone, handleGetUserName, handleZaloAuthorize, handleFollowOA }}>
+        <GlobalContext.Provider value={{ setGlobalState,globalState, updateGlobalState, handleGetUserPhone, handleGetUserName, handleZaloAuthorize, handleFollowOA }}>
             {children}
             <WarningNotify isModalOpen={openModal} onConfirm={handleConfirm} onClose={() => setOpenModal(false)} />
         </GlobalContext.Provider>
