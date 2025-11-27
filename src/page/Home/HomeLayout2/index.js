@@ -8,6 +8,7 @@ import NewService, { fetchMetadataWithCache } from './../../../services/addBooki
 import HomePartner from './../HomePartner'
 import L2FunctionButtonList from './L2FunctionButtonList'
 import L2HotNew from './L2HotNew'
+import L2MainButton from './L2MainButton'
 import {
   BOOKING_LIST_BTN,
   BTN_LIST_SERVICE,
@@ -20,7 +21,7 @@ import {
 import { useHistory, useLocation } from 'react-router-dom'
 import HomeNew from '../HomeNew'
 import SystemConfigurationsService from '../../../services/SystemConfigurationsService'
-import { Button, Sheet, Text, Box, Page } from "zmp-ui";
+import { Button, Modal, Box } from "zmp-ui";
 import "zmp-ui/zaui.min.css";
 import { getBannerBySectionCache } from '../../../helper/getBannerBySectionCache'
 import HomeRecruitment from '../HomeRecruitment'
@@ -30,7 +31,7 @@ import BookingService from './../../../services/addBookingService'
 import { PATH } from '../../../constants/router'
 import { useGlobalContext } from '../../../context/GlobalContext'
 import PopupSheetIframe from '../../../components/Popup/PopupSheetIframe'
-import MainLogo from '../../../components/MainLogo'
+import { ClickableTextPhone } from '../../../components/BasicComponent/ClickableTextPhone'
 import { Spin } from 'antd'
 
 const HomeLayout2 = (props) => {
@@ -49,6 +50,7 @@ const HomeLayout2 = (props) => {
   const [partnerUtilityNews, setPartnerUtilityNews] = useState([])
   const [setting, setSetting] = useState([]);
   const [firtLoadding, setFirtLoadding] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isLoadingAPI, setIsLoadingAPI] = useState(true);
   const [bottomBanner, setBottomBanner] = useState([]);
   const { height, width } = useWindowDimensions()
@@ -65,7 +67,7 @@ const HomeLayout2 = (props) => {
     label: "Zalo",
     link: "/"
   });
-  const [isLoading , setIsLoading] = useState(false);
+  const [isSupportModalVisible, setIsSupportModalVisible] = useState(false)
   const [listNews , setListNews ] = useState([]) 
   const [hideNewsFromZaloMiniApp , setHideNewsFromZaloMiniApp ] = useState(true) 
   const [isZaloShowStationList, setIsZaloShowStationList] = useState(false)
@@ -151,6 +153,12 @@ const HomeLayout2 = (props) => {
         NewService.getBannerStationsList({
           filter: {
             bannerSection: 10
+          },
+          skip: 0,
+          limit: 20,
+          order: {
+            key: 'createdAt',
+            value: 'desc'
           }
         }),
         NewService.getBannerCenterList({
@@ -167,8 +175,7 @@ const HomeLayout2 = (props) => {
       ])
 
       if (centerBanner?.data?.length || systemBanner?.data?.length) {
-        centerBanner?.data?.length && setSetting((prev) => [...prev, ...centerBanner?.data])
-        systemBanner?.data?.length && setSetting((prev) => [...prev, ...systemBanner?.data])
+        systemBanner?.data?.length && setSetting(systemBanner?.data)
         setIsLoading(false)
         return
       }else{
@@ -445,6 +452,10 @@ const HomeLayout2 = (props) => {
       }
     }
   }
+  const handleSupportClick = () => {
+    setIsSupportModalVisible(true);
+  }
+
   const handleOpenSheet=(Title,link)=>{
     setSheetVisible(true);
     setDataBtn({
@@ -457,7 +468,6 @@ const HomeLayout2 = (props) => {
     return (
       <div className="loading">
         <div className="text-center">
-          <MainLogo height={60} width={60}></MainLogo>
           <Spin style={{ width: '100%' }} className="mt-3" />
         </div>
       </div>
@@ -470,21 +480,22 @@ const HomeLayout2 = (props) => {
         <PageLayout>{renderSlider}</PageLayout>
         <div className="more mt-3">
           <div className="layout2-body" style={{ maxWidth: 600, margin: 'auto' }}>
+            <L2MainButton onSupportClick={handleSupportClick} setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} />
             {!stationConfigs?.length ? (
               
               <div>
                 <div className="booking-layout2 mb-4">
-                  <L2FunctionButtonList
+                  {/* <L2FunctionButtonList
                     setSheetVisible={setSheetVisible}
                     setDataBtn={setDataBtn}
                     list={BOOKING_LIST_BTN}
-                    title={'Đặt lịch'}></L2FunctionButtonList>
+                    title={'Đặt lịch'}></L2FunctionButtonList> */}
 
-                  <L2FunctionButtonList
+                  {/* <L2FunctionButtonList
                     setSheetVisible={setSheetVisible}
                     setDataBtn={setDataBtn}
                     list={INSPECTION_SERVICES}
-                    title={'Dịch vụ đăng kiểm'}></L2FunctionButtonList>
+                    title={'Dịch vụ đăng kiểm'}></L2FunctionButtonList> */}
                   {!hideNewsFromZaloMiniApp && (
                     <div className="layout2-bg mb-4">
                       {hotNews?.length > 0 && (
@@ -502,12 +513,12 @@ const HomeLayout2 = (props) => {
                       )}
                     </div>
                   )}
-                  <L2FunctionButtonList
+                  {/* <L2FunctionButtonList
                     setSheetVisible={setSheetVisible}
                     setDataBtn={setDataBtn}
                     slider={HOT_SERVICES?.length > 9 || (mobile && HOT_SERVICES?.length > 7)}
                     list={HOT_SERVICES}
-                    title={'Dịch vụ nổi bật'}></L2FunctionButtonList>
+                    title={'Dịch vụ nổi bật'}></L2FunctionButtonList> */}
                   {!hideNewsFromZaloMiniApp && stationNewsPartnerPromotion?.length > 0 && (
                     <div className="home-container mb-5 ">
                       <div className="d-flex justify-content-between align-items-center news-center">
@@ -541,27 +552,25 @@ const HomeLayout2 = (props) => {
                       list={BTN_LIST_SERVICE}
                       title={'Điểm dịch vụ đề xuất'}></L2FunctionButtonList>
                   )}
-                  {!hideNewsFromZaloMiniApp && (
-                    <div className="layout2-bg mb-4">
-                      {listNews?.length > 0 && (
-                        <div className="home-container mb-1 mt-1">
-                          <div className="d-flex justify-content-between align-items-center news-center">
-                            <div className="text-large title-homelayout" style={{ padding: '0 10px' }}>
-                              Tin tức
-                            </div>
-                            <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet('Tin tức', '/new')}>
-                              <a href="/" onClick={(e) => e.preventDefault()}>
-                                Xem tất cả
-                              </a>
-                            </div>
+                  <div className="layout2-bg mb-4">
+                    {listNews?.length > 0 && (
+                      <div className="home-container mb-1 mt-1">
+                        <div className="d-flex justify-content-between align-items-center news-center">
+                          <div className="text-large title-homelayout" style={{ padding: '0 10px' }}>
+                            Tin tức
                           </div>
-                          <div className="mobile-content">
-                            <HomeNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={listNews} />
+                          <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet('Tin tức', '/new')}>
+                            <a href="/" onClick={(e) => e.preventDefault()}>
+                              Xem tất cả
+                            </a>
                           </div>
                         </div>
-                      )}
-                    </div>
-                  )}
+                        <div className="mobile-content">
+                          <HomeNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={listNews} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   {!hideNewsFromZaloMiniApp && (
                     <L2FunctionButtonList
                       setSheetVisible={setSheetVisible}
@@ -587,12 +596,12 @@ const HomeLayout2 = (props) => {
                 </div>
               }
             </div> */}
-                  <L2FunctionButtonList
+                  {/* <L2FunctionButtonList
                     setSheetVisible={setSheetVisible}
                     setDataBtn={setDataBtn}
                     list={GOVERNMENT_BTN}
                     className="government-btn"
-                    title={'Cơ quan chính phủ'}></L2FunctionButtonList>
+                    title={'Cơ quan chính phủ'}></L2FunctionButtonList> */}
                 </div>
                 {/* <div className='mb-5'>
               <div className="home-container sation-slider">
@@ -753,6 +762,18 @@ const HomeLayout2 = (props) => {
           styleCss={{ style: { minHeight: '10vh' } }}
         />
       </div>
+
+      {/* Modal hỗ trợ CSKH */}
+      <Modal
+        visible={isSupportModalVisible}
+        onClose={() => setIsSupportModalVisible(false)}
+        title="Hỗ trợ khách hàng"
+      >
+        <Box className="bottom-sheet-body" style={{ textAlign: 'center', padding: '20px 0' }}>
+          <ClickableTextPhone phoneNum="0366458835" children={<span>Số điện thoại hỗ trợ: <strong>0366 458 835</strong></span>} />
+        </Box>
+      </Modal>
+
     </>
   )
 }
