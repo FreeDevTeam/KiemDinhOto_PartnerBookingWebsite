@@ -31,17 +31,18 @@ export const SCHEDULE_TYPE = {
 
 export const SCHEDULE_TYPE_MINIAPP = {
   VEHICLE_INSPECTION: 1, // Đăng kiểm xe định kỳ
+  REGISTER_EPASS_TAG: 2, // Đăng ký dán thẻ EPASS
   REGISTER_NEW_VEHICLE: 3, // nộp hồ sơ xe mới
-  CONSULTANT_INSURANCE_COMPENSATION: 25, // Tư vấn bồi thường bảo hiểm
   CHANGE_REGISTATION: 4, // Đổi mục đích sử dụng, đổi chủ, đổi thông tin hồ sơ
   VEHICLE_INSPECTION_CONSULTATION: 12, // Tư vấn đăng kiểm xe định kỳ
   TRAFFIC_FINE_CONSULTATION: 13, // Tư vấn xử lý phạt nguội
-  CONSULTANT_MAINTENANCE: 7, // Đặt lịch tư vấn bảo dưỡng
+  //CONSULTANT_MAINTENANCE: 7, // Đặt lịch tư vấn bảo dưỡng
   CONSULTANT_TNDS_INSURANCE: 14, // Tư vấn bảo hiểm TNDS xe ô tô
   CONSULTANT_INSURANCE: 8, // Đặt lịch tư bảo hiểm vật chất xe ô tô
   CONSULTANT_RENOVATION: 9, // Đặt lịch tư vấn cải tạo xe
   LOST_REGISTRATION_PAPER: 10, // Mất giấy đăng kiểm
   REISSUE_INSPECTION_STICKER: 11, // Cấp lại tem đăng kiểm
+  CONSULTANT_INSURANCE_COMPENSATION: 25, // Tư vấn bồi thường bảo hiểm
   E_TICKET_SALE: 27 // Bán vé điện tử
 }
 
@@ -184,144 +185,10 @@ export const SCHEDULE_DATA = [
   }
 ]
 
-export const optionServiceType = [
-  {
-    value: 1,
-    label: 'Tra cứu phạt nguội'
-  },
-  {
-    value: 2,
-    label: 'Dán thẻ VETC'
-  },
-  {
-    value: 3,
-    label: 'Đóng phí phạt nguội'
-  },
-  {
-    value: 4,
-    label: 'Gia hạn bảo hiểm TNDS'
-  },
-  {
-    value: 5,
-    label: 'Tư vấn hoán cải'
-  },
-  {
-    value: 6,
-    label: 'Đóng phí VETC'
-  },
-  {
-    value: 7,
-    label: 'Gia hạn BH thân vỏ'
-  },
-  {
-    value: 8,
-    label: 'Bảo dưỡng, sửa chữa xe cơ giới'
-  },
-  {
-    value: 9,
-    label: 'Đăng kiểm xe cơ giới'
-  },
-  {
-    value: 10,
-    label: 'Nạp tiền ePass'
-  },
-  {
-    value: 11,
-    label: 'Cứu hộ xe bị hư hỏng'
-  },
-  {
-    value: 12,
-    label: 'Tự động thông báo phạt nguội'
-  },
-  {
-    value: 13,
-    label: 'Đăng kiểm xe cũ'
-  },
-  {
-    value: 14,
-    label: 'Nộp hồ sơ xe mới'
-  },
-  {
-    value: 15,
-    label: 'Đổi mục đích sử dụng, đổi chủ, đổi thông tin hồ sơ'
-  },
-  {
-    value: 16,
-    label: 'Thanh toán phí đường bộ'
-  },
-  {
-    value: 17,
-    label: 'Đặt lịch tư vấn bảo dưỡng'
-  },
-  {
-    value: 18,
-    label: 'Đặt lịch tư vấn bảo hiểm'
-  },
-  {
-    value: 19,
-    label: 'Mất giấy đăng kiểm'
-  },
-  {
-    value: 20,
-    label: 'Cấp lại tem đăng kiểm'
-  },
-  {
-    value: 21,
-    label: 'Tư vấn đăng kiểm xe'
-  },
-  {
-    value: 22,
-    label: 'Tư vấn xử lý phạt nguội'
-  },
-  {
-    value: 23,
-    label: 'Tư vấn bảo hiểm vật chất xe ô tô'
-  },
-  {
-    value: 24,
-    label: 'Tra cứu cảnh báo đăng kiểm'
-  },
-  {
-    value: 25,
-    label: 'Hỗ trợ xử lý phạt nguội'
-  },
-  {
-    value: 26,
-    label: 'Gia hạn định vị'
-  },
-  {
-    value: 27,
-    label: 'Gia hạn phù hiệu xe kinh doanh'
-  },
-  {
-    value: 28,
-    label: 'Gia hạn giấy tập huấn'
-  },
-  {
-    value: 29,
-    label: 'Gia hạn camera hành trình'
-  },
-  {
-    value: 30,
-    label: 'Gia hạn BH TNDS'
-  },
-  {
-    value: 31,
-    label: 'Nộp hồ sơ xe mới (Ngoài giờ HC)'
-  },
-  {
-    value: 32,
-    label: 'Đăng kiểm xe (Ngoài giờ HC)'
-  },
-  {
-    value: 33,
-    label: 'Khám sức khỏe lái xe'
-  },
-  {
-    value: 34,
-    label: 'Tư vấn bồi thường bảo hiểm'
-  }
-]
+export const optionServiceType = Object.values(SCHEDULE_TYPE_MINIAPP).map(value => ({
+  value,
+  label: SCHEDULE_TITLE[value]?.title || `Type ${value}`
+}))
 
 export const E_TICKET_SALE_OPTIONS = [
   {

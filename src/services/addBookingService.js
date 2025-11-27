@@ -195,7 +195,7 @@ export default class BookingService {
           skip: skip || 0,
           limit: 10,
           stationsUrl: window.origin.split('://')[1],
-        }
+        }//,newUrl: 'https://partner-api.ttdkapi.ttdk.com.vn'
       }).then((result = {}) => {
         const { statusCode, data } = result
         if (statusCode === 200) {
@@ -238,12 +238,12 @@ export default class BookingService {
       })
     })
   }
-  static async getZaloUserPhoneNumber(headers) {
+  static async getZaloUserPhoneNumber(data) {
     return new Promise((resolve) => {
-      console.log("BookingService ~ returnnewPromise ~ headers:", headers)
+      console.log("BookingService ~ returnnewPromise ~ data:", data)
       Request.sendZaloMiniApp({
-        method: 'GET',
-        headers: headers
+        method: 'POST',
+        data: data
       }).then((result = {}) => {
         const { statusCode, data } = result
         console.log("BookingService ~ returnnewPromise ~ result:", result)

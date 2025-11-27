@@ -73,8 +73,13 @@ export const ROUTERS = {
         isZaloApp: 1,
     },
     // page on web
-    checkVihcle: {
+    homePageWeb: {
         path: PATH.HOME,
+        component: HomePage,
+        isZaloApp: 0,
+    },
+    checkVihcle: {
+        path: PATH.CHECK_VIHCLE,
         component:CheckVihcle,
         isZaloApp: 0,
     },
