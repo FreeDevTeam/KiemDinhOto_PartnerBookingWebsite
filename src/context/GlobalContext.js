@@ -65,21 +65,22 @@ export const GlobalProvider = ({ children }) => {
                 if(setting['scope.userPhonenumber'] && setting['scope.userInfo']){
                     setGlobalState(prev => ({
                         ...prev,
-                        isAuthorize: true
+                        isAuthorize:true
                     }))
                 }else{
                     let authorUserInfo = await getZaloAuthorize()
                     if(authorUserInfo){
                         setGlobalState(prev => ({
                             ...prev,
-                            isAuthorize: true
+                            isAuthorize:true
                         }))
-                        handleGetUserName()
+                        await handleGetUserName()
+                        await handleGetUserPhone()
                     }
                 }
             } catch (error) {
-                throw error;
-                
+                setOpenModal(true)
+                throw error
             }
         }
     }
@@ -96,7 +97,8 @@ export const GlobalProvider = ({ children }) => {
                     return phoneNumber
                 }
             } catch (error) {
-                throw error;
+                setOpenModal(true)
+                throw error
             }
         }
 

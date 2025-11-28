@@ -109,7 +109,7 @@ export default function ResetPassword() {
             //     message: "Có lỗi phát sinh. Vui lòng thử lại"
             // })
             setCurrentStatePage(statePage.Error)
-            history.pushState('/')
+            history.push('/')
         }
     }
     return (
