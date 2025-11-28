@@ -55,7 +55,7 @@ const BookingSuccess = ({ isModalOpen, onClose,setTabKey,setIsModalOpen,schedule
                 Xem lịch hẹn
               </Button> */}
               <Button className="login__button df" onClick={onClose} type="primary" htmlType="submit" size="large">
-                Xác nhận
+                Đóng
               </Button>
             </div>
           </div>

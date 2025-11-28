@@ -8,6 +8,7 @@ import NewService, { fetchMetadataWithCache } from './../../../services/addBooki
 import HomePartner from './../HomePartner'
 import L2FunctionButtonList from './L2FunctionButtonList'
 import L2HotNew from './L2HotNew'
+import L2MainButton from './L2MainButton'
 import {
   BOOKING_LIST_BTN,
   BTN_LIST_SERVICE,
@@ -30,7 +31,6 @@ import BookingService from './../../../services/addBookingService'
 import { PATH } from '../../../constants/router'
 import { useGlobalContext } from '../../../context/GlobalContext'
 import PopupSheetIframe from '../../../components/Popup/PopupSheetIframe'
-import MainLogo from '../../../components/MainLogo'
 import { Spin } from 'antd'
 
 const HomeLayout2 = (props) => {
@@ -457,7 +457,6 @@ const HomeLayout2 = (props) => {
     return (
       <div className="loading">
         <div className="text-center">
-          <MainLogo height={60} width={60}></MainLogo>
           <Spin style={{ width: '100%' }} className="mt-3" />
         </div>
       </div>
@@ -470,6 +469,7 @@ const HomeLayout2 = (props) => {
         <PageLayout>{renderSlider}</PageLayout>
         <div className="more mt-3">
           <div className="layout2-body" style={{ maxWidth: 600, margin: 'auto' }}>
+            <L2MainButton setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} />
             {!stationConfigs?.length ? (
               
               <div>
@@ -728,9 +728,9 @@ const HomeLayout2 = (props) => {
               </div>
             )}
             {bottomBanner?.length > 1 && <PageLayout>{renderBottomSlider}</PageLayout>}
-            {bottomBanner?.length == 1 && (
+            {bottomBanner?.length === 1 && (
               <div className={'layout2'}>
-                <img style={{ borderRadius: '8px' }} src={bottomBanner[0]?.bannerImageUrl}></img>
+                <img style={{ borderRadius: '8px' }} src={bottomBanner[0]?.bannerImageUrl} alt="Bottom Banner"></img>
               </div>
             )}
           </div>

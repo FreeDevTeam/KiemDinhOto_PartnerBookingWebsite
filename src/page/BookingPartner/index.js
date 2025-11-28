@@ -9,7 +9,6 @@ import { TTDK_PARTNER } from '../../components/BasicComponent/CheckLogoPartner'
 import { getZaloUserName, getZaloUserPhone } from '../../helper/zaloSDK'
 import { useGlobalContext } from '../../context/GlobalContext'
 import { SCHEDULE_TYPE, WEBVIEW_TYPES } from '../../constants/global'
-import MainLogo from '../../components/MainLogo'
 import addKeyLocalStorage from '../../helper/localStorage'
 function BookingPartner() {
   const { globalState, handleGetUserPhone, handleGetUserName, setGlobalState } = useGlobalContext();
@@ -97,45 +96,40 @@ function BookingPartner() {
                 </Tabs.TabPane>
               </Tabs> */}
                 </div>
-                <div style={{ maxWidth: 600, margin: 'auto', padding: '30px 0', textAlign: 'center' }}>
-                  <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
-                    <MainLogo height={60} width={60}></MainLogo>
+              <div style={{ maxWidth: 600, margin: 'auto', padding: '30px 0', textAlign: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
                     {TTDK_PARTNER.map(item => {
-                      if (item.name == partner) {
+                    if (item.name == partner) {
                         return (<div style={{ maxHeight: '58px',maxWidth:'150px' }}>
                           {item.icon}
                         </div>)
-                      }
-                    })}
-                  </div>
-                  {
-                    !localLogo &&
-                    <div style={{ color: 'var(--primary-button-color)', marginTop: '0.5rem' }}>Powered by TTDK</div>
-                  }
+                    }
+                  })}
                 </div>
+              </div>
               </>
             )
             }
           </div>
         ) :
         (
-          <>
-            <LoadFormBookingFailed></LoadFormBookingFailed>
-            <div style={{ maxWidth: 600, margin: 'auto', padding: '30px 0', textAlign: 'center' }}>
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <>
+          <LoadFormBookingFailed></LoadFormBookingFailed>
+          <div style={{ maxWidth: 600, margin: 'auto', padding: '30px 0', textAlign: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
                 {TTDK_PARTNER.map(item => {
-                  if (item.name == partner) {
+                if (item.name == partner) {
                     return (<div style={{ maxHeight: '58px',maxWidth:'150px' }}>
                       {item.icon}
                     </div>)
-                  }
-                })}
-              </div>
-              <div style={{ color: 'var(--primary-button-color)', marginTop: '0.5rem' }}>Powered by TTDK</div>
+                }
+              })}
             </div>
-          </>
+          </div>
+        </>
         )
       }
+      <div style={{ height: 150 }}></div>
     </>
   )
 }

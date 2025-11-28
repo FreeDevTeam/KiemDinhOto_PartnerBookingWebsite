@@ -1,5 +1,9 @@
 @import '../../assets/scss/variable';
 
+body {
+  min-height: calc(100vh + 150px);
+}
+
 .home-page {
     .slide {
         height: 250px !important;

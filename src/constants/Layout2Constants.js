@@ -54,6 +54,37 @@ const TraCuuPn = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4,
 let appUserId = localStorage.getItem('appUserId')
 let token = localStorage.getItem('userToken')
 const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1
+export const FEATURE_CARDS = {
+  INSPECTION: {
+    key: 'inspection',
+    title: 'Đăng kiểm xe',
+    subtitle: 'Đặt lịch đăng kiểm, thay đổi thông tin, nộp hồ sơ',
+    icon: <DangKiemXeDinhKyIcon></DangKiemXeDinhKyIcon>
+  },
+  INSURANCE: {
+    key: 'insurance',
+    title: 'Bảo hiểm',
+    subtitle: 'Mua bảo hiểm TNDS, tư vấn bảo hiểm',
+    icon: <GiaHanBaoHiemTNDSIcon></GiaHanBaoHiemTNDSIcon>,
+    link: process.env.REACT_APP_RUNTIME_MODE === 'production' 
+      ? `https://baohiem.ttdk.com.vn/?isEmbeddedView=1&appUserId=${appUserId}&token=${token}` 
+      : `https://ttdk-develop-baohiem.service.makefamousapp.com/?isEmbeddedView=1&appUserId=${appUserId}&token=${token}`
+  },
+  TRAFFIC_FINE: {
+    key: 'traffic_fine',
+    title: 'Kiểm tra phạt nguội',
+    subtitle: 'Tra cứu và xử lý phạt nguội',
+    icon: <TraCuuPn></TraCuuPn>,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/kiemtraphatnguoi?isEmbeddedView=true&isFromPartnerApp=true&appUserId=${appUserId}&token=${token}`
+  },
+  SUPPORT: {
+    key: 'support',
+    title: 'Tư vấn hỗ trợ',
+    subtitle: 'Liên hệ hỗ trợ khách hàng',
+    icon: <TuVanDKIcon></TuVanDKIcon>,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/station/wiigo?title=Hỗ trợ khách hàng&isEmbedded=true`
+  }
+}
 export const BTN_LIST_SERVICE = [
   {
     label: 'Trung tâm <br> đăng kiểm',
@@ -341,7 +372,7 @@ export const BOOKING_LIST_BTN = [
     //     : `https://ttdk-sanbox-muabaohiem.service.makefamousapp.com?isEmbeddedView=1&appUserId=${appUserId}&token=${token}`,
         link: process.env.REACT_APP_RUNTIME_MODE == 'production' 
         ? `https://baohiem.ttdk.com.vn?&appUserId=${appUserId}&token=${token}` 
-        : `https://ttdk-sanbox-muabaohiem.service.makefamousapp.com?isEmbeddedView=1&appUserId=${appUserId}&token=${token}`,
+        : `https://ttdk-develop-baohiem.service.makefamousapp.com/?isEmbeddedView=1&appUserId=${appUserId}&token=${token}`,
   },
   //tạm ẩn
   // {

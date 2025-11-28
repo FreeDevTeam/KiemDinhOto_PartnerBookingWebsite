@@ -4,8 +4,9 @@ import './homeNew.scss'
 import { useHistory } from 'react-router-dom'
 import BasicPlaceholder from './../../components/BasicComponent/BasicPlaceholder'
 import CardItem from './CardItemNews'
+import { PATH } from '../../constants/router'
 
-const HomeNew = ({ listNews , linkDirectDetail = "detail-post" , showEye = true, setSheetVisible, setDataBtn}) => {
+const HomeNew = ({ listNews , linkDirectDetail = "detail-post" , showEye = true, setSheetVisible, setDataBtn, useFunctionalPage = false}) => {
   const LENGTH_LIST_NO_SLIDER = 1 // nếu chỉ có 1 thì sẽ không dùng slider
   const history = useHistory()
   const [isDragging, setIsDragging] = useState(false)
@@ -24,12 +25,17 @@ const HomeNew = ({ listNews , linkDirectDetail = "detail-post" , showEye = true,
 
   const handleCardClick = (value) => {
     if (!isDragging) {
-      setSheetVisible(true)
-      let data= {
-        label: value?.stationNewsTitle,
-        link: `${process.env.REACT_APP_DEPLOY_URL}/${linkDirectDetail}/${value?.stationNewsId}?isEmbeddedView=true`
+      if (useFunctionalPage) {
+        const newsUrl = `${process.env.REACT_APP_DEPLOY_URL}/${linkDirectDetail}/${value?.stationNewsId}?isEmbeddedView=true`;
+        history.push(`${PATH.FUNCTIONAL}?url=${encodeURIComponent(newsUrl)}&title=${encodeURIComponent("TIN TỨC")}`)
+      } else {
+        setSheetVisible(true)
+        let data= {
+          label: value?.stationNewsTitle,
+          link: `${process.env.REACT_APP_DEPLOY_URL}/${linkDirectDetail}/${value?.stationNewsId}?isEmbeddedView=true`
+        }
+        setDataBtn(data)
       }
-      setDataBtn(data)
     }
   }
 

@@ -1,19 +1,14 @@
 import React, { useState } from 'react'
 import { Input, Button, message, Spin, Radio, Modal } from 'antd'
-import BookingService from 'services/addBookingService'
-import DetailScheduledComponent from 'components/ScheduledDetail'
-import { SCHEDULE_ERROR } from 'constants/errorMessage'
+// import DetailScheduledComponent from 'components/ScheduledDetail'
 import './index.scss'
-import BookingSuccess from './BookingSuccessModal'
 
 const { TextArea } = Input
 
-const ConfirmModal = ({ data, history, setStep }) => {
+const ConfirmModal = ({ data, history, setStep, onConfirm, onClose }) => {
   const [check, setCheck] = useState(false)
   const [error, setError] = useState(false)
   const [reasonNote, setReasonNote] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isVisible, setIsVisible] = useState(false)
 
   const handleOK = () => {
     const newData = {
@@ -35,35 +30,13 @@ const ConfirmModal = ({ data, history, setStep }) => {
       setError(true)
       return
     }
-    setIsVisible(true)
-    BookingService.createSchedule(newData).then((result) => {
-      const { error: rsMess, statusCode } = result
-      if (statusCode != 200) {
-        if (Object.keys(SCHEDULE_ERROR).includes(rsMess)) {
-          message.warn(SCHEDULE_ERROR[rsMess])
-        } else {
-          message.warn(SCHEDULE_ERROR.INVALID_REQUEST)
-        }
-        setStep('Car')
-      } else {
-        setIsModalOpen(true)
-      }
-      setIsVisible(false)
-    })
+    if (onConfirm) {
+      onConfirm(newData)
+    }
   }
   const handleChange = (e) => {
     setCheck(e.target.checked)
     setError(false)
-  }
-
-  const handleCloseModal = () => setIsModalOpen(false)
-
-  if (isVisible) {
-    return (
-      <div className="loading">
-        <Spin />
-      </div>
-    )
   }
 
   if (!data) {
@@ -72,7 +45,13 @@ const ConfirmModal = ({ data, history, setStep }) => {
 
   return (
     <div className="px-2 form-heigh-booking-car" style={{ maxWidth: 600, margin: 'auto' }}>
-      <DetailScheduledComponent data={data} enableEditBtn={true} onEdit={() => setStep('Car')}>
+      <div>
+        <h3>Chi tiết lịch hẹn</h3>
+        <p>Tên: {data.fullnameSchedule}</p>
+        <p>Số điện thoại: {data.phone}</p>
+        <p>Biển số: {data.licensePlates}</p>
+        <p>Ngày: {data.dateSchedule}</p>
+        <p>Giờ: {data.time}</p>
         <div className="d-flex flex-column">
           <TextArea
             rows={4}
@@ -87,7 +66,7 @@ const ConfirmModal = ({ data, history, setStep }) => {
           </Radio>
           {error && <div className="modalConfirm-error">Bạn cần đọc và đồng ý với các quy định trên.</div>}
         </div>
-      </DetailScheduledComponent>
+      </div>
       <Button
         type="primary"
         className="py-3 d-flex justify-content-center align-items-center modalConfirm-btn login__button df mgt-30"
@@ -96,7 +75,6 @@ const ConfirmModal = ({ data, history, setStep }) => {
         onClick={handleOK}>
         Xác nhận
       </Button>
-      <BookingSuccess isModalOpen={isModalOpen} history={history} onClose={handleCloseModal} />
     </div>
   )
 }
