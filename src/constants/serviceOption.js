@@ -171,6 +171,8 @@ export const SCHEDULE_TITLE = {
   }
 }
 
+export const SCHEDULE_TYPE_ARRAY = Object.values(SCHEDULE_TYPE).map(value => ({ value, label: SCHEDULE_TITLE[value]?.title || `Type ${value}` }))
+
 export const SCHEDULE_DATA = [
   {
     id: SCHEDULE_TYPE.VEHICLE_INSPECTION,

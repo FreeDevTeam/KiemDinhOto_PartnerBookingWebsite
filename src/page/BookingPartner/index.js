@@ -8,7 +8,8 @@ import { CheckApiKey } from '../../helper/CheckApiKey'
 import { TTDK_PARTNER } from '../../components/BasicComponent/CheckLogoPartner'
 import { getZaloUserName, getZaloUserPhone } from '../../helper/zaloSDK'
 import { useGlobalContext } from '../../context/GlobalContext'
-import { SCHEDULE_TYPE, WEBVIEW_TYPES } from '../../constants/global'
+import { SCHEDULE_TYPE_ARRAY } from '../../constants/serviceOption'
+import { WEBVIEW_TYPES } from '../../constants/global'
 import addKeyLocalStorage from '../../helper/localStorage'
 function BookingPartner() {
   const { globalState, handleGetUserPhone, handleGetUserName, setGlobalState } = useGlobalContext();
@@ -50,7 +51,7 @@ function BookingPartner() {
   const getTitleName = (searchParam) => {
     const splitSearchParam = searchParam?.split('=')
     const scheduleType = Number(splitSearchParam[splitSearchParam.length - 1])
-    const title = SCHEDULE_TYPE.find((item) => item.value === scheduleType)?.label
+    const title = SCHEDULE_TYPE_ARRAY.find((item) => item.value === scheduleType)?.label
     return "THÔNG TIN LỊCH HẸN"
     // return title === undefined 
     //   ? 'ĐẶT LỊCH ĐĂNG KIỂM' 

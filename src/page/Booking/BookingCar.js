@@ -19,7 +19,7 @@ import {
 import { validatorPlateNumber } from './../../helper/validatorPlateNumber'
 import { DATE_DISPLAY_FORMAT } from './../../constants/dateFormats'
 import ChoosingCarModal from './ChoosingCarModal'
-import { SCHEDULE_TYPE } from './../../constants/global'
+import { SCHEDULE_TYPE } from './../../constants/serviceOption'
 
 function BookingCar({ history, setData, data, listPlate, setListPlate, setStep , step,dataBookingParam }) {
   const [dateFilter, setDateFilter] = useState({

@@ -3,6 +3,7 @@ import { Modal, Button } from 'antd'
 import { ReactComponent as SuccessIcon } from './../../assets/icons/success.svg'
 import './index.scss'
 import { SCHEDULE_TYPE } from '../../constants/serviceOption'
+import { followOA } from "zmp-sdk/apis";
 const BookingSuccess = ({ isModalOpen, onClose,setTabKey,setIsModalOpen,scheduleType }) => {
   const consultantTypes = [
     SCHEDULE_TYPE.CONSULTANT_MAINTENANCE,
@@ -13,6 +14,11 @@ const BookingSuccess = ({ isModalOpen, onClose,setTabKey,setIsModalOpen,schedule
     SCHEDULE_TYPE.CONSULTANT_TNDS_INSURANCE,
   ]
   const isConsultantType = consultantTypes.includes(scheduleType)
+  const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1
+
+  const handleFollowOA = () => {
+    followOA({ id: 'ttdk2023' })
+  }
   const handleViewListBooking=()=>{
     setTimeout(() => {
       setTabKey()
@@ -51,9 +57,17 @@ const BookingSuccess = ({ isModalOpen, onClose,setTabKey,setIsModalOpen,schedule
               </Button>
               </>
               )}
-              {/* <Button className="login__button df" onClick={()=>handleViewListBooking()} type="primary" htmlType="submit" size="large">
-                Xem lịch hẹn
-              </Button> */}
+              {isZaloApp && (
+                <Button 
+                  type="default" 
+                  block
+                  onClick={handleFollowOA}
+                  style={{ marginBottom: '10px' }}
+                  className='login__button df'
+                >
+                  Theo dõi trang để nhận thông tin đăng kiểm mới nhất
+                </Button>
+              )}
               <Button className="login__button df" onClick={onClose} type="primary" htmlType="submit" size="large">
                 Đóng
               </Button>

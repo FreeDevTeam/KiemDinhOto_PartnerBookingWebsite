@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Modal, Spin,Tag,Pagination,Empty,Radio,Space,Input } from 'antd'
 import _ from 'lodash'
-import { SCHEDULE_STATUS_3_0, SCHEDULE_TITLE, SCHEDULE_TYPE, VIHCLE_TYPES_STATE } from '../../constants/global'
+import { SCHEDULE_STATUS_3_0, VIHCLE_TYPES_STATE } from '../../constants/global'
+import { SCHEDULE_TITLE, SCHEDULE_TYPE_ARRAY } from '../../constants/serviceOption'
 import { changeTime } from '../../helper/changeTime'
 import BookingService from '../../services/addBookingService'
 import PopupMessage from './PopupMessage'
@@ -112,7 +113,7 @@ const ScheduleItem = ({
           <div className="d-flex mt-2 align-items-center inline-content">
             <span className="me-1 scheduleItem-lable">Dịch vụ: </span>
             <div className="scheduleItem-value scheduleItem-href d-inline">
-              {SCHEDULE_TYPE.find((e) => e.value == scheduleType)?.label || 'Đăng kiểm xe'}
+              {SCHEDULE_TYPE_ARRAY.find((e) => e.value == scheduleType)?.label || 'Đăng kiểm xe'}
             </div>
           </div>
           <div className="d-flex mt-2 align-items-center inline-content">

@@ -42,7 +42,7 @@ const L2FunctionButtonList = (props) => {
       await setSheetVisible(false)
       window.open(link, '_blank')
     } else {
-      const functionalUrl = `${PATH.FUNCTIONAL}?url=${encodeURIComponent(link)}&title=${encodeURIComponent(element.label.replace(/<br\s*\/?>/gi, ' '))}`
+      const functionalUrl = `${PATH.EMBED_PAGE}?url=${encodeURIComponent(link)}&title=${encodeURIComponent(element.label.replace(/<br\s*\/?>/gi, ' '))}`
       history.push(functionalUrl)
     }
   }

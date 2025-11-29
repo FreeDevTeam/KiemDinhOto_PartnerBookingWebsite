@@ -114,42 +114,6 @@ export const PLATE_COLOR = [
   //   value: 4,
   // },
 ]
-export const SCHEDULE_TYPE = [
-  { value: 1, label: 'Đăng kiểm xe định kỳ' },
-  { value: 2, label: 'Đăng ký dán thẻ EPASS' },
-  { value: 3, label: 'Nộp hồ sơ xe mới' },
-  { value: 4, label: 'Thay đổi thông tin xe' },
-  { value: 7, label: 'Tư vấn bảo dưỡng' },
-  { value: 8, label: 'Tư vấn bảo hiểm' },
-  { value: 9, label: 'Tư vấn hoán cải' },
-  { value: 10, label: 'Mất giấy đăng kiểm' },
-  { value: 11, label: 'Cấp lại tem đăng kiểm' },
-  { value: 12, label: 'Tư vấn đăng kiểm xe' },
-  { value: 13, label: 'Tư vấn xử lý phạt nguội' },
-  { value: 14, label: 'Tư vấn bảo hiểm vật chất xe ô tô' },
-  { value: 15, label: 'Tra cứu cảnh báo đăng kiểm' },
-  { value: 16, label: 'Hỗ trợ xử lý phạt nguội' },
-  { value: 17, label: 'Gia hạn định vị' },
-  { value: 18, label: 'Gia hạn phù hiệu xe kinh doanh' },
-  { value: 19, label: 'Gia hạn giấy tập huấn' },
-  { value: 20, label: 'Gia hạn camera hành trình' },
-  { value: 21, label: 'Đăng ký dán thẻ VETC' },
-  { value: 22, label: 'Gia hạn BH TNDS' },
-  { value: 23, label: 'Nộp hồ sơ xe mới (Ngoài giờ HC)' },
-  { value: 24, label: 'Đăng kiểm xe (Ngoài giờ HC)' },
-  { value: 25, label: 'Tư vấn bồi thường bảo hiểm' },
-  { value: 26, label: 'Tư vấn sức khỏe lái xe' }
-]
-export const SCHEDULE_TITLE = {
-  [SCHEDULE_TYPE.VEHICLE_INSPECTION]: {
-    title: 'Đăng kiểm xe định kỳ',
-    subTitle: 'Dành cho khách hàng đặt lịch để đăng kiểm các xe đã đăng kiểm trước đây'
-  },
-  [SCHEDULE_TYPE.NEW_VEHICLE_INSPECTION]: {
-    title: 'Đăng kiểm xe mới',
-    subTitle: 'Dành cho khách hàng đăng kiểm lần đầu - không mang phương tiện đến trạm đăng kiểm'
-  }
-}
 export const VIHCLE_TYPES = [
   {
     label: 'Xe ô tô con < 9 chỗ',

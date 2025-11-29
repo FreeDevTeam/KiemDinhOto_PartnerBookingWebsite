@@ -2,20 +2,38 @@ import React from 'react'
 import { useHistory } from 'react-router-dom'
 import { FEATURE_CARDS } from '../../../constants/Layout2Constants'
 import { PATH } from '../../../constants/router'
+import { useGlobalContext } from '../../../context/GlobalContext'
 
 const L2MainButton = ({ setSheetVisible, setDataBtn }) => {
   const history = useHistory()
+  const { handleZaloAuthorize, globalState, handleGetUserPhone } = useGlobalContext()
   const featureCardsArray = Object.values(FEATURE_CARDS)
 
-  const handleClick = (card) => {
-    if (card.key === 'inspection') {
-      history.push(PATH.BOOKING);
-    } else if (card.link) {
-      if (card.link.startsWith('https')) {
-        history.push(`${PATH.FUNCTIONAL}?url=${encodeURIComponent(card.link)}&title=${encodeURIComponent(card.title)}`);
+  const handleRouter = async (path) => {
+    if (!globalState?.isAuthorize) {
+      await handleZaloAuthorize()
+    }
+    await handleGetUserPhone().then((data) => {
+      history.push(path)
+    })
+  }
+
+  const handleClick = async (card) => {
+    if (!globalState?.isAuthorize) {
+      await handleZaloAuthorize()
+    }
+    const link = card?.link
+    if (link) {
+      const isZaloLink = link.includes('zalo.me')
+
+      if (isZaloLink) {
+        window.open(link, '_blank')
       } else {
-        history.push(card.link);
+        const functionalUrl = `${PATH.EMBED_PAGE}?url=${encodeURIComponent(link)}&title=${encodeURIComponent(card.title)}`
+        history.push(functionalUrl)
       }
+    } else {
+      await handleRouter(card?.link || card?.linkNavigation)
     }
   }
 
@@ -26,7 +44,7 @@ const L2MainButton = ({ setSheetVisible, setDataBtn }) => {
           <div
             key={card.key}
             className="feature-card"
-            onClick={() => handleClick(card)}>
+            onClick={async () => await handleClick(card)}>
             <div className="card-icon">
               {card.icon}
             </div>

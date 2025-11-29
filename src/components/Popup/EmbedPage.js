@@ -1,9 +1,9 @@
 import React from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { ReactComponent as LeftIcon } from '../../assets/Booking-icon/ArrowLeft.svg';
-import './Functional.scss';
+import './EmbedPage.scss';
 
-const Functional = () => {
+const EmbedPage = () => {
   const location = useLocation();
   const history = useHistory();
 
@@ -12,20 +12,24 @@ const Functional = () => {
   const title = searchParams.get('title');
   const url = searchParams.get('url');
 
+  const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1
+
   const handleBack = () => {
     history.goBack();
   };
 
   return (
-    <div className="functional-container">
-      <div className="functional-page">
-        <div className="functional-header">
-          <button onClick={handleBack} className="back-button">
-            <LeftIcon />
-          </button>
-          <h1 className="page-title">{title}</h1>
-        </div>
-        <div className="functional-content">
+    <div className="embed-page-container">
+      <div className="embed-page-page">
+        {!isZaloApp && (
+          <div className="embed-page-header">
+            <button onClick={handleBack} className="back-button">
+              <LeftIcon />
+            </button>
+            <h1 className="page-title">{title}</h1>
+          </div>
+        )}
+        <div className="embed-page-content">
           <iframe
             src={url}
             width="100%"
@@ -39,4 +43,4 @@ const Functional = () => {
   );
 };
 
-export default Functional;
+export default EmbedPage;
