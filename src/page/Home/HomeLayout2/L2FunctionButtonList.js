@@ -5,6 +5,7 @@ import { useGlobalContext } from './../../../context/GlobalContext'
 import Slider from 'react-slick'
 import useWindowDimensions from '../../../hooks/window-dimensions'
 import { PATH } from '../../../constants/router'
+import { buildEmbedUrl } from '../../../components/Popup/EmbedPage'
 
 const L2FunctionButtonList = (props) => {
   const { handleZaloAuthorize, globalState } = useGlobalContext()
@@ -42,7 +43,7 @@ const L2FunctionButtonList = (props) => {
       await setSheetVisible(false)
       window.open(link, '_blank')
     } else {
-      const functionalUrl = `${PATH.EMBED_PAGE}?url=${encodeURIComponent(link)}&title=${encodeURIComponent(element.label.replace(/<br\s*\/?>/gi, ' '))}`
+      const functionalUrl = buildEmbedUrl(link, element.label)
       history.push(functionalUrl)
     }
   }

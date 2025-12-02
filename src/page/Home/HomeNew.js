@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom'
 import BasicPlaceholder from './../../components/BasicComponent/BasicPlaceholder'
 import CardItem from './CardItemNews'
 import { PATH } from '../../constants/router'
+import { buildEmbedUrl } from '../../components/Popup/EmbedPage'
 
 const HomeNew = ({ listNews , linkDirectDetail = "detail-post" , showEye = true, setSheetVisible, setDataBtn, useEmbedPage = false}) => {
   const LENGTH_LIST_NO_SLIDER = 1 // nếu chỉ có 1 thì sẽ không dùng slider
@@ -27,7 +28,7 @@ const HomeNew = ({ listNews , linkDirectDetail = "detail-post" , showEye = true,
     if (!isDragging) {
       if (useEmbedPage) {
         const newsUrl = `${process.env.REACT_APP_DEPLOY_URL}/${linkDirectDetail}/${value?.stationNewsId}?isEmbeddedView=true`;
-        history.push(`${PATH.EMBED_PAGE}?url=${encodeURIComponent(newsUrl)}&title=${encodeURIComponent("TIN TỨC")}`)
+        history.push(buildEmbedUrl(newsUrl, "TIN TỨC"))
       } else {
         setSheetVisible(true)
         let data= {

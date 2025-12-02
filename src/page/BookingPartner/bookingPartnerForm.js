@@ -1314,9 +1314,10 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
         <div className="loading">
           <div className="text-center">
             {(() => {
-              const partnerLogo = localStorage.getItem(addKeyLocalStorage('partnerLogo'))
-              return partnerLogo ? (
-                <img src={partnerLogo} alt="Partner Logo" style={{ height: '60px', width: '90px', objectFit: 'contain' }} />
+              const dataTheme = JSON.parse(localStorage.getItem(addKeyLocalStorage('dataTheme'))) || {}
+              const logo = dataTheme?.stationsLogo
+              return logo ? (
+                <img src={logo} alt="Logo" style={{ height: '60px', width: '90px', objectFit: 'contain' }} />
               ) : (
                 <MainLogo height={60} width={90}></MainLogo>
               )

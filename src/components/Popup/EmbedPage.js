@@ -1,7 +1,13 @@
 import React from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { ReactComponent as LeftIcon } from '../../assets/Booking-icon/ArrowLeft.svg';
+import { PATH } from '../../constants/router';
 import './EmbedPage.scss';
+
+export const buildEmbedUrl = (url, title) => {
+  const cleanedTitle = title.replace(/<br\s*\/?>/gi, ' ');
+  return `${PATH.EMBED_PAGE}?url=${encodeURIComponent(url)}&title=${encodeURIComponent(cleanedTitle)}`;
+};
 
 const EmbedPage = () => {
   const location = useLocation();

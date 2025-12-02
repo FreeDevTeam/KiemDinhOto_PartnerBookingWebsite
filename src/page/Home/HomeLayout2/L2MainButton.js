@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom'
 import { FEATURE_CARDS } from '../../../constants/Layout2Constants'
 import { PATH } from '../../../constants/router'
 import { useGlobalContext } from '../../../context/GlobalContext'
+import { buildEmbedUrl } from '../../../components/Popup/EmbedPage'
 
 const L2MainButton = ({ setSheetVisible, setDataBtn }) => {
   const history = useHistory()
@@ -33,7 +34,7 @@ const L2MainButton = ({ setSheetVisible, setDataBtn }) => {
       if (isZaloLink) {
         window.open(link, '_blank')
       } else {
-        const functionalUrl = `${PATH.EMBED_PAGE}?url=${encodeURIComponent(link)}&title=${encodeURIComponent(card.title)}`
+        const functionalUrl = buildEmbedUrl(link, card.title)
         history.push(functionalUrl)
       }
     } else {

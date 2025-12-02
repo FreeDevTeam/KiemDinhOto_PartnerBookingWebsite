@@ -7,6 +7,8 @@ import addKeyLocalStorage, { saveClickToLocalStorage } from '../../helper/localS
 import LogService from '../../services/logService'
 
 const CLICK_STORAGE_KEY = 'recordClickData'
+const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1 // ==> dùng cho miniApp
+
 export const SliderHome = (props) => {
   const { setting, isLoading, className, tramId, hideNewsFromZaloMiniApp } = props
   const [popupUrl, setPopupUrl] = useState(null)
@@ -37,7 +39,8 @@ export const SliderHome = (props) => {
 	};
 
   const handleClickBanner = (item, index) => {
-    if (item?.bannerUrl) {
+    // Chỉ mở link trên Web, MiniApp sẽ không mở
+    if (!isZaloApp && item?.bannerUrl) {
       setPopupUrl(item.bannerUrl)
       setSheetVisible(true)
       if (item?.targetId) {
@@ -102,7 +105,7 @@ export const SliderHome = (props) => {
                   className="slide"
                   key={index}
                   onClick={() => handleClickBanner(item, index)}
-                  style={{ cursor: item?.bannerUrl ? 'pointer' : 'default' }}>
+                  style={{ cursor: isZaloApp ? 'default' : item?.bannerUrl ? 'pointer' : 'default' }}>
                   <img src={imgSrc} alt={`Slide ${index + 1}`} />
                 </div>
               )

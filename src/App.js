@@ -1,7 +1,6 @@
 import './App.css';
 import React, { useEffect, useLayoutEffect } from "react";
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
-import { Spin } from 'antd'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import "./assets/scss/index.scss"
@@ -25,6 +24,7 @@ import { useDispatch } from 'react-redux'
 import SystemConfigurationsService from './services/SystemConfigurationsService';
 import { getQueryParams } from './page/BookingPartner/bookingPartnerForm';
 import addKeyLocalStorage from './helper/localStorage';
+import LoadingPopup from './components/LoadingPopup';
 export const baseName = IS_ZALO_MINI_APP ? `/zapps/${process.env.REACT_APP_ZMP_APP_ID}` : '/'
 function App() {
   // Kiểm tra xem có APIKey trong URL không cho tính năng tự động đặt lịch
@@ -99,9 +99,7 @@ function App() {
                 component={(props) => (
                   <React.Suspense
                     fallback={
-                      <div className="loading" style={{ background: 'white' }}>
-                        <Spin />
-                      </div>
+                      <LoadingPopup type="full" />
                     }>
                     <Layout {...props} Component={fillterRoutes[key].component} hideMobileMenu={fillterRoutes[key].hideMobileMenu} />
                   </React.Suspense>

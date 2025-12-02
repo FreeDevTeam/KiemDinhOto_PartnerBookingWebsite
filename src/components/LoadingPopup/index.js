@@ -5,12 +5,13 @@ import MainLogo from '../MainLogo'
 import addKeyLocalStorage from '../../helper/localStorage'
 
 const LoadingPopup = ({type = "full", className, noText}) => { // full và content : toàn màn hình và trong thành phần hiện có, mặc định full
-  const partnerLogo = localStorage.getItem(addKeyLocalStorage('partnerLogo'))
+  const dataTheme = JSON.parse(localStorage.getItem(addKeyLocalStorage('dataTheme'))) || {}
+  const logo = dataTheme?.stationsLogo
   
   return (
     <div className={`loadingPopup ${"loadingPopup-" + type} ${className}`}>
-      {partnerLogo ? (
-        <img src={partnerLogo} alt="Partner Logo" style={{ height: '60px', width: '90px', objectFit: 'contain' }} />
+      {logo ? (
+        <img src={logo} alt="Logo" style={{ height: '60px', width: '90px', objectFit: 'contain' }} />
       ) : (
         <MainLogo height={60} width={60}></MainLogo>
       )}

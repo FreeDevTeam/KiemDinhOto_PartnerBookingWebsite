@@ -62,7 +62,7 @@ const BookingSuccess = ({ isModalOpen, onClose,setTabKey,setIsModalOpen,schedule
                   type="default" 
                   block
                   onClick={handleFollowOA}
-                  style={{ marginBottom: '10px' }}
+                  style={{ marginBottom: '10px', height: 'auto', whiteSpace: 'normal' }}
                   className='login__button df'
                 >
                   Theo dõi trang để nhận<br/>thông tin đăng kiểm mới nhất

@@ -29,6 +29,7 @@ import PartnerPromotionNew from '../PartnerPromotionNew'
 import useWindowDimensions from '../../../hooks/window-dimensions'
 import BookingService from './../../../services/addBookingService'
 import { PATH } from '../../../constants/router'
+import { buildEmbedUrl } from '../../../components/Popup/EmbedPage'
 import { useGlobalContext } from '../../../context/GlobalContext'
 import PopupSheetIframe from '../../../components/Popup/PopupSheetIframe'
 import { Spin } from 'antd'
@@ -491,7 +492,7 @@ const HomeLayout2 = (props) => {
                             </div>
                             <div className="d-flex mb-0 justify-content-end home-link" onClick={() => {
                               const newsUrl = `${process.env.REACT_APP_DEPLOY_URL}/new`;
-                              history.push(`${PATH.EMBED_PAGE}?url=${encodeURIComponent(newsUrl)}&title=${encodeURIComponent("Tin tức")}`)
+                              history.push(buildEmbedUrl(newsUrl, "Tin tức"))
                             }}>
                               <a href="/" onClick={(e) => e.preventDefault()}>
                                 Xem tất cả
