@@ -60,7 +60,7 @@ export const FEATURE_CARDS = {
     title: 'Đăng kiểm xe',
     subtitle: 'Đặt lịch đăng kiểm, thay đổi thông tin, nộp hồ sơ',
     icon: <DangKiemXeDinhKyIcon></DangKiemXeDinhKyIcon>,
-    linkNavigation: `${PATH.BOOKING}?scheduleType=1`
+    linkNavigation: `${PATH.BOOKING}`
   },
   INSURANCE: {
     key: 'insurance',
@@ -68,22 +68,22 @@ export const FEATURE_CARDS = {
     subtitle: 'Mua bảo hiểm TNDS, tư vấn bảo hiểm',
     icon: <GiaHanBaoHiemTNDSIcon></GiaHanBaoHiemTNDSIcon>,
     link: process.env.REACT_APP_RUNTIME_MODE === 'production' 
-      ? `https://baohiem.ttdk.com.vn/?isEmbeddedView=1&appUserId=1003716` 
-      : `https://ttdk-develop-baohiem.service.makefamousapp.com/?isEmbeddedView=1&appUserId=1003716`
+      ? `https://baohiem.ttdk.com.vn/?isEmbeddedView=1` 
+      : `https://ttdk-develop-baohiem.service.makefamousapp.com/?isEmbeddedView=1`
   },
   TRAFFIC_FINE: {
     key: 'traffic_fine',
     title: 'Kiểm tra phạt nguội',
     subtitle: 'Tra cứu và xử lý phạt nguội',
     icon: <TraCuuPn></TraCuuPn>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/kiemtraphatnguoi?isEmbeddedView=true&isFromPartnerApp=true&appUserId=1003716`
+    link: `${process.env.REACT_APP_DEPLOY_URL}/kiemtraphatnguoi?isEmbeddedView=true&isFromPartnerApp=true`
   },
   SUPPORT: {
     key: 'support',
     title: 'Tư vấn hỗ trợ',
     subtitle: 'Liên hệ hỗ trợ khách hàng',
     icon: <TuVanDKIcon></TuVanDKIcon>,
-    link: `${process.env.REACT_APP_DEPLOY_URL}/station/wiigo?title=Hỗ trợ khách hàng&isEmbedded=true`
+    link: `${process.env.REACT_APP_DEPLOY_URL}/station/wiigo?isEmbedded=true`
   }
 }
 export const BTN_LIST_SERVICE = [

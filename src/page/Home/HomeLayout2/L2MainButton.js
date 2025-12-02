@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { useHistory } from 'react-router-dom'
 import { FEATURE_CARDS } from '../../../constants/Layout2Constants'
 import { PATH } from '../../../constants/router'
@@ -6,22 +6,26 @@ import { useGlobalContext } from '../../../context/GlobalContext'
 
 const L2MainButton = ({ setSheetVisible, setDataBtn }) => {
   const history = useHistory()
-  const { handleZaloAuthorize, globalState, handleGetUserPhone } = useGlobalContext()
+  const { handleZaloAuthorize, handleGetUserPhone } = useGlobalContext()
   const featureCardsArray = Object.values(FEATURE_CARDS)
+  const isAuthorizingRef = useRef(false)
 
   const handleRouter = async (path) => {
-    if (!globalState?.isAuthorize) {
+    // Prevent multiple rapid calls
+    if (isAuthorizingRef.current) return
+    
+    isAuthorizingRef.current = true
+    try {
       await handleZaloAuthorize()
+      await handleGetUserPhone().then((data) => {
+        history.push(path)
+      })
+    } finally {
+      isAuthorizingRef.current = false
     }
-    await handleGetUserPhone().then((data) => {
-      history.push(path)
-    })
   }
 
   const handleClick = async (card) => {
-    if (!globalState?.isAuthorize) {
-      await handleZaloAuthorize()
-    }
     const link = card?.link
     if (link) {
       const isZaloLink = link.includes('zalo.me')

@@ -11,7 +11,7 @@ const WarningNotify = ({ isModalOpen, onClose, onConfirm }) => {
             <Modal title="" visible={isModalOpen} footer={null} closable={false} className="my-modal text-center" onClose={onClose}>
                 <WarningIcon style={{ margin: 'auto', width: 50, height: 50, color: "#FAAD14" }} />
                 <div style={{ margin: '12px auto 12px' }}>
-                    Việc đặt lịch cần có số điện thoại để TTDK hỗ trợ tốt hơn cho quý khách. Vui lòng cung cấp số điện thoại
+                    Việc đặt lịch cần có số điện thoại để Wiigo hỗ trợ tốt hơn cho quý khách. Vui lòng cung cấp số điện thoại
                 </div>
                 <div>
                     <Button

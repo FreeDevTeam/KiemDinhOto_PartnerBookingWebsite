@@ -8,7 +8,7 @@ import BookingSuccess from './BookingSuccessModal'
 import PopupMessage from './PopupMessage'
 import { changeTime } from '../../helper/changeTime'
 import { validatorPlateNumber } from './../../helper/validatorPlateNumber'
-import { E_TICKET_SALE_OPTIONS, optionServiceType, SCHEDULE_TITLE, SCHEDULE_TYPE_MINIAPP } from '../../constants/serviceOption'
+import { E_TICKET_SALE_OPTIONS, optionServiceType, SCHEDULE_TITLE, SCHEDULE_TYPE_MINIAPP, filterScheduleTypesByServices } from '../../constants/serviceOption'
 import {
   PLATE_COLOR,
   VEHICLE_SUB_CATEGORY,
@@ -62,6 +62,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   // state dùng cho form
   const [scheduleCategory, setScheduleCategory] = useState(1)
   const [scheduleTypes, setScheduleTypes] = useState([])
+  const [originalScheduleTypes, setOriginalScheduleTypes] = useState([])
+  const [stationServices, setStationServices] = useState([])
   const [licensePlateColorList, setLicensePlateColorList] = useState(PLATE_COLOR)
   const [vehicleSubCategoryOptions, setVehicleSubCategoryOptions] = useState([])
   const [listStationArea, setListStationArea] = useState([])
@@ -127,21 +129,27 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
     }
   }
 
-  const getStationConfigByApiKey = (paramsFromUrl) => {
+  const getStationConfigByApiKey = async (paramsFromUrl) => {
     setIsLoading(true)
     const apiKey = paramsFromUrl?.apiKey || localStorage.getItem('apiKey') || undefined
-    SystemConfigurationsService.getStationConfigByApiKey({ apiKey: apiKey })
-      .then((result) => {
-        const stationMiniAppLink = JSON.parse(result?.[0]?.stationMiniAppLink || '{}')
-        setDataBookingParam({ ...stationMiniAppLink, ...paramsFromUrl })
-      })
-      .catch((err) => {
-        setErrorMessage('Lấy thông tin cấu hình thất bại.')
-        setIsModalErrOpen(true)
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
+    try {
+      const result = await SystemConfigurationsService.getStationConfigByApiKey({ apiKey: apiKey })
+      const stationMiniAppLink = JSON.parse(result?.[0]?.stationMiniAppLink || '{}')
+      const stationsId = result?.[0]?.stationsId
+      
+      setDataBookingParam({ ...stationMiniAppLink, ...paramsFromUrl })
+      
+      // If we have stationsId, fetch the services for this station
+      if (stationsId) {
+        const services = await getStationServices(stationsId)
+        setStationServices(services)
+      }
+    } catch (err) {
+      setErrorMessage('Lấy thông tin cấu hình thất bại.')
+      setIsModalErrOpen(true)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
 
@@ -376,6 +384,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
             )
           }))
           setScheduleTypes(newValues)
+          setOriginalScheduleTypes(newValues)
         } else {
           firstScheduleTypeHandler()
         }
@@ -628,10 +637,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
     try {
       const response = await BookingService.getListStationService({ filter: { stationsId: stationsId } })
       if (response?.isSuccess) {
-        return response.data.data.map((item) => ({
-          value: item.stationServicesId,
-          label: item.serviceName
-        }))
+        return response.data.data
       }
       return []
     } catch (error) {
@@ -800,8 +806,12 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
     if (form.getFieldValue('stationsId')) {
       getStationServices(form.getFieldValue('stationsId')).then((services) => {
         const allowedLabels = E_TICKET_SALE_OPTIONS.map((option) => option?.label?.toLowerCase())
-        const filteredServices = services.filter((service) => allowedLabels.includes(service?.label?.toLowerCase()))
-        setETicketOptions(filteredServices)
+        const filteredServices = services.filter((service) => allowedLabels.includes(service?.serviceName?.toLowerCase()))
+        const mappedServices = filteredServices.map((item) => ({
+          value: item.stationServicesId,
+          label: item.serviceName
+        }))
+        setETicketOptions(mappedServices)
       })
     }
 
@@ -883,11 +893,15 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
           if (station) {
             getStationServices(station?.stationsId).then((services) => {
               const allowedLabels = E_TICKET_SALE_OPTIONS.map((option) => option?.label?.toLowerCase())
-              const filteredServices = services.filter((service) => allowedLabels.includes(service?.label?.toLowerCase()))
-              if (filteredServices.length > 0) {
+              const filteredServices = services.filter((service) => allowedLabels.includes(service?.serviceName?.toLowerCase()))
+              const mappedServices = filteredServices.map((item) => ({
+                value: item.stationServicesId,
+                label: item.serviceName
+              }))
+              if (mappedServices.length > 0) {
                 setShowServiceType(true)
-                form.setFieldValue('serviceId', filteredServices[0]?.value)
-                setETicketOptions(filteredServices)
+                form.setFieldValue('serviceId', mappedServices[0]?.value)
+                setETicketOptions(mappedServices)
               } else {
                 form.setFieldValue('serviceId', undefined)
                 setShowServiceType(false)
@@ -901,6 +915,14 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       form.setFieldValue('serviceId', undefined)
     }
   }, [form.getFieldValue('scheduleType')])
+
+  // Filter schedule types based on available services
+  useEffect(() => {
+    if (stationServices?.length && originalScheduleTypes?.length) {
+      const filteredTypes = filterScheduleTypesByServices(originalScheduleTypes, stationServices)
+      setScheduleTypes(filteredTypes)
+    }
+  }, [stationServices, originalScheduleTypes])
 
   useEffect(() => {
     const scheduleTypeWithParams = scheduleTypes.find((item) => item.value === +form.getFieldValue('scheduleType'))
@@ -977,7 +999,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                 isSearchable={true}
                 placeholder="Vui lòng chọn mục đích đặt lịch"
                 styles={customStyles}
-                options={dataBookingParam?.scheduleType ? (scheduleTypes || optionServiceType)?.filter((item) => +item?.value === +dataBookingParam?.scheduleType ) : (scheduleTypes || optionServiceType)}
+                options={scheduleTypes || optionServiceType}
                 menuPlacement="top"
                 onChange={(values, scheduleType) => {
                   setScheduleCategory(scheduleType?.scheduleCategory)
@@ -1291,7 +1313,14 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       {isLoading && (
         <div className="loading">
           <div className="text-center">
-            <MainLogo height={60} width={60}></MainLogo>
+            {(() => {
+              const partnerLogo = localStorage.getItem(addKeyLocalStorage('partnerLogo'))
+              return partnerLogo ? (
+                <img src={partnerLogo} alt="Partner Logo" style={{ height: '60px', width: '90px', objectFit: 'contain' }} />
+              ) : (
+                <MainLogo height={60} width={90}></MainLogo>
+              )
+            })()}
             <Spin style={{ width: '100%' }} className="mt-3" />
           </div>
         </div>

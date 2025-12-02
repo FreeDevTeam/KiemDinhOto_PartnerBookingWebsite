@@ -205,3 +205,54 @@ export const E_TICKET_SALE_OPTIONS = [
     label: 'Vé lượt'
   }
 ]
+
+export const SERVICE_NAME_TO_SCHEDULE_TYPE_MAP = {
+  'Tra cứu phạt nguội': SCHEDULE_TYPE.AUTO_NOTIFY_VIOLATION,
+  'Đăng ký dán thẻ VETC': SCHEDULE_TYPE.REGISTER_VETC_TAG,
+  'Đóng phí phạt nguội': SCHEDULE_TYPE.SUPPORT_FINE_RESOLUTION,
+  'Gia hạn bảo hiểm TNDS': SCHEDULE_TYPE.TNDS_INSURANCE_RENEWAL,
+  'Đóng phí VETC': SCHEDULE_TYPE.REGISTER_VETC_TAG,
+  'Gia hạn BH thân vỏ': SCHEDULE_TYPE.TNDS_INSURANCE_RENEWAL,
+  'Bảo dưỡng xe': SCHEDULE_TYPE.CONSULTANT_MAINTENANCE,
+  'Đăng kiểm xe cơ giới': SCHEDULE_TYPE.VEHICLE_INSPECTION,
+  'Đăng ký dán thẻ ePass': SCHEDULE_TYPE.REGISTER_EPASS_TAG,
+  'Cứu hộ xe bị hư hỏng': SCHEDULE_TYPE.CONSULTANT_MAINTENANCE,
+  'Tư vấn hoán cải': SCHEDULE_TYPE.CONSULTANT_RENOVATION,
+  'Tự động thông báo phạt nguội': SCHEDULE_TYPE.AUTO_NOTIFY_VIOLATION,
+  'Đăng kiểm định kỳ': SCHEDULE_TYPE.VEHICLE_INSPECTION,
+  'Nộp hồ sơ xe mới': SCHEDULE_TYPE.REGISTER_NEW_VEHICLE,
+  'Đổi mục đích sử dụng, đổi chủ, đổi thông tin hồ sơ': SCHEDULE_TYPE.CHANGE_REGISTATION,
+  'Thanh toán phí đường bộ': SCHEDULE_TYPE.PAY_ROAD_FEE,
+  'Đặt lịch tư vấn bảo dưỡng': SCHEDULE_TYPE.CONSULTANT_MAINTENANCE,
+  'Đặt lịch tư bảo hiểm': SCHEDULE_TYPE.CONSULTANT_INSURANCE,
+  'Mất giấy đăng kiểm': SCHEDULE_TYPE.LOST_REGISTRATION_PAPER,
+  'Cấp lại tem đăng kiểm': SCHEDULE_TYPE.REISSUE_INSPECTION_STICKER,
+  'Tư vấn đăng kiểm xe định kỳ': SCHEDULE_TYPE.VEHICLE_INSPECTION_CONSULTATION,
+  'Tư vấn xử lý phạt nguội': SCHEDULE_TYPE.TRAFFIC_FINE_CONSULTATION,
+  'Tư vấn bảo hiểm TNDS xe ô tô': SCHEDULE_TYPE.CONSULTANT_TNDS_INSURANCE,
+  'Hỗ trợ xử lý phạt nguội': SCHEDULE_TYPE.SUPPORT_FINE_RESOLUTION,
+  'Gia hạn định vị': SCHEDULE_TYPE.GPS_RENEWAL,
+  'Gia hạn phù hiệu xe kinh doanh': SCHEDULE_TYPE.BUSINESS_VEHICLE_BADGE_RENEWAL,
+  'Gia hạn giấy tập huấn': SCHEDULE_TYPE.TRAINING_CERTIFICATE_RENEWAL,
+  'Gia hạn camera hành trình': SCHEDULE_TYPE.DASHCAM_RENEWAL,
+  'Mua bảo hiểm TNDS': SCHEDULE_TYPE.TNDS_INSURANCE_RENEWAL,
+  'Nộp hồ sơ xe mới (Ngoài giờ HC)': SCHEDULE_TYPE.OFF_HOUR_NEW_VEHICLE_REGISTER,
+  'Đăng kiểm xe (Ngoài giờ HC)': SCHEDULE_TYPE.OFF_HOUR_VEHICLE_INSPECTION,
+  'Khám sức khoẻ lái xe': SCHEDULE_TYPE.CONSULTANT_DRIVER_HEALTH,
+  'Tư vấn bồi thường bảo hiểm': SCHEDULE_TYPE.CONSULTANT_INSURANCE_COMPENSATION,
+  'Vé vào cổng': SCHEDULE_TYPE.E_TICKET_SALE,
+  'Vé cầu': SCHEDULE_TYPE.E_TICKET_SALE,
+  'Vé lượt': SCHEDULE_TYPE.E_TICKET_SALE
+}
+
+export const filterScheduleTypesByServices = (allScheduleTypes, services = []) => {
+  if (!services?.length) return allScheduleTypes
+  
+  const matchedIds = new Set()
+  services.forEach(service => {
+    const id = SERVICE_NAME_TO_SCHEDULE_TYPE_MAP[service.serviceName || service.label || '']
+    if (id) matchedIds.add(id)
+  })
+  
+  return allScheduleTypes.filter(st => matchedIds.has(st.value))
+}

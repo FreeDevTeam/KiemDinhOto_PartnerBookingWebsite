@@ -489,7 +489,10 @@ const HomeLayout2 = (props) => {
                             <div className="text-large title-homelayout" style={{ padding: '0 10px' }}>
                               Tin tức
                             </div>
-                            <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet('Tin tức', '/new')}>
+                            <div className="d-flex mb-0 justify-content-end home-link" onClick={() => {
+                              const newsUrl = `${process.env.REACT_APP_DEPLOY_URL}/new`;
+                              history.push(`${PATH.EMBED_PAGE}?url=${encodeURIComponent(newsUrl)}&title=${encodeURIComponent("Tin tức")}`)
+                            }}>
                               <a href="/" onClick={(e) => e.preventDefault()}>
                                 Xem tất cả
                               </a>
