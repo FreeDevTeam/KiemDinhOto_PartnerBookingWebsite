@@ -736,7 +736,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       })
 
       getStationConfigByApiKey(paramsFromUrl)
-      firstScheduleTypeHandler()
       setLicensePlateColorList(PLATE_COLOR)
     }
 
