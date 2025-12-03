@@ -246,6 +246,53 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   // ...Thêm biến
 }
 
+[data-theme='IHANOI'] {
+  // Font family
+  --font-family: 'Inter';
+
+  // Primary - Màu chủ đạo thương hiệu, dùng cho button chính, link chính
+  --primary-color: linear-gradient(to bottom, #0C4D9F 0%, #1067D4 100%); // Gradient từ 0% #0C4D9F đến 100% #1067D4
+  --primary-button-color: linear-gradient(to bottom, #0C4D9F 0%, #1067D4 100%); // Gradient từ 0% #0C4D9F đến 100% #1067D4
+  --title-color: #0C4D9F; // Primary title
+  
+  // Primary Light - Hover, background nhân nhẹ, trạng thái rê chuột
+  --hover-color: linear-gradient(to bottom, #D6E9FF 0%, #C4DDFA 100%); // Gradient từ 0% #D6E9FF đến 100% #C4DDFA
+  --background-banner-color: linear-gradient(to bottom, #D6E9FF 0%, #C4DDFA 100%); // Gradient từ 0% #D6E9FF đến 100% #C4DDFA
+  --bgr-list-btn-color: #D6E9FF; // Primary Light list button
+  
+  // Primary Dark - Header, navbar, nền mạnh
+  --blue-deep-cove: linear-gradient(to bottom, #1067D4 0%, #0C4D9F 100%); // Gradient từ 0% #1067D4 đến 100% #0C4D9F
+
+  // Secondary - Heading phụ, nút phụ, text phụ
+  --secondary-color: linear-gradient(to bottom, #D6E9FF 0%, #C4DDFA 100%); // Gradient từ 0% #D6E9FF đến 100% #C4DDFA
+
+  // Gradient - Gradient cho button, thẻ ngày, giờ khi được chọn
+  --linear-gradient-active: linear-gradient(to bottom, #0C4D9F 0%, #1067D4 100%); // Gradient từ 0% #0C4D9F đến 100% #1067D4
+
+  --surface: #FFFFFF; // Surface - Nền của card, modal, input, button
+  --background-color: #FFFFFF; // Background - Nền tổng thể của app
+  --text-color: #000000; // Text Primary - Nội dung chính, tiêu đề đó, nội dung lớn
+  --gray-color: #4B5563; // Text Secondary - Nội dung phụ, mô tả, text phụ
+  --text-disabled: #767A7F; // Text Disabled - Trạng thái vô hiệu, mờ đi, không thể nhấn
+  --text-placeholder: #828282; // Text Placeholder - Text PlaceHolder
+  --icon-helper-text: #767A7F; // Icon Helper text - Màu icon Helper text
+  --helper-text: #646569; // Helper text - Màu Helper text
+  --selection-color: #0C4D9F; // Selection Color - Màu khi chọn văn bản
+  --otpfield-bg: #E3E3E3; // OTPField Background - Nền ô nhập OTP
+  --error-btn-color: #DD0101; // Button Danger - Màu button Danger
+  --unactive-button-color: #E9EBED; // Button Neutral Background - Màu nền button Neutral
+  --border-color: #D6D6D6; // Border - Viền Forms input trạng thái ban đầu, thành công và vô hiệu hoá
+  --step-line-booking: #0C4D9F; // Border Active - Viền Forms input khi nhập và button chính
+  --float-btn-color: #0C4D9F; // Primary float button
+  --attention-color: #1A74E6; // Error Tertiary - Thông báo trung tính, hướng dẫn, trạng thái hệ thống chung
+  --success-btn-color: #3DA153; // Button Success - Màu button Success
+  --warning-color: #E27032; // Warning - Thông báo cảnh báo chung
+  --error-color: #FE0033; // Error - Thông báo lỗi: validate form, alert rồi
+  --stop-receiving-color: #E27032; // Warning - Stop receiving
+  --background-iphone-popup-coler: #a6bab8; // iPhone popup background
+  --transparent-color: transparent; // Transparent
+}
+
 // Màu sắc cho chủ đề tối
 body.dark {
   --primary-color: #0e57b7; // Màu chính cho chủ đề tối
