@@ -815,7 +815,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
         name: dataBookingParam.name || zaloUserName,
         phone: dataBookingParam.phone || zaloUserPhone,
         vehicleSubType: dataBookingParam.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value,
-        scheduleType: inspection ? 1 : (dataBookingParam.scheduleType || optionServiceType[0]?.value),
+        scheduleType: dataBookingParam.scheduleType || optionServiceType[0]?.value,
         licensePlateColor: dataBookingParam.licensePlateColor || licensePlateColorList[0]?.value,
         vntId: dataBookingParam.vntId || listStationArea[0]?.value,
         vehicleSubCategory: dataBookingParam.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
@@ -831,7 +831,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       form.setFieldValue('phone', zaloUserPhone)
       form.setFieldValue('name', zaloUserName)
       form.setFieldValue('vehicleSubType', dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
-      form.setFieldValue('scheduleType', inspection ? 1 : (dataBookingParam?.scheduleType || optionServiceType[0]?.value))
+      form.setFieldValue('scheduleType', dataBookingParam?.scheduleType || optionServiceType[0]?.value)
       form.setFieldValue('licensePlateColor', dataBookingParam?.licensePlateColor || licensePlateColorList[0]?.value)
       form.setFieldValue('vehicleSubCategory', dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value)
     }
@@ -935,6 +935,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
               name="scheduleType"
               label="Mục đích đặt hẹn"
               required
+              hidden={inspection}
               rules={[
                 {
                   required: true,
@@ -942,13 +943,12 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                 }
               ]}>
               <SelectAntd
-                defaultValue={inspection ? 1 : (dataBookingParam?.scheduleType || optionServiceType[0]?.value)}
+                defaultValue={dataBookingParam?.scheduleType || optionServiceType[0]?.value}
                 className="cs-select ant-custom booking-input"
                 isSearchable={true}
                 placeholder="Vui lòng chọn mục đích đặt lịch"
                 styles={customStyles}
-                options={inspection ? scheduleTypes.filter(item => item.value === 1) : scheduleTypes}
-                disabled={inspection}
+                options={scheduleTypes}
                 menuPlacement="top"
                 onChange={(values, scheduleType) => {
                   setScheduleCategory(scheduleType?.scheduleCategory)
