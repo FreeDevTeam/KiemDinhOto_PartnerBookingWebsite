@@ -103,6 +103,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   const [scheduleTypePopUp, setScheduleTypePopUp] = useState([])
   const [isModalErrOpen, setIsModalErrOpen] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [inspection, setInspection] = useState(false)
 
   // Các functions bổ trợ
   const CheckSum = () => {
@@ -645,7 +646,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       'vntId',
       'vehicleSubCategory',
       'certificateSeries',
-      'licensePlates'
+      'licensePlates',
+      'inspection'
     ]
     const paramsKeysNoUse = Object.fromEntries(Object.entries(paramsFromUrl).filter(([key]) => allowedKeys.includes(key)))
     const paramsFromUrlKeys = Object.keys(paramsKeysNoUse)
@@ -721,6 +723,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       handleCategory(paramsFromUrl?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
       let isValid = MINIAPP_GTELPAY ? CheckSum() : !!paramsFromUrl
       if (isValid === false) return
+      setInspection(paramsFromUrl.inspection === '1')
 
       Object.keys(paramsFromUrl).forEach((key) => {
         let value = paramsFromUrl[key]
@@ -733,7 +736,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       })
 
       getStationConfigByApiKey(paramsFromUrl)
-      firstScheduleTypeHandler()
       setLicensePlateColorList(PLATE_COLOR)
     }
 
@@ -813,7 +815,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
         name: dataBookingParam.name || zaloUserName,
         phone: dataBookingParam.phone || zaloUserPhone,
         vehicleSubType: dataBookingParam.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value,
-        scheduleType: dataBookingParam.scheduleType || optionServiceType[0]?.value,
+        scheduleType: inspection ? 1 : (dataBookingParam.scheduleType || optionServiceType[0]?.value),
         licensePlateColor: dataBookingParam.licensePlateColor || licensePlateColorList[0]?.value,
         vntId: dataBookingParam.vntId || listStationArea[0]?.value,
         vehicleSubCategory: dataBookingParam.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
@@ -829,7 +831,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       form.setFieldValue('phone', zaloUserPhone)
       form.setFieldValue('name', zaloUserName)
       form.setFieldValue('vehicleSubType', dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
-      form.setFieldValue('scheduleType', dataBookingParam?.scheduleType || optionServiceType[0]?.value)
+      form.setFieldValue('scheduleType', inspection ? 1 : (dataBookingParam?.scheduleType || optionServiceType[0]?.value))
       form.setFieldValue('licensePlateColor', dataBookingParam?.licensePlateColor || licensePlateColorList[0]?.value)
       form.setFieldValue('vehicleSubCategory', dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value)
     }
@@ -940,12 +942,13 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                 }
               ]}>
               <SelectAntd
-                defaultValue={dataBookingParam?.scheduleType || optionServiceType[0]?.value}
+                defaultValue={inspection ? 1 : (dataBookingParam?.scheduleType || optionServiceType[0]?.value)}
                 className="cs-select ant-custom booking-input"
                 isSearchable={true}
                 placeholder="Vui lòng chọn mục đích đặt lịch"
                 styles={customStyles}
-                options={scheduleTypes}
+                options={inspection ? scheduleTypes.filter(item => item.value === 1) : scheduleTypes}
+                disabled={inspection}
                 menuPlacement="top"
                 onChange={(values, scheduleType) => {
                   setScheduleCategory(scheduleType?.scheduleCategory)
@@ -1086,7 +1089,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                 <div>
                   Số seri GCN mới nhất
                   <span
-                    className="text-important text-very-small text-primary"
+s                    className="text-important text-small text-primary"
                     onClick={() => {
                       setIsModalErrOpen(true)
                       setErrorMessage(

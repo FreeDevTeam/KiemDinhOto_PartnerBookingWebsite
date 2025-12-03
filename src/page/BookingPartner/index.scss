@@ -1,5 +1,12 @@
 @import "./../../assets/scss/variable";
 
+.partner {
+  font-family: var(--font-family);
+  * {
+    font-family: var(--font-family);
+  }
+}
+
 .partner-select {
   & .ant-input {
     border-radius: 8px;
@@ -23,9 +30,9 @@
     width: 100%;
     display: flex;
     justify-content: center;
-    color: #c9c9c9;
+    color: var(--gray-color);
     background: transparent;
-    border: 1px solid #f2f2f2;
+    border: 1px solid var(--border-color);
   }
 
   & .ant-tabs-nav .ant-tabs-tab:nth-child(1) {
@@ -37,7 +44,7 @@
   }
 
   & .ant-tabs-nav .ant-tabs-tab-btn {
-    color: #b6b6b6;
+    color: var(--text-secondary);
     font-weight: 400;
     font-size: 16px;
     line-height: 19px;
@@ -49,7 +56,7 @@
   }
 
   & .ant-tabs-tab-active div {
-    color: #fff !important;
+    color: var(--background-color) !important;
   }
 
   & .ant-tabs-ink-bar {
@@ -57,22 +64,22 @@
   }
 
   & .ant-form-item .ant-form-item-label {
-    color: #222222;
+    color: var(--text-color);
     font-weight: 600;
     font-size: 14px;
     line-height: 20px;
   }
 }
 .ant-tabs-tab {
-  background: #f5f5f5 0% 0% no-repeat padding-box;
+  background: var(--secondary-color) 0% 0% no-repeat padding-box;
   border-radius: 8px;
   padding: 9px 12px;
 
   .ant-tabs-tab-btn {
     text-align: center;
-    font: normal normal 600 14px/20px sans-serif;
+    font: normal normal 600 14px/20px var(--font-family);
     letter-spacing: 0px;
-    color: #242426;
+    color: var(--text-color);
   }
 }
 .priority-mode{
@@ -98,7 +105,7 @@
 }
 #booking_dateSchedule_extra,
 #booking_certificateSeries_extra{
-  color: var(--primary-button-color);
+  color: var(--primary-color) !important;
 }
 .headerBookingHistory {
   display: flex;
@@ -113,7 +120,10 @@
   }
 }
 .text-primary{
-  color: var(--title-color);
+  color: var(--title-color) !important;
+}
+.text-small{
+  font-size: $text-small-fs !important;
 }
 .d-flex{
   display: flex;
@@ -161,14 +171,14 @@
   }
 
   & .ant-tabs-nav .ant-tabs-tab-btn {
-    color: #b6b6b6;
+    color: var(--text-secondary);
     font-weight: 400;
     font-size: 16px;
     line-height: 19px;
   }
 
   & .ant-tabs-tab-active div {
-    color: var(--title-color) !important;
+    color: var(--primary-color) !important;
   }
   & .ant-tabs-tab-active {
     border: none;
@@ -181,12 +191,12 @@
 
 .scheduleItem {
   margin-bottom: 10px;
-  background: #ffffff;
-  border: 1px solid #f2f2f2;
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 24px 12px;
   &-lable {
-    color: #525252;
+    color: var(--text-secondary);
   }
 
   &-lable,
@@ -210,12 +220,12 @@
 
   &-info {
     padding-bottom: 8px;
-    border-bottom: 1px solid #d8d8d8;
+    border-bottom: 1px solid var(--border-color);
     margin-bottom: 8px;
   }
 
   &-black {
-    color: #525252;
+    color: var(--text-secondary);
   }
 }
 
@@ -247,13 +257,13 @@
   border: 1px solid transparent;
   width: 100%;
   margin-top: 15px;
-  background: var(--title-color) !important;
+  background: var(--primary-button-color) !important;
   &.ant-btn span {
     font-weight: 550;
     font-size: 15px;
     line-height: 22px;
     text-align: center;
-    color: #ffffff;
+    color: var(--background-color);
   }
 }
 
@@ -282,7 +292,7 @@
   min-width: 48px;
   padding: 2px 5px;
   height: 26px;
-  background: #00b59c;
+  background: var(--success-btn-color);
   border-radius: 3px;
   display: flex;
   justify-content: center;
@@ -293,7 +303,7 @@
 .text {
   font-size: 10.5px;
   line-height: 15px;
-  color: #ffffff;
+  color: var(--background-color);
 }
 .ant-tabs > .ant-tabs-nav .ant-tabs-nav-wrap, .ant-tabs > div > .ant-tabs-nav .ant-tabs-nav-wrap {
   overflow: unset;

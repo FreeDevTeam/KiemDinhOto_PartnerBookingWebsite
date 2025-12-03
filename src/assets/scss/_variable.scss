@@ -184,6 +184,7 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --primary-color: #0e57b7; // Màu chính cho chủ đề sáng
   --background-color: #ffffff; // Màu nền cho chủ đề sáng
   --text-color: #000000; // Màu văn bản cho chủ đề sáng
+  --text-secondary: #b6b6b6;
   --secondary-color: #f0f0f0; // Màu phụ cho chủ đề sáng
   --border-color: #e8e8e8; // Màu viền cho chủ đề sáng
   --hover-color: #e6f7ff; // Màu khi rê chuột lên cho chủ đề sáng
@@ -244,6 +245,25 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --float-btn-color:#f43b3e;
   --attention-color:#dd0030;
   // ...Thêm biến
+}
+
+[data-theme='IHANOI'] {
+  // Font family
+  --font-family: 'Inter';
+
+  // Primary
+  --primary-color: #0C4D9F;
+  --primary-button-color: linear-gradient(90deg, #0C4D9F 0%, #1067D4 100%);
+  --title-color: #0C4D9F;
+  --linear-gradient-active: linear-gradient(90deg, #0C4D9F 0%, #1067D4 100%);
+  
+  // Colors
+  --background-color: #FFFFFF;
+  --text-color: #000000;
+  --text-secondary: #828282;
+  --secondary-color: #F0F0F0;
+  --border-color: #D6D6D6;
+  --gray-color: #4B5563;
 }
 
 // Màu sắc cho chủ đề tối
