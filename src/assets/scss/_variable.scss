@@ -251,8 +251,8 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --font-family: 'Inter';
 
   // Primary - Màu chủ đạo thương hiệu, dùng cho button chính, link chính
-  --primary-color: linear-gradient(to bottom, #0C4D9F 0%, #1067D4 100%); // Gradient từ 0% #0C4D9F đến 100% #1067D4
-  --primary-button-color: linear-gradient(to bottom, #0C4D9F 0%, #1067D4 100%); // Gradient từ 0% #0C4D9F đến 100% #1067D4
+  --primary-color: #0C4D9F; // Primary color
+  --primary-button-color: linear-gradient(90deg, #0C4D9F 0%, #1067D4 100%); // Gradient từ 0% #0C4D9F đến 100% #1067D4
   --title-color: #0C4D9F; // Primary title
   
   // Primary Light - Hover, background nhân nhẹ, trạng thái rê chuột
@@ -267,7 +267,7 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --secondary-color: linear-gradient(to bottom, #D6E9FF 0%, #C4DDFA 100%); // Gradient từ 0% #D6E9FF đến 100% #C4DDFA
 
   // Gradient - Gradient cho button, thẻ ngày, giờ khi được chọn
-  --linear-gradient-active: linear-gradient(to bottom, #0C4D9F 0%, #1067D4 100%); // Gradient từ 0% #0C4D9F đến 100% #1067D4
+  --linear-gradient-active: linear-gradient(90deg, #0C4D9F 0%, #1067D4 100%); // Gradient từ 0% #0C4D9F đến 100% #1067D4
 
   --surface: #FFFFFF; // Surface - Nền của card, modal, input, button
   --background-color: #FFFFFF; // Background - Nền tổng thể của app
