@@ -105,7 +105,7 @@
 }
 #booking_dateSchedule_extra,
 #booking_certificateSeries_extra{
-  color: var(--primary-button-color);
+  color: var(--primary-color) !important;
 }
 .headerBookingHistory {
   display: flex;
