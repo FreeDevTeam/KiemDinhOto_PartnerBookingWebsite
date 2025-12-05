@@ -1,12 +1,5 @@
 @import "./../../assets/scss/variable";
 
-.partner {
-  font-family: var(--font-family);
-  * {
-    font-family: var(--font-family);
-  }
-}
-
 .partner-select {
   & .ant-input {
     border-radius: 8px;

@@ -99,8 +99,12 @@ function App() {
                 component={(props) => (
                   <React.Suspense
                     fallback={
-                      <div className="loading" style={{ background: 'white' }}>
-                        <Spin />
+                      <div className="loading" style={{ background: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                        {process.env.REACT_APP_THEME_NAME === 'IHANOI' ? (
+                          <img src='/IHANOI/logofull.png' alt="Loading" style={{ width: 100, height: 100 }} />
+                        ) : (
+                          <Spin />
+                        )}
                       </div>
                     }>
                     <Layout {...props} Component={fillterRoutes[key].component} hideMobileMenu={fillterRoutes[key].hideMobileMenu} />

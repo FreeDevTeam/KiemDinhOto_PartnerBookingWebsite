@@ -14,6 +14,8 @@ const BookingDetail = React.lazy(() => import('./page/BookingDetail/index'))
 const PartnerGuide = React.lazy(() => import('./page/Guide/partnerGuide'))
 const PersonalGuide = React.lazy(() => import('./page/Guide/personalGuide'))
 const UpdateBookingDetail = React.lazy(() => import('./page/BookingDetail/UpdateBookingDetail'))
+const EmbedPage = React.lazy(() => import('./components/Popup/EmbedPage'))
+const SelectInspectionService = React.lazy(() => import('./components/Popup/SelectInspectionService'))
 
 const BookingType=process.env.REACT_APP_BHTNDS
 
@@ -72,10 +74,21 @@ export const ROUTERS = {
         component: UpdateBookingDetail,
         isZaloApp: 1,
     },
+    embedPageZalo: {
+        path: PATH.EMBED_PAGE,
+        component: EmbedPage,
+        isZaloApp: 1,
+    },
+
     // page on web
     checkVihcle: {
-        path: PATH.HOME,
+        path: process.env.REACT_APP_THEME_NAME === 'IHANOI' ? '/check-vihcle' : PATH.HOME,
         component:CheckVihcle,
+        isZaloApp: 0,
+    },
+    homePageWeb: {
+        path: process.env.REACT_APP_THEME_NAME === 'IHANOI' ? PATH.HOME : '/home',
+        component: HomePage,
         isZaloApp: 0,
     },
     bookingHome: {
@@ -106,6 +119,16 @@ export const ROUTERS = {
     updateBookingOnWeb: {
         path: PATH.BOOKING_UPDATE,
         component: UpdateBookingDetail,
+        isZaloApp: 0,
+    },
+    embedPage: {
+        path: PATH.EMBED_PAGE,
+        component: EmbedPage,
+        isZaloApp: 0,
+    },
+    selectInspectionService: {
+        path: PATH.SELECT_INSPECTION_SERVICE,
+        component: SelectInspectionService,
         isZaloApp: 0,
     },
     // bookingPartnerIframe: {

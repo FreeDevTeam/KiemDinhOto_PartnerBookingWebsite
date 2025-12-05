@@ -19,4 +19,9 @@ export const STATIONS_TYPE = {
     PARTS_MANUFACTURING_CONSULTANCY:16, //Tư vấn sản xuất phụ tùng xe,
     DRIVER_HEALTH: 17, //  Khám sức khoẻ lái xe
     CAR_EVALUATION_SERVICE: 18, // Dịch vụ định giá xe
+    CUA_HANG_RUA_XE_OTO: 19, // Cửa hàng rửa xe ô tô
+    CHUYEN_GIA_HO_TRO: 20, // Chuyên gia hỗ trợ
+    HANG_XE: 21, // Hãng xe
+    BEN_XE: 22, // Bến xe
+    TRU_SO_CSGT: 23, // Trụ sở Cảnh sát giao thông
 }

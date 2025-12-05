@@ -8,7 +8,8 @@ import NewService, { fetchMetadataWithCache } from './../../../services/addBooki
 import HomePartner from './../HomePartner'
 import L2FunctionButtonList from './L2FunctionButtonList'
 import L2HotNew from './L2HotNew'
-import {BOOKING_LIST_BTN, BTN_LIST_SERVICE, CONVENIENCE_DRIVERS_BTN, GOVERNMENT_BTN, INSPECTION_SERVICES, HOT_SERVICES} from '../../../constants/Layout2Constants'
+import L2MainButton from './L2MainButton'
+import {BOOKING_LIST_BTN, BTN_LIST_SERVICE, BTN_LIST_SERVICE_IHANOI, CONVENIENCE_DRIVERS_BTN, GOVERNMENT_BTN, INSPECTION_SERVICES, HOT_SERVICES} from '../../../constants/Layout2Constants'
 import { useHistory, useLocation } from 'react-router-dom'
 import HomeNew from '../HomeNew'
 import SystemConfigurationsService from '../../../services/SystemConfigurationsService'
@@ -59,7 +60,8 @@ const HomeLayout2 = (props) => {
   const [hideNewsFromZaloMiniApp , setHideNewsFromZaloMiniApp ] = useState(true) 
   const [isZaloShowStationList, setIsZaloShowStationList] = useState(false)
   const LAST_UPDATE_NEWS = {}
-  const lastUpdateNews = JSON.parse(localStorage.getItem('LAST_UPDATE_NEWS'))
+  const lastUpdateNews = JSON.parse(localStorage.getItem('LAST_UPDATE_NEWS'))  
+  const isIHanoi = process.env.REACT_APP_THEME_NAME === 'IHANOI'
 
   const pushCacheDataIntoObj = (typeOfNews, lastId, obj) => {
     const id = JSON.parse(localStorage.getItem(`LAST_${typeOfNews}_NEWS_ID`)) || undefined
@@ -318,7 +320,7 @@ const HomeLayout2 = (props) => {
       setFirtLoadding(false)
     }, 300);
 
-    if(!userToken){
+    if(!userToken && !isIHanoi){
       history.push(PATH.LOGIN)
     }
     setTimeout(async() =>  {
@@ -370,46 +372,60 @@ const HomeLayout2 = (props) => {
         <PageLayout>{renderSlider}</PageLayout>
         <div className="more mt-3">
         <div className='layout2-body' style={{ maxWidth: 600, margin: 'auto' }}>
-            <div className='booking-layout2'>
-              <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} list={BOOKING_LIST_BTN} title={'Đặt lịch'}></L2FunctionButtonList>
-            </div>
-            <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} list={INSPECTION_SERVICES} title={'Dịch vụ đăng kiểm'}></L2FunctionButtonList>
-            {!hideNewsFromZaloMiniApp && (
-              <div className='layout2-bg mb-4'>
-                {hotNews?.length > 0 &&
-                  <div style={{padding:'0 10px',marginBottom:'1.5rem'}}>
-                    <div className="d-flex justify-content-between align-items-center news-center" >
-                      <div className='text-large title-homelayout'>Nổi bật</div>
-                      <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Nổi bật",'/highlight-news')}>
-                        <a href="/" onClick={(e) => e.preventDefault()}>
-                          Xem tất cả
-                        </a>
-                      </div>
-                    </div>
-                    <L2HotNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} hotNew={hotNews} />
-                  </div>
-                }
+            {!isIHanoi && (
+              <div className='booking-layout2'>
+                <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} list={BOOKING_LIST_BTN} title={'Đặt lịch'}></L2FunctionButtonList>
               </div>
             )}
-            <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} slider={HOT_SERVICES?.length > 9 || (mobile && HOT_SERVICES?.length > 7)} list={HOT_SERVICES} title={'Dịch vụ nổi bật'}></L2FunctionButtonList>
-            {!hideNewsFromZaloMiniApp && (
-              stationNewsPartnerPromotion?.length > 0 && (
-                <div className="home-container mb-5 ">
-                  <div className="d-flex justify-content-between align-items-center news-center" >
-                    <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Ưu đãi từ đối tác</div>
-                    <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Ưu đãi từ đối tác",'/station-newsPartner-promotion')}>
-                      <a href="/" onClick={(e) => e.preventDefault()}>
-                        Xem tất cả
-                      </a>
-                    </div>
-                  </div>
-                  <div className='mobile-content'>
-                    <HomeNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={stationNewsPartnerPromotion} linkDirectDetail = {"station-news-Partner-promotion-post"} showEye={false}/>
-                  </div>
-                </div>
-              )
+            {isIHanoi && (
+              <div className='booking-layout2'>
+                <L2MainButton setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} />
+              </div>
             )}
-            {isZaloShowStationList && ( //Nếu không phải là zalo mini app thì mới hiện lên
+            {!isIHanoi && (
+              <>
+                <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} list={INSPECTION_SERVICES} title={'Dịch vụ đăng kiểm'}></L2FunctionButtonList>
+                {!hideNewsFromZaloMiniApp && (
+                  <div className='layout2-bg mb-4'>
+                    {hotNews?.length > 0 &&
+                      <div style={{padding:'0 10px',marginBottom:'1.5rem'}}>
+                        <div className="d-flex justify-content-between align-items-center news-center" >
+                          <div className='text-large title-homelayout'>Nổi bật</div>
+                          <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Nổi bật",'/highlight-news')}>
+                            <a href="/" onClick={(e) => e.preventDefault()}>
+                              Xem tất cả
+                            </a>
+                          </div>
+                        </div>
+                        <L2HotNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} hotNew={hotNews} />
+                      </div>
+                    }
+                  </div>
+                )}
+                <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} slider={HOT_SERVICES?.length > 9 || (mobile && HOT_SERVICES?.length > 7)} list={HOT_SERVICES} title={'Dịch vụ nổi bật'}></L2FunctionButtonList>
+                {!hideNewsFromZaloMiniApp && (
+                  stationNewsPartnerPromotion?.length > 0 && (
+                    <div className="home-container mb-5 ">
+                      <div className="d-flex justify-content-between align-items-center news-center" >
+                        <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Ưu đãi từ đối tác</div>
+                        <div className="d-flex mb-0 justify-content-end home-link" onClick={() => handleOpenSheet("Ưu đãi từ đối tác",'/station-newsPartner-promotion')}>
+                          <a href="/" onClick={(e) => e.preventDefault()}>
+                            Xem tất cả
+                          </a>
+                        </div>
+                      </div>
+                      <div className='mobile-content'>
+                        <HomeNew setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} listNews={stationNewsPartnerPromotion} linkDirectDetail = {"station-news-Partner-promotion-post"} showEye={false}/>
+                      </div>
+                    </div>
+                  )
+                )}
+              </>
+            )}
+            {isIHanoi && isZaloShowStationList && (
+              <L2FunctionButtonList setSheetVisible={setSheetVisible} slider={false} setDataBtn={setDataBtn} list={BTN_LIST_SERVICE_IHANOI} className={'layout1-btn-booking-section-single-row'} title={'Điểm dịch vụ đề xuất'}></L2FunctionButtonList>
+            )}
+            {!isIHanoi && isZaloShowStationList && ( //Nếu không phải là zalo mini app thì mới hiện lên
               <L2FunctionButtonList setSheetVisible={setSheetVisible} slider={true} setDataBtn={setDataBtn} list={BTN_LIST_SERVICE} title={'Điểm dịch vụ đề xuất'}></L2FunctionButtonList>
             )}
             {!hideNewsFromZaloMiniApp && (
@@ -451,7 +467,9 @@ const HomeLayout2 = (props) => {
                 </div>
               }
             </div> */}
-            <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} list={GOVERNMENT_BTN} className='government-btn' title={'Cơ quan chính phủ'}></L2FunctionButtonList>
+            {!isIHanoi && (
+              <L2FunctionButtonList setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} list={GOVERNMENT_BTN} className='government-btn' title={'Cơ quan chính phủ'}></L2FunctionButtonList>
+            )}
             {/* <div className='mb-5'>
               <div className="home-container sation-slider">
                 <div className="d-flex justify-content-between align-items-center news-center" >

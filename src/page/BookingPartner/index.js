@@ -11,6 +11,8 @@ import { useGlobalContext } from '../../context/GlobalContext'
 import { SCHEDULE_TYPE, WEBVIEW_TYPES } from '../../constants/global'
 import MainLogo from '../../components/MainLogo'
 import addKeyLocalStorage from '../../helper/localStorage'
+const isIHanoi = process.env.REACT_APP_THEME_NAME === 'IHANOI'
+
 function BookingPartner() {
   const { globalState, handleGetUserPhone, handleGetUserName, setGlobalState } = useGlobalContext();
   const [isVisible, setIsVisible] = useState(false)
@@ -110,6 +112,7 @@ function BookingPartner() {
                   </div>
                   {
                     !localLogo &&
+                    !isIHanoi &&
                     <div style={{ color: 'var(--primary-button-color)', marginTop: '0.5rem' }}>Powered by TTDK</div>
                   }
                 </div>
@@ -131,7 +134,7 @@ function BookingPartner() {
                   }
                 })}
               </div>
-              <div style={{ color: 'var(--primary-button-color)', marginTop: '0.5rem' }}>Powered by TTDK</div>
+              {!isIHanoi && <div style={{ color: 'var(--primary-button-color)', marginTop: '0.5rem' }}>Powered by TTDK</div>}
             </div>
           </>
         )
