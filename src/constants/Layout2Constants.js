@@ -574,7 +574,7 @@ export const iHaNoiInspectionServices = [
     title: 'Đặt lịch đăng kiểm',
     subTitle: 'Đặt lịch đăng kiểm xe của bạn nhanh chóng và tiện lợi',
     type: 'inspection',
-    path: `${PATH.BOOKING}?inspection=1`,
+    path: `${PATH.BOOKING}?scheduleType=1`,
     icon: <DangKiemXeDinhKyIcon></DangKiemXeDinhKyIcon>
   },
   {

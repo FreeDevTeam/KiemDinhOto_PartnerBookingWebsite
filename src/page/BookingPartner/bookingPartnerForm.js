@@ -103,7 +103,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   const [scheduleTypePopUp, setScheduleTypePopUp] = useState([])
   const [isModalErrOpen, setIsModalErrOpen] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const [inspection, setInspection] = useState(false)
 
   // Các functions bổ trợ
   const CheckSum = () => {
@@ -646,8 +645,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       'vntId',
       'vehicleSubCategory',
       'certificateSeries',
-      'licensePlates',
-      'inspection'
+      'licensePlates'
     ]
     const paramsKeysNoUse = Object.fromEntries(Object.entries(paramsFromUrl).filter(([key]) => allowedKeys.includes(key)))
     const paramsFromUrlKeys = Object.keys(paramsKeysNoUse)
@@ -723,7 +721,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       handleCategory(paramsFromUrl?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
       let isValid = MINIAPP_GTELPAY ? CheckSum() : !!paramsFromUrl
       if (isValid === false) return
-      setInspection(paramsFromUrl.inspection === '1')
 
       Object.keys(paramsFromUrl).forEach((key) => {
         let value = paramsFromUrl[key]
@@ -935,7 +932,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
               name="scheduleType"
               label="Mục đích đặt hẹn"
               required
-              hidden={inspection}
+              hidden={!!dataBookingParam?.scheduleType}
               rules={[
                 {
                   required: true,
