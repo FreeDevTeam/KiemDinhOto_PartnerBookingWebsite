@@ -7,7 +7,7 @@ export default function MainLogo({
     const localLogo = (JSON.parse(localStorage.getItem(addKeyLocalStorage('dataTheme'))) || {})?.stationsLogo
     
     if (process.env.REACT_APP_THEME_NAME === 'IHANOI' && !localLogo) {
-        return <img src='/IHANOI/logo.png' alt='' {...rest}/>
+        return <img src='/logo.png' alt='' {...rest}/>
     }
     
     return (

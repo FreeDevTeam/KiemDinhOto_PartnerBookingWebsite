@@ -24,4 +24,6 @@ export const STATIONS_TYPE = {
     HANG_XE: 21, // Hãng xe
     BEN_XE: 22, // Bến xe
     TRU_SO_CSGT: 23, // Trụ sở Cảnh sát giao thông
+    TRAFFIC_CAMERA: 24,      // Điểm Camera giao thông
+    EMERGENCY_HOTLINE: 25,   // Hỗ trợ Khẩn cấp (đường dây nóng)
 }

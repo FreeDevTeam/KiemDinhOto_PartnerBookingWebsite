@@ -1,7 +1,6 @@
 import './App.css';
 import React, { useEffect, useLayoutEffect } from "react";
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
-import { Spin } from 'antd'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import "./assets/scss/index.scss"
@@ -100,11 +99,7 @@ function App() {
                   <React.Suspense
                     fallback={
                       <div className="loading" style={{ background: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                        {process.env.REACT_APP_THEME_NAME === 'IHANOI' ? (
-                          <img src='/IHANOI/logofull.png' alt="Loading" style={{ width: 100, height: 100 }} />
-                        ) : (
-                          <Spin />
-                        )}
+                        <img src='/MAINLOGO.png' alt="Loading" style={{ width: 100, height: 100 }} />
                       </div>
                     }>
                     <Layout {...props} Component={fillterRoutes[key].component} hideMobileMenu={fillterRoutes[key].hideMobileMenu} />

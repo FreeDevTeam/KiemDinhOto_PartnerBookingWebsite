@@ -244,7 +244,7 @@
       flex-direction: column;
       align-items: center;
       padding: 16px;
-      background: white;
+      background: var(--background-color);
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       cursor: pointer;
@@ -270,13 +270,13 @@
         .card-title {
           font-size: 14px;
           font-weight: 600;
-          color: #333;
+          color: var(--light-black-color);
           margin-bottom: 4px;
         }
 
         .card-subtitle {
           font-size: 12px;
-          color: #666;
+          color: var(--gray-color);
           line-height: 1.4;
         }
       }

@@ -18,7 +18,7 @@
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #ffffff;
+  background-color: var(--background-color);
   z-index: 20;
   max-width: 600px;
   box-sizing: border-box;
@@ -30,7 +30,7 @@
     padding: 15px;
     border-bottom: 1px solid var(--border-color);
     box-shadow: 0px 4px 12px 0px rgba(29, 33, 167, 0.04);
-    background-color: #002399;
+    background-color: var(--main-color);
     position: relative;
 
     // Back button with arrow icon
