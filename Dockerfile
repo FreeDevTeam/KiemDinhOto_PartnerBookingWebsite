@@ -16,7 +16,7 @@ COPY . /usr/src/app
 #replace "public" folder based on Theme name from REACT_APP_THEME_NAME system environment
 ARG REACT_APP_THEME_NAME=${REACT_APP_THEME_NAME}
 ENV REACT_APP_THEME_NAME=${REACT_APP_THEME_NAME}
-# COPY ./public/${REACT_APP_THEME_NAME}/* /usr/src/app/public/
+COPY ./public/${REACT_APP_THEME_NAME}/* /usr/src/app/public/
 
 #replace new build version
 RUN sed -i "s/REACT_APP_BUILD_VERSION=/REACT_APP_BUILD_VERSION=$(date +%Y%m%d%H%M)/g" .env
