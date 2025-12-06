@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
 import { useGlobalContext } from './../../../context/GlobalContext'
 import Slider from 'react-slick'
 import useWindowDimensions from '../../../hooks/window-dimensions'
+import { buildEmbedUrl } from '../../../components/Popup/EmbedPage'
 
 const L2FunctionButtonList = (props) => {
   const { handleZaloAuthorize,globalState } = useGlobalContext();
@@ -41,8 +42,8 @@ const L2FunctionButtonList = (props) => {
       await setSheetVisible(false)
       window.open(link, '_blank')
     } else {
-      await setSheetVisible(true);
-      await setDataBtn(element)
+      const embedUrl = buildEmbedUrl(link, element?.label || element?.title)
+      history.push(embedUrl)
     }
   }
   const renderBtns = () => {

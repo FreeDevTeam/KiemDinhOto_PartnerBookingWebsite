@@ -90,6 +90,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   // khai báo các biến cho toàn trang
   const history = useHistory()
   const [isLoading, setIsLoading] = useState(false)
+  const [defaultScheduleType, setDefaultScheduleType] = useState(null)
 
   // Kiểm tra các biển trong ENV
   const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1 // ==> dùng cho miniApp
@@ -103,7 +104,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   const [scheduleTypePopUp, setScheduleTypePopUp] = useState([])
   const [isModalErrOpen, setIsModalErrOpen] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const [inspection, setInspection] = useState(false)
 
   // Các functions bổ trợ
   const CheckSum = () => {
@@ -646,8 +646,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       'vntId',
       'vehicleSubCategory',
       'certificateSeries',
-      'licensePlates',
-      'inspection'
+      'licensePlates'
     ]
     const paramsKeysNoUse = Object.fromEntries(Object.entries(paramsFromUrl).filter(([key]) => allowedKeys.includes(key)))
     const paramsFromUrlKeys = Object.keys(paramsKeysNoUse)
@@ -723,7 +722,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       handleCategory(paramsFromUrl?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
       let isValid = MINIAPP_GTELPAY ? CheckSum() : !!paramsFromUrl
       if (isValid === false) return
-      setInspection(paramsFromUrl.inspection === '1')
 
       Object.keys(paramsFromUrl).forEach((key) => {
         let value = paramsFromUrl[key]
@@ -734,7 +732,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
         paramsFromUrl[key] = value
         // fillFormValue(key, value)
       })
-
+      setDefaultScheduleType(paramsFromUrl?.scheduleType)
       getStationConfigByApiKey(paramsFromUrl)
       setLicensePlateColorList(PLATE_COLOR)
     }
@@ -935,7 +933,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
               name="scheduleType"
               label="Mục đích đặt hẹn"
               required
-              hidden={inspection}
               rules={[
                 {
                   required: true,
@@ -948,7 +945,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                 isSearchable={true}
                 placeholder="Vui lòng chọn mục đích đặt lịch"
                 styles={customStyles}
-                options={scheduleTypes}
+                options={defaultScheduleType ? (scheduleTypes || optionServiceType)?.filter((item) => +item?.value === +defaultScheduleType ) : (scheduleTypes || optionServiceType)}
                 menuPlacement="top"
                 onChange={(values, scheduleType) => {
                   setScheduleCategory(scheduleType?.scheduleCategory)

@@ -1,7 +1,6 @@
 import './App.css';
 import React, { useEffect, useLayoutEffect } from "react";
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom'
-import { Spin } from 'antd'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import "./assets/scss/index.scss"
@@ -16,7 +15,6 @@ import './main.scss'
 import './dropDownCommon.scss'
 import { IS_ZALO_MINI_APP } from './constants/global';
 import Layout from './components/Layout';
-import Logo from './assets/MAINLOGO.png'
 import { PATH } from './constants/router';
 import { GlobalProvider } from './context/GlobalContext';
 import { fillterRoutes } from './router';
@@ -99,8 +97,8 @@ function App() {
                 component={(props) => (
                   <React.Suspense
                     fallback={
-                      <div className="loading" style={{ background: 'white' }}>
-                        <Spin />
+                      <div className="loading" style={{ background: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                        <img src='/MAINLOGO.png' alt="Loading" style={{ width: 100, height: 100 }} />
                       </div>
                     }>
                     <Layout {...props} Component={fillterRoutes[key].component} hideMobileMenu={fillterRoutes[key].hideMobileMenu} />

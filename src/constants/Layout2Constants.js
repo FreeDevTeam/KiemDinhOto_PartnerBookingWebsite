@@ -54,6 +54,75 @@ const TraCuuPn = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4,
 let appUserId = localStorage.getItem('appUserId')
 let token = localStorage.getItem('userToken')
 const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1
+export const FEATURE_CARDS = {
+  INSPECTION: {
+    key: 'inspection',
+    title: 'Đăng kiểm xe',
+    subtitle: 'Đặt lịch đăng kiểm, thay đổi thông tin, nộp hồ sơ',
+    icon: <DangKiemXeDinhKyIcon></DangKiemXeDinhKyIcon>,
+    linkNavigation: `${PATH.BOOKING}`
+  },
+  INSURANCE: {
+    key: 'insurance',
+    title: 'Bảo hiểm',
+    subtitle: 'Mua bảo hiểm TNDS, tư vấn bảo hiểm',
+    icon: <GiaHanBaoHiemTNDSIcon></GiaHanBaoHiemTNDSIcon>,
+    link: process.env.REACT_APP_RUNTIME_MODE === 'production'
+      ? `https://baohiem.ttdk.com.vn/?isEmbeddedView=1`
+      : `https://ttdk-develop-baohiem.service.makefamousapp.com/?isEmbeddedView=1`
+  },
+  TRAFFIC_FINE: {
+    key: 'traffic_fine',
+    title: 'Kiểm tra phạt nguội',
+    subtitle: 'Tra cứu và xử lý phạt nguội',
+    icon: <TraCuuPn></TraCuuPn>,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/kiemtraphatnguoi?isEmbeddedView=true&isFromPartnerApp=true`
+  },
+  SUPPORT: {
+    key: 'support',
+    title: 'Tư vấn hỗ trợ',
+    subtitle: 'Liên hệ hỗ trợ khách hàng',
+    icon: <TuVanDKIcon></TuVanDKIcon>,
+    isZaloOpenchat: true
+  }
+}
+
+export const FEATURE_CARDS_IHANOI = {
+  INSPECTION: {
+    key: 'inspection',
+    title: 'Đăng kiểm xe',
+    subtitle: 'Đặt lịch đăng kiểm trực tuyến',
+    icon: <DangKiemXeDinhKyIcon></DangKiemXeDinhKyIcon>,
+    linkNavigation: `${PATH.BOOKING}`
+  },
+  INSURANCE: {
+    key: 'insurance',
+    title: 'Bảo hiểm',
+    subtitle: 'Mua bảo hiểm TNDS, tư vấn bảo hiểm',
+    icon: <GiaHanBaoHiemTNDSIcon></GiaHanBaoHiemTNDSIcon>,
+    link: process.env.REACT_APP_RUNTIME_MODE === 'production'
+      ? `https://ihanoi-baohiem.websitecaptain.ttdk.com.vn?isEmbeddedView=1`
+      : `https://ihanoi-develop-baohiem.service.makefamousapp.com?isEmbeddedView=1`
+  },
+  TRAFFIC_FINE: {
+    key: 'traffic_fine',
+    title: 'Tra cứu phạt nguội',
+    subtitle: 'Tra cứu phạt nguội nhanh chóng',
+    icon: <TraCuuPn></TraCuuPn>,
+    link: process.env.REACT_APP_RUNTIME_MODE === 'production'
+      ? 'https://ihanoi-phatnguoi.websitecaptain.ttdk.com.vn/tra-cuu-phat-nguoi'
+      : 'https://ihanoi-develop-phatnguoi.service.makefamousapp.com/tra-cuu-phat-nguoi'
+  },
+  MAP_FINE: {
+    key: 'map_fine',
+    title: 'Bản đồ phạt nguội',
+    subtitle: 'Xem bản đồ phạt nguội',
+    icon: <ShowRoomIcon></ShowRoomIcon>,
+    link: process.env.REACT_APP_RUNTIME_MODE === 'production'
+      ? 'https://ihanoi-phatnguoi.websitecaptain.ttdk.com.vn/ban-do-diem-nong-phat-nguoi'
+      : 'https://ihanoi-develop-phatnguoi.service.makefamousapp.com/ban-do-diem-nong-phat-nguoi'
+  }
+}
 export const BTN_LIST_SERVICE = [
   {
     label: 'Trung tâm <br> đăng kiểm',
@@ -123,6 +192,30 @@ export const BTN_LIST_SERVICE = [
     link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.DRIVER_HEALTH}&name=Khám sức khỏe lái xe&isEmbeddedView=true`,
   },
 ]
+
+export const BTN_LIST_SERVICE_IHANOI = [
+  {
+    label: 'Trung tâm <br> đăng kiểm',
+    icon: <TrungTamDKIcon></TrungTamDKIcon>,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.CENTER}&name=Trung tâm đăng kiểm&isEmbeddedView=true`,
+  },
+  {
+    label: 'Cứu hộ <br> đăng kiểm',
+    icon: <CuuHoIcon></CuuHoIcon>,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.INSPECTION_RESCUE}&name=cuuho&isEmbeddedView=true`,
+  },
+  {
+    label: 'Bảo dưỡng <br> ô tô',
+    icon: <TramBDIcon></TramBDIcon>,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.GARAGE}&name=Bảo dưỡng ô tô&isEmbeddedView=true`,
+  },
+  {
+    label: 'Trụ sở <br> CSGT',
+    icon: <HoptacxaIcon></HoptacxaIcon>,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.TRU_SO_CSGT}&name=Trụ sở CSGT&isEmbeddedView=true`,
+  },
+]
+
 export const CONVENIENCE_DRIVERS_BTN = [
   {
     label: 'Cộng đồng <br> review',
@@ -473,4 +566,23 @@ export const HOT_SERVICES = [
     link: `${PATH.BOOKING}?scheduleType=21`,
     unOpen: true,
   },
+]
+
+export const iHaNoiInspectionServices = [
+  {
+    id: 1,
+    title: 'Đặt lịch đăng kiểm',
+    subTitle: 'Đặt lịch đăng kiểm xe của bạn nhanh chóng và tiện lợi',
+    type: 'inspection',
+    path: `${PATH.BOOKING}?scheduleType=1`,
+    icon: <DangKiemXeDinhKyIcon></DangKiemXeDinhKyIcon>
+  },
+  {
+    id: 2,
+    title: 'Đặt lịch dịch vụ đăng kiểm',
+    subTitle: 'Đặt lịch dịch vụ đăng kiểm kèm theo các tiện ích bổ sung',
+    type: 'service',
+    path: PATH.BOOKING,
+    icon: <TramBDIcon></TramBDIcon>
+  }
 ]
