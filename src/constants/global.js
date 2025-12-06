@@ -853,7 +853,10 @@ export const WEBVIEW_TYPES = {
 }
 
 export const PAYMENT_TYPE = {
-  ATM_BANK:'1',
-  MOMO_BANK:'2',
-  GTEL_PAY: '3',
+  ATM_BANK: 1,
+  MOMO_BANK: 2,
+  GTEL_PAY: 3,
+  VNPAY: 4,
+  ZALOPAY: 5,
+  VIETTEL_PAY: 6
 }

@@ -337,6 +337,23 @@ export default class BookingService {
       })
     })
   }
+  static async getBannerCenterList(filter) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/SystemPromoBanners/partner/getStationBanners',
+        data: filter
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(data)
+        } else {
+          return resolve({})
+        }
+      })
+    })
+  }
+
   static async userGetPartnerUtilityNews(limit) {
     return new Promise((resolve) => {
       Request.send({

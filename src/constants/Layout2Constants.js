@@ -474,3 +474,15 @@ export const HOT_SERVICES = [
     unOpen: true,
   },
 ]
+
+export const SECTION = {
+  default: '',
+  0: 'Điểm dịch vụ đề xuất',
+  1: 'Tiện ích cho tài xế',
+  2: 'Cơ quan chính phủ',
+  3: 'Đối tác',
+  4: 'Ưu đãi từ đối tác',
+  5: 'Tin tức',
+  6: 'Tuyển dụng',
+  7: 'Chuyên gia chia sẻ'
+}

@@ -20,7 +20,7 @@ function CheckVihcle() {
   const [isOpen, setIsOpen] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [form] = Form.useForm()
-  const apikey= CheckApiKey()
+  const apiKey= CheckApiKey()
   const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1
   const searchparam = location.search
   const params = new URLSearchParams(searchparam)
@@ -74,7 +74,7 @@ function CheckVihcle() {
           certificateSeries:data?.certificateSeries || values.certificateSeries
         }
         setTimeout(() => {
-          history.push(`${PATH.BOOKING}${isZaloApp ? '':`?apikey=${apikey}`}`,params)
+          history.push(`${PATH.BOOKING}${isZaloApp ? '':`?apiKey=${apiKey}`}`,params)
         }, 500);
       }
       setIsLoading(false)
@@ -101,7 +101,7 @@ function CheckVihcle() {
   };
   return (
     <>
-      {apikey ? 
+      {apiKey ? 
         (
           <div className="bg-white" style={{ maxWidth: 600, margin: 'auto', padding: '20px 15px' }}>
           <h4 className='mb-3 text-large' style={{textAlign:'center'}}>Thông tin xe</h4>

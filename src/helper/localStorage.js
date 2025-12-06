@@ -9,3 +9,21 @@ const addKeyLocalStorage = (key) => {
 }
 
 export default addKeyLocalStorage
+
+export const saveClickToLocalStorage = ({ localStorageKey, targetId }) => {
+  const existingData = JSON.parse(localStorage.getItem(addKeyLocalStorage(localStorageKey))) || {}
+  if (existingData[targetId]) {
+    existingData[targetId].count += 1
+    existingData[targetId].lastClicked = Date.now()
+  } else {
+    existingData[targetId] = {
+      targetId,
+      count: 1,
+      lastClicked: Date.now()
+    }
+  }
+
+  if (JSON.stringify(existingData)) {
+    localStorage.setItem(addKeyLocalStorage(localStorageKey), JSON.stringify(existingData))
+  }
+}

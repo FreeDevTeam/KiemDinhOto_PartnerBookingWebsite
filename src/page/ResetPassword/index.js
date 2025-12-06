@@ -5,6 +5,7 @@ import "./index.scss"
 import { resetPassword } from '../../services/ttdkService'
 import { notification } from "antd";
 import MainLogo from '../../components/MainLogo'
+import { useHistory } from 'react-router-dom'
 
 const statePage = {
     Default: "default",
@@ -78,6 +79,7 @@ const ContentPage = (props) => {
 }
 
 export default function ResetPassword() {
+     const history = useHistory()
     const [currentStatePage, setCurrentStatePage] = useState(statePage.Default);
     const handleConfirm = async () => {
         try {
@@ -106,6 +108,7 @@ export default function ResetPassword() {
                 message: "Có lỗi phát sinh. Vui lòng thử lại"
             })
             setCurrentStatePage(statePage.Error)
+            history.push('/')
         }
     }
     return (

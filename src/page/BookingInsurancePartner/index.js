@@ -19,7 +19,7 @@ function BookingInsurancePartner() {
   const searchparam = location.search
   const params = new URLSearchParams(searchparam)
   let partner = params.get('partner')?.toLowerCase()
-  let apikey = CheckApiKey()
+  let apiKey = CheckApiKey()
 
   const handleGetUserInfor = async () => {
     try {
@@ -44,7 +44,7 @@ function BookingInsurancePartner() {
   }, [])
   return (
     <>
-      {apikey ?
+      {apiKey ?
         (
           <div className={`partner app-container ${nextTab === 'otp' ? 'py-0 px-2' : 'pd-30-15'}`} style={{ maxWidth: 480, margin: 'auto', padding: '10px' }}>
             {isVisible ? (

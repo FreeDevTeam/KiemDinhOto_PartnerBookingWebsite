@@ -17,10 +17,10 @@ function cleanUp() {
 
 function send({ method = 'get', path, data = null, query = null, headers = {}, newUrl, }) {
   return new Promise((resolve) => {
-    let apikey = CheckApiKey()
+    let apiKey = CheckApiKey()
     let _query={
       ...query,
-      apikey : apikey
+      apiKey : apiKey
     }
     let url = HOST + `${path}${getQueryString(_query)}`
     if (newUrl) {

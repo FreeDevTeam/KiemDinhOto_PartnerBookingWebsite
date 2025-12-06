@@ -20,7 +20,7 @@ function BookingInsurancePartner() {
   const searchparam = location.search
   const params = new URLSearchParams(searchparam)
   let partner = params.get('partner')?.toLowerCase()
-  let apikey = CheckApiKey()
+  let apiKey = CheckApiKey()
 
   const handleGetUserInfor = async () => {
     try {
@@ -45,7 +45,7 @@ function BookingInsurancePartner() {
   }, [])
   return (
     <>
-      {apikey ?
+      {apiKey ?
         (
           <div className=''>
             {isVisible ? (

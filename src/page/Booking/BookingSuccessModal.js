@@ -23,7 +23,7 @@ const BookingSuccess = ({ isModalOpen, onClose, history, scheduleId,setStep,setI
         <div>
           {/* <Button
             className="login__button w-100 custom-df-btn light custom-btn"
-            onClick={() => history.push(`/booking-history?apikey=${apiKey}&name=${fullName}&phone=${phoneNumber}`)}
+            onClick={() => history.push(`/booking-history?apiKey=${apiKey}&name=${fullName}&phone=${phoneNumber}`)}
             style={{ marginTop: 8 }}
             size="large">
             Xem lịch hẹn
