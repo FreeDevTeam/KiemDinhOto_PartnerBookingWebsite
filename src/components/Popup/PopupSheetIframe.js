@@ -1,12 +1,20 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, Sheet, Text } from 'zmp-ui'
 
 const PopupSheetIframe = ({ visible, onClose, title, iframeUrl, styleCss }) => {
+  const isEmbeddedView = useMemo(() => iframeUrl?.includes('isEmbeddedView'), [iframeUrl]);
+
+  const iframeStyle = useMemo(() => ({
+    ...(styleCss?.style || { border: 'none' }),
+    minHeight: isEmbeddedView ? '100vh' : (styleCss?.style?.minHeight || '70vh'),
+    height: isEmbeddedView ? '100vh' : (styleCss?.style?.height || 'auto'),
+  }), [isEmbeddedView, styleCss]);
+
   return (
     <Sheet
       visible={visible}
       onClose={onClose}
-      autoHeight
+      autoHeight={!isEmbeddedView}
       className="sheet-zalo"
       mask={true}
       swipeToClose
@@ -21,7 +29,7 @@ const PopupSheetIframe = ({ visible, onClose, title, iframeUrl, styleCss }) => {
           <iframe
             src={iframeUrl}
             width={styleCss?.width || '100%'}
-            style={styleCss?.style || { minHeight: '70vh', border: 'none' }}
+            style={iframeStyle}
             frameBorder={styleCss?.frameBorder || "0"}
             title={styleCss?.title || "Banner Popup"}
           ></iframe>

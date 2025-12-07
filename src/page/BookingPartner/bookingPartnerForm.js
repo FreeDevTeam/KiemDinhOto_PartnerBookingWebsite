@@ -1042,10 +1042,10 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
             <Form.Item
               name="scheduleType"
               label="Mục đích đặt hẹn"
-              required
+              hidden={dataBookingParam?.visible_scheduleType === false}
               rules={[
                 {
-                  required: true,
+                  required: dataBookingParam?.visible_scheduleType !== false && dataBookingParam?.require_scheduleType === true,
                   message: 'Vui lòng chọn mục đích đặt lịch'
                 }
               ]}>
