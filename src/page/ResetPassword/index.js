@@ -118,7 +118,7 @@ export default function ResetPassword() {
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
                 <MainLogo height={60} width={60}></MainLogo>
                 </div>
-                <div className='text-blue mt-3'>Powered by TTDK</div>
+                <div className='text-blue mt-3'>Powered by {process.env.REACT_APP_THEME_NAME}</div>
             </div>
         </div>
     )

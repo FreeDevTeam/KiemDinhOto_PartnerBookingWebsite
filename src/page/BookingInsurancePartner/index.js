@@ -75,7 +75,7 @@ function BookingInsurancePartner() {
                       }
                     })}
                   </div>
-                  <div style={{ color: 'var(--primary-button-color)', marginTop: '0.5rem' }}>Powered by TTDK</div>
+                  <div style={{ color: 'var(--primary-button-color)', marginTop: '0.5rem' }}>Powered by {process.env.REACT_APP_THEME_NAME}</div>
                 </div>
               </>
             )
@@ -95,7 +95,7 @@ function BookingInsurancePartner() {
                   }
                 })}
               </div>
-              <div style={{ color: 'var(--primary-button-color)', marginTop: '0.5rem' }}>Powered by TTDK</div>
+              <div style={{ color: 'var(--primary-button-color)', marginTop: '0.5rem' }}>Powered by {process.env.REACT_APP_THEME_NAME}</div>
             </div>
           </>
         )
