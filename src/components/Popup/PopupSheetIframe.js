@@ -6,8 +6,8 @@ const PopupSheetIframe = ({ visible, onClose, title, iframeUrl, styleCss }) => {
 
   const iframeStyle = useMemo(() => ({
     ...(styleCss?.style || { border: 'none' }),
-    minHeight: isEmbeddedView ? '100vh' : (styleCss?.style?.minHeight || '70vh'),
-    height: isEmbeddedView ? '100vh' : (styleCss?.style?.height || 'auto'),
+    minHeight: isEmbeddedView ? '90vh' : (styleCss?.style?.minHeight || '90vh'),
+    height: isEmbeddedView ? '90vh' : (styleCss?.style?.height || 'auto'),
   }), [isEmbeddedView, styleCss]);
 
   return (
@@ -19,12 +19,19 @@ const PopupSheetIframe = ({ visible, onClose, title, iframeUrl, styleCss }) => {
       mask={true}
       swipeToClose
     >
-      <Box p={4} className="custom-bottom-sheet" flex flexDirection="column">
-        {title && (
+      <Box p={4} className="custom-bottom-sheet position-relative" flex flexDirection="column">
+        <div
+          className="position-absolute end-0 p-3"
+          style={{ cursor: 'pointer', fontSize: 20, top: -24 }} 
+          onClick={onClose} 
+        >
+          ✖
+        </div>
+        {/* {title && (
           <Box my={4}>
             <Text.Title>{title}</Text.Title>
           </Box>
-        )}
+        )} */}
         <Box className="bottom-sheet-body" style={{ overflowY: 'auto' }}>
           <iframe
             src={iframeUrl}
