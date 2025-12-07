@@ -47,6 +47,7 @@ import MomoPartner from "./../assets/Layout2Icons/momo.png";
 import BICPartner from "./../assets/Layout2Icons/BIC.png";
 import BHSPartner from "./../assets/Layout2Icons/BHS.png";
 import { PATH } from './router'
+import { REACT_APP_INSURANCE_WEB_URL, REACT_APP_PHATNGUOI_WEB_URL } from './url'
 const EpassLogo = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4,display:'inline'}} src={Epass}></img></div>
 const DatXeLogo = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4,display:'inline'}} src={DatXe}></img></div>
 const TuDongBaoPN = ()=> <div ><img style={{width:40,borderRadius:4,marginBottom:4,display:'inline'}} src={TuDongTBPN}></img></div>
@@ -59,7 +60,21 @@ export const BTN_LIST_SERVICE = [
     label: 'Trung tâm <br> đăng kiểm',
     icon: <TrungTamDKIcon></TrungTamDKIcon>,
     link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.CENTER}&name=Trung tâm đăng kiểm&isEmbeddedView=true`,
-    
+  },
+    {
+    label: 'Trụ sở CSGT <br> CA Địa phương',
+    icon: <TrungTamDKIcon></TrungTamDKIcon>,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=23&name=Trụ sở CSGT và CA Địa phương&isEmbeddedView=true`,
+  },
+  {
+    label: 'Điểm camera <br> giao thông',
+    icon: <TrungTamDKIcon></TrungTamDKIcon>,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=24&name=Điểm camera giao thông&isEmbeddedView=true`,
+  },
+  {
+    label: 'Hỗ trợ khẩn cấp <br> đường dây nóng',
+    icon: <TrungTamDKIcon></TrungTamDKIcon>,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=25&name=Hỗ trợ khẩn cấp và đường dây nóng&isEmbeddedView=true`,
   },
   {
     label: 'Cứu hộ <br> đăng kiểm',
@@ -122,6 +137,7 @@ export const BTN_LIST_SERVICE = [
     icon: <KhamSKIcon></KhamSKIcon>,
     link: `${process.env.REACT_APP_DEPLOY_URL}/stations?type=${STATIONS_TYPE.DRIVER_HEALTH}&name=Khám sức khỏe lái xe&isEmbeddedView=true`,
   },
+
 ]
 export const CONVENIENCE_DRIVERS_BTN = [
   {
@@ -305,7 +321,7 @@ export const BOOKING_LIST_BTN = [
     label: 'Tra cứu <br> phạt nguội',
     icon: <TraCuuPn></TraCuuPn>,
     // link: `${process.env.REACT_APP_DEPLOY_URL}/kiemtraphatnguoi?isEmbeddedView=true`,
-    link: `https://ttdk.com.vn/kiemtraphatnguoi?isEmbeddedView=true&isFromPartnerApp=true`,
+    link: `${process.env.REACT_APP_DEPLOY_URL}/kiemtraphatnguoi?isEmbeddedView=true&isFromPartnerApp=true`,
     token: true,
   },
   {
@@ -325,12 +341,12 @@ export const BOOKING_LIST_BTN = [
     link: `${PATH.BOOKING}?scheduleType=22`,
     unOpen: true,
   },
-  {
-    label: 'Danh sách <br> lịch hẹn',
-    icon: <HuongDanDKIcon></HuongDanDKIcon>,
-    link: `/my-booking-history`,
-    unOpen: true,
-  },
+  // {
+  //   label: 'Danh sách <br> lịch hẹn',
+  //   icon: <HuongDanDKIcon></HuongDanDKIcon>,
+  //   link: `/my-booking-history`,
+  //   unOpen: true,
+  // },
   {
     label: 'Bảo hiểm',
     icon: <GiaHanDangKiemIcon></GiaHanDangKiemIcon>,
@@ -339,9 +355,7 @@ export const BOOKING_LIST_BTN = [
     //   : process.env.REACT_APP_RUNTIME_MODE == 'production' 
     //     ? `https://baohiem.ttdk.com.vn?&appUserId=${appUserId}&token=${token}` 
     //     : `https://ttdk-sanbox-muabaohiem.service.makefamousapp.com?isEmbeddedView=1&appUserId=${appUserId}&token=${token}`,
-        link: process.env.REACT_APP_RUNTIME_MODE == 'production' 
-        ? `https://baohiem.ttdk.com.vn?&appUserId=${appUserId}&token=${token}` 
-        : `https://ttdk-sanbox-muabaohiem.service.makefamousapp.com?isEmbeddedView=1&appUserId=${appUserId}&token=${token}`,
+    link:  `${REACT_APP_INSURANCE_WEB_URL}?isEmbeddedView=1&appUserId=${appUserId}&token=${token}`
   },
   //tạm ẩn
   // {
@@ -350,11 +364,11 @@ export const BOOKING_LIST_BTN = [
   //   link: `${PATH.BOOKING}?scheduleType=5`,
   //   unOpen: true,
   // },
-  // {
-  //   label: 'Tra cứu <br> thông tin xe',
-  //   icon: <DinhGiaXe></DinhGiaXe>,
-  //   link: `${process.env.REACT_APP_DEPLOY_URL}/kiemtraphatnguoi`,
-  // },
+  {
+    label: 'Bản đồ <br> phạt nguội',
+    icon: <DinhGiaXe></DinhGiaXe>,
+    link: `${REACT_APP_PHATNGUOI_WEB_URL}/ban-do-diem-nong-phat-nguoi`,
+  },
 ]
 export const INSPECTION_SERVICES = [
   {
@@ -373,9 +387,7 @@ export const INSPECTION_SERVICES = [
     label: 'Tư vấn BH <br> TNDS xe ô tô',
     icon: <TuVanBaoHiemIcon></TuVanBaoHiemIcon>,
     // link: `${PATH.BOOKING}?scheduleType=14`,
-    link: process.env.REACT_APP_RUNTIME_MODE == 'production' 
-    ? `https://baohiem.ttdk.com.vn?&appUserId=${appUserId}&token=${token}` 
-    : `https://ttdk-sanbox-muabaohiem.service.makefamousapp.com?isEmbeddedView=1&appUserId=${appUserId}&token=${token}`,
+    link: `${REACT_APP_INSURANCE_WEB_URL}?&appUserId=${appUserId}&token=${token}`,
     unOpen: false,
   },
   {
@@ -414,9 +426,7 @@ export const HOT_SERVICES = [
     label: 'Mua bảo hiểm TNDS',
     icon: <TramBDIcon></TramBDIcon>,
     // link: `${process.env.REACT_APP_DEPLOY_URL}/doi-tac-bao-hiem/saladin-bao-hiem-toan-dien?isEmbeddedView=true`,
-    link: process.env.REACT_APP_RUNTIME_MODE == 'production' 
-    ? `https://baohiem.ttdk.com.vn?&appUserId=${appUserId}&token=${token}` 
-    : `https://ttdk-sanbox-muabaohiem.service.makefamousapp.com?isEmbeddedView=1&appUserId=${appUserId}&token=${token}`,
+    link: `${REACT_APP_INSURANCE_WEB_URL}?&appUserId=${appUserId}&token=${token}`,
     unOpen: false,
   },
   {
