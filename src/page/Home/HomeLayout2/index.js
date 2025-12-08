@@ -490,7 +490,7 @@ const HomeLayout2 = (props) => {
                   <L2FunctionButtonList
                     setSheetVisible={setSheetVisible}
                     setDataBtn={setDataBtn}
-                    list={vehicleInspectionList}
+                    list={violationList}
                     title={'Phạt nguội giao thông'}></L2FunctionButtonList>
                   {/* <L2FunctionButtonList
                     setSheetVisible={setSheetVisible}
