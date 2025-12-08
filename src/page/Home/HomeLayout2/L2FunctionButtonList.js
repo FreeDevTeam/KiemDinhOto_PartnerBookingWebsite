@@ -39,11 +39,13 @@ const L2FunctionButtonList = (props) => {
     const isZaloLink = link.includes('zalo.me')
 
     if (isZaloLink) {
-      // await setSheetVisible(false)
+      await setSheetVisible(false)
       window.open(link, '_blank')
     } else {
       if (link) {
-        window.location.href = link
+        await setSheetVisible(true);
+        await setDataBtn(element)
+        // window.location.href = link
       }
     }
   }

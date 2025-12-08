@@ -38,8 +38,8 @@ export const SliderHome = (props) => {
 
   const handleClickBanner = (item, index) => {
     if (item?.bannerUrl) {
-      // setPopupUrl(item.bannerUrl)
-      // setSheetVisible(true)
+      setPopupUrl(item.bannerUrl)
+      setSheetVisible(true)
       if (item?.targetId) {
         saveClickToLocalStorage({ localStorageKey: CLICK_STORAGE_KEY, targetId: item?.targetId })
         if (!intervalRef.current) {
@@ -48,7 +48,7 @@ export const SliderHome = (props) => {
           }, 30 * 1000) // 30s
         }
       }
-      window.location.href=item.bannerUrl
+      // window.location.href=item.bannerUrl
     }
   }
 
