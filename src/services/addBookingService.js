@@ -309,7 +309,7 @@ export default class BookingService {
     return new Promise((resolve) => {
       Request.send({
         method: 'POST',
-        path: '/HomePageConfig/user/getList',
+        path: '/HomePageConfig/partner/getHomePageConfig',
         data: data
       }).then((result = {}) => {
         const { statusCode, data } = result

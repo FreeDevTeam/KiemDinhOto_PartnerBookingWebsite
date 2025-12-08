@@ -72,6 +72,8 @@ const HomeLayout2 = (props) => {
   const LAST_UPDATE_NEWS = {}
   const lastUpdateNews = JSON.parse(localStorage.getItem('LAST_UPDATE_NEWS'))
   const [stationConfigs, setStationConfigs] = useState(undefined)
+  const [vehicleInspectionList, setVehicleInspectionList] = useState([])
+  const [violationList, setViolationList] = useState([])
 
   const pushCacheDataIntoObj = (typeOfNews, lastId, obj) => {
     const id = JSON.parse(localStorage.getItem(`LAST_${typeOfNews}_NEWS_ID`)) || undefined
@@ -299,6 +301,12 @@ const HomeLayout2 = (props) => {
           case 2:
             setGovernmentAgency(data?.data);
             break;
+          case 4:
+            setVehicleInspectionList(data?.data);
+            break;
+          case 5:
+            setViolationList(data?.data);
+            break;
         }
       } else {
         switch (params) {
@@ -399,8 +407,8 @@ const HomeLayout2 = (props) => {
 
   useEffect(() => {
     getZaloDisplayStationListSetting()
-    getHomePageConfig(1)
-    getHomePageConfig(2)
+    getHomePageConfig(4)
+    getHomePageConfig(5)
     fetchStationButtonConfig()
     setTimeout(() => {
       fetchData()
@@ -412,13 +420,13 @@ const HomeLayout2 = (props) => {
     // }
     setTimeout(async() =>  {
       await getMetaData()
-      await getExpertNews()
-      await getRecruitmentListNew()
-      await getPartnerUtilityNews()
-      await getStationNewsPartnerPromotion()
-      await getStationNewsPromotion()
-      await getListNews()
-      await getNews()
+      // await getExpertNews()
+      // await getRecruitmentListNew()
+      // await getPartnerUtilityNews()
+      // await getStationNewsPartnerPromotion()
+      // await getStationNewsPromotion()
+      // await getListNews()
+      // await getNews()
       await getBannerBySectionCache(12).then(data =>{
         if(data?.length > 0){
           setBottomBanner(data)
@@ -477,15 +485,25 @@ const HomeLayout2 = (props) => {
                   <L2FunctionButtonList
                     setSheetVisible={setSheetVisible}
                     setDataBtn={setDataBtn}
-                    list={BOOKING_LIST_BTN}
-                    title={'Đặt lịch'}></L2FunctionButtonList>
-
+                    list={vehicleInspectionList}
+                    title={'Đăng kiểm xe cơ giới'}></L2FunctionButtonList>
                   <L2FunctionButtonList
                     setSheetVisible={setSheetVisible}
                     setDataBtn={setDataBtn}
+                    list={vehicleInspectionList}
+                    title={'Phạt nguội giao thông'}></L2FunctionButtonList>
+                  {/* <L2FunctionButtonList
+                    setSheetVisible={setSheetVisible}
+                    setDataBtn={setDataBtn}
+                    list={BOOKING_LIST_BTN}
+                    title={'Đặt lịch'}></L2FunctionButtonList> */}
+
+                  {/* <L2FunctionButtonList
+                    setSheetVisible={setSheetVisible}
+                    setDataBtn={setDataBtn}
                     list={INSPECTION_SERVICES}
-                    title={'Dịch vụ đăng kiểm'}></L2FunctionButtonList>
-                  {!hideNewsFromZaloMiniApp && (
+                    title={'Dịch vụ đăng kiểm'}></L2FunctionButtonList> */}
+                  {/* {!hideNewsFromZaloMiniApp && (
                     <div className="layout2-bg mb-4">
                       {hotNews?.length > 0 && (
                         <div style={{ padding: '0 10px', marginBottom: '1.5rem' }}>
@@ -501,14 +519,14 @@ const HomeLayout2 = (props) => {
                         </div>
                       )}
                     </div>
-                  )}
-                  <L2FunctionButtonList
+                  )} */}
+                  {/* <L2FunctionButtonList
                     setSheetVisible={setSheetVisible}
                     setDataBtn={setDataBtn}
                     slider={HOT_SERVICES?.length > 9 || (mobile && HOT_SERVICES?.length > 7)}
                     list={HOT_SERVICES}
-                    title={'Dịch vụ nổi bật'}></L2FunctionButtonList>
-                  {!hideNewsFromZaloMiniApp && stationNewsPartnerPromotion?.length > 0 && (
+                    title={'Dịch vụ nổi bật'}></L2FunctionButtonList> */}
+                  {/* {!hideNewsFromZaloMiniApp && stationNewsPartnerPromotion?.length > 0 && (
                     <div className="home-container mb-5 ">
                       <div className="d-flex justify-content-between align-items-center news-center">
                         <div className="text-large title-homelayout" style={{ padding: '0 10px' }}>
@@ -532,16 +550,16 @@ const HomeLayout2 = (props) => {
                         />
                       </div>
                     </div>
-                  )}
-                  {isZaloShowStationList && ( //Nếu không phải là zalo mini app thì mới hiện lên
+                  )} */}
+                  {/* {isZaloShowStationList && ( //Nếu không phải là zalo mini app thì mới hiện lên
                     <L2FunctionButtonList
                       setSheetVisible={setSheetVisible}
                       slider={true}
                       setDataBtn={setDataBtn}
                       list={BTN_LIST_SERVICE}
                       title={'Điểm dịch vụ đề xuất'}></L2FunctionButtonList>
-                  )}
-                  {!hideNewsFromZaloMiniApp && (
+                  )} */}
+                  {/* {!hideNewsFromZaloMiniApp && (
                     <div className="layout2-bg mb-4">
                       {listNews?.length > 0 && (
                         <div className="home-container mb-1 mt-1">
@@ -561,15 +579,15 @@ const HomeLayout2 = (props) => {
                         </div>
                       )}
                     </div>
-                  )}
-                  {!hideNewsFromZaloMiniApp && (
+                  )} */}
+                  {/* {!hideNewsFromZaloMiniApp && (
                     <L2FunctionButtonList
                       setSheetVisible={setSheetVisible}
                       setDataBtn={setDataBtn}
                       slider={CONVENIENCE_DRIVERS_BTN?.length > 9 || (mobile && CONVENIENCE_DRIVERS_BTN?.length > 7)}
                       list={CONVENIENCE_DRIVERS_BTN}
                       title={'Tiện ích cho tài xế'}></L2FunctionButtonList>
-                  )}
+                  )} */}
                   {/* <div className=''>
               {partnerUtilityNews?.length > 0 &&
                 <div className="home-container mb-5">
@@ -587,12 +605,12 @@ const HomeLayout2 = (props) => {
                 </div>
               }
             </div> */}
-                  <L2FunctionButtonList
+                  {/* <L2FunctionButtonList
                     setSheetVisible={setSheetVisible}
                     setDataBtn={setDataBtn}
                     list={GOVERNMENT_BTN}
                     className="government-btn"
-                    title={'Cơ quan chính phủ'}></L2FunctionButtonList>
+                    title={'Cơ quan chính phủ'}></L2FunctionButtonList> */}
                 </div>
                 {/* <div className='mb-5'>
               <div className="home-container sation-slider">
@@ -622,7 +640,7 @@ const HomeLayout2 = (props) => {
                   </div>
                 </div>
               )} */}
-                  {!hideNewsFromZaloMiniApp && (
+                  {/* {!hideNewsFromZaloMiniApp && (
                     <>
                       <div className="layout2-bg">
                         {recruitmentList?.length > 0 && (
@@ -665,7 +683,7 @@ const HomeLayout2 = (props) => {
                         </div>
                       )}
                     </>
-                  )}
+                  )} */}
                 </div>
               </div>
             ) : (

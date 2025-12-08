@@ -34,15 +34,17 @@ const L2FunctionButtonList = (props) => {
     if(!globalState?.isAuthorize){
       await handleZaloAuthorize()
     }
-    const link = element?.link
+
+    const link = element?.link || element?.linkNavigation
     const isZaloLink = link.includes('zalo.me')
 
     if (isZaloLink) {
-      await setSheetVisible(false)
+      // await setSheetVisible(false)
       window.open(link, '_blank')
     } else {
-      await setSheetVisible(true);
-      await setDataBtn(element)
+      if (link) {
+        window.location.href = link
+      }
     }
   }
   const renderBtns = () => {
