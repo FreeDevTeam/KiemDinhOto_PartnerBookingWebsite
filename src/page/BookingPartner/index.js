@@ -11,6 +11,7 @@ import { useGlobalContext } from '../../context/GlobalContext'
 import { SCHEDULE_TYPE, WEBVIEW_TYPES } from '../../constants/global'
 import MainLogo from '../../components/MainLogo'
 import addKeyLocalStorage from '../../helper/localStorage'
+import { ReactComponent as ArrowLeft } from '../../assets/Booking-icon/ArrowLeft.svg'
 function BookingPartner() {
   const { globalState, handleGetUserPhone, handleGetUserName, setGlobalState } = useGlobalContext();
   const [isVisible, setIsVisible] = useState(false)
@@ -63,6 +64,11 @@ function BookingPartner() {
       {apikey ?
         (
           <div className={`partner app-container ${nextTab === 'otp' ? 'py-0 px-2' : 'pd-30-15'}`} style={{ maxWidth: 480, margin: 'auto', padding: '10px' }}>
+            {(['true', '1'].includes(params.get('isEmbeddedView'))) && (
+              <div className="embedded-header">
+                <ArrowLeft className="back-icon" onClick={() => window.history.back()} />
+              </div>
+            )}
             {isVisible ? (
               <div className="loading">
                 <Spin style={{ width: '100%' }} />
