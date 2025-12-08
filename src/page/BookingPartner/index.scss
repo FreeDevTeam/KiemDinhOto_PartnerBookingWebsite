@@ -382,7 +382,7 @@
 
 .embedded-header {
   position: absolute;
-  top: 5px;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
   max-width: 600px;
@@ -390,4 +390,11 @@
   height: 50px;
   background-color: var(--transparent);
   z-index: 1000;
+
+  .back-icon {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    cursor: pointer;
+  }
 }
