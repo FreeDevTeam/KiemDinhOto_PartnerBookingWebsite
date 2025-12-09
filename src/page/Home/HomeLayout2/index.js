@@ -747,8 +747,11 @@ const HomeLayout2 = (props) => {
             )}
             {bottomBanner?.length > 1 && <PageLayout>{renderBottomSlider}</PageLayout>}
             {bottomBanner?.length == 1 && (
-              <div className={'layout2'}>
-                <img style={{ borderRadius: '8px' }} src={bottomBanner[0]?.bannerImageUrl}></img>
+              <div className={'layout2'} onClick={()=>{
+                  setSheetVisible(true)
+                  setDataBtn({link: bottomBanner?.[0]?.bannerUrl})
+                }}>
+                <img style={{ borderRadius: '8px' }} src={bottomBanner[0]?.bannerImageUrl} ></img>
               </div>
             )}
           </div>
