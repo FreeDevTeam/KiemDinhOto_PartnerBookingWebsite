@@ -34,6 +34,7 @@ const PopupSheetIframe = ({ visible, onClose, title, iframeUrl, styleCss }) => {
         )} */}
         <Box className="bottom-sheet-body" style={{ overflowY: 'auto' }}>
           <iframe
+            key={iframeUrl}
             src={iframeUrl}
             width={styleCss?.width || '100%'}
             style={iframeStyle}

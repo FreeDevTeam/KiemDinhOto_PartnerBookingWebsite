@@ -762,7 +762,7 @@ const HomeLayout2 = (props) => {
           iframeUrl={handleReturnLink()}
         />
       </div>
-      <div className="hidden-pop">
+      {/* <div className="hidden-pop">
         <PopupSheetIframe
           visible={firtLoadding}
           onClose={() => setFirtLoadding(false)}
@@ -770,7 +770,7 @@ const HomeLayout2 = (props) => {
           iframeUrl={`${process.env.REACT_APP_DEPLOY_URL}/stations?type=3&name=Bảo%20dưỡng%20ô%20tô&isEmbeddedView=true`}
           styleCss={{ style: { minHeight: '10vh' } }}
         />
-      </div>
+      </div> */}
     </>
   )
 }
