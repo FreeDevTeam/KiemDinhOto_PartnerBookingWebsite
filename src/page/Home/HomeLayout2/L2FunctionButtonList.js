@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
 import { useGlobalContext } from './../../../context/GlobalContext'
 import Slider from 'react-slick'
 import useWindowDimensions from '../../../hooks/window-dimensions'
+import { NAVIGATION_TYPE } from '../../../constants/global'
 
 const L2FunctionButtonList = (props) => {
   const { handleZaloAuthorize,globalState } = useGlobalContext();
@@ -36,9 +37,10 @@ const L2FunctionButtonList = (props) => {
     }
 
     const link = element?.link || element?.linkNavigation
-    const isZaloLink = link.includes('zalo.me')
+    // const isZaloLink = link.includes('zalo.me')
+    const isBlankTab = element?.navigationType === NAVIGATION_TYPE.EXTERNAL
 
-    if (isZaloLink) {
+    if (isBlankTab) {
       await setSheetVisible(false)
       window.open(link, '_blank')
     } else {
@@ -52,7 +54,7 @@ const L2FunctionButtonList = (props) => {
   const renderBtns = () => {
     return (
       <div style={{marginBottom:'1rem'}}>
-        <div className='text-large title-homelayout' style={{padding:'0 10px'}}>{title}</div>
+        <div className='text-large title-homelayout' style={{padding:'0 12px'}}>{title}</div>
         {slider ? (
           <div className={`card-slider layout1-btn-booking-section slider-list-btn ${className}`}>
             <Slider ref={sliderRef} {...settings}>

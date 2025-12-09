@@ -19,7 +19,7 @@ export const SliderHome = (props) => {
     speed: 500,
 		className: props?.center ? "center":'',
     centerMode: props?.center ? true: false,
-    centerPadding: props?.center ? "16px" : '',
+    centerPadding: "0px",
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay:true,

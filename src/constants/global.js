@@ -860,3 +860,9 @@ export const PAYMENT_TYPE = {
   ZALOPAY: 5,
   VIETTEL_PAY: 6
 }
+
+export const NAVIGATION_TYPE= {
+  DIRECT: 1, // Trực tiếp
+  EXTERNAL: 2, // Ra ngoài
+  INTERNAL: 3, // Nội bộ
+}

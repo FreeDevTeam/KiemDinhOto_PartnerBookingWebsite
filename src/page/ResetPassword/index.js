@@ -112,7 +112,7 @@ export default function ResetPassword() {
         }
     }
     return (
-        <div style={{ maxWidth: 480, margin: 'auto', padding: '10px' }}>
+        <div style={{ maxWidth: 600, margin: 'auto', padding: '12px' }}>
             <ContentPage page={currentStatePage} handleConfirm={handleConfirm} />
             <div style={{ maxWidth: 600, margin: 'auto', padding: '30px 0', textAlign: 'center' }}>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>

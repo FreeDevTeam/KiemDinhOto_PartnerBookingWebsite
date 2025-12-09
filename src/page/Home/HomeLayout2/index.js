@@ -446,11 +446,11 @@ const HomeLayout2 = (props) => {
         return dataBtn?.link
       }
     }else{
-      if((dataBtn?.linkNavigation).slice(0, 7).includes("http") ){
+      // if((dataBtn?.linkNavigation).slice(0, 7).includes("http") ){
         return dataBtn?.linkNavigation
-      }else{
-        return `${process.env.REACT_APP_DEPLOY_URL}${dataBtn?.linkNavigation}`
-      }
+      // }else{
+      //   return `${process.env.REACT_APP_DEPLOY_URL}${dataBtn?.linkNavigation}`
+      // }
     }
   }
   const handleOpenSheet=(Title,link)=>{

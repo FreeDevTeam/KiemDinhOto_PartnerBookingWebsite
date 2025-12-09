@@ -19,7 +19,7 @@ const PopupSheetIframe = ({ visible, onClose, title, iframeUrl, styleCss }) => {
       mask={true}
       swipeToClose
     >
-      <Box p={4} className="custom-bottom-sheet position-relative" flex flexDirection="column">
+      <Box py={4} className="custom-bottom-sheet position-relative" flex flexDirection="column">
         <div
           className="position-absolute end-0 p-3"
           style={{ cursor: 'pointer', fontSize: 20, top: -24 }} 
@@ -33,14 +33,17 @@ const PopupSheetIframe = ({ visible, onClose, title, iframeUrl, styleCss }) => {
           </Box>
         )} */}
         <Box className="bottom-sheet-body" style={{ overflowY: 'auto' }}>
-          <iframe
-            key={iframeUrl}
-            src={iframeUrl}
-            width={styleCss?.width || '100%'}
-            style={iframeStyle}
-            frameBorder={styleCss?.frameBorder || "0"}
-            title={styleCss?.title || "Banner Popup"}
-          ></iframe>
+          {
+            visible && 
+            <iframe
+              key={iframeUrl}
+              src={iframeUrl}
+              width={styleCss?.width || '100%'}
+              style={iframeStyle}
+              frameBorder={styleCss?.frameBorder || "0"}
+              title={styleCss?.title || "Banner Popup"}
+            ></iframe>
+          }
         </Box>
       </Box>
     </Sheet>
