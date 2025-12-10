@@ -133,7 +133,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
 
   const getStationConfigByApiKey = (paramsFromUrl) => {
     setIsLoading(true)
-    const apiKey = paramsFromUrl?.apiKey || localStorage.getItem('apikey') || localStorage.getItem('apiKey') || undefined
+    const apiKey = paramsFromUrl?.apiKey || paramsFromUrl?.apikey || localStorage.getItem('apiKey')  || localStorage.getItem('apikey') ||undefined
 
     SystemConfigurationsService.getStationConfigByApiKey({ apiKey: apiKey })
       .then((result) => {
