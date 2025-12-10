@@ -1,13 +1,13 @@
 import React, { useMemo } from 'react';
 import { Box, Sheet, Text } from 'zmp-ui'
-
+import { isSafari } from 'react-device-detect';
 const PopupSheetIframe = ({ visible, onClose, title, iframeUrl, styleCss }) => {
   const isEmbeddedView = useMemo(() => iframeUrl?.includes('isEmbeddedView'), [iframeUrl]);
 
   const iframeStyle = useMemo(() => ({
     ...(styleCss?.style || { border: 'none' }),
-    minHeight: isEmbeddedView ? '90vh' : (styleCss?.style?.minHeight || '90vh'),
-    height: isEmbeddedView ? '90vh' : (styleCss?.style?.height || 'auto'),
+    minHeight: isSafari ? "75vh": isEmbeddedView ? '90vh' : (styleCss?.style?.minHeight || '90vh'),
+    height:isSafari ? "75vh": isEmbeddedView ? '90vh' : (styleCss?.style?.height || 'auto'),
   }), [isEmbeddedView, styleCss]);
 
   return (
