@@ -411,7 +411,7 @@ const HomeLayout2 = (props) => {
     getHomePageConfig(5)
     fetchStationButtonConfig()
     setTimeout(() => {
-      fetchData()
+      // fetchData()
       setFirtLoadding(false)
     }, 300);
 
@@ -427,7 +427,15 @@ const HomeLayout2 = (props) => {
       // await getStationNewsPromotion()
       // await getListNews()
       // await getNews()
-      await getBannerBySectionCache(12).then(data =>{
+      getBannerBySectionCache("2001").then(data =>{
+        if(data?.length > 0){
+          setSetting(data)
+          return
+        }else{
+          setSetting([]);
+        }
+      })
+      getBannerBySectionCache("2002").then(data =>{
         if(data?.length > 0){
           setBottomBanner(data)
           return

@@ -5,6 +5,7 @@ import BasicPlaceholder from './../BasicComponent/BasicPlaceholder'
 import PopupSheetIframe from '../Popup/PopupSheetIframe'
 import addKeyLocalStorage, { saveClickToLocalStorage } from '../../helper/localStorage'
 import LogService from '../../services/logService'
+import { NAVIGATION_TYPE } from '../../constants/global'
 
 const CLICK_STORAGE_KEY = 'recordClickData'
 export const SliderHome = (props) => {
@@ -38,8 +39,12 @@ export const SliderHome = (props) => {
 
   const handleClickBanner = (item, index) => {
     if (item?.bannerUrl) {
-      setPopupUrl(item.bannerUrl)
-      setSheetVisible(true)
+      if (item?.bannerNavigationType === NAVIGATION_TYPE.EXTERNAL) {
+         window.open(item.bannerUrl, '_blank')
+      }else{
+        setPopupUrl(item.bannerUrl)
+        setSheetVisible(true)
+      }
       if (item?.targetId) {
         saveClickToLocalStorage({ localStorageKey: CLICK_STORAGE_KEY, targetId: item?.targetId })
         if (!intervalRef.current) {
