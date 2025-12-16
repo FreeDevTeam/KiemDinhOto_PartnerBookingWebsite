@@ -8,11 +8,13 @@ import { CheckApiKey } from '../../helper/CheckApiKey'
 import { TTDK_PARTNER } from '../../components/BasicComponent/CheckLogoPartner'
 import { getZaloUserName, getZaloUserPhone } from '../../helper/zaloSDK'
 import { useGlobalContext } from '../../context/GlobalContext'
+import { useGtelpayUserData } from '../../context/GtelpayContext'
 import { SCHEDULE_TYPE, WEBVIEW_TYPES } from '../../constants/global'
 import MainLogo from '../../components/MainLogo'
 import addKeyLocalStorage from '../../helper/localStorage'
 function BookingPartner() {
-  const { globalState, handleGetUserPhone, handleGetUserName, setGlobalState } = useGlobalContext();
+  const { globalState, handleGetUserPhone, handleGetUserName } = useGlobalContext();
+  const { gtelpayUser } = useGtelpayUserData()
   const [isVisible, setIsVisible] = useState(false)
   const [nextTab, setNextTab] = useState('partner')
   const [tabKey, setTabKey] = useState()
@@ -25,28 +27,29 @@ function BookingPartner() {
   let apikey = CheckApiKey()
   const localLogo = (JSON.parse(localStorage.getItem(addKeyLocalStorage('dataTheme'))) || {})?.stationsLogo
 
+  // Kiểm tra môi trường
+  const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE === '1'
+  const isGtelpayApp = process.env.REACT_APP_MINIAPP_GTELPAY === '1'
 
-  const handleGetUserInfor = async () => {
-    try {
-      handleGetUserName()
-    } catch (error) {
-      
-    }
-    try {
-      await handleGetUserPhone()
-    } catch (error) {
-      setIsVisible(false)
-      notification.error({
-        message: "Có lỗi phát sinh. Vui lòng thử lại."
-      })
-    }
-    setIsVisible(false)
-  }
-
+  // Lấy thông tin user cho Zalo app
   useEffect(() => {
-    setIsVisible(true)
-    handleGetUserInfor()
-  }, [])
+    if (isZaloApp) {
+      setIsVisible(true)
+      const getZaloUserInfor = async () => {
+        try {
+          handleGetUserName()
+          await handleGetUserPhone()
+          setIsVisible(false)
+        } catch (error) {
+          setIsVisible(false)
+          notification.error({
+            message: "Có lỗi phát sinh. Vui lòng thử lại."
+          })
+        }
+      }
+      getZaloUserInfor()
+    }
+  }, [isZaloApp])
 
   const getTitleName = (searchParam) => {
     const splitSearchParam = searchParam?.split('=')
@@ -85,7 +88,7 @@ function BookingPartner() {
                     Number(isWebView) !== WEBVIEW_TYPES.WEBVIEW ? <div className='booking-title title-normal'>{getTitleName(searchparam)}</div> : null
                   }
                   <div className='mt-4'>
-                    <BookingPartnerForm zaloUserPhone={globalState.phoneNumber} zaloUserName={globalState.userName} setTabKey={setTabKey} form={form} />
+                    <BookingPartnerForm zaloUserPhone={globalState.phoneNumber} zaloUserName={globalState.userName} gtelpayUser={gtelpayUser} setTabKey={setTabKey} form={form} />
                   </div>
                   {/* </Tabs.TabPane>
                         <Tabs.TabPane tab="Lịch hẹn" key="bookingList">

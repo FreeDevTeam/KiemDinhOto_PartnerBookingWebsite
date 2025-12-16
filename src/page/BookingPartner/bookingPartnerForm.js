@@ -47,7 +47,7 @@ export function getQueryParams(options = {}) {
   }
   return {}
 }
-function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
+function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtelpayUser = {} }) {
   const customStyles = {
     control: (base) => ({
       ...base,
@@ -92,7 +92,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
   const history = useHistory()
   const [isLoading, setIsLoading] = useState(false)
 
-  // Kiểm tra các biển trong ENV
+  // Kiểm tra các biến trong ENV
   const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1 // ==> dùng cho miniApp
   const MINIAPP_GTELPAY = window?._env_?.REACT_APP_MINIAPP_GTELPAY == '1' 
   const MINIAPP_ZALOPAY = window?._env_?.REACT_APP_MINIAPP_ZALOPAY == '1' // dùng để tích hợp thanh toán qua ZALOPAY
@@ -940,6 +940,14 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
     }
   }, [isZaloApp, zaloUserPhone, zaloUserName])
 
+  // Handle Gtelpay user data
+  useEffect(() => {
+    if (MINIAPP_GTELPAY && gtelpayUser?.phoneNumber) {
+      form.setFieldValue('phone', gtelpayUser.phoneNumber)
+      form.setFieldValue('name', gtelpayUser.fullName)
+    }
+  }, [MINIAPP_GTELPAY, gtelpayUser])
+
   const isShowStationDateTime = useMemo(() => {
     const selectedOption = scheduleTypes.find((item) => item.value === form.getFieldValue('scheduleType'))
     const showStationField = selectedOption?.requireScheduleStation === 1
@@ -1036,7 +1044,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                   message: 'Số điện thoại quá dài'
                 }
               ]}>
-              <Input className="booking-input booking-input" placeholder="Nhập số điện thoại" type="text" size="large" disabled={isZaloApp && zaloUserPhone?.trim()} />
+              <Input className="booking-input booking-input" placeholder="Nhập số điện thoại" type="text" size="large" disabled={(isZaloApp && zaloUserPhone?.trim()) || (MINIAPP_GTELPAY && gtelpayUser?.phoneNumber?.trim())} />
             </Form.Item>
 
             <Form.Item

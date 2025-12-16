@@ -1,52 +1,69 @@
-import React, { useState, useEffect } from 'react';
-import { GTELPAY_CONFIG } from '../constants/gtelpayConfig';
-import GtelpayWebViewSDK from '../helper/gtelpayWebViewSDK';
+import { useState, useEffect, useRef } from 'react';
+import { initGtelpaySDK, getGtelpayConfig, isFromGtelpayUniversalLink, parseUniversalLinkParams, cleanupUrlParams } from '../helper/gtelpaySDK';
+import gtelpayApiService from '../services/gtelpayApiService';
+
+const isGtelpayEnabled = () => {
+  const isMiniAppGtelpay = window?._env_?.REACT_APP_MINIAPP_GTELPAY === '1' || process.env.REACT_APP_MINIAPP_GTELPAY === '1';
+  return isMiniAppGtelpay && getGtelpayConfig().isEnabled;
+};
 
 export const useGtelpayUserData = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isGtelpayWebView, setIsGtelpayWebView] = useState(false);
+  const abortController = useRef(null);
 
   useEffect(() => {
-    const initializeGtelpayData = async () => {
+    abortController.current = new AbortController();
+
+    const initGtelpay = async () => {
+      if (!isGtelpayEnabled() || !isFromGtelpayUniversalLink()) return;
+
       try {
-        const isMiniAppGtelpay = window?._env_?.REACT_APP_MINIAPP_GTELPAY === '1' ||
-                                process.env.REACT_APP_MINIAPP_GTELPAY === '1';
-        if (!isMiniAppGtelpay || !GTELPAY_CONFIG.isEnabled) {
-          return;
-        }
-        if (!GtelpayWebViewSDK.isFromGtelpayUniversalLink()) {
-          setIsGtelpayWebView(false);
-          return;
-        }
-        let retries = 0;
-        const maxRetries = 20;
-        const retryDelay = 150;
-        while (!localStorage.getItem('gtelpay_private_key') && retries < maxRetries) {
-          await new Promise(resolve => setTimeout(resolve, retryDelay));
-          retries++;
-        }
+        initGtelpaySDK();
         if (!localStorage.getItem('gtelpay_private_key')) {
-          throw new Error('Private key không được tải');
+          throw new Error('Failed to initialize Gtelpay private key');
         }
         setIsGtelpayWebView(true);
         setLoading(true);
-        const userInfo = await GtelpayWebViewSDK.initializeWebView();
-        if (userInfo) {
+
+        const { encryptedAccessCode, encryptedKey, transactionId } = parseUniversalLinkParams();
+        
+        const userInfo = await gtelpayApiService.executeGtelpayFlow({
+          encryptedAccessCode,
+          encryptedKey,
+          transactionId
+        });
+
+        if (userInfo && !abortController.current?.signal.aborted) {
           setUserData(userInfo);
         }
-        GtelpayWebViewSDK.cleanupUrlParams();
+
+        cleanupUrlParams();
       } catch (err) {
-        console.error('[Gtelpay] Initialize error:', err.message);
-        setError(err.message);
+        if (!abortController.current?.signal.aborted) {
+          setError(err.message);
+        }
       } finally {
-        setLoading(false);
+        if (!abortController.current?.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
-    initializeGtelpayData();
+
+    initGtelpay();
+
+    return () => abortController.current?.abort();
   }, []);
 
-  return { userData, loading, error, isGtelpayWebView };
+  const gtelpayUser = userData ? {
+    fullName: userData.fullName || '',
+    phoneNumber: userData.phoneNumber || ''
+  } : { fullName: '', phoneNumber: '' };
+
+  return { userData, gtelpayUser, loading, error, isGtelpayWebView };
 };
+
+
 

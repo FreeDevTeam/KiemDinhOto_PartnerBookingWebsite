@@ -1,117 +1,117 @@
 import axios from 'axios';
-import { GTELPAY_CONFIG, createSignature, verifyResponseSignature } from '../constants/gtelpayConfig';
+import {
+  getGtelpayConfig,
+  createSignature,
+  verifyResponseSignature,
+  decryptConsentData,
+  decryptAccessCode
+} from '../helper/gtelpaySDK';
 
-const AGENT_GATEWAY_URL = process.env.REACT_APP_GTELPAY_AGENT_GATEWAY;
+const API_TIMEOUT = 10000;
 
 class GtelpayApiService {
-  constructor() {
-    this.apiKey = process.env.REACT_APP_GTELPAY_API_KEY;
-    this.partnerCode = process.env.REACT_APP_GTELPAY_PARTNER_CODE;
-    this.partnerAppId = process.env.REACT_APP_GTELPAY_PARTNER_APP_ID;
+  get config() {
+    return getGtelpayConfig();
   }
 
-  async getAccessToken(accessCode, transactionId, retries = 3) {
-    let lastError;
-    
-    for (let attempt = 0; attempt < retries; attempt++) {
-      try {
-        if (!GTELPAY_CONFIG.isEnabled) {
-          throw new Error('[Gtelpay] SDK not enabled');
-        }
-        const requestBody = {
-          access_code: accessCode,
-          transaction_id: transactionId
-        };
-        const jsonData = JSON.stringify(requestBody);
-        const signature = await createSignature(jsonData);
-        const response = await axios.post(
-          `${AGENT_GATEWAY_URL}/get-token`,
-          requestBody,
-          {
-            headers: {
-              'Content-Type': 'application/json;charset=utf-8',
-              'api_key': this.apiKey,
-              'partner_code': this.partnerCode,
-              'partner_app_id': this.partnerAppId,
-              'signature': signature
-            }
+  async getAccessToken(accessCode, transactionId) {
+    if (!this.config.isEnabled) return null;
+
+    try {
+      const requestBody = { access_code: accessCode, transaction_id: transactionId };
+      const signature = await createSignature(JSON.stringify(requestBody));
+
+      const response = await axios.post(
+        `${this.config.agentGateway}/get-token`,
+        requestBody,
+        {
+          timeout: API_TIMEOUT,
+          headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+            'api_key': this.config.apiKey,
+            'partner_code': this.config.partnerCode,
+            'partner_app_id': this.config.partnerAppId,
+            'signature': signature
           }
-        );
+        }
+      );
 
-        // Verify response signature
-        const responseSignature = response.headers['signature'];
-        const responseBody = JSON.stringify(response.data);
-        if (responseSignature) {
-          await verifyResponseSignature(responseBody, responseSignature);
-        }
-
-        if (response.data.error_code !== '200') {
-          throw new Error(`[Gtelpay] Get token failed: ${response.data.message}`);
-        }
-        return response.data.data;
-      } catch (error) {
-        lastError = error;
-        if (attempt < retries - 1) {
-          const delayMs = Math.pow(2, attempt) * 1000;
-          await new Promise(resolve => setTimeout(resolve, delayMs));
-        }
+      if (response.headers['signature']) {
+        await verifyResponseSignature(JSON.stringify(response.data), response.headers['signature']);
       }
+
+      return response.data?.error_code === '200' ? response.data.data : null;
+    } catch (error) {
+      throw new Error(`Failed to get access token: ${error.message}`);
     }
-    
-    console.error('[Gtelpay] Get token error after retries:', lastError.message);
-    throw lastError;
   }
 
-  async getUserInfo(accessToken, transactionId, retries = 3) {
-    let lastError;
-    
-    for (let attempt = 0; attempt < retries; attempt++) {
-      try {
-        if (!GTELPAY_CONFIG.isEnabled) {
-          throw new Error('[Gtelpay] SDK not enabled');
-        }
-        const requestBody = {
-          transaction_id: transactionId
-        };
-        const jsonData = JSON.stringify(requestBody);
-        const signature = await createSignature(jsonData);
-        const response = await axios.post(
-          `${AGENT_GATEWAY_URL}/get-user-info`,
-          requestBody,
-          {
-            headers: {
-              'Content-Type': 'application/json;charset=utf-8',
-              'Authorization': `Bearer ${accessToken}`,
-              'api_key': this.apiKey,
-              'partner_code': this.partnerCode,
-              'partner_app_id': this.partnerAppId,
-              'signature': signature
-            }
+  async getUserInfo(accessToken, transactionId) {
+    if (!this.config.isEnabled) return null;
+
+    try {
+      const requestBody = { transaction_id: transactionId };
+      const signature = await createSignature(JSON.stringify(requestBody));
+
+      const response = await axios.post(
+        `${this.config.agentGateway}/get-user-info`,
+        requestBody,
+        {
+          timeout: API_TIMEOUT,
+          headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+            'Authorization': `Bearer ${accessToken}`,
+            'api_key': this.config.apiKey,
+            'partner_code': this.config.partnerCode,
+            'partner_app_id': this.config.partnerAppId,
+            'signature': signature
           }
-        );
+        }
+      );
 
-        // Verify response signature
-        const responseSignature = response.headers['signature'];
-        const responseBody = JSON.stringify(response.data);
-        if (responseSignature) {
-          await verifyResponseSignature(responseBody, responseSignature);
-        }
-
-        if (response.data.error_code !== '200') {
-          throw new Error(`[Gtelpay] Get user info failed: ${response.data.message}`);
-        }
-        return response.data.data;
-      } catch (error) {
-        lastError = error;
-        if (attempt < retries - 1) {
-          const delayMs = Math.pow(2, attempt) * 1000;
-          await new Promise(resolve => setTimeout(resolve, delayMs));
-        }
+      if (response.headers['signature']) {
+        await verifyResponseSignature(JSON.stringify(response.data), response.headers['signature']);
       }
+
+      return response.data?.error_code === '200' ? response.data.data : null;
+    } catch (error) {
+      throw new Error(`Failed to get user info: ${error.message}`);
     }
-    
-    console.error('[Gtelpay] Get user info error after retries:', lastError.message);
-    throw lastError;
+  }
+
+  async executeGtelpayFlow(params) {
+    const { encryptedAccessCode, encryptedKey, transactionId } = params;
+
+    try {
+      const accessCode = await decryptAccessCode(encryptedKey, encryptedAccessCode);
+      const tokenData = await this.getAccessToken(accessCode, transactionId);
+      if (!tokenData) throw new Error('Failed to get access_token');
+
+      const userInfoData = await this.getUserInfo(tokenData.access_token, transactionId);
+      if (!userInfoData) throw new Error('Failed to get user info');
+
+      if (userInfoData.consent_data) {
+        const decryptedData = await decryptConsentData(userInfoData.consent_data);
+        return {
+          fullName: decryptedData.full_name || '',
+          phoneNumber: decryptedData.phone_no || '',
+          email: decryptedData.email || '',
+          dateOfBirth: decryptedData.date_of_birth || '',
+          gender: decryptedData.gender || '',
+          nationality: decryptedData.nationality || '',
+          legalNo: decryptedData.legal_no || '',
+          legalIssueDate: decryptedData.legal_issue_date || '',
+          legalExpiredDate: decryptedData.legal_expired_date || '',
+          legalIssueBy: decryptedData.legal_issue_by || '',
+          permanentResidence: decryptedData.permanent_residence || '',
+          placeOfOrigin: decryptedData.place_of_origin || '',
+          rawData: decryptedData
+        };
+      }
+      return null;
+    } catch (error) {
+      throw error;
+    }
   }
 }
 
