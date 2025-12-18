@@ -11,8 +11,10 @@ import { useGlobalContext } from '../../context/GlobalContext'
 import { SCHEDULE_TYPE, WEBVIEW_TYPES } from '../../constants/global'
 import MainLogo from '../../components/MainLogo'
 import addKeyLocalStorage from '../../helper/localStorage'
+import { useGtelpayUserData } from '../../context/GtelpayContext'
 function BookingPartner() {
   const { globalState, handleGetUserPhone, handleGetUserName, setGlobalState } = useGlobalContext();
+  const { gtelpayUser } = useGtelpayUserData();
   const [isVisible, setIsVisible] = useState(false)
   const [nextTab, setNextTab] = useState('partner')
   const [tabKey, setTabKey] = useState()
@@ -85,7 +87,7 @@ function BookingPartner() {
                     Number(isWebView) !== WEBVIEW_TYPES.WEBVIEW ? <div className='booking-title title-normal'>{getTitleName(searchparam)}</div> : null
                   }
                   <div className='mt-4'>
-                    <BookingPartnerForm zaloUserPhone={globalState.phoneNumber} zaloUserName={globalState.userName} setTabKey={setTabKey} form={form} />
+                    <BookingPartnerForm zaloUserPhone={globalState.phoneNumber} zaloUserName={globalState.userName} gtelpayUser={gtelpayUser} setTabKey={setTabKey} form={form} />
                   </div>
                   {/* </Tabs.TabPane>
                         <Tabs.TabPane tab="Lịch hẹn" key="bookingList">

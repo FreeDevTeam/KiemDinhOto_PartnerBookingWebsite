@@ -47,7 +47,7 @@ export function getQueryParams(options = {}) {
   }
   return {}
 }
-function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
+function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtelpayUser }) {
   const customStyles = {
     control: (base) => ({
       ...base,
@@ -940,6 +940,14 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
     }
   }, [isZaloApp, zaloUserPhone, zaloUserName])
 
+  // GTEL: Fill user data
+  useEffect(() => {
+    if (gtelpayUser?.phoneNumber && !isZaloApp) {
+      if (gtelpayUser.fullName) form.setFieldValue('name', gtelpayUser.fullName)
+      form.setFieldValue('phone', gtelpayUser.phoneNumber)
+    }
+  }, [gtelpayUser, isZaloApp])
+
   const isShowStationDateTime = useMemo(() => {
     const selectedOption = scheduleTypes.find((item) => item.value === form.getFieldValue('scheduleType'))
     const showStationField = selectedOption?.requireScheduleStation === 1
@@ -1036,7 +1044,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                   message: 'Số điện thoại quá dài'
                 }
               ]}>
-              <Input className="booking-input booking-input" placeholder="Nhập số điện thoại" type="text" size="large" disabled={isZaloApp && zaloUserPhone?.trim()} />
+              <Input className="booking-input booking-input" placeholder="Nhập số điện thoại" type="text" size="large" disabled={(isZaloApp && zaloUserPhone?.trim()) || gtelpayUser?.phoneNumber?.trim()} />
             </Form.Item>
 
             <Form.Item
