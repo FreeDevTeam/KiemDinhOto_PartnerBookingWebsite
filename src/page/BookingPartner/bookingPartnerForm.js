@@ -158,6 +158,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           setErrorMessage(SCHEDULE_ERROR[rsMess] || SCHEDULE_ERROR.INVALID_REQUEST)
           return
         }
+        // Lưu schedule data để tạo CustomerSchedule sau
+        localStorage.setItem('gtel_pending_schedule', JSON.stringify(values))
         const { paymentUrl } = data
         const customerScheduleId = data?.[0]
         // Gọi API thanh toán nếu ở môi trường GTEL
@@ -196,6 +198,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           setErrorMessage(SCHEDULE_ERROR[rsMess] || SCHEDULE_ERROR.INVALID_REQUEST)
           return
         }
+        // Lưu schedule data để tạo CustomerSchedule sau
+        localStorage.setItem('gtel_pending_schedule', JSON.stringify(values))
         const scheduleId = data?.[0]
         if (MINIAPP_GTELPAY && scheduleId) {
           BookingService.createPayment({

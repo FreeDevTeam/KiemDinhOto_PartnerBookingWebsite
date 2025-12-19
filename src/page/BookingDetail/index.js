@@ -105,14 +105,25 @@ const BookingDetail = ({
   }
   useEffect(() => {
     if(scheduleHash){
-      BookingService.findByHash({scheduleHash:scheduleHash}).then((result) => {
-        const { isSuccess, message, data } = result
-        if (!isSuccess || !data) {
-          return
-        } else {
-          setScheduleInformation(data)
-        }
-      })
+      // For GTEL: Create CustomerSchedule from Order first
+      const pendingSchedule = localStorage.getItem('gtel_pending_schedule')
+      if (pendingSchedule) {
+        const scheduleData = JSON.parse(pendingSchedule)
+        BookingService.createSchedule(scheduleData).then(() => {
+          localStorage.removeItem('gtel_pending_schedule')
+          BookingService.findByHash({scheduleHash:scheduleHash}).then((result) => {
+            if (result.isSuccess && result.data) {
+              setScheduleInformation(result.data)
+            }
+          })
+        })
+      } else {
+        BookingService.findByHash({scheduleHash:scheduleHash}).then((result) => {
+          if (result.isSuccess && result.data) {
+            setScheduleInformation(result.data)
+          }
+        })
+      }
     }
     else{
       if(customerScheduleId) {
