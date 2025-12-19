@@ -8,7 +8,6 @@ import { useHistory } from 'react-router-dom'
 import moment from 'moment'
 import BookingService from '../../services/addBookingService'
 import PopupMessage from '../BookingPartner/PopupMessage'
-import MainLogo from '../../components/MainLogo'
 import { useParams } from 'react-router-dom/cjs/react-router-dom'
 
 const { TextArea } = Input
@@ -37,7 +36,6 @@ const BookingDetail = ({
   const [scheduleInformation, setScheduleInformation] = useState([])
   const [isModal, setIsModal] = useState(false)
   const [vali, setVali] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const [reasonRateCancelSchedule, setReasonRateCancelSchedule] = useState(null)
   const [reasonNoteCancelSchedule, setReasonNoteCancelSchedule] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
@@ -107,38 +105,14 @@ const BookingDetail = ({
   }
   useEffect(() => {
     if(scheduleHash){
-      // For GTEL: Create CustomerSchedule from Order first
-      const pendingSchedule = localStorage.getItem('gtel_pending_schedule')
-      if (pendingSchedule) {
-        const scheduleData = JSON.parse(pendingSchedule)
-        setIsLoading(true)
-        BookingService.createSchedule(scheduleData)
-          .then(() => {
-            localStorage.removeItem('gtel_pending_schedule')
-            // Delay short time to ensure DB consistency, then fetch
-            setTimeout(() => {
-              BookingService.findByHash({ scheduleHash: scheduleHash })
-                .then((result) => {
-                  if (result.isSuccess && result.data) {
-                    setScheduleInformation(result.data)
-                  }
-                })
-                .then(() => setIsLoading(false))
-                .catch(() => { setIsLoading(false) })
-            }, 1000)
-          })
-          .catch(() => { setIsLoading(false) })
-      } else {
-        setIsLoading(true)
-        BookingService.findByHash({ scheduleHash: scheduleHash })
-          .then((result) => {
-            if (result.isSuccess && result.data) {
-              setScheduleInformation(result.data)
-            }
-          })
-          .then(() => setIsLoading(false))
-          .catch(() => { setIsLoading(false) })
-      }
+      BookingService.findByHash({scheduleHash:scheduleHash}).then((result) => {
+        const { isSuccess, message, data } = result
+        if (!isSuccess || !data) {
+          return
+        } else {
+          setScheduleInformation(data)
+        }
+      })
     }
     else{
       if(customerScheduleId) {
@@ -393,14 +367,6 @@ const BookingDetail = ({
           onClose={() => { setIsModalErrOpen(false) }}
           text={errorMessage} ></PopupMessage>
       }
-      {isLoading && (
-        <div className="loading">
-          <div className="text-center">
-            <MainLogo height={60} width={60}></MainLogo>
-            <Spin style={{ width: '100%' }} className="mt-3" />
-          </div>
-        </div>
-      )}
     </div>
   )
 }

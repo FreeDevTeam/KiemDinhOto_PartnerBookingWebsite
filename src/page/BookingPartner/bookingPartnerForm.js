@@ -158,8 +158,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           setErrorMessage(SCHEDULE_ERROR[rsMess] || SCHEDULE_ERROR.INVALID_REQUEST)
           return
         }
-        // Lưu schedule data để tạo CustomerSchedule sau
-        localStorage.setItem('gtel_pending_schedule', JSON.stringify(values))
         const { paymentUrl } = data
         const customerScheduleId = data?.[0]
         // Gọi API thanh toán nếu ở môi trường GTEL
@@ -198,8 +196,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           setErrorMessage(SCHEDULE_ERROR[rsMess] || SCHEDULE_ERROR.INVALID_REQUEST)
           return
         }
-        // Lưu schedule data để tạo CustomerSchedule sau
-        localStorage.setItem('gtel_pending_schedule', JSON.stringify(values))
         const scheduleId = data?.[0]
         if (MINIAPP_GTELPAY && scheduleId) {
           BookingService.createPayment({
@@ -918,11 +914,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       })
     }
     if (dataBookingParam && Object.keys(dataBookingParam).length > 0) {
-      // Chỉ set tên và số điện thoại nếu chưa có giá trị (ưu tiên GTEL/Zalo)
-      const currentValues = form.getFieldsValue();
       form.setFieldsValue({
-        name: currentValues.name || dataBookingParam.name || zaloUserName,
-        phone: currentValues.phone || dataBookingParam.phone || zaloUserPhone,
+        name: dataBookingParam.name || zaloUserName,
+        phone: dataBookingParam.phone || zaloUserPhone,
         vehicleSubType: dataBookingParam.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value,
         scheduleType: dataBookingParam.scheduleType || optionServiceType[0]?.value,
         licensePlateColor: dataBookingParam.licensePlateColor || licensePlateColorList[0]?.value,
