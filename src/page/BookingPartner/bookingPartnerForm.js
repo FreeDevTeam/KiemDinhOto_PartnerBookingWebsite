@@ -46,7 +46,7 @@ export function getQueryParams(options = {}) {
   }
   return {}
 }
-function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
+function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtelpayUser }) {
   const customStyles = {
     control: (base) => ({
       ...base,
@@ -809,9 +809,11 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       })
     }
     if (dataBookingParam && Object.keys(dataBookingParam).length > 0) {
+      // Chỉ set tên và số điện thoại nếu chưa có giá trị (ưu tiên GTEL/Zalo)
+      const currentValues = form.getFieldsValue();
       form.setFieldsValue({
-        name: dataBookingParam.name || zaloUserName,
-        phone: dataBookingParam.phone || zaloUserPhone,
+        name: currentValues.name || dataBookingParam.name || gtelpayUser?.fullName || zaloUserName,
+        phone: currentValues.phone || dataBookingParam.phone || gtelpayUser?.phoneNumber || zaloUserPhone,
         vehicleSubType: dataBookingParam.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value,
         scheduleType: dataBookingParam.scheduleType || optionServiceType[0]?.value,
         licensePlateColor: dataBookingParam.licensePlateColor || licensePlateColorList[0]?.value,
@@ -834,6 +836,14 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
       form.setFieldValue('vehicleSubCategory', dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value)
     }
   }, [isZaloApp])
+
+  // GTEL: Fill user data
+  useEffect(() => {
+    if (gtelpayUser?.phoneNumber && !isZaloApp) {
+      if (gtelpayUser.fullName) form.setFieldValue('name', gtelpayUser.fullName)
+      form.setFieldValue('phone', gtelpayUser.phoneNumber)
+    }
+  }, [gtelpayUser, isZaloApp])
 
   const isShowStationDateTime = useMemo(() => {
     const selectedOption = scheduleTypes.find((item) => item.value === form.getFieldValue('scheduleType'))
@@ -926,7 +936,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone }) {
                   message: 'Số điện thoại quá dài'
                 }
               ]}>
-              <Input className="booking-input booking-input" placeholder="Nhập số điện thoại" type="text" size="large" disabled={isZaloApp} />
+              <Input className="booking-input booking-input" placeholder="Nhập số điện thoại" type="text" size="large" disabled={(isZaloApp && zaloUserPhone?.trim()) || gtelpayUser?.phoneNumber?.trim()} />
             </Form.Item>
 
             <Form.Item

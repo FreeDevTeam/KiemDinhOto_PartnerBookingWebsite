@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Form, Tabs, Spin, notification } from 'antd'
 import './index.scss'
 import BookingPartnerForm from './bookingPartnerForm'
+import { useGtelpayUserData } from '../../context/GtelpayContext'
 import { useLocation } from 'react-router-dom'
 import LoadFormBookingFailed from '../../components/BasicComponent/LoadFormBookingFailed'
 import { CheckApiKey } from '../../helper/CheckApiKey'
@@ -13,6 +14,7 @@ import MainLogo from '../../components/MainLogo'
 import addKeyLocalStorage from '../../helper/localStorage'
 function BookingPartner() {
   const { globalState, handleGetUserPhone, handleGetUserName, setGlobalState } = useGlobalContext();
+  const { gtelpayUser } = useGtelpayUserData()
   const [isVisible, setIsVisible] = useState(false)
   const [nextTab, setNextTab] = useState('partner')
   const [tabKey, setTabKey] = useState()
@@ -85,7 +87,7 @@ function BookingPartner() {
                     Number(isWebView) !== WEBVIEW_TYPES.WEBVIEW ? <div className='booking-title title-normal'>{getTitleName(searchparam)}</div> : null
                   }
                   <div className='mt-4'>
-                    <BookingPartnerForm zaloUserPhone={globalState.phoneNumber} zaloUserName={globalState.userName} setTabKey={setTabKey} form={form} />
+                    <BookingPartnerForm gtelpayUser={gtelpayUser} zaloUserPhone={globalState.phoneNumber} zaloUserName={globalState.userName} setTabKey={setTabKey} form={form} />
                   </div>
                   {/* </Tabs.TabPane>
                         <Tabs.TabPane tab="Lịch hẹn" key="bookingList">
