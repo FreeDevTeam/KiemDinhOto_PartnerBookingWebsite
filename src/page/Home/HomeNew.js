@@ -4,8 +4,11 @@ import './homeNew.scss'
 import { useHistory } from 'react-router-dom'
 import BasicPlaceholder from './../../components/BasicComponent/BasicPlaceholder'
 import CardItem from './CardItemNews'
+import { PATH } from '../../constants/router'
+import { PARAM_URL_IFRAME } from '../../constants/params'
+import { encodeLink } from '../../helper/common'
 
-const HomeNew = ({ listNews , linkDirectDetail = "detail-post" , showEye = true, setSheetVisible, setDataBtn}) => {
+const HomeNew = ({ listNews , linkDirectDetail = "detail-post" , showEye = true}) => {
   const LENGTH_LIST_NO_SLIDER = 1 // nếu chỉ có 1 thì sẽ không dùng slider
   const history = useHistory()
   const [isDragging, setIsDragging] = useState(false)
@@ -24,12 +27,8 @@ const HomeNew = ({ listNews , linkDirectDetail = "detail-post" , showEye = true,
 
   const handleCardClick = (value) => {
     if (!isDragging) {
-      setSheetVisible(true)
-      let data= {
-        label: value?.stationNewsTitle,
-        link: `${process.env.REACT_APP_DEPLOY_URL}/${linkDirectDetail}/${value?.stationNewsId}?isEmbeddedView=true`
-      }
-      setDataBtn(data)
+      const link = `${process.env.REACT_APP_DEPLOY_URL}/${linkDirectDetail}/${value?.stationNewsId}?isEmbeddedView=true`
+      history.push(`${PATH.IFRAME_VIEW}?${PARAM_URL_IFRAME}=${encodeLink(link)}`)
     }
   }
 

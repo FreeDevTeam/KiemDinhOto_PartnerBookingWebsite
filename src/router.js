@@ -6,7 +6,8 @@ const BookingInsurancePartner = React.lazy(() => import('./page/BookingInsurance
 const BookingInsuranceSaladin = React.lazy(() => import('./page/BookingInsuranceSaladin/index'))
 const BookingPartnerIframe = React.lazy(() => import('./page/Booking/index'))
 const BookingHistory = React.lazy(() => import('./page/BookingHistory/index'))
-const HomePage = React.lazy(() => import('./page/Home/HomeLayout2/index'))
+const HomeLayout2 = React.lazy(() => import('./page/Home/HomeLayout2/index'))
+const HomeLayout3 = React.lazy(() => import('./page/Home/HomeLayout3/index'))
 const HomePageLogin = React.lazy(() => import('./page/Login/index'))
 const ResetPassword = React.lazy(() => import('./page/ResetPassword'))
 const MyBookingHistory = React.lazy(() => import('./page/MyBookingHistory/index'))
@@ -17,6 +18,7 @@ const UpdateBookingDetail = React.lazy(() => import('./page/BookingDetail/Update
 const IframeView = React.lazy(() => import('./page/IframeView'))
 
 const BookingType=process.env.REACT_APP_BHTNDS
+const LAYOUT_TYPE=process.env.REACT_APP_LAYOUT_TYPE
 
 const handleCheckPage=()=>{
     switch (BookingType) {
@@ -31,11 +33,22 @@ const handleCheckPage=()=>{
     }
 }
 
+const handleCheckLayout=()=>{
+    switch (LAYOUT_TYPE) {
+        case '2':
+            return (HomeLayout2)
+        case '3':
+            return (HomeLayout3)
+        default:
+            return (HomeLayout2)
+    }
+}
+
 export const ROUTERS = {
     //page on ZALO app
     homePage: {
         path: PATH.HOME,
-        component: HomePage,
+        component: handleCheckLayout(),
         isZaloApp: 1
     },
     homeLogin: {
@@ -76,7 +89,7 @@ export const ROUTERS = {
     // page on web
     homePageWeb: {
         path: PATH.HOME,
-        component: HomePage,
+        component: handleCheckLayout(),
         isZaloApp: 0,
     },
     checkVihcle: {
