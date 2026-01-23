@@ -14,6 +14,7 @@ import MainLogo from '../../../components/MainLogo'
 import { Spin } from 'antd'
 import { getHomePageConfigCache } from '../../../helper/getHomePageConfigCache'
 import Header from '../../../components/Header'
+import MiniAppBridge from '../../../sdk/ihanoi/miniappBridge'
 
 const HomeLayout2 = (props) => {
   const location = useLocation()
@@ -157,6 +158,27 @@ const HomeLayout2 = (props) => {
     setIsLoadingAPI(false)
   }
 
+  useEffect(() => {
+    if (process.env.REACT_APP_THEME_NAME !== 'IHANOI') {
+      return
+    }
+    const info = MiniAppBridge.init({
+      // mode: "ANDROID" | "IOS" | "FLUTTER" | "REACT_NATIVE" | "WEB_PARENT"
+      // để trống thì auto detect
+      targetOrigin: "*", // nếu WEB_PARENT và bạn biết domain đối tác thì set cho an toàn
+    });
+
+    console.log("MiniAppBridge inited:", info);
+  }, []);
+  const handleExit = async () => {
+    try {
+      await MiniAppBridge.exit("GO_BACK", { success: true, reason: "user_click_exit" });
+      // Thường sẽ không chạy tới đây nếu host đóng webview ngay.
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const handleReturnLink = () => {
     if (dataBtn?.link) {
       if (dataBtn.token) {
@@ -186,7 +208,7 @@ const HomeLayout2 = (props) => {
 
   return (
     <div>
-      {process.env.REACT_APP_THEME_NAME === 'IHANOI' && <Header title={'Giao thông số'} onBack={() => {}} />}
+      {process.env.REACT_APP_THEME_NAME === 'IHANOI' && <Header title={'Giao thông số'} onBack={() => {handleExit()}} />}
 
       <PageLayout>{renderSlider}</PageLayout>
       <div className="more mt-3">
