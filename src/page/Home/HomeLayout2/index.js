@@ -167,8 +167,6 @@ const HomeLayout2 = (props) => {
       // để trống thì auto detect
       targetOrigin: "*", // nếu WEB_PARENT và bạn biết domain đối tác thì set cho an toàn
     });
-
-    console.log("MiniAppBridge inited:", info);
   }, []);
   const handleExit = async () => {
     try {
@@ -208,7 +206,7 @@ const HomeLayout2 = (props) => {
 
   return (
     <div>
-      {process.env.REACT_APP_THEME_NAME === 'IHANOI' && <Header title={'Giao thông số'} onBack={() => {handleExit()}} />}
+      {process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE && <Header title={process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE} onBack={() => {handleExit()}} />}
 
       <PageLayout>{renderSlider}</PageLayout>
       <div className="more mt-3">
