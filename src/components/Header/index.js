@@ -13,12 +13,13 @@ export default function Header({ title, onBack }) {
   const params = new URLSearchParams(searchparam)
   const headerTitle = smartParseParam(params.get(PARAM_HEADER_TITLE)) || 'Thông tin lịch hẹn'
   const history = useHistory()
+
   const isBackToHomeMiniApp =
     checkIsBackToHomeMiniApp(window.location.href) ||
     sessionStorage.getItem(PARAM_IS_BACK_TO_HOME_MINI_APP) === 'true' ||
     sessionStorage.getItem(PARAM_IS_BACK_TO_HOME_MINI_APP) === '1'
   return (
-    <div className="Header">
+    <div className={`Header ${smartParseParam(process.env.REACT_APP_HOME_MINIAPP_HEADER_EXPAND) ? 'Header_expand' : ''}`}>
       <div className="Header_fixed">
         <ArrowLeft
           onClick={() => {

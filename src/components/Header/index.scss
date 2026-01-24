@@ -2,11 +2,11 @@
 
 .Header {
   position: sticky;
-  top:0;
+  top: 0;
   z-index: 99;
-  
+
   .Header_fixed {
-    // z-index: 99; 
+    // z-index: 99;
     // position: fixed;
     max-width: 600px;
     width: 100%;
@@ -48,6 +48,13 @@
   }
 }
 
+.Header_expand {
+  .Header_fixed {
+    height: 80px !important;
+    padding-top: 42px !important;
+  }
+}
+
 @media screen and (min-width: 600px) {
   .Header {
     .Header_fixed {
@@ -71,6 +78,13 @@
       display: block;
       // min-height: 60px;
       content: '';
+    }
+  }
+
+  .Header_expand {
+    .Header_fixed {
+      height: 80px !important;
+      padding-top: 42px !important;
     }
   }
 }

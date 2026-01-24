@@ -14,12 +14,13 @@ import MainLogo from '../../../components/MainLogo'
 import { Spin } from 'antd'
 import { getHomePageConfigCache } from '../../../helper/getHomePageConfigCache'
 import Header from '../../../components/Header'
-import MiniAppBridge from '../../../sdk/ihanoi/miniappBridge'
+import usePartnerBridge from '../../../sdk/usePartnerBridge'
 
 const HomeLayout2 = (props) => {
   const location = useLocation()
   const [userToken, setUserToken] = useState(location?.state?.token || localStorage.getItem('userToken') || '')
   const [isLoadingAPI, setIsLoadingAPI] = useState(true)
+  const { init: initBridge, exit: exitBridge, isSupported: isPartnerBridgeSupported } = usePartnerBridge()
 
   const [sheetVisible, setSheetVisible] = useState(false)
   const [dataBtn, setDataBtn] = useState({
@@ -159,18 +160,12 @@ const HomeLayout2 = (props) => {
   }
 
   useEffect(() => {
-    if (process.env.REACT_APP_THEME_NAME !== 'IHANOI') {
-      return
-    }
-    const info = MiniAppBridge.init({
-      // mode: "ANDROID" | "IOS" | "FLUTTER" | "REACT_NATIVE" | "WEB_PARENT"
-      // để trống thì auto detect
-      targetOrigin: "*", // nếu WEB_PARENT và bạn biết domain đối tác thì set cho an toàn
-    });
-  }, []);
+    if (!isPartnerBridgeSupported) return
+    initBridge()
+  }, [initBridge, isPartnerBridgeSupported])
   const handleExit = async () => {
     try {
-      await MiniAppBridge.exit("GO_BACK", { success: true, reason: "user_click_exit" });
+      await exitBridge()
       // Thường sẽ không chạy tới đây nếu host đóng webview ngay.
     } catch (e) {
       console.error(e);
@@ -206,7 +201,9 @@ const HomeLayout2 = (props) => {
 
   return (
     <div>
-      {process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE && <Header title={process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE} onBack={() => {handleExit()}} />}
+      {/* {process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE &&  */}
+      <Header title={process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE} onBack={() => {handleExit()}} />
+      {/* } */}
 
       <PageLayout>{renderSlider}</PageLayout>
       <div className="more mt-3">
