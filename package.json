@@ -2,6 +2,7 @@
   "name": "booking_partner",
   "version": "0.1.0",
   "private": true,
+  "homepage": "/miniapp/ttdk-2186/",
   "dependencies": {
     "@babel/core": "^7.23.5",
     "@babel/preset-env": "^7.23.5",
@@ -11,7 +12,7 @@
     "@testing-library/user-event": "^13.5.0",
     "antd": "^5.11.5",
     "axios": "^0.19.2",
-    "bootstrap": "^5.3.2",
+    "bootstrap": "^5.3.2",  
     "crypto-js": "^4.2.0",
     "jwt-decode": "^3.1.2",
     "moment": "^2.29.4",
@@ -35,6 +36,8 @@
     "zmp-ui": "^1.5.5"
   },
   "devDependencies": {
+    "ajv": "^6.12.6",
+    "ajv-keywords": "^3.5.2",
     "copyright-header": "^0.4.6",
     "env-cmd": "^10.1.0",
     "husky": "^8.0.2",
