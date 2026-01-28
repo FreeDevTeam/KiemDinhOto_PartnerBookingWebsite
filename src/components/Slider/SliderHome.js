@@ -9,6 +9,21 @@ import { useHistory } from 'react-router-dom'
 import { PATH } from '../../constants/router'
 import { PARAM_URL_IFRAME } from '../../constants/params'
 import { encodeLink } from '../../helper/common'
+import { NAVIGATION_TYPE } from '../../constants/global'
+
+export const handleDirect = (link, type, history) => {
+  if (type === NAVIGATION_TYPE.DIRECT) {
+    window.location.href = link
+  } else if (type === NAVIGATION_TYPE.EXTERNAL) {
+    window.open(link, '_blank')
+  } else {
+    if (!(link?.startsWith("https://") || link?.startsWith("http://"))) {
+      history.push(link)
+    } else{
+      history.push(`${PATH.IFRAME_VIEW}?${PARAM_URL_IFRAME}=${encodeLink(link)}`)
+    }
+  }
+}
 
 const CLICK_STORAGE_KEY = 'recordClickData'
 export const SliderHome = (props) => {
@@ -43,13 +58,7 @@ export const SliderHome = (props) => {
   const handleClickBanner = (item, index) => {
     if (item?.bannerUrl) {
       const link = item?.bannerUrl
-      if (link) {
-        if (!(link?.startsWith("https://") || link?.startsWith("http://"))) {
-          history.push(link)
-        } else{
-          history.push(`${PATH.IFRAME_VIEW}?${PARAM_URL_IFRAME}=${encodeLink(link)}`)
-        }
-      }
+      
       // setPopupUrl(item.bannerUrl)
       // setSheetVisible(true)
       if (item?.targetId) {
@@ -59,6 +68,10 @@ export const SliderHome = (props) => {
             submitClickData()
           }, 30 * 1000) // 30s
         }
+      }
+
+      if (link) {
+        handleDirect(item?.bannerUrl, item?.bannerNavigationType  , history)
       }
     }
   }

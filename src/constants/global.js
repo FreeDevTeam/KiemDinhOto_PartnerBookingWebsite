@@ -864,3 +864,10 @@ export const PAYMENT_TYPE = {
 export const PAYMENT_SUB_TYPE = {
   GTEL_WEBINAPP: 'GTEL_WEBINAPP',
 }
+
+export const NAVIGATION_TYPE= {
+  DEFAULT: null,
+  DIRECT: 1,      // Trực tiếp
+  EXTERNAL: 2,    // Ra ngoài
+  INTERNAL: 3,    // Nội bộ
+}

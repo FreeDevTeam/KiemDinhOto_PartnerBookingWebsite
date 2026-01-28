@@ -7,6 +7,7 @@ import useWindowDimensions from '../../../hooks/window-dimensions'
 import { PATH } from '../../../constants/router'
 import { PARAM_URL_IFRAME } from '../../../constants/params'
 import { encodeLink } from '../../../helper/common'
+import { handleDirect } from '../../../components/Slider/SliderHome'
 
 const L2FunctionButtonList = (props) => {
   const { handleZaloAuthorize,globalState } = useGlobalContext();
@@ -41,11 +42,7 @@ const L2FunctionButtonList = (props) => {
 
     const isZaloLink = link.includes('zalo.me')
     if (link) {
-      if (!(link?.startsWith("https://") || link?.startsWith("http://"))) {
-        history.push(link)
-      } else{
-        history.push(`${PATH.IFRAME_VIEW}?${PARAM_URL_IFRAME}=${encodeLink(link)}`)
-      }
+      handleDirect(link, element?.navigationType  , history)
     }
     // if (isZaloLink) {
     //   await setSheetVisible(false)
