@@ -70,16 +70,17 @@
   <!-- End Meta Pixel Code -->
   <style>
     .splash-screen-loading {
+      position: fixed;
       width: 100%;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      z-index: 99;
       display: flex;
       align-items: center;
       justify-content: center;
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
       background-color: white;
-      height: 100vh;
-      overflow: hidden;
+      z-index: 999999999;
     }
 
     .splash-screen-loading img {
@@ -87,30 +88,12 @@
     }
   </style>
 </head>
+<div class="splash-screen-loading">
+  <img src='/logo.png' />
+</div>
 
 <body id="body-root">
   <noscript>
-    <style>
-      .splash-screen-loading {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: center;
-        background-color: white;
-        height: 100vh;
-        overflow: hidden;
-      }
-
-      .splash-screen-loading svg {
-        width: 60px;
-      }
-    </style>
-    <div class="splash-screen-loading">
-      <img src='/MAINLOGO.png' />
-    </div>
   </noscript>
   <div id="app"></div>
 </body>
