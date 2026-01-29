@@ -5,7 +5,6 @@ import { getQueryString } from '../helper/common'
 import addKeyLocalStorage from './../helper/localStorage'
 import { CheckApiKey } from '../helper/CheckApiKey'
 import { decryptAes256CBC } from './../pageUtililiy/EncryptionFunctions'
-import { sendTelegramNotification } from './../hooks/botTelegram'
 
 function cleanUp() {
   window.localStorage.clear()

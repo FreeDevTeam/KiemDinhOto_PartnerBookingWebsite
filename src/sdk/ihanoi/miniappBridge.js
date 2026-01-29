@@ -25,23 +25,23 @@ const MiniAppBridge = (() => {
 
   function detectMode() {
     // React Native WebView
-    if (window.ReactNativeWebView && typeof window.ReactNativeWebView.postMessage === "function") {
+    if (window?.ReactNativeWebView && typeof window?.ReactNativeWebView?.postMessage === "function") {
       return "REACT_NATIVE";
     }
     // Flutter InAppWebView
-    if (window.flutter_inappwebview && typeof window.flutter_inappwebview.callHandler === "function") {
+    if (window?.flutter_inappwebview && typeof window?.flutter_inappwebview?.callHandler === "function") {
       return "FLUTTER";
     }
     // iOS WKWebView
-    if (window.webkit?.messageHandlers?.miniappWebviewToSdk?.postMessage) {
+    if (window?.webkit?.messageHandlers?.miniappWebviewToSdk && window.webkit?.messageHandlers?.miniappWebviewToSdk?.postMessage) {
       return "IOS";
     }
     // Android JS Interface
-    if (window.AndroidWebview && typeof window.AndroidWebview.miniappWebviewToSdk === "function") {
+    if (window?.AndroidWebview && typeof window.AndroidWebview?.miniappWebviewToSdk === "function") {
       return "ANDROID";
     }
     // Web embedded in iframe (partner web)
-    if (window.parent && window.parent !== window) {
+    if (window?.parent && window?.parent !== window) {
       return "WEB_PARENT";
     }
     return "UNKNOWN";
@@ -58,7 +58,6 @@ const MiniAppBridge = (() => {
   function sendToHostRaw(payload) {
     // payload có thể là object; nhiều bridge yêu cầu string JSON
     const asJson = typeof payload === "string" ? payload : JSON.stringify(payload);
-
     switch (mode) {
       case "REACT_NATIVE":
         // Native RN cần onMessage để nhận
@@ -77,11 +76,7 @@ const MiniAppBridge = (() => {
 
       case "IOS":
         // iOS WKWebView messageHandlers thường nhận object tốt
-        try {
-          window.webkit.messageHandlers.miniappWebviewToSdk.postMessage(payload);
-        } catch {
-          window.webkit.messageHandlers.miniappWebviewToSdk.postMessage(asJson);
-        }
+        window.webkit.messageHandlers.miniappWebviewToSdk.postMessage(asJson);
         return;
 
       case "ANDROID":

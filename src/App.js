@@ -25,6 +25,7 @@ import { useDispatch } from 'react-redux'
 import SystemConfigurationsService from './services/SystemConfigurationsService';
 import { getQueryParams } from './page/BookingPartner/bookingPartnerForm';
 import addKeyLocalStorage from './helper/localStorage';
+import MainLogo from './components/MainLogo';
 export const baseName = IS_ZALO_MINI_APP ? `/zapps/${process.env.REACT_APP_ZMP_APP_ID}` : '/'
 function App() {
   // Kiểm tra xem có APIKey trong URL không cho tính năng tự động đặt lịch
@@ -103,7 +104,7 @@ function App() {
                   <React.Suspense
                     fallback={
                       <div className="loading" style={{ background: 'white' }}>
-                        <Spin />
+                        <MainLogo height={60} width={60}></MainLogo>
                       </div>
                     }>
                     <Layout {...props} Component={fillterRoutes[key].component} hideMobileMenu={fillterRoutes[key].hideMobileMenu} />

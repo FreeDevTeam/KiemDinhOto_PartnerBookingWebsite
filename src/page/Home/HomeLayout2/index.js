@@ -193,7 +193,6 @@ const HomeLayout2 = (props) => {
       <div className="loading">
         <div className="text-center">
           <MainLogo height={60} width={60}></MainLogo>
-          <Spin style={{ width: '100%' }} className="mt-3" />
         </div>
       </div>
     )
