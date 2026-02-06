@@ -18,7 +18,7 @@ const UpdateBookingDetail = React.lazy(() => import('./page/BookingDetail/Update
 const IframeView = React.lazy(() => import('./page/IframeView'))
 
 const BookingType=process.env.REACT_APP_BHTNDS
-const LAYOUT_TYPE=process.env.REACT_APP_LAYOUT_TYPE
+const DEFAULT_HOME_LAYOUT=process.env.REACT_APP_DEFAULT_HOME_LAYOUT
 
 const handleCheckPage=()=>{
     switch (BookingType) {
@@ -34,7 +34,7 @@ const handleCheckPage=()=>{
 }
 
 const handleCheckLayout=()=>{
-    switch (LAYOUT_TYPE) {
+    switch (DEFAULT_HOME_LAYOUT) {
         case '2':
             return (HomeLayout2)
         case '3':
