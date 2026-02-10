@@ -19,6 +19,8 @@ import { PATH } from '../../../constants/router'
 import { PARAM_URL_IFRAME } from '../../../constants/params'
 import { encodeLink } from '../../../helper/common'
 import useWindowDimensions from '../../../hooks/window-dimensions'
+import Header from '../../../components/Header'
+import usePartnerBridge from '../../../sdk/usePartnerBridge'
 
 const HomeLayout3 = (props) => {
   const location = useLocation()
@@ -50,6 +52,16 @@ const HomeLayout3 = (props) => {
   const [recommendedServicesList, setRecommendedServicesList] = useState(storageHomePageConfigRecommendedServices ? (JSON.parse(storageHomePageConfigRecommendedServices))?.data : [])
 
   const [listNews, setListNews] = useState([])
+
+  const { init: initBridge, exit: exitBridge, isSupported: isPartnerBridgeSupported } = usePartnerBridge()
+
+  const handleExit = async () => {
+    try {
+      await exitBridge()
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const pushCacheDataIntoObj = (typeOfNews, lastId, obj) => {
     const id = JSON.parse(localStorage.getItem(`LAST_${typeOfNews}_NEWS_ID`)) || undefined
@@ -179,6 +191,9 @@ const HomeLayout3 = (props) => {
 
   return (
     <>
+      {process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE && 
+        <Header title={process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE} onBack={() => {handleExit()}} />
+      }
       <sc.Container>
         <PageLayout>{renderSlider}</PageLayout>
         <div className="more mt-3">

@@ -7,6 +7,7 @@ import useWindowDimensions from '../../../hooks/window-dimensions'
 import { PATH } from '../../../constants/router'
 import { PARAM_URL_IFRAME } from '../../../constants/params'
 import { encodeLink } from '../../../helper/common'
+import { handleDirect } from '../../../components/Slider/SliderHome'
 
 const L2FunctionButtonList = (props) => {
   const { handleZaloAuthorize,globalState } = useGlobalContext();
@@ -37,18 +38,13 @@ const L2FunctionButtonList = (props) => {
     if(!globalState?.isAuthorize){
       await handleZaloAuthorize()
     }
-    const link = element?.link
-    const isZaloLink = link.includes('zalo.me')
+    const link = element?.linkNavigation
 
-    if (isZaloLink) {
+    if (link && link.includes('zalo.me')) {
       await setSheetVisible(false)
       window.open(link, '_blank')
-    } else {
-      if (!(link?.startsWith("https://") || link?.startsWith("http://"))) {
-        history.push(link)
-      } else {
-        history.push(`${PATH.IFRAME_VIEW}?${PARAM_URL_IFRAME}=${encodeLink(link)}`)
-      }
+    } else if (link) {
+      handleDirect(link, element?.navigationType, history)
     }
   }
 

@@ -337,3 +337,18 @@ export const E_TICKET_SALE_OPTIONS = [
     label: 'Vé lượt'
   }
 ]
+
+export const MAIN_BUTTON_TITLES = {
+  'Đăng kiểm xe': {
+    subTitle: 'Đặt lịch đăng kiểm, thay đổi thông tin, nộp hồ sơ'
+  },
+  'Bảo hiểm': {
+    subTitle: 'Mua bảo hiểm TNDS, tư vấn bảo hiểm'
+  },
+  'Kiểm tra phạt nguội': {
+    subTitle: 'Tra cứu và xử lý phạt nguội'
+  },
+  'Tư vấn hỗ trợ': {
+    subTitle: 'Liên hệ hỗ trợ khách hàng'
+  }
+}

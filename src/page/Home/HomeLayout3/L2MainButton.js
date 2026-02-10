@@ -4,6 +4,7 @@ import { useGlobalContext } from '../../../context/GlobalContext'
 import { PATH } from '../../../constants/router'
 import { PARAM_URL_IFRAME } from '../../../constants/params'
 import { encodeLink } from '../../../helper/common'
+import { MAIN_BUTTON_TITLES } from '../../../constants/serviceOption'
 
 const L2MainButton = ({ setSheetVisible, setDataBtn, list, title, className }) => {
   const history = useHistory()
@@ -35,10 +36,15 @@ const L2MainButton = ({ setSheetVisible, setDataBtn, list, title, className }) =
     }
   }
 
+  const enhancedList = list.map(card => ({
+    ...card,
+    subtitle: MAIN_BUTTON_TITLES[card.label || card?.title]?.subTitle
+  }))
+
   return (
     <div className="main-button-feature">
       <div className="feature-cards-container">
-        {list.map((card, index) => (
+        {enhancedList.map((card, index) => (
           <div
             key={index}
             className="feature-card"
