@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useHistory } from 'react-router-dom'
 import moment from 'moment'
-import { SHA256 } from 'crypto-js'
 import { Form, Input, Button, Spin, Select as SelectAntd, Row, Col } from 'antd'
 
 import BookingSuccess from './BookingSuccessModal'
@@ -9,6 +8,7 @@ import PopupMessage from './PopupMessage'
 import { changeTime } from '../../helper/changeTime'
 import { validatorPlateNumber } from './../../helper/validatorPlateNumber'
 import { E_TICKET_SALE_OPTIONS, optionServiceType, SCHEDULE_TITLE, SCHEDULE_TYPE_MINIAPP } from '../../constants/serviceOption'
+import { PATH } from '../../constants/router'
 import {
   PAYMENT_SUB_TYPE,
   PAYMENT_TYPE,
@@ -33,6 +33,7 @@ import SystemConfigurationsService from '../../services/SystemConfigurationsServ
 import MainLogo from '../../components/MainLogo'
 import addKeyLocalStorage from '../../helper/localStorage'
 import PaymentService from '../../services/paymentService'
+import StationServicesSelect, { detectPaymentCase } from './StationServicesSelect'
 
 const Gtel = window
 
@@ -80,6 +81,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   const [minMonthAvailable, setMinMonthAvailable] = useState(moment().format(DATE_DISPLAY_FORMAT))
   const [showServiceType, setShowServiceType] = useState(false)
   const [ETicketOptions, setETicketOptions] = useState([])
+  const [stationServices, setStationServices] = useState([])
+  const [selectedServiceIds, setSelectedServiceIds] = useState([])
   const [workdayFilter, setWorkdayFilter] = useState({
     stationsId: null,
     startDate: moment().format(DATE_DISPLAY_FORMAT),
@@ -109,6 +112,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
   // states cho phương thức thanh toán
   const [zalopayPaymentMethod, setZalopayPaymentMethod] = useState(null)
+
+  // State lưu data thanh toán
+  const [paymentData, setPaymentData] = useState(null)
 
   const getPublicPaymentMethod = async () => {
     try {
@@ -219,6 +225,29 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           return
         }
         const { customerScheduleId, paymentUrl } = data
+        
+        // Kiểm tra thanh toán tùy chọn
+        const paymentCase = detectPaymentCase()
+        
+        // Hiển thị modal thành công + nút thanh toán, không navigate ngay
+        if (paymentCase === 'onlinePayment' && selectedServiceIds.length > 0) {
+          const scheduleData = buildScheduleData(values)
+          const serviceData = buildServiceData('enableOnlinePayment')
+          
+          setPaymentData({
+            customerScheduleId,
+            schedulingType: 'ONLINE_PAYMENT',
+            scheduleData,
+            serviceData
+          })
+          
+          form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
+          setScheduleTypePopUp(values.scheduleType)
+          setIsModalOpen(true)
+          setIsLoading(false)
+          return
+        }
+        
         // Gọi API thanh toán nếu ở môi trường GTEL
         if (MINIAPP_GTELPAY) {
           BookingService.createPayment({
@@ -245,38 +274,119 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       })
   }
 
+
+  // Hàm xử lý kết quả đặt lịch
+  const handleBookingResult = (result, values, paymentCase, type = 'schedule') => {
+    const { error: rsMess, statusCode, data } = result
+    if (statusCode !== 200) {
+      setIsModalErrOpen(true)
+      setErrorMessage(SCHEDULE_ERROR[rsMess] || SCHEDULE_ERROR.INVALID_REQUEST)
+      setIsLoading(false)
+      return
+    }
+    if (!Array.isArray(data) || data.length === 0) {
+      setIsModalErrOpen(true)
+      setErrorMessage('Không nhận được mã lịch/đơn hàng')
+      setIsLoading(false)
+      return
+    }
+    const id = data[0]
+    form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
+    setScheduleTypePopUp(values.scheduleType)
+
+    if (!paymentCase) {
+      setIsModalOpen(true)
+      setIsLoading(false)
+      return
+    }
+    if (paymentCase === 'onlinePayment') {
+      const scheduleData = buildScheduleData(values)
+      const serviceData = buildServiceData('enableOnlinePayment')
+      setPaymentData({
+        orderId: id,
+        schedulingType: 'ONLINE_PAYMENT',
+        scheduleData,
+        serviceData,
+        formValues: values
+      })
+      setIsModalOpen(true)
+      setIsLoading(false)
+      return
+    }
+    if (paymentCase === 'prepay') {
+      const scheduleData = buildScheduleData(values)
+      const serviceData = buildServiceData('enablePrepay')
+      history.push(PATH.SCHEDULE_PAYMENT, {
+        orderId: id,
+        schedulingType: 'PREPAY',
+        scheduleData,
+        serviceData,
+        formValues: values
+      })
+      setIsLoading(false)
+      return
+    }
+  }
+
   const createBookingSchedule = (values) => {
+    const paymentCase = detectPaymentCase(stationServices, selectedServiceIds)
     setIsLoading(true)
     BookingService.createSchedule(values)
-      .then((result) => {
-        const { error: rsMess, statusCode, data } = result
-
-        if (statusCode !== 200) {
-          setIsModalErrOpen(true)
-          setErrorMessage(SCHEDULE_ERROR[rsMess] || SCHEDULE_ERROR.INVALID_REQUEST)
-          return
-        }
-        const scheduleId = data?.[0]
-        if (MINIAPP_GTELPAY && scheduleId) {
-          BookingService.createPayment({
-            customerScheduleId: scheduleId,
-            stationServicesList: values['stationServicesList'],
-            paymentMethodType: PAYMENT_TYPE.GTEL_PAY
-          }).then((result) => {
-            const orderId = result?.data?.inAppGtelOrderId
-            if (orderId) {
-              Gtel.GtelPayJSBridge?.payOrder({ order_id: orderId })
-            }
-          })
-        }
-        setIsModalOpen(true)
-        form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
-      })
-      .finally(() => {
+      .then((result) => handleBookingResult(result, values, paymentCase, 'schedule'))
+      .catch((error) => {
+        setIsModalErrOpen(true)
+        setErrorMessage('Lỗi kết nối hoặc tạo lịch thất bại')
         setIsLoading(false)
       })
   }
 
+  // Tạo order và xử lý thanh toán
+  const createOrderScheduleAndPay = (values, paymentCase) => {
+    setIsLoading(true)
+    let data = { ...values }
+    if (paymentCase === 'onlinePayment') {
+      data.isImmediate = 1 // yêu cầu BE tạo lịch trước khi thanh toán
+    }
+    BookingService.createOrderSchedule(data)
+      .then((result) => handleBookingResult(result, values, paymentCase, 'order'))
+      .catch((error) => {
+        setIsModalErrOpen(true)
+        setErrorMessage('Lỗi kết nối hoặc tạo đơn hàng thất bại')
+        setIsLoading(false)
+      })
+  }
+
+  // Hàm helper: Xây dựng dữ liệu lịch hẹn
+  const buildScheduleData = (values) => ({
+    licensePlates: values.licensePlates,
+    fullnameSchedule: values.name,
+    email: values.email,
+    phone: values.phone,
+    scheduleType: values.scheduleType,
+    vehicleType: workdayFilter.vehicleType,
+    vehicleSubType: values.vehicleSubType,
+    vehicleSubCategory: values.vehicleSubCategory,
+    licensePlateColor: values.licensePlateColor,
+    certificateSeries: values.certificateSeries,
+    dateSchedule: workdaySelectedDate,
+    time: values?.time?.scheduleTime
+  })
+
+  // Hàm helper: Xây dựng dữ liệu dịch vụ từ selectedServiceIds
+  const buildServiceData = (serviceField = 'enableOnlinePayment') => {
+    const selectedServiceId = selectedServiceIds.length > 0 ? selectedServiceIds[0] : null
+    const selectedService = stationServices.find(s => s.stationServicesId === selectedServiceId)
+    return selectedService ? {
+      serviceName: selectedService.serviceName,
+      servicePrice: selectedService.servicePrice || 0,
+      stationServicesList: selectedServiceIds,
+      [serviceField]: selectedService[serviceField] === 1
+    } : {
+      serviceName: '',
+      servicePrice: 0,
+      stationServicesList: []
+    }
+  }
 
   const handlePaymentInZaloPay = async (app_id, zp_trans_token) => {
     return window.zlpSdk.Payment.startCashier({
@@ -397,21 +507,33 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     if (values.serviceId) {
       data.stationServicesList = [values.serviceId]
     }
-    // dùng cho ZALOPAY
-    // if (scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT && MINIAPP_ZALOPAY) {
-    //   ZaloPayBookingConsultantSchedule(data)
-    // }
+    if (selectedServiceIds.length > 0) {
+      data.stationServicesList = selectedServiceIds
+    }
 
+    // Detect phương thức thanh toán dựa trên service được chọn
+    const paymentCase = detectPaymentCase(stationServices, selectedServiceIds)
+
+    // Miniapp environment (GTEL/ZALOPAY) luôn được ưu tiên trước
     if (scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT && MINIAPP_GTELPAY) {
       GtelBookingConsultantSchedule(data)
     } else if (scheduleCategory === SCHEDULE_BOOKING_TYPE.SCHEDULE && MINIAPP_GTELPAY) {
       GtelCreateBookingSchedule(data)
     } else if (scheduleCategory === SCHEDULE_BOOKING_TYPE.SCHEDULE && MINIAPP_ZALOPAY) {
       ZaloPayCreateBookingSchedule(data)
-    } else if (scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT) {
-      bookingConsultantSchedule(data)
-    } else if (scheduleCategory === SCHEDULE_BOOKING_TYPE.SCHEDULE) {
-      createBookingSchedule(data)
+    } else if (!paymentCase) {
+      // Không có payment case từ service
+      if (scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT) {
+        bookingConsultantSchedule(data)
+      } else if (scheduleCategory === SCHEDULE_BOOKING_TYPE.SCHEDULE) {
+        createBookingSchedule(data)
+      }
+    } else if (paymentCase === 'onlinePayment') {
+      // Thanh toán tùy chọn: Tạo schedule + order, show modal có nút thanh toán
+      createOrderScheduleAndPay(data, 'onlinePayment')
+    } else if (paymentCase === 'prepay') {
+      // Thanh toán bắt buộc: Tạo order, chuyển sang trang thanh toán
+      createOrderScheduleAndPay(data, 'prepay')
     }
     getBookingDate()
   }
@@ -829,7 +951,17 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       }
       paramsFromUrl[key] = value
       // fillFormValue(key, value)
-    })
+    })    // Normalize station param aliases and prioritize URL param for default station.
+    const stationIdFromParam = [
+      paramsFromUrl?.stationsId,
+      paramsFromUrl?.stationsid,
+      paramsFromUrl?.stationId,
+      paramsFromUrl?.stationid
+    ].find((value) => value !== undefined && value !== null && value !== '')
+    if (stationIdFromParam !== undefined) {
+      paramsFromUrl.stationsId = stationIdFromParam
+    }
+
     getStationConfigByApiKey(paramsFromUrl)
   }
 
@@ -894,6 +1026,27 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       })
     }
   }, [workdaySelectedDate, stationSelected])
+
+  // Fetch danh sách dịch vụ trạm khi chọn trạm khác
+  useEffect(() => {
+    const stationsId = form.getFieldValue('stationsId')
+    if (stationsId) {
+      BookingService.getListStationService({ filter: { stationsId: stationsId } })
+        .then((response) => {
+          if (response?.isSuccess && response?.data?.data) {
+            const activeServices = response.data.data.filter((item) => Number(item.isActive) === 1)
+            setStationServices(activeServices)
+            setSelectedServiceIds([])
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching station services:', error)
+        })
+    } else {
+      setStationServices([])
+      setSelectedServiceIds([])
+    }
+  }, [form.getFieldValue('stationsId')])
 
   useEffect(() => {
     if (dataBookingParam?.vehicleSubType || form.getFieldValue('vehicleSubType')) {
@@ -1234,6 +1387,20 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                 }}
               />
             </Form.Item>
+            {stationServices.length > 0 && (
+              <Form.Item
+                name="stationServicesList"
+                label="Dịch vụ theo yêu cầu">
+                <StationServicesSelect
+                  stationServices={stationServices}
+                  selectedServiceIds={selectedServiceIds}
+                  onChange={(checkedValues) => {
+                    setSelectedServiceIds(checkedValues)
+                    form.setFieldValue('stationServicesList', checkedValues)
+                  }}
+                />
+              </Form.Item>
+            )}
             {isShowStationDateTime.showAreaField && (
               <Form.Item
                 required={dataBookingParam?.visible_StationArea !== false}
@@ -1357,8 +1524,11 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
         scheduleType={scheduleTypePopUp}
         setTabKey={setTabKey}
         setIsModalOpen={setIsModalOpen}
+        paymentData={paymentData}
+        history={history}
         onClose={() => {
           setIsModalOpen(false)
+          setPaymentData(null)
           // history.goBack()
         }}></BookingSuccess>
       {isModalErrOpen && (

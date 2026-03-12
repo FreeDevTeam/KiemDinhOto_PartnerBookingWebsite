@@ -2,10 +2,11 @@ import { Modal, Button } from 'antd'
 import { ReactComponent as SuccessIcon } from './../../assets/icons/success.svg'
 import './index.scss'
 import { SCHEDULE_TYPE } from '../../constants/serviceOption'
+import { PATH } from '../../constants/router'
 import { useAppParamsContext } from '../../context/AppParamsContext'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-const BookingSuccess = ({ isModalOpen, onClose,setTabKey,setIsModalOpen,scheduleType }) => {
+const BookingSuccess = ({ isModalOpen, onClose, setTabKey, setIsModalOpen, scheduleType, paymentData, history, isPaymentPage }) => {
   const consultantTypes = [
     SCHEDULE_TYPE.CONSULTANT_MAINTENANCE,
     SCHEDULE_TYPE.CONSULTANT_INSURANCE,
@@ -30,19 +31,40 @@ const BookingSuccess = ({ isModalOpen, onClose,setTabKey,setIsModalOpen,schedule
       setTabKey('bookingList')
       )
   }
+
+  // Xử lý nút thanh toán online
+  const handleGoToPayment = () => {
+    if (!paymentData) return
+    
+    setTimeout(() => {
+      history.push(PATH.SCHEDULE_PAYMENT, paymentData)
+    }, 500)
+    setIsModalOpen(false)
+  }
+
+  const isPaymentFlow = paymentData?.schedulingType === 'ONLINE_PAYMENT' || paymentData?.schedulingType === 'PREPAY'
+
+  // Nếu là trang thanh toán, khi đóng modal sẽ gọi onClose để về trang đặt lịch
+  const handleModalClose = () => {
+    if (isPaymentPage && typeof onClose === 'function') {
+      onClose()
+    } else if (typeof onClose === 'function') {
+      onClose()
+    }
+  }
+
   return (
-    <>
-      <Modal title="" visible={isModalOpen} footer={null} closable={false} className="text-center" onClose={onClose}>
-        <div className={'register app-container'} style={{ maxWidth: 600, margin: 'auto', padding:15}}>
-          <div className="register-success text-center">
-            <SuccessIcon className={'text-center'} />
-            <div className='mb-4'>
-              <div className="mb-2">
-                <div className='title-normal text-uppercase m-2'>Đặt lịch thành công</div>
-              </div>
-              <div>Thông tin đã được chuyển đến tư vấn viên của chúng tôi. Nhân viên tư vấn sẽ sớm liên hệ lại để hỗ trợ tư vấn cho bạn.</div>
+    <Modal title="" visible={isModalOpen} footer={null} closable={false} className="text-center" onCancel={handleModalClose}>
+      <div className={'register app-container'} style={{ maxWidth: 600, margin: 'auto', padding:15}}>
+        <div className="register-success text-center">
+          <SuccessIcon className={'text-center'} />
+          <div className='mb-4'>
+            <div className="mb-2">
+              <div className='title-normal text-uppercase m-2'>Đặt lịch thành công</div>
             </div>
-            <div>
+            <div>Thông tin đã được chuyển đến tư vấn viên của chúng tôi. Nhân viên tư vấn sẽ sớm liên hệ lại để hỗ trợ tư vấn cho bạn.</div>
+          </div>
+          <div>
             {isConsultantType && !(isWebView) && (
               <>
             <p style={{ margin: '15px 0' }}>
@@ -59,17 +81,28 @@ const BookingSuccess = ({ isModalOpen, onClose,setTabKey,setIsModalOpen,schedule
               </Button>
               </>
             )}
-              {/* <Button className="login__button df" onClick={()=>handleViewListBooking()} type="primary" htmlType="submit" size="large">
-                Xem lịch hẹn
-              </Button> */}
-              <Button className="login__button df" onClick={onClose} type="primary" htmlType="submit" size="large">
-                Xác nhận
+            {/* <Button className="login__button df" onClick={()=>handleViewListBooking()} type="primary" htmlType="submit" size="large">
+              Xem lịch hẹn
+            </Button> */}
+            {isPaymentFlow && (
+              <Button 
+                className="login__button df" 
+                onClick={handleGoToPayment} 
+                type="primary" 
+                htmlType="submit" 
+                size="large"
+                style={{ marginBottom: '10px' }}
+              >
+                Thanh toán Online
               </Button>
-            </div>
+            )}
+            <Button className="login__button df" onClick={handleModalClose} type="primary" htmlType="submit" size="large">
+              Xác nhận
+            </Button>
           </div>
         </div>
-      </Modal>
-    </>
+      </div>
+    </Modal>
   )
 }
 

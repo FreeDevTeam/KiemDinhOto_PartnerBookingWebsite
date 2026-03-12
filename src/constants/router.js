@@ -13,4 +13,5 @@ export const PATH = {
     PARTNER_GUIDE: '/partner-guide-link',
     PERSONAL_GUIDE: '/personal-guide-link',
     IFRAME_VIEW: '/page',
+    SCHEDULE_PAYMENT: '/schedule-payment',
 }

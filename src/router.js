@@ -16,6 +16,7 @@ const PartnerGuide = React.lazy(() => import('./page/Guide/partnerGuide'))
 const PersonalGuide = React.lazy(() => import('./page/Guide/personalGuide'))
 const UpdateBookingDetail = React.lazy(() => import('./page/BookingDetail/UpdateBookingDetail'))
 const IframeView = React.lazy(() => import('./page/IframeView'))
+const SchedulePayment = React.lazy(() => import('./page/SchedulePayment/index'))
 
 const BookingType=process.env.REACT_APP_BHTNDS
 const DEFAULT_HOME_LAYOUT=process.env.REACT_APP_DEFAULT_HOME_LAYOUT
@@ -135,6 +136,16 @@ export const ROUTERS = {
     iframeViewWeb: {
         path: PATH.IFRAME_VIEW,
         component: IframeView,
+        isZaloApp: 0,
+    },
+    schedulePaymentZalo: {
+        path: PATH.SCHEDULE_PAYMENT,
+        component: SchedulePayment,
+        isZaloApp: 1,
+    },
+    schedulePaymentWeb: {
+        path: PATH.SCHEDULE_PAYMENT,
+        component: SchedulePayment,
         isZaloApp: 0,
     },
     // bookingPartnerIframe: {
