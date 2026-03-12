@@ -1,0 +1,16 @@
+@import url('../../assets/scss/_variable.scss');
+
+.payment-method-selection {
+  &-item {
+    border: 1px solid var(--gray-gallery);
+    border-radius: 12px;
+    cursor: pointer;
+    width: calc(50% - 8px);
+    height: 100px;
+
+    &.active {
+      border: 1px solid var(--blue-ribbon) !important;
+      background: var(--gray-solitude) !important;
+    }
+  }
+}

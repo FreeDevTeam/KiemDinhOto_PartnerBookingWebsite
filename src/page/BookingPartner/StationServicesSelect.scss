@@ -1,0 +1,65 @@
+@import '../../assets/scss/variable';
+
+// Bootstrap mb-2 utility class
+.mb-2 {
+  margin-bottom: 0.5rem; // 8px
+}
+
+.station-services-select {
+  .custom-checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .custom-checkbox {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--title-color);
+    border-radius: 50%;
+    background: var(--background-color);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, border-color 0.2s;
+    cursor: pointer;
+
+    &.checked {
+      background: var(--title-color);
+      border-color: var(--title-color);
+    }
+
+    .checkmark {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+    }
+  }
+
+  .checkbox-label {
+    margin-left: 8px;
+    font-size: 14px;
+    color: var(--light-black-color);
+    cursor: pointer;
+  }
+
+  .services-total-price {
+    margin-top: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--secondary-color);
+
+    .price-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--light-black-color);
+    }
+
+    .price-value {
+      color: var(--title-color);
+      font-size: 16px;
+      font-weight: bold;
+    }
+  }
+}

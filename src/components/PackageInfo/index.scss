@@ -1,0 +1,45 @@
+@import '../../assets/scss/_variable.scss';
+
+.package-info {
+  &-content {
+    border: 1px solid var(--gray-gallery);
+    border-radius: 12px;
+  }
+
+  &-prices {
+    border-top: 0.5px solid var(--gray-mercury);
+
+    &:last-child {
+      padding-bottom: 0 !important;
+    }
+
+    &-unpaid {
+      color: var(--error-btn-color);
+      font-weight: 700;
+    }
+
+    &-paid {
+      color: var(--success-btn-color);
+      font-weight: 700;
+    }
+  }
+
+  &-services {
+    &-icon {
+      width: 64px;
+      height: 64px;
+      min-width: 64px;
+      min-height: 64px;
+      background: var(--gray-solitude);
+      border-radius: 6px;
+
+      small {
+        color: var(--blue-ribbon) !important;
+      }
+    }
+  }
+
+  small {
+    color: var(--gray-mid-gray);
+  }
+}
