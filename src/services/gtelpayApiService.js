@@ -32,12 +32,21 @@ class GtelpayApiService {
     if (!this.isEnabled()) {
       return null;
     }
-
     try {
-      const params = new URLSearchParams(window.location.search);
-      const access_code = params.get('access_code');
-      const key = params.get('key'); // This is encrypted_key (RSA encrypted AES key)
-      const transaction_id = params.get('transaction_id');
+      let params = new URLSearchParams(window.location.search);
+      let access_code = params.get('access_code');
+      let key = params.get('key');
+      let transaction_id = params.get('transaction_id');
+
+      if (!access_code || !key || !transaction_id) {
+        const raw = window.location.search || '';
+        const candidate = raw.startsWith('?') ? raw.slice(1) : raw;
+        const fixed = candidate.replace(/\\u003d/gi, '=').replace(/\\u0026/gi, '&');
+        params = new URLSearchParams('?' + fixed);
+        access_code = params.get('access_code');
+        key = params.get('key');
+        transaction_id = params.get('transaction_id');
+      }
 
       if (!access_code || !key || !transaction_id) {
         return null;

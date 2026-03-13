@@ -9,10 +9,41 @@ export const GTELPAY_CONFIG = {
   }
 };
 
+const tryParseSearch = (searchStr) => {
+  if (!searchStr) return null;
+  const candidate = searchStr.startsWith('?') ? searchStr.slice(1) : searchStr;
+
+  // xử lý trường hợp có chuỗi escape dạng "\u003d" (dấu =) và "\u0026" (dấu &)
+  const fixed = candidate.replace(/\\u003d/gi, '=').replace(/\\u0026/gi, '&');
+
+  const attempts = [fixed];
+
+  if (/%[0-9A-Fa-f]{2}/.test(fixed)) {
+    const dec = decodeURIComponent(fixed);
+    if (dec !== fixed) attempts.unshift(dec);
+  }
+
+  for (const a of attempts) {
+    if (!a) continue;
+
+    if (!(a.includes('access_code') || a.includes('transaction_id'))) continue;
+
+    const params = new URLSearchParams('?' + a);
+    if (params.get('access_code') && params.get('key') && params.get('transaction_id')) {
+      return Object.fromEntries(params.entries());
+    }
+  }
+
+  return null;
+};
+
 /** Check if URL has GTEL params */
-const isFromGtelpayUniversalLink = () => {
-  const params = new URLSearchParams(window.location.search);
-  return !!(params.get('access_code') && params.get('key') && params.get('transaction_id'));
+const isFromGtelpayUniversalLink = () => !!tryParseSearch(window.location.search || '');
+
+export const parseGtelpayParams = () => {
+  const raw = window.location.search || '';
+  const result = tryParseSearch(raw) || {};
+  return result;
 };
 
 const gtelpayFlowCache = new Map();
