@@ -131,6 +131,8 @@ const PaymentMethodSelection = ({ paymentMethod, setPaymentMethod, setListPaymen
           // Phần này sẽ check hiển thị theo đúng theme (phân sách SMoc và TAMove)
           filteredData = checkShowPaymentMethodWithTheme(filteredData)
         }
+        // Tạm thời ẩn phương thức GtelPay
+        filteredData = filteredData.filter((item) => item.paymentMethodType !== PAYMENT_TYPE.GTEL_PAY && item.paymentMethodType !== PAYMENT_TYPE_CODE.GTELPAY)
         const dataConverted = Object.fromEntries(
           filteredData.map((item) => {
             // tạm thời ẩn đi zalopay, nào cần mở thì xóa 3 dòng dưới là đươc

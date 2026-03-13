@@ -6,7 +6,7 @@ import { PATH } from '../../constants/router'
 import { useAppParamsContext } from '../../context/AppParamsContext'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-const BookingSuccess = ({ isModalOpen, onClose, setTabKey, setIsModalOpen, scheduleType, paymentData, history, isPaymentPage }) => {
+const BookingSuccess = ({ isModalOpen, onClose, setTabKey, setIsModalOpen, scheduleType, paymentData, history, isPaymentPage, message }) => {
   const consultantTypes = [
     SCHEDULE_TYPE.CONSULTANT_MAINTENANCE,
     SCHEDULE_TYPE.CONSULTANT_INSURANCE,
@@ -60,7 +60,9 @@ const BookingSuccess = ({ isModalOpen, onClose, setTabKey, setIsModalOpen, sched
           <SuccessIcon className={'text-center'} />
           <div className='mb-4'>
             <div className="mb-2">
-              <div className='title-normal text-uppercase m-2'>Đặt lịch thành công</div>
+              <div className='title-normal text-uppercase m-2'>
+                {message ? message : 'Đặt lịch thành công'}
+              </div>
             </div>
             <div>Thông tin đã được chuyển đến tư vấn viên của chúng tôi. Nhân viên tư vấn sẽ sớm liên hệ lại để hỗ trợ tư vấn cho bạn.</div>
           </div>

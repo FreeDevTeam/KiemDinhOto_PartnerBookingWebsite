@@ -1391,13 +1391,29 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
               <Form.Item
                 name="stationServicesList"
                 label="Dịch vụ theo yêu cầu">
-                <StationServicesSelect
-                  stationServices={stationServices}
-                  selectedServiceIds={selectedServiceIds}
-                  onChange={(checkedValues) => {
-                    setSelectedServiceIds(checkedValues)
-                    form.setFieldValue('stationServicesList', checkedValues)
+                <SelectAntd
+                  className="cs-select ant-custom booking-input"
+                  placeholder="Vui lòng chọn dịch vụ"
+                  value={selectedServiceIds[0] || undefined}
+                  onChange={(value) => {
+                    setSelectedServiceIds(value ? [value] : [])
+                    form.setFieldValue('stationServicesList', value ? [value] : [])
                   }}
+                  style={{ width: '100%' }}
+                  options={stationServices.map((service) => ({
+                    value: service.stationServicesId,
+                    label: (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                        <span>{service.serviceName}</span>
+                        {service.servicePrice > 0 && (
+                          <span className="service-price-value">
+                            {service.servicePrice.toLocaleString('vi-VN')}đ
+                          </span>
+                        )}
+                      </div>
+                    )
+                  }))}
+                  allowClear
                 />
               </Form.Item>
             )}

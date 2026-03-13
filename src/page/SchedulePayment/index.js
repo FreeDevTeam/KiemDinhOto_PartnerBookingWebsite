@@ -72,8 +72,11 @@ const SchedulePayment = () => {
             stopPolling();
             setShowPaymentModal(false);
             setTimeout(() => {
-              const caseType = schedulingType === 'PREPAY' ? 'CASE_C' : 'CASE_B';
-              setSuccessMessage(caseType === 'CASE_C' ? 'Dat lich thanh toan thanh cong' : 'Thanh toan thanh cong');
+              setSuccessMessage(
+                schedulingType === 'PREPAY'
+                  ? 'Đặt lịch & thanh toán thành công'
+                  : 'Thanh toán thành công'
+              );
               setShowSuccessModal(true);
             }, 500);
             return;
@@ -168,8 +171,8 @@ const SchedulePayment = () => {
 
       // Nếu không có paymentLinkUrl, mới show QR modal
       const response = {
-        totalPay: serviceData.servicePrice || 0,
-        formatedTotalPay: (serviceData.servicePrice || 0).toLocaleString('vi-VN'),
+        totalPay: totalServicePrice,
+        formatedTotalPay: formatedTotalPay,
         qr: {
           bankQR: responseData.bankQR || null,
           momoQR: responseData.momoQR || null
@@ -203,7 +206,7 @@ const SchedulePayment = () => {
   const handleBackToBooking = () => {
     setShowSuccessModal(false)
     setTimeout(() => {
-      history.replace('/')
+      history.goBack()
     }, 300)
   }
 
@@ -340,6 +343,7 @@ const SchedulePayment = () => {
         isModalOpen={showSuccessModal}
         onClose={handleBackToBooking}
         isPaymentPage={true}
+        message={successMessage}
       />
     </div>
   )
