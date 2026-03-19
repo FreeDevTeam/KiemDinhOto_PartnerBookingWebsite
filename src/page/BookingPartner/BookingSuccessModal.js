@@ -6,7 +6,7 @@ import { PATH } from '../../constants/router'
 import { useAppParamsContext } from '../../context/AppParamsContext'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-const BookingSuccess = ({ isModalOpen, onClose, setTabKey, setIsModalOpen, scheduleType, paymentData, history, isPaymentPage, message }) => {
+const BookingSuccess = ({ isModalOpen, onClose, setTabKey, setIsModalOpen, scheduleType, paymentData, history, isPaymentPage, message, onOpenExternalPayment }) => {
   const consultantTypes = [
     SCHEDULE_TYPE.CONSULTANT_MAINTENANCE,
     SCHEDULE_TYPE.CONSULTANT_INSURANCE,
@@ -35,7 +35,14 @@ const BookingSuccess = ({ isModalOpen, onClose, setTabKey, setIsModalOpen, sched
   // Xử lý nút thanh toán online
   const handleGoToPayment = () => {
     if (!paymentData) return
-    
+
+    // If parent provided a handler to open external payment, use it
+    if (typeof onOpenExternalPayment === 'function') {
+      onOpenExternalPayment(paymentData)
+      setIsModalOpen(false)
+      return
+    }
+
     setTimeout(() => {
       history.push(PATH.SCHEDULE_PAYMENT, paymentData)
     }, 500)

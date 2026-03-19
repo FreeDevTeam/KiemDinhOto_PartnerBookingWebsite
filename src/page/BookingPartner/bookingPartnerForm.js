@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { useHistory } from 'react-router-dom'
 import moment from 'moment'
 import { Form, Input, Button, Spin, Select as SelectAntd, Row, Col } from 'antd'
@@ -25,6 +25,7 @@ import {
 } from '../../constants/global'
 import BookingService, { fetchMetadataWithCache } from '../../services/addBookingService'
 import { DATE_DISPLAY_FORMAT } from '../../constants/dateFormats'
+import { REACT_APP_URL_WEB_PAYMENT } from '../../constants/url'
 
 import BookingDatePicker from '../../components/BookingDatePicker'
 import BookingHoursPicker from '../../components/BookingHoursPicker'
@@ -115,6 +116,244 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
   // State lưu data thanh toán
   const [paymentData, setPaymentData] = useState(null)
+  // External payment iframe state
+  const [externalPaymentUrl, setExternalPaymentUrl] = useState(null)
+  const [isExternalPaymentOpen, setIsExternalPaymentOpen] = useState(false)
+  const externalPaymentIframeRef = useRef(null)
+  const redirectTimerRef = useRef(null)
+  const paymentSessionRef = useRef({
+    orderId: null,
+    scheduleHash: '',
+    origin: '',
+    callbackUrl: '',
+    isHandling: false
+  })
+
+  const getScheduleHashFromPayload = (payload = {}) => payload?.scheduleHash || payload?.schedulehash || ''
+
+  const buildExternalPaymentUrl = (rawUrl, scheduleHash = '') => {
+    if (!rawUrl) return ''
+
+    try {
+      const urlObj = new URL(rawUrl, window.location.origin)
+      const hasEmbeddedFlag = urlObj.searchParams.has('isBackToHomeMiniApp')
+
+      if (!hasEmbeddedFlag) {
+        urlObj.searchParams.set('isBackToHomeMiniApp', 'true')
+      }
+
+      const envTheme = process.env.REACT_APP_THEME_NAME
+      if (envTheme && !urlObj.searchParams.has('themeName')) {
+        urlObj.searchParams.set('themeName', envTheme)
+      }
+
+      return urlObj.toString()
+    } catch (error) {
+      return rawUrl
+    }
+  }
+
+  const openExternalPayment = useCallback((url, context = {}) => {
+    if (!url) return
+
+    let origin = ''
+    let scheduleHash = context?.scheduleHash || ''
+
+    const parsedUrl = new URL(url)
+    origin = parsedUrl.origin
+
+    paymentSessionRef.current = {
+      orderId: context?.orderId || null,
+      scheduleHash,
+      origin,
+      callbackUrl: '',
+      isHandling: false
+    }
+
+    setExternalPaymentUrl(url)
+    setIsExternalPaymentOpen(true)
+    setIsModalOpen(false)
+  }, [])
+
+  const closeExternalPayment = useCallback(() => {
+    if (redirectTimerRef.current) {
+      clearTimeout(redirectTimerRef.current)
+      redirectTimerRef.current = null
+    }
+
+    setIsExternalPaymentOpen(false)
+    setExternalPaymentUrl(null)
+    paymentSessionRef.current.isHandling = false
+  }, [])
+
+  const resolveScheduleHashFromOrder = useCallback((orderDetail, payload = {}) => {
+    const payloadHash = getScheduleHashFromPayload(payload)
+    if (payloadHash) return payloadHash
+    if (paymentSessionRef.current.scheduleHash) return paymentSessionRef.current.scheduleHash
+
+    try {
+      const orderOtherData = JSON.parse(orderDetail?.orderOtherData || '{}')
+      return orderOtherData?.scheduleHash || orderDetail?.orderHash || ''
+    } catch (error) {
+      return orderDetail?.orderHash || ''
+    }
+  }, [])
+
+  const redirectToPaymentCallback = useCallback((scheduleHash = '') => {
+    const hashToRedirect = scheduleHash || paymentSessionRef.current.scheduleHash
+    if (hashToRedirect) {
+      history.push(`${PATH.BOOKING_DETAIL_NO_ID}?schedulehash=${encodeURIComponent(hashToRedirect)}`)
+      return true
+    }
+
+    // Per new flow: only redirect when we have a scheduleHash. Otherwise do nothing.
+    return false
+  }, [history])
+
+  const handlePaymentSuccessSignal = useCallback(async (payload = {}) => {
+    if (paymentSessionRef.current.isHandling) return
+
+    // If the iframe was closed (PAYMENT_CLOSE), do not trigger redirect flow here
+    if (payload?.type === 'PAYMENT_CLOSE') {
+      if (redirectTimerRef.current) {
+        clearTimeout(redirectTimerRef.current)
+        redirectTimerRef.current = null
+      }
+      paymentSessionRef.current.isHandling = false
+      return
+    }
+
+    const orderIdToVerify = payload?.orderId || payload?.orderID || paymentSessionRef.current.orderId
+    if (!orderIdToVerify) return
+
+    paymentSessionRef.current.isHandling = true
+    let didHandleSuccess = false
+
+    try {
+      const orderDetail = await PaymentService.checkOrderStatus(orderIdToVerify)
+      if (`${orderDetail?.paymentStatus || ''}`.toUpperCase() !== 'SUCCESS') return
+
+      const scheduleHash = resolveScheduleHashFromOrder(orderDetail, payload)
+      if (scheduleHash) {
+        paymentSessionRef.current.scheduleHash = scheduleHash
+      }
+
+      redirectTimerRef.current = setTimeout(() => {
+        redirectTimerRef.current = null
+        try {
+          closeExternalPayment()
+          redirectToPaymentCallback(scheduleHash)
+        } finally {
+          paymentSessionRef.current.isHandling = false
+        }
+      }, 3000)
+
+      didHandleSuccess = true
+    } catch (error) {
+      if (`${payload?.paymentStatus || ''}`.toUpperCase() !== 'SUCCESS') return
+
+      const fallbackScheduleHash = getScheduleHashFromPayload(payload) || paymentSessionRef.current.scheduleHash
+      if (fallbackScheduleHash) {
+        paymentSessionRef.current.scheduleHash = fallbackScheduleHash
+      }
+
+      redirectTimerRef.current = setTimeout(() => {
+        redirectTimerRef.current = null
+        try {
+          closeExternalPayment()
+          redirectToPaymentCallback(fallbackScheduleHash)
+        } finally {
+          paymentSessionRef.current.isHandling = false
+        }
+      }, 3000)
+
+      didHandleSuccess = true
+    } finally {
+      if (!didHandleSuccess) {
+        paymentSessionRef.current.isHandling = false
+      }
+    }
+  }, [closeExternalPayment, redirectToPaymentCallback, resolveScheduleHashFromOrder])
+
+  const resolveExternalPaymentContext = (paymentPayloadOrOrderId) => {
+    const fallbackOrderId = paymentData?.orderId || null
+    const fallbackScheduleHash = paymentData?.scheduleHash || ''
+
+    if (typeof paymentPayloadOrOrderId === 'string' && /^https?:\/\//.test(paymentPayloadOrOrderId)) {
+      return {
+        url: paymentPayloadOrOrderId,
+        orderId: fallbackOrderId,
+        scheduleHash: fallbackScheduleHash
+      }
+    }
+
+    const payload = paymentPayloadOrOrderId && typeof paymentPayloadOrOrderId === 'object' ? paymentPayloadOrOrderId : {}
+    const orderIdFromPrimitive =
+      typeof paymentPayloadOrOrderId === 'number' ||
+      (typeof paymentPayloadOrOrderId === 'string' && paymentPayloadOrOrderId.trim() !== '')
+        ? paymentPayloadOrOrderId
+        : null
+    const orderId = payload.orderId || payload.customerScheduleId || orderIdFromPrimitive || fallbackOrderId
+    const scheduleHash = payload.scheduleHash || fallbackScheduleHash
+
+    if (typeof payload.paymentUrl === 'string' && /^https?:\/\//.test(payload.paymentUrl)) {
+      return {
+        url: payload.paymentUrl,
+        orderId,
+        scheduleHash
+      }
+    }
+
+    if (!orderId) {
+      return {
+        url: '',
+        orderId: null,
+        scheduleHash
+      }
+    }
+
+    const base = (REACT_APP_URL_WEB_PAYMENT || '').replace(/\/$/, '')
+    return {
+      url: `${base}/order-payment/${orderId}`,
+      orderId,
+      scheduleHash
+    }
+  }
+
+  const handleOpenExternalPayment = (paymentPayloadOrOrderId) => {
+    if (!paymentPayloadOrOrderId && !paymentData?.orderId) return
+
+    const { url, orderId, scheduleHash } = resolveExternalPaymentContext(paymentPayloadOrOrderId)
+    if (!url) return
+
+    openExternalPayment(buildExternalPaymentUrl(url, scheduleHash), { orderId, scheduleHash })
+  }
+
+  useEffect(() => {
+    const listener = (event) => {
+      if (!isExternalPaymentOpen) return
+
+      const expectedOrigin = paymentSessionRef.current.origin
+      if (!expectedOrigin || event.origin !== expectedOrigin) return
+
+      const iframeWindow = externalPaymentIframeRef.current?.contentWindow
+      if (iframeWindow && event.source !== iframeWindow) return
+
+      const data = event?.data || {}
+      if (data?.channel !== 'TTDK_PAYMENT') return
+
+      if (data?.type === 'PAYMENT_CLOSE') {
+        closeExternalPayment()
+      }
+
+      if (data?.type === 'PAYMENT_SUCCESS' || data?.type === 'PAYMENT_CLOSE') {
+        handlePaymentSuccessSignal(data)
+      }
+    }
+
+    window.addEventListener('message', listener)
+    return () => window.removeEventListener('message', listener)
+  }, [closeExternalPayment, handlePaymentSuccessSignal, isExternalPaymentOpen])
 
   const getPublicPaymentMethod = async () => {
     try {
@@ -172,7 +411,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
         setScheduleTypePopUp(values.scheduleType)
         if (paymentUrl?.length > 0) {
           setTimeout(() => {
-            window.open(paymentUrl, '_blank')
+            handleOpenExternalPayment(paymentUrl)
           }, 500)
         }
         form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
@@ -233,12 +472,13 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
         if (paymentCase === 'onlinePayment' && selectedServiceIds.length > 0) {
           const scheduleData = buildScheduleData(values)
           const serviceData = buildServiceData('enableOnlinePayment')
-          
+          const paymentUrlFromRes = paymentUrl
           setPaymentData({
             customerScheduleId,
             schedulingType: 'ONLINE_PAYMENT',
             scheduleData,
-            serviceData
+            serviceData,
+            paymentUrl: paymentUrlFromRes
           })
           
           form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
@@ -264,7 +504,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
         setIsModalOpen(true)
         if (paymentUrl?.length > 0) {
           setTimeout(() => {
-            window.open(paymentUrl, '_blank')
+            handleOpenExternalPayment(paymentUrl)
           }, 500)
         }
         form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
@@ -291,6 +531,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       return
     }
     const id = data[0]
+    const paymentUrlFromRes = data?.paymentUrl
     form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
     setScheduleTypePopUp(values.scheduleType)
 
@@ -307,7 +548,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
         schedulingType: 'ONLINE_PAYMENT',
         scheduleData,
         serviceData,
-        formValues: values
+        formValues: values,
+        paymentUrl: paymentUrlFromRes
       })
       setIsModalOpen(true)
       setIsLoading(false)
@@ -316,13 +558,19 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     if (paymentCase === 'prepay') {
       const scheduleData = buildScheduleData(values)
       const serviceData = buildServiceData('enablePrepay')
-      history.push(PATH.SCHEDULE_PAYMENT, {
-        orderId: id,
-        schedulingType: 'PREPAY',
-        scheduleData,
-        serviceData,
-        formValues: values
-      })
+      // Open external payment in iframe instead of navigating to internal payment route
+      try {
+        handleOpenExternalPayment({ orderId: id, schedulingType: 'PREPAY', scheduleData, serviceData, formValues: values })
+      } catch (err) {
+        // fallback to internal navigation if handler unavailable
+        history.push(PATH.SCHEDULE_PAYMENT, {
+          orderId: id,
+          schedulingType: 'PREPAY',
+          scheduleData,
+          serviceData,
+          formValues: values
+        })
+      }
       setIsLoading(false)
       return
     }
@@ -1542,6 +1790,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
         setIsModalOpen={setIsModalOpen}
         paymentData={paymentData}
         history={history}
+        onOpenExternalPayment={handleOpenExternalPayment}
         onClose={() => {
           setIsModalOpen(false)
           setPaymentData(null)
@@ -1554,6 +1803,17 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
             setIsModalErrOpen(false)
           }}
           text={errorMessage}></PopupMessage>
+      )}
+      {isExternalPaymentOpen && externalPaymentUrl && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.8)' }}>
+          <div style={{ position: 'absolute', top: 12, right: 12, zIndex: 10000 }}>
+            <Button type="primary" onClick={() => {
+              handlePaymentSuccessSignal({ type: 'PAYMENT_CLOSE' })
+              closeExternalPayment()
+            }}>Đóng</Button>
+          </div>
+          <iframe ref={externalPaymentIframeRef} title="External Payment" src={externalPaymentUrl} style={{ width: '100%', height: '100%', border: 0 }} />
+        </div>
       )}
       {/* Hiển thị loading */}
       {isLoading && (

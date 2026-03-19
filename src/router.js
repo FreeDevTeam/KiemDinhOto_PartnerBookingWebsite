@@ -123,6 +123,11 @@ export const ROUTERS = {
         component: BookingDetail,
         isZaloApp: 0
     },
+    bookingDetailWeb: {
+        path: PATH.BOOKING_DETAIL,
+        component: BookingDetail,
+        isZaloApp: 0
+    },
     updateBookingOnWeb: {
         path: PATH.BOOKING_UPDATE,
         component: UpdateBookingDetail,
