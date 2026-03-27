@@ -7,6 +7,7 @@ import { changeTime } from '../../helper/changeTime'
 import { useHistory } from 'react-router-dom'
 import moment from 'moment'
 import BookingService from '../../services/addBookingService'
+import PaymentService from '../../services/paymentService'
 import PopupMessage from '../BookingPartner/PopupMessage'
 import { useParams } from 'react-router-dom/cjs/react-router-dom'
 import { CheckApiKey } from '../../helper/CheckApiKey'
@@ -24,17 +25,88 @@ const RetunStatus = ({ status }) => {
   )
 }
 
+const parseJsonSafely = (value) => {
+  if (!value || typeof value !== 'string') return {}
+  try {
+    return JSON.parse(value)
+  } catch (error) {
+    return {}
+  }
+}
+
+const resolveServiceName = (item = {}) => {
+  const orderItemName = String(item?.orderItemName || '').trim()
+  if (!orderItemName) return ''
+  if (orderItemName.includes(':')) return orderItemName.split(':').slice(1).join(':').trim()
+  return orderItemName
+}
+
+const resolveStationIdFromOrderDetail = (orderDetail = {}) => {
+  const parsedOrderOtherData = parseJsonSafely(orderDetail?.orderOtherData)
+  const stationIdCandidate =
+    parsedOrderOtherData?.stationsId
+    || orderDetail?.stationsId
+    || orderDetail?.referStationId
+    || null
+
+  const normalizedStationId = Number(stationIdCandidate)
+  return Number.isNaN(normalizedStationId) ? null : normalizedStationId
+}
+
+const buildScheduleInformationFromOrderDetail = (orderDetail = {}) => {
+  const parsedOrderOtherData = parseJsonSafely(orderDetail?.orderOtherData)
+  const orderItems = Array.isArray(orderDetail?.orderItems) ? orderDetail.orderItems : []
+  const stationServices = orderItems
+    .map((item) => ({ serviceName: resolveServiceName(item) }))
+    .filter((item) => item?.serviceName)
+
+  return {
+    customerScheduleId: orderDetail?.customerScheduleId || parsedOrderOtherData?.customerScheduleId || null,
+    stationsId: resolveStationIdFromOrderDetail(orderDetail),
+    stationsName: parsedOrderOtherData?.partnerName || '',
+    stationsAddress: '',
+    stationArea: '',
+    fullnameSchedule: parsedOrderOtherData?.fullnameSchedule || orderDetail?.firstName || '',
+    phone: parsedOrderOtherData?.phone || orderDetail?.phoneNumber || '',
+    licensePlates: parsedOrderOtherData?.licensePlates || orderItems?.[0]?.orderItemValue || '',
+    licensePlateColor: parsedOrderOtherData?.licensePlateColor,
+    vehicleType: parsedOrderOtherData?.vehicleType,
+    dateSchedule: parsedOrderOtherData?.dateSchedule || '',
+    time: parsedOrderOtherData?.time || '',
+    scheduleCode: orderDetail?.orderCode || '',
+    station: {
+      enablePaymentGateway: 0,
+      stationPayments: '',
+      stationWorkTimeConfig: null
+    },
+    stationServices,
+    order: {
+      paymentStatus: orderDetail?.paymentStatus || '',
+      totalPayment: orderDetail?.totalAmount || 0,
+      approveDate: orderDetail?.approveDate || null
+    }
+  }
+}
+
 const BookingDetail = ({
   contentHeader = <></>,
   isHeader = true
 }) => {
   const { customerScheduleId } = useParams()
   const urlParams = new URLSearchParams(window.location.search);
-  const scheduleHash = localStorage.getItem('schedulehash') || urlParams.get('schedulehash');
+  const orderIdFromQuery = (urlParams.get('orderId') || '').trim()
+  const scheduleHashFromQuery = (urlParams.get('schedulehash') || urlParams.get('scheduleHash') || '').trim()
+  const scheduleHash = scheduleHashFromQuery || (localStorage.getItem('schedulehash') || '').trim()
   let apiKey = CheckApiKey()
   if (apiKey) {
     localStorage.setItem('apiKey', apiKey);
   }
+  useEffect(() => {
+    if (scheduleHashFromQuery) {
+      localStorage.setItem('schedulehash', scheduleHashFromQuery)
+    }
+  }, [scheduleHashFromQuery])
+
   let wab = []
   const [scheduleInformation, setScheduleInformation] = useState([])
   const [isModal, setIsModal] = useState(false)
@@ -97,32 +169,71 @@ const BookingDetail = ({
     wab = JSON.parse(scheduleInformation?.station?.stationWorkTimeConfig)
   }
   const getScheduleDetail = () => {
-    BookingService.getBookingDetail(customerScheduleId).then((result) => {
+    return BookingService.getBookingDetail(customerScheduleId).then((result) => {
       const { isSuccess, message, data } = result
       if (!isSuccess || !data) {
-        return
+        return false
       } else {
         setScheduleInformation(data)
+        return true
       }
     })
   }
-  useEffect(() => {
-    if(scheduleHash){
-      BookingService.findByHash({scheduleHash:scheduleHash}).then((result) => {
-        const { isSuccess, message, data } = result
-        if (!isSuccess || !data) {
-          return
-        } else {
-          setScheduleInformation(data)
+
+  const loadOrderDetailFallback = () => {
+    if (!orderIdFromQuery) return Promise.resolve(false)
+    return PaymentService.checkOrderStatus(orderIdFromQuery)
+      .then(async (orderDetail) => {
+        if (!orderDetail) return false
+        const fallbackData = buildScheduleInformationFromOrderDetail(orderDetail)
+        const stationId = resolveStationIdFromOrderDetail(orderDetail)
+
+        if (stationId) {
+          try {
+            const stationDetail = await BookingService.getDetailStation({ id: stationId })
+            fallbackData.stationsName =
+              stationDetail?.stationsName
+              || stationDetail?.stationCode
+              || fallbackData.stationsName
+            fallbackData.stationsAddress = stationDetail?.stationsAddress || fallbackData.stationsAddress
+            fallbackData.stationArea = stationDetail?.stationArea || fallbackData.stationArea
+          } catch (error) {
+            // keep fallback values from order detail
+          }
         }
+
+        setScheduleInformation(fallbackData)
+        return true
       })
-    }
-    else{
-      if(customerScheduleId) {
-        getScheduleDetail()
+      .catch(() => false)
+  }
+
+  useEffect(() => {
+    const fetchScheduleDetail = async () => {
+      if (orderIdFromQuery) {
+        await loadOrderDetailFallback()
+        return
       }
+
+      if (scheduleHash) {
+        const result = await BookingService.findByHash({ scheduleHash: scheduleHash })
+        const { isSuccess, data } = result || {}
+        if (isSuccess && data) {
+          setScheduleInformation(data)
+          return
+        }
+      }
+
+      if (customerScheduleId) {
+        const isSuccess = await getScheduleDetail()
+        if (isSuccess) return
+      }
+
+      await loadOrderDetailFallback()
     }
-  }, [customerScheduleId,scheduleHash])
+
+    fetchScheduleDetail()
+  }, [customerScheduleId, orderIdFromQuery, scheduleHash])
 
   const history = useHistory()
   const BindPlate = ({ type, number }) => {
@@ -209,7 +320,7 @@ const BookingDetail = ({
           </div>
         }
         <div className="d-flex j-sb mgt-15">
-          {scheduleInformation?.scheduleCode && (
+          {scheduleInformation?.scheduleCode && !orderIdFromQuery && (
             <div className="box w-50">
               <div className="title-i">Trạng thái</div>
              <RetunStatus status={scheduleInformation?.CustomerScheduleStatus} />

@@ -2,11 +2,10 @@ import { Modal, Button } from 'antd'
 import { ReactComponent as SuccessIcon } from './../../assets/icons/success.svg'
 import './index.scss'
 import { SCHEDULE_TYPE } from '../../constants/serviceOption'
-import { PATH } from '../../constants/router'
 import { useAppParamsContext } from '../../context/AppParamsContext'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-const BookingSuccess = ({ isModalOpen, onClose, setTabKey, setIsModalOpen, scheduleType, paymentData, history, isPaymentPage, message, onOpenExternalPayment }) => {
+const BookingSuccess = ({ isModalOpen, onClose, setIsModalOpen, scheduleType, paymentData, isPaymentPage, message, onOpenExternalPayment }) => {
   const consultantTypes = [
     SCHEDULE_TYPE.CONSULTANT_MAINTENANCE,
     SCHEDULE_TYPE.CONSULTANT_INSURANCE,
@@ -22,34 +21,16 @@ const BookingSuccess = ({ isModalOpen, onClose, setTabKey, setIsModalOpen, sched
     checkUrlParamSaveContext('isWebView')
   }, [checkUrlParamSaveContext, location.search])
   
-  const handleViewListBooking=()=>{
-    setTimeout(() => {
-      setTabKey()
-    }, 1000);
-    return(
-      setIsModalOpen(false),
-      setTabKey('bookingList')
-      )
-  }
 
   // Xử lý nút thanh toán online
   const handleGoToPayment = () => {
-    if (!paymentData) return
-
-    // If parent provided a handler to open external payment, use it
-    if (typeof onOpenExternalPayment === 'function') {
-      onOpenExternalPayment(paymentData)
-      setIsModalOpen(false)
-      return
-    }
-
-    setTimeout(() => {
-      history.push(PATH.SCHEDULE_PAYMENT, paymentData)
-    }, 500)
+    if (!paymentData || typeof onOpenExternalPayment !== 'function') return
+    onOpenExternalPayment(paymentData)
     setIsModalOpen(false)
   }
 
   const isPaymentFlow = paymentData?.schedulingType === 'ONLINE_PAYMENT' || paymentData?.schedulingType === 'PREPAY'
+  const canOpenPayment = typeof onOpenExternalPayment === 'function'
 
   // Nếu là trang thanh toán, khi đóng modal sẽ gọi onClose để về trang đặt lịch
   const handleModalClose = () => {
@@ -90,10 +71,7 @@ const BookingSuccess = ({ isModalOpen, onClose, setTabKey, setIsModalOpen, sched
               </Button>
               </>
             )}
-            {/* <Button className="login__button df" onClick={()=>handleViewListBooking()} type="primary" htmlType="submit" size="large">
-              Xem lịch hẹn
-            </Button> */}
-            {isPaymentFlow && (
+            {isPaymentFlow && canOpenPayment && (
               <Button 
                 className="login__button df" 
                 onClick={handleGoToPayment} 

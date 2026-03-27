@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
-import { useHistory } from 'react-router-dom'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import moment from 'moment'
 import { Form, Input, Button, Spin, Select as SelectAntd, Row, Col } from 'antd'
 
@@ -7,7 +6,7 @@ import BookingSuccess from './BookingSuccessModal'
 import PopupMessage from './PopupMessage'
 import { changeTime } from '../../helper/changeTime'
 import { validatorPlateNumber } from './../../helper/validatorPlateNumber'
-import { E_TICKET_SALE_OPTIONS, optionServiceType, SCHEDULE_TITLE, SCHEDULE_TYPE_MINIAPP } from '../../constants/serviceOption'
+import { getServiceTypeFilterByScheduleType, optionServiceType, SCHEDULE_TITLE, SCHEDULE_TYPE_MINIAPP } from '../../constants/serviceOption'
 import { PATH } from '../../constants/router'
 import {
   PAYMENT_SUB_TYPE,
@@ -25,7 +24,6 @@ import {
 } from '../../constants/global'
 import BookingService, { fetchMetadataWithCache } from '../../services/addBookingService'
 import { DATE_DISPLAY_FORMAT } from '../../constants/dateFormats'
-import { REACT_APP_URL_WEB_PAYMENT } from '../../constants/url'
 
 import BookingDatePicker from '../../components/BookingDatePicker'
 import BookingHoursPicker from '../../components/BookingHoursPicker'
@@ -34,7 +32,13 @@ import SystemConfigurationsService from '../../services/SystemConfigurationsServ
 import MainLogo from '../../components/MainLogo'
 import addKeyLocalStorage from '../../helper/localStorage'
 import PaymentService from '../../services/paymentService'
-import StationServicesSelect, { detectPaymentCase } from './StationServicesSelect'
+import { detectPaymentCase } from './StationServicesSelect'
+import {
+  buildExternalPaymentUrl,
+  buildPaymentBackUrl,
+  getScheduleHashFromPayload,
+  resolveExternalPaymentContext
+} from './helper/paymentRedirectHelper'
 
 const Gtel = window
 
@@ -50,7 +54,7 @@ export function getQueryParams(options = {}) {
   }
   return {}
 }
-function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtelpayUser }) {
+function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) {
   const customStyles = {
     control: (base) => ({
       ...base,
@@ -80,9 +84,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   const [loadingHoursPicker, setLoadingHoursPicker] = useState(false)
   const [listBookingTime, setListBookingTime] = useState([])
   const [minMonthAvailable, setMinMonthAvailable] = useState(moment().format(DATE_DISPLAY_FORMAT))
-  const [showServiceType, setShowServiceType] = useState(false)
-  const [ETicketOptions, setETicketOptions] = useState([])
   const [stationServices, setStationServices] = useState([])
+  const [stationServiceOrder, setStationServiceOrder] = useState([])
   const [selectedServiceIds, setSelectedServiceIds] = useState([])
   const [workdayFilter, setWorkdayFilter] = useState({
     stationsId: null,
@@ -92,9 +95,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   })
   const paramsScheduleTypeParams = (getQueryParams() || {})?.scheduleType
   const dataTheme = JSON.parse(localStorage.getItem(addKeyLocalStorage('dataTheme'))) || {}
+  const selectedScheduleType = Form.useWatch('scheduleType', form)
 
   // khai báo các biến cho toàn trang
-  const history = useHistory()
   const [isLoading, setIsLoading] = useState(false)
 
   // Kiểm tra các biển trong ENV
@@ -116,244 +119,74 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
   // State lưu data thanh toán
   const [paymentData, setPaymentData] = useState(null)
-  // External payment iframe state
-  const [externalPaymentUrl, setExternalPaymentUrl] = useState(null)
-  const [isExternalPaymentOpen, setIsExternalPaymentOpen] = useState(false)
-  const externalPaymentIframeRef = useRef(null)
-  const redirectTimerRef = useRef(null)
-  const paymentSessionRef = useRef({
-    orderId: null,
-    scheduleHash: '',
-    origin: '',
-    callbackUrl: '',
-    isHandling: false
-  })
+  const stationServiceOrderMap = useMemo(() => {
+    const orderMap = new Map()
+    stationServiceOrder.forEach((serviceType, index) => {
+      if (serviceType === undefined || serviceType === null) return
+      orderMap.set(String(serviceType), index)
+    })
+    return orderMap
+  }, [stationServiceOrder])
 
-  const getScheduleHashFromPayload = (payload = {}) => payload?.scheduleHash || payload?.schedulehash || ''
+  const sortServicesByMetadataOrder = useCallback(
+    (services = []) => {
+      if (!Array.isArray(services) || services.length === 0) return []
+      if (stationServiceOrderMap.size === 0) return [...services]
 
-  const buildExternalPaymentUrl = (rawUrl, scheduleHash = '') => {
-    if (!rawUrl) return ''
+      const fallbackIndex = Number.MAX_SAFE_INTEGER
+      return [...services].sort((a, b) => {
+        const orderA = stationServiceOrderMap.get(String(a?.serviceType)) ?? fallbackIndex
+        const orderB = stationServiceOrderMap.get(String(b?.serviceType)) ?? fallbackIndex
 
-    try {
-      const urlObj = new URL(rawUrl, window.location.origin)
-      const hasEmbeddedFlag = urlObj.searchParams.has('isBackToHomeMiniApp')
+        if (orderA !== orderB) return orderA - orderB
+        if (orderA === fallbackIndex && orderB === fallbackIndex) return 0
 
-      if (!hasEmbeddedFlag) {
-        urlObj.searchParams.set('isBackToHomeMiniApp', 'true')
-      }
+        const nameA = String(a?.serviceName || a?.label || '')
+        const nameB = String(b?.serviceName || b?.label || '')
+        return nameA.localeCompare(nameB, 'vi')
+      })
+    },
+    [stationServiceOrderMap]
+  )
 
-      const envTheme = process.env.REACT_APP_THEME_NAME
-      if (envTheme && !urlObj.searchParams.has('themeName')) {
-        urlObj.searchParams.set('themeName', envTheme)
-      }
+  const filteredStationServices = useMemo(() => {
+    if (!Array.isArray(stationServices) || stationServices.length === 0) return []
 
-      return urlObj.toString()
-    } catch (error) {
-      return rawUrl
-    }
-  }
-
-  const openExternalPayment = useCallback((url, context = {}) => {
-    if (!url) return
-
-    let origin = ''
-    let scheduleHash = context?.scheduleHash || ''
-
-    const parsedUrl = new URL(url)
-    origin = parsedUrl.origin
-
-    paymentSessionRef.current = {
-      orderId: context?.orderId || null,
-      scheduleHash,
-      origin,
-      callbackUrl: '',
-      isHandling: false
+    const allowedServiceTypes = getServiceTypeFilterByScheduleType(selectedScheduleType)
+    if (!Array.isArray(allowedServiceTypes) || allowedServiceTypes.length === 0) {
+      return stationServices
     }
 
-    setExternalPaymentUrl(url)
-    setIsExternalPaymentOpen(true)
-    setIsModalOpen(false)
-  }, [])
-
-  const closeExternalPayment = useCallback(() => {
-    if (redirectTimerRef.current) {
-      clearTimeout(redirectTimerRef.current)
-      redirectTimerRef.current = null
-    }
-
-    setIsExternalPaymentOpen(false)
-    setExternalPaymentUrl(null)
-    paymentSessionRef.current.isHandling = false
-  }, [])
-
-  const resolveScheduleHashFromOrder = useCallback((orderDetail, payload = {}) => {
-    const payloadHash = getScheduleHashFromPayload(payload)
-    if (payloadHash) return payloadHash
-    if (paymentSessionRef.current.scheduleHash) return paymentSessionRef.current.scheduleHash
-
-    try {
-      const orderOtherData = JSON.parse(orderDetail?.orderOtherData || '{}')
-      return orderOtherData?.scheduleHash || orderDetail?.orderHash || ''
-    } catch (error) {
-      return orderDetail?.orderHash || ''
-    }
-  }, [])
-
-  const redirectToPaymentCallback = useCallback((scheduleHash = '') => {
-    const hashToRedirect = scheduleHash || paymentSessionRef.current.scheduleHash
-    if (hashToRedirect) {
-      history.push(`${PATH.BOOKING_DETAIL_NO_ID}?schedulehash=${encodeURIComponent(hashToRedirect)}`)
-      return true
-    }
-
-    // Per new flow: only redirect when we have a scheduleHash. Otherwise do nothing.
-    return false
-  }, [history])
-
-  const handlePaymentSuccessSignal = useCallback(async (payload = {}) => {
-    if (paymentSessionRef.current.isHandling) return
-
-    // If the iframe was closed (PAYMENT_CLOSE), do not trigger redirect flow here
-    if (payload?.type === 'PAYMENT_CLOSE') {
-      if (redirectTimerRef.current) {
-        clearTimeout(redirectTimerRef.current)
-        redirectTimerRef.current = null
-      }
-      paymentSessionRef.current.isHandling = false
-      return
-    }
-
-    const orderIdToVerify = payload?.orderId || payload?.orderID || paymentSessionRef.current.orderId
-    if (!orderIdToVerify) return
-
-    paymentSessionRef.current.isHandling = true
-    let didHandleSuccess = false
-
-    try {
-      const orderDetail = await PaymentService.checkOrderStatus(orderIdToVerify)
-      if (`${orderDetail?.paymentStatus || ''}`.toUpperCase() !== 'SUCCESS') return
-
-      const scheduleHash = resolveScheduleHashFromOrder(orderDetail, payload)
-      if (scheduleHash) {
-        paymentSessionRef.current.scheduleHash = scheduleHash
-      }
-
-      redirectTimerRef.current = setTimeout(() => {
-        redirectTimerRef.current = null
-        try {
-          closeExternalPayment()
-          redirectToPaymentCallback(scheduleHash)
-        } finally {
-          paymentSessionRef.current.isHandling = false
-        }
-      }, 3000)
-
-      didHandleSuccess = true
-    } catch (error) {
-      if (`${payload?.paymentStatus || ''}`.toUpperCase() !== 'SUCCESS') return
-
-      const fallbackScheduleHash = getScheduleHashFromPayload(payload) || paymentSessionRef.current.scheduleHash
-      if (fallbackScheduleHash) {
-        paymentSessionRef.current.scheduleHash = fallbackScheduleHash
-      }
-
-      redirectTimerRef.current = setTimeout(() => {
-        redirectTimerRef.current = null
-        try {
-          closeExternalPayment()
-          redirectToPaymentCallback(fallbackScheduleHash)
-        } finally {
-          paymentSessionRef.current.isHandling = false
-        }
-      }, 3000)
-
-      didHandleSuccess = true
-    } finally {
-      if (!didHandleSuccess) {
-        paymentSessionRef.current.isHandling = false
-      }
-    }
-  }, [closeExternalPayment, redirectToPaymentCallback, resolveScheduleHashFromOrder])
-
-  const resolveExternalPaymentContext = (paymentPayloadOrOrderId) => {
-    const fallbackOrderId = paymentData?.orderId || null
-    const fallbackScheduleHash = paymentData?.scheduleHash || ''
-
-    if (typeof paymentPayloadOrOrderId === 'string' && /^https?:\/\//.test(paymentPayloadOrOrderId)) {
-      return {
-        url: paymentPayloadOrOrderId,
-        orderId: fallbackOrderId,
-        scheduleHash: fallbackScheduleHash
-      }
-    }
-
-    const payload = paymentPayloadOrOrderId && typeof paymentPayloadOrOrderId === 'object' ? paymentPayloadOrOrderId : {}
-    const orderIdFromPrimitive =
-      typeof paymentPayloadOrOrderId === 'number' ||
-      (typeof paymentPayloadOrOrderId === 'string' && paymentPayloadOrOrderId.trim() !== '')
-        ? paymentPayloadOrOrderId
-        : null
-    const orderId = payload.orderId || payload.customerScheduleId || orderIdFromPrimitive || fallbackOrderId
-    const scheduleHash = payload.scheduleHash || fallbackScheduleHash
-
-    if (typeof payload.paymentUrl === 'string' && /^https?:\/\//.test(payload.paymentUrl)) {
-      return {
-        url: payload.paymentUrl,
-        orderId,
-        scheduleHash
-      }
-    }
-
-    if (!orderId) {
-      return {
-        url: '',
-        orderId: null,
-        scheduleHash
-      }
-    }
-
-    const base = (REACT_APP_URL_WEB_PAYMENT || '').replace(/\/$/, '')
-    return {
-      url: `${base}/order-payment/${orderId}`,
-      orderId,
-      scheduleHash
-    }
-  }
+    const allowedServiceTypeSet = new Set(allowedServiceTypes.map((serviceType) => Number(serviceType)))
+    return stationServices.filter((service) => allowedServiceTypeSet.has(Number(service?.serviceType)))
+  }, [stationServices, selectedScheduleType])
 
   const handleOpenExternalPayment = (paymentPayloadOrOrderId) => {
-    if (!paymentPayloadOrOrderId && !paymentData?.orderId) return
+    if (!paymentPayloadOrOrderId && !paymentData?.paymentUrl && !paymentData?.orderId) return
 
-    const { url, orderId, scheduleHash } = resolveExternalPaymentContext(paymentPayloadOrOrderId)
+    const mergedPaymentData =
+      paymentPayloadOrOrderId && typeof paymentPayloadOrOrderId === 'object'
+        ? { ...paymentData, ...paymentPayloadOrOrderId }
+        : paymentPayloadOrOrderId || paymentData
+
+    const { url, scheduleHash, orderId, isConsultantBooking } = resolveExternalPaymentContext(mergedPaymentData)
     if (!url) return
 
-    openExternalPayment(buildExternalPaymentUrl(url, scheduleHash), { orderId, scheduleHash })
+    const backUrl = buildPaymentBackUrl({
+      isConsultantBooking,
+      orderId,
+      scheduleHash,
+      bookingDetailPath: PATH.BOOKING_DETAIL_NO_ID
+    })
+    const redirectUrl = buildExternalPaymentUrl({
+      rawUrl: url,
+      backUrl,
+      themeName: process.env.REACT_APP_THEME_NAME
+    })
+    if (!redirectUrl) return
+    setIsModalOpen(false)
+    window.location.assign(redirectUrl)
   }
-
-  useEffect(() => {
-    const listener = (event) => {
-      if (!isExternalPaymentOpen) return
-
-      const expectedOrigin = paymentSessionRef.current.origin
-      if (!expectedOrigin || event.origin !== expectedOrigin) return
-
-      const iframeWindow = externalPaymentIframeRef.current?.contentWindow
-      if (iframeWindow && event.source !== iframeWindow) return
-
-      const data = event?.data || {}
-      if (data?.channel !== 'TTDK_PAYMENT') return
-
-      if (data?.type === 'PAYMENT_CLOSE') {
-        closeExternalPayment()
-      }
-
-      if (data?.type === 'PAYMENT_SUCCESS' || data?.type === 'PAYMENT_CLOSE') {
-        handlePaymentSuccessSignal(data)
-      }
-    }
-
-    window.addEventListener('message', listener)
-    return () => window.removeEventListener('message', listener)
-  }, [closeExternalPayment, handlePaymentSuccessSignal, isExternalPaymentOpen])
 
   const getPublicPaymentMethod = async () => {
     try {
@@ -385,7 +218,11 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
   const GtelBookingConsultantSchedule = (values) => {
     setIsLoading(true)
-    BookingService.createOrderSchedule(values)
+    const payload = {
+      ...values,
+      isImmediate: 1
+    }
+    BookingService.createOrderSchedule(payload)
       .then((result) => {
         const { error: rsMess, statusCode, data } = result
         if (statusCode !== 200) {
@@ -410,8 +247,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
         }
         setScheduleTypePopUp(values.scheduleType)
         if (paymentUrl?.length > 0) {
+          const scheduleHash = getScheduleHashFromPayload(data)
           setTimeout(() => {
-            handleOpenExternalPayment(paymentUrl)
+            handleOpenExternalPayment({ paymentUrl, scheduleHash, customerScheduleId, isConsultantBooking: true })
           }, 500)
         }
         form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
@@ -473,12 +311,15 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           const scheduleData = buildScheduleData(values)
           const serviceData = buildServiceData('enableOnlinePayment')
           const paymentUrlFromRes = paymentUrl
+          const scheduleHash = getScheduleHashFromPayload(data)
           setPaymentData({
             customerScheduleId,
             schedulingType: 'ONLINE_PAYMENT',
+            isConsultantBooking: true,
             scheduleData,
             serviceData,
-            paymentUrl: paymentUrlFromRes
+            paymentUrl: paymentUrlFromRes,
+            scheduleHash
           })
           
           form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
@@ -503,8 +344,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
         setScheduleTypePopUp(values.scheduleType)
         setIsModalOpen(true)
         if (paymentUrl?.length > 0) {
+          const scheduleHash = getScheduleHashFromPayload(data)
           setTimeout(() => {
-            handleOpenExternalPayment(paymentUrl)
+            handleOpenExternalPayment({ paymentUrl, scheduleHash, customerScheduleId, isConsultantBooking: true })
           }, 500)
         }
         form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
@@ -532,6 +374,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     }
     const id = data[0]
     const paymentUrlFromRes = data?.paymentUrl
+    const scheduleHashFromRes = getScheduleHashFromPayload(data)
     form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
     setScheduleTypePopUp(values.scheduleType)
 
@@ -546,10 +389,12 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       setPaymentData({
         orderId: id,
         schedulingType: 'ONLINE_PAYMENT',
+        isConsultantBooking: false,
         scheduleData,
         serviceData,
         formValues: values,
-        paymentUrl: paymentUrlFromRes
+        paymentUrl: paymentUrlFromRes,
+        scheduleHash: scheduleHashFromRes
       })
       setIsModalOpen(true)
       setIsLoading(false)
@@ -558,19 +403,15 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     if (paymentCase === 'prepay') {
       const scheduleData = buildScheduleData(values)
       const serviceData = buildServiceData('enablePrepay')
-      // Open external payment in iframe instead of navigating to internal payment route
-      try {
-        handleOpenExternalPayment({ orderId: id, schedulingType: 'PREPAY', scheduleData, serviceData, formValues: values })
-      } catch (err) {
-        // fallback to internal navigation if handler unavailable
-        history.push(PATH.SCHEDULE_PAYMENT, {
-          orderId: id,
-          schedulingType: 'PREPAY',
-          scheduleData,
-          serviceData,
-          formValues: values
-        })
-      }
+      handleOpenExternalPayment({
+        orderId: id,
+        schedulingType: 'PREPAY',
+        isConsultantBooking: false,
+        scheduleData,
+        serviceData,
+        formValues: values,
+        scheduleHash: scheduleHashFromRes
+      })
       setIsLoading(false)
       return
     }
@@ -605,20 +446,79 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   }
 
   // Hàm helper: Xây dựng dữ liệu lịch hẹn
-  const buildScheduleData = (values) => ({
-    licensePlates: values.licensePlates,
-    fullnameSchedule: values.name,
-    email: values.email,
-    phone: values.phone,
-    scheduleType: values.scheduleType,
-    vehicleType: workdayFilter.vehicleType,
-    vehicleSubType: values.vehicleSubType,
-    vehicleSubCategory: values.vehicleSubCategory,
-    licensePlateColor: values.licensePlateColor,
-    certificateSeries: values.certificateSeries,
-    dateSchedule: workdaySelectedDate,
-    time: values?.time?.scheduleTime
-  })
+  const getScheduleTimeValue = (timeValue) => {
+    if (typeof timeValue === 'string') return timeValue.trim()
+    if (timeValue && typeof timeValue === 'object') {
+      return String(timeValue.scheduleTime || '').trim()
+    }
+    return ''
+  }
+
+  const removeOptionalEmptyFields = (payload = {}) => {
+    return Object.entries(payload).reduce((result, [key, value]) => {
+      if (value === undefined || value === null) return result
+      if (typeof value === 'string' && value.trim() === '' && key !== 'dateSchedule' && key !== 'time') return result
+      if (Array.isArray(value) && value.length === 0) return result
+      result[key] = value
+      return result
+    }, {})
+  }
+
+  const buildBookingPayload = (values = {}) => {
+    const isConsultantBooking = scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT
+    const payload = {
+      licensePlates: values.licensePlates,
+      phone: values.phone,
+      fullnameSchedule: values.name,
+      email: values.email,
+      vehicleType: workdayFilter.vehicleType,
+      licensePlateColor: values.licensePlateColor,
+      scheduleType: values.scheduleType,
+      vehicleSubType: values.vehicleSubType,
+      vehicleSubCategory: values.vehicleSubCategory,
+      certificateSeries: values.certificateSeries
+    }
+
+    if (!isConsultantBooking && isShowStationDateTime.showStationField) {
+      payload.stationsId = values.stationsId
+    }
+    if (!isConsultantBooking && isShowStationDateTime.showDateField) {
+      payload.dateSchedule = workdaySelectedDate
+    }
+    if (!isConsultantBooking && isShowStationDateTime.showTimeField) {
+      payload.time = getScheduleTimeValue(values?.time)
+    }
+    if (selectedServiceIds.length > 0) {
+      payload.stationServicesList = selectedServiceIds
+    }
+
+    return removeOptionalEmptyFields(payload)
+  }
+
+  const buildScheduleData = (values) => {
+    const isConsultantBooking = scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT
+    const scheduleData = {
+      licensePlates: values.licensePlates,
+      fullnameSchedule: values.name,
+      email: values.email,
+      phone: values.phone,
+      scheduleType: values.scheduleType,
+      vehicleType: workdayFilter.vehicleType,
+      vehicleSubType: values.vehicleSubType,
+      vehicleSubCategory: values.vehicleSubCategory,
+      licensePlateColor: values.licensePlateColor,
+      certificateSeries: values.certificateSeries
+    }
+
+    if (!isConsultantBooking && isShowStationDateTime.showDateField) {
+      scheduleData.dateSchedule = workdaySelectedDate
+    }
+    if (!isConsultantBooking && isShowStationDateTime.showTimeField) {
+      scheduleData.time = getScheduleTimeValue(values?.time)
+    }
+
+    return removeOptionalEmptyFields(scheduleData)
+  }
 
   // Hàm helper: Xây dựng dữ liệu dịch vụ từ selectedServiceIds
   const buildServiceData = (serviceField = 'enableOnlinePayment') => {
@@ -737,27 +637,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   }
 
   const onFinish = (values) => {
-    const data = {
-      licensePlates: values.licensePlates,
-      phone: values.phone,
-      fullnameSchedule: values.name,
-      email: values.email,
-      dateSchedule: workdaySelectedDate,
-      time: values?.time?.scheduleTime,
-      stationsId: values.stationsId,
-      vehicleType: workdayFilter.vehicleType,
-      licensePlateColor: values.licensePlateColor,
-      scheduleType: values.scheduleType,
-      vehicleSubType: values.vehicleSubType,
-      vehicleSubCategory: values.vehicleSubCategory,
-      certificateSeries: values.certificateSeries
-    }
-    if (values.serviceId) {
-      data.stationServicesList = [values.serviceId]
-    }
-    if (selectedServiceIds.length > 0) {
-      data.stationServicesList = selectedServiceIds
-    }
+    const data = buildBookingPayload(values)
 
     // Detect phương thức thanh toán dựa trên service được chọn
     const paymentCase = detectPaymentCase(stationServices, selectedServiceIds)
@@ -798,6 +678,11 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     fetchMetadataWithCache()
       .then((result) => {
         const { statusCode, data } = result
+        const stationServiceMeta = data?.STATION_SERVICE || {}
+        const nextStationServiceOrder = Object.values(stationServiceMeta)
+          .map((item) => item?.serviceType)
+          .filter((serviceType) => serviceType !== undefined && serviceType !== null)
+        setStationServiceOrder(nextStationServiceOrder)
         if (statusCode === 200 && data?.SCHEDULE_TYPE) {
           const newValues = Object.values(data.SCHEDULE_TYPE).map((item) => ({
             value: item.scheduleType,
@@ -1064,21 +949,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       })
   }
 
-  async function getStationServices(stationsId) {
-    try {
-      const response = await BookingService.getListStationService({ filter: { stationsId: stationsId } })
-      if (response?.isSuccess) {
-        return response.data.data.map((item) => ({
-          value: item.stationServicesId,
-          label: item.serviceName
-        }))
-      }
-      return []
-    } catch (error) {
-      console.error('Error fetching station services:', error)
-    }
-  }
-
   const handleCategory = (evt) => {
     const categoryOptionsMap = {
       [VEHICLE_SUB_CATEGORY.CAR]: VIHCLE_CATEGORY_OTO,
@@ -1105,11 +975,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       })
       return data
     })
-  }
-
-  // FUNC: fill value X vào field X của form
-  const fillFormValue = (fieldName, value) => {
-    form.setFieldsValue({ [fieldName]: value })
   }
 
   //function lấy ra ngày đầu tiên có lịch làm
@@ -1143,21 +1008,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     }
 
     return null // Không tìm thấy tháng nào có ngày làm việc
-  }
-
-  async function getStationByApiKey(apiKey) {
-    return new Promise((resolve) => {
-      SystemConfigurationsService.getStationByApiKey(apiKey)
-        .then((result = {}) => {
-          if (!result) {
-            return resolve(null)
-          }
-          return resolve(result)
-        })
-        .catch(() => {
-          return resolve(null)
-        })
-    })
   }
 
   // ------------USE EFFECT------------------
@@ -1247,17 +1097,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       }
     }
 
-    if (form.getFieldValue('stationsId')) {
-      getStationServices(form.getFieldValue('stationsId')).then((services) => {
-        const allowedLabels = E_TICKET_SALE_OPTIONS.map((option) => option?.label?.toLowerCase())
-        const filteredServices = services.filter((service) => allowedLabels.includes(service?.label?.toLowerCase()))
-        setETicketOptions(filteredServices)
-      })
-    }
-
     // Gọi hàm fetchData
     fetchData()
-  }, [form.getFieldValue('stationsId')]) // Dependency array theo stationsId
+  }, [form.getFieldValue('stationsId'), sortServicesByMetadataOrder]) // Dependency array theo stationsId
 
   useEffect(() => {
     if ((workdayFilter.vehicleType && workdayFilter.stationsId) || (workdayFilter.stationsId && form.getFieldValue('vehicleSubType'))) {
@@ -1283,8 +1125,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
         .then((response) => {
           if (response?.isSuccess && response?.data?.data) {
             const activeServices = response.data.data.filter((item) => Number(item.isActive) === 1)
-            setStationServices(activeServices)
+            setStationServices(sortServicesByMetadataOrder(activeServices))
             setSelectedServiceIds([])
+            form.setFieldValue('stationServicesList', [])
           }
         })
         .catch((error) => {
@@ -1293,8 +1136,19 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     } else {
       setStationServices([])
       setSelectedServiceIds([])
+      form.setFieldValue('stationServicesList', [])
     }
-  }, [form.getFieldValue('stationsId')])
+  }, [form.getFieldValue('stationsId'), sortServicesByMetadataOrder])
+
+  useEffect(() => {
+    if (!selectedServiceIds.length) return
+    const selectedServiceId = selectedServiceIds[0]
+    const hasSelectedService = filteredStationServices.some((service) => service.stationServicesId === selectedServiceId)
+    if (!hasSelectedService) {
+      setSelectedServiceIds([])
+      form.setFieldValue('stationServicesList', [])
+    }
+  }, [selectedServiceIds, filteredStationServices, form])
 
   useEffect(() => {
     if (dataBookingParam?.vehicleSubType || form.getFieldValue('vehicleSubType')) {
@@ -1344,7 +1198,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   }, [gtelpayUser, isZaloApp])
 
   const isShowStationDateTime = useMemo(() => {
-    const selectedOption = scheduleTypes.find((item) => item.value === form.getFieldValue('scheduleType'))
+    const selectedOption = scheduleTypes.find((item) => item.value === selectedScheduleType)
     const showStationField = selectedOption?.requireScheduleStation === 1
     const showDateField = selectedOption?.requireScheduleDate === 1
     const showTimeField = selectedOption?.requireScheduleTime === 1
@@ -1355,38 +1209,12 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       showTimeField,
       showAreaField: showStationField || showDateField || showTimeField
     }
-  }, [form.getFieldValue('scheduleType'), scheduleTypes])
+  }, [selectedScheduleType, scheduleTypes])
 
   useEffect(() => {
-    if (form.getFieldValue('scheduleType') === SCHEDULE_TYPE_MINIAPP.E_TICKET_SALE) {
-      if (scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT) {
-        getStationByApiKey(dataBookingParam?.apiKey || dataBookingParam?.apikey || localStorage.getItem('apiKey') || process.env.REACT_APP_APIKEY).then((station) => {
-          if (station) {
-            getStationServices(station?.stationsId).then((services) => {
-              const allowedLabels = E_TICKET_SALE_OPTIONS.map((option) => option?.label?.toLowerCase())
-              const filteredServices = services.filter((service) => allowedLabels.includes(service?.label?.toLowerCase()))
-              if (filteredServices.length > 0) {
-                setShowServiceType(true)
-                form.setFieldValue('serviceId', filteredServices[0]?.value)
-                setETicketOptions(filteredServices)
-              } else {
-                form.setFieldValue('serviceId', undefined)
-                setShowServiceType(false)
-              }
-            })
-          }
-        })
-      }
-    } else {
-      setShowServiceType(false)
-      form.setFieldValue('serviceId', undefined)
-    }
-  }, [form.getFieldValue('scheduleType')])
-
-  useEffect(() => {
-    const scheduleTypeWithParams = scheduleTypes.find((item) => item.value === +form.getFieldValue('scheduleType'))
+    const scheduleTypeWithParams = scheduleTypes.find((item) => item.value === +selectedScheduleType)
      setScheduleCategory(scheduleTypeWithParams?.scheduleCategory || SCHEDULE_BOOKING_TYPE.SCHEDULE)
-  }, [scheduleTypes, form.getFieldValue('scheduleType')])
+  }, [scheduleTypes, selectedScheduleType])
 
   return (
     <div className="position-relative">
@@ -1468,27 +1296,33 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                 }}
               />
             </Form.Item>
-            {showServiceType && (
+            {filteredStationServices.length > 0 && (
               <Form.Item
-                name="serviceId"
-                label="Chọn dịch vụ"
-                required
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng chọn dịch vụ'
-                  }
-                ]}>
+                name="stationServicesList"
+                label={'Chọn dịch vụ'}>
                 <SelectAntd
                   className="cs-select ant-custom booking-input"
-                  isSearchable={true}
-                  placeholder="Vui lòng chọn dịch vụ"
-                  styles={customStyles}
-                  options={ETicketOptions}
-                  menuPlacement="top"
-                  onChange={(values, scheduleType) => {
-                    form.setFieldValue('serviceId', values)
+                  placeholder={'Vui lòng chọn dịch vụ'}
+                  value={selectedServiceIds[0] || undefined}
+                  onChange={(value) => {
+                    setSelectedServiceIds(value ? [value] : [])
+                    form.setFieldValue('stationServicesList', value ? [value] : [])
                   }}
+                  style={{ width: '100%' }}
+                  options={filteredStationServices.map((service) => ({
+                    value: service.stationServicesId,
+                    label: (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                        <span>{service.serviceName}</span>
+                        {service.servicePrice > 0 && (
+                          <span className="service-price-value">
+                            {service.servicePrice.toLocaleString('vi-VN')}đ
+                          </span>
+                        )}
+                      </div>
+                    )
+                  }))}
+                  allowClear
                 />
               </Form.Item>
             )}
@@ -1635,36 +1469,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                 }}
               />
             </Form.Item>
-            {stationServices.length > 0 && (
-              <Form.Item
-                name="stationServicesList"
-                label="Dịch vụ theo yêu cầu">
-                <SelectAntd
-                  className="cs-select ant-custom booking-input"
-                  placeholder="Vui lòng chọn dịch vụ"
-                  value={selectedServiceIds[0] || undefined}
-                  onChange={(value) => {
-                    setSelectedServiceIds(value ? [value] : [])
-                    form.setFieldValue('stationServicesList', value ? [value] : [])
-                  }}
-                  style={{ width: '100%' }}
-                  options={stationServices.map((service) => ({
-                    value: service.stationServicesId,
-                    label: (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                        <span>{service.serviceName}</span>
-                        {service.servicePrice > 0 && (
-                          <span className="service-price-value">
-                            {service.servicePrice.toLocaleString('vi-VN')}đ
-                          </span>
-                        )}
-                      </div>
-                    )
-                  }))}
-                  allowClear
-                />
-              </Form.Item>
-            )}
             {isShowStationDateTime.showAreaField && (
               <Form.Item
                 required={dataBookingParam?.visible_StationArea !== false}
@@ -1786,15 +1590,12 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       <BookingSuccess
         isModalOpen={isModalOpen}
         scheduleType={scheduleTypePopUp}
-        setTabKey={setTabKey}
         setIsModalOpen={setIsModalOpen}
         paymentData={paymentData}
-        history={history}
         onOpenExternalPayment={handleOpenExternalPayment}
         onClose={() => {
           setIsModalOpen(false)
           setPaymentData(null)
-          // history.goBack()
         }}></BookingSuccess>
       {isModalErrOpen && (
         <PopupMessage
@@ -1803,17 +1604,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
             setIsModalErrOpen(false)
           }}
           text={errorMessage}></PopupMessage>
-      )}
-      {isExternalPaymentOpen && externalPaymentUrl && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.8)' }}>
-          <div style={{ position: 'absolute', top: 12, right: 12, zIndex: 10000 }}>
-            <Button type="primary" onClick={() => {
-              handlePaymentSuccessSignal({ type: 'PAYMENT_CLOSE' })
-              closeExternalPayment()
-            }}>Đóng</Button>
-          </div>
-          <iframe ref={externalPaymentIframeRef} title="External Payment" src={externalPaymentUrl} style={{ width: '100%', height: '100%', border: 0 }} />
-        </div>
       )}
       {/* Hiển thị loading */}
       {isLoading && (

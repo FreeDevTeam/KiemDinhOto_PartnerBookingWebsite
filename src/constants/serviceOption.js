@@ -352,3 +352,34 @@ export const MAIN_BUTTON_TITLES = {
     subTitle: 'Liên hệ hỗ trợ khách hàng'
   }
 }
+
+export const SERVICE_TYPE_FILTER_GROUPS = {
+  inspection_docs: [8, 13, 14, 15, 20, 21, 22, 32, 33],
+  violation_fine: [1, 3, 12, 23, 25, 26],
+  insurance: [4, 6, 19, 24, 31, 34, 35],
+  maintenance_renovation: [7, 10, 11, 18],
+  e_toll_ticket: [2, 5, 9, 36, 37, 38],
+  renewal_services: [16, 27, 28, 29, 30]
+}
+
+export const SCHEDULE_TYPE_FILTER_GROUPS = {
+  inspection_docs: [1, 3, 4, 10, 11, 12, 23, 24],
+  violation_fine: [13, 15, 16],
+  insurance: [6, 8, 14, 22, 25, 26],
+  maintenance_renovation: [7, 9],
+  e_toll_ticket: [2, 21, 27],
+  renewal_services: [5, 17, 18, 19, 20]
+}
+
+const SCHEDULE_TYPE_TO_GROUP_KEY = Object.entries(SCHEDULE_TYPE_FILTER_GROUPS).reduce((acc, [groupKey, scheduleTypes]) => {
+  scheduleTypes.forEach((scheduleType) => {
+    acc[Number(scheduleType)] = groupKey
+  })
+  return acc
+}, {})
+
+export const getServiceTypeFilterByScheduleType = (scheduleType) => {
+  const groupKey = SCHEDULE_TYPE_TO_GROUP_KEY[Number(scheduleType)]
+  if (!groupKey) return null
+  return SERVICE_TYPE_FILTER_GROUPS[groupKey] || null
+}
