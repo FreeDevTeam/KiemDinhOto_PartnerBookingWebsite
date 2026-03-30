@@ -110,6 +110,7 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
 
   // state này để lấy thông tin trên params và hiển thị cho lần đầu tiên
   const [dataBookingParam, setDataBookingParam] = useState({})
+  const resolvedStationsId = watchedStationsId || dataBookingParam?.stationsId
 
   // state của các modal hiển thị thông báo
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -202,21 +203,35 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
     }
   }
 
-  const getStationConfigByApiKey = (paramsFromUrl) => {
+  const getStationConfigByApiKey = async (paramsFromUrl) => {
     setIsLoading(true)
     const apiKey = paramsFromUrl?.apiKey || paramsFromUrl?.apikey || localStorage.getItem('apiKey') || process.env.REACT_APP_APIKEY || undefined
-    SystemConfigurationsService.getStationConfigByApiKey({ apiKey: apiKey })
-      .then((result) => {
-        const stationMiniAppLink = JSON.parse(result?.[0]?.stationMiniAppLink || '{}')
-        setDataBookingParam({ ...stationMiniAppLink, ...paramsFromUrl })
+
+    try {
+      if (!apiKey) {
+        setDataBookingParam({ ...paramsFromUrl })
+        return
+      }
+
+      const [stationConfig, stationByApiKey] = await Promise.all([
+        SystemConfigurationsService.getStationConfigByApiKey({ apiKey: apiKey }),
+        SystemConfigurationsService.getStationByApiKey(apiKey)
+      ])
+
+      const stationMiniAppLink = JSON.parse(stationConfig?.[0]?.stationMiniAppLink || '{}')
+      const stationIdFromApiKey = stationByApiKey?.stationsId || stationByApiKey?.stationId
+
+      setDataBookingParam({
+        ...stationMiniAppLink,
+        ...paramsFromUrl,
+        stationsId: paramsFromUrl?.stationsId || stationIdFromApiKey || stationMiniAppLink?.stationsId
       })
-      .catch((err) => {
-        setErrorMessage('Lấy thông tin cấu hình thất bại.')
-        setIsModalErrOpen(true)
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
+    } catch (err) {
+      setErrorMessage('Lấy thông tin cấu hình thất bại.')
+      setIsModalErrOpen(true)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const GtelBookingConsultantSchedule = (values) => {
@@ -1083,7 +1098,7 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
   useEffect(() => {
     const fetchData = async () => {
       // Lấy giá trị của stationsId từ form watch
-      const stationsId = watchedStationsId
+      const stationsId = resolvedStationsId
 
       if (stationsId) {
         try {
@@ -1102,7 +1117,7 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
 
     // Gọi hàm fetchData
     fetchData()
-  }, [watchedStationsId]) // Dependency array theo stationsId
+  }, [resolvedStationsId]) // Dependency array theo stationsId
 
   useEffect(() => {
     if ((workdayFilter.vehicleType && workdayFilter.stationsId) || (workdayFilter.stationsId && watchedVehicleSubType)) {
@@ -1122,7 +1137,7 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
 
   // Fetch danh sách dịch vụ trạm khi chọn trạm khác
   useEffect(() => {
-    const stationsId = watchedStationsId
+    const stationsId = resolvedStationsId
     if (stationsId) {
       BookingService.getListStationService({ filter: { stationsId: stationsId } })
         .then((response) => {
@@ -1141,7 +1156,7 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
       setSelectedServiceIds([])
       form.setFieldValue('stationServicesList', [])
     }
-  }, [watchedStationsId, sortServicesByMetadataOrder])
+  }, [resolvedStationsId, sortServicesByMetadataOrder])
 
   useEffect(() => {
     if (!selectedServiceIds.length) return
