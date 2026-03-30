@@ -5,7 +5,7 @@ export const IMAGE_HOST = HOST + 'upload/'
 const DEVELOP_URL = {
   REACT_APP_URL_WEB_BAOHIEM: 'https://ttdk-develop-baohiem.service.makefamousapp.com',
   REACT_APP_URL_WEB_PHATNGUOI: 'https://ttdk-develop-phatnguoi.service.makefamousapp.com',
-  REACT_APP_URL_WEB_PAYMENT: 'https://tamove-develop-payment.service.makefamousapp.com'
+  REACT_APP_URL_WEB_PAYMENT: 'http://localhost:3000'
 }
 
 const PRODUCTION_URL = {
