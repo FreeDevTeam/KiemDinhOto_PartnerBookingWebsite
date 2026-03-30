@@ -96,6 +96,9 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
   const paramsScheduleTypeParams = (getQueryParams() || {})?.scheduleType
   const dataTheme = JSON.parse(localStorage.getItem(addKeyLocalStorage('dataTheme'))) || {}
   const selectedScheduleType = Form.useWatch('scheduleType', form)
+  const watchedStationsId = Form.useWatch('stationsId', form)
+  const watchedVntId = Form.useWatch('vntId', form)
+  const watchedVehicleSubType = Form.useWatch('vehicleSubType', form)
 
   // khai báo các biến cho toàn trang
   const [isLoading, setIsLoading] = useState(false)
@@ -668,10 +671,10 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
 
   const handleFillStationDateTime = () => {
     const stationsId = form.getFieldValue('stationsId')
-    setWorkdayFilter({
-      ...workdayFilter,
+    setWorkdayFilter((prev) => ({
+      ...prev,
       stationsId: stationsId
-    })
+    }))
   }
 
   const getMetaData = () => {
@@ -1068,19 +1071,19 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
   }
 
   useEffect(() => {
-    if (form.getFieldValue('vntId')) {
+    if (watchedVntId) {
       getStations({
         filter: {
-          stationArea: form.getFieldValue('vntId')
+          stationArea: watchedVntId
         }
       })
     }
-  }, [form.getFieldValue('vntId')])
+  }, [watchedVntId])
 
   useEffect(() => {
     const fetchData = async () => {
-      // Lấy giá trị của stationsId từ form
-      const stationsId = form.getFieldValue('stationsId')
+      // Lấy giá trị của stationsId từ form watch
+      const stationsId = watchedStationsId
 
       if (stationsId) {
         try {
@@ -1099,13 +1102,13 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
 
     // Gọi hàm fetchData
     fetchData()
-  }, [form.getFieldValue('stationsId'), sortServicesByMetadataOrder]) // Dependency array theo stationsId
+  }, [watchedStationsId]) // Dependency array theo stationsId
 
   useEffect(() => {
-    if ((workdayFilter.vehicleType && workdayFilter.stationsId) || (workdayFilter.stationsId && form.getFieldValue('vehicleSubType'))) {
+    if ((workdayFilter.vehicleType && workdayFilter.stationsId) || (workdayFilter.stationsId && watchedVehicleSubType)) {
       getBookingDate()
     }
-  }, [workdayFilter])
+  }, [workdayFilter, watchedVehicleSubType])
 
   useEffect(() => {
     if (workdayFilter.vehicleType && workdayFilter.stationsId && workdaySelectedDate) {
@@ -1119,7 +1122,7 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
 
   // Fetch danh sách dịch vụ trạm khi chọn trạm khác
   useEffect(() => {
-    const stationsId = form.getFieldValue('stationsId')
+    const stationsId = watchedStationsId
     if (stationsId) {
       BookingService.getListStationService({ filter: { stationsId: stationsId } })
         .then((response) => {
@@ -1138,7 +1141,7 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
       setSelectedServiceIds([])
       form.setFieldValue('stationServicesList', [])
     }
-  }, [form.getFieldValue('stationsId'), sortServicesByMetadataOrder])
+  }, [watchedStationsId, sortServicesByMetadataOrder])
 
   useEffect(() => {
     if (!selectedServiceIds.length) return
@@ -1513,9 +1516,9 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
                   options={listStation}
                   menuPlacement="top"
                   onChange={(value, station) => {
+                    form.setFieldValue('stationsId', value)
                     setStationSelected(station)
                     handleFillStationDateTime()
-                    form.setFieldValue('stationsId', value)
                   }}
                 />
               </Form.Item>
