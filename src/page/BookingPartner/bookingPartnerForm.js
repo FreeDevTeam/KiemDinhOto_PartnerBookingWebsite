@@ -36,8 +36,8 @@ import { detectPaymentCase } from './StationServicesSelect'
 import {
   buildExternalPaymentUrl,
   buildPaymentBackUrl,
-  getScheduleHashFromPayload,
-  resolveExternalPaymentContext
+  resolveExternalPaymentContext,
+  resolveOrderPaymentIdentifiers
 } from './helper/paymentRedirectHelper'
 
 const Gtel = window
@@ -165,7 +165,27 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
     return stationServices.filter((service) => allowedServiceTypeSet.has(Number(service?.serviceType)))
   }, [stationServices, selectedScheduleType])
 
-  const handleOpenExternalPayment = (paymentPayloadOrOrderId) => {
+  const hydratePaymentIdentifiers = async ({ orderId }) => {
+    if (!orderId) {
+      return {
+        orderId
+      }
+    }
+
+    try {
+      const orderDetail = await PaymentService.checkOrderStatus(orderId)
+      const identifiersFromOrderDetail = resolveOrderPaymentIdentifiers(orderDetail)
+      return {
+        orderId: identifiersFromOrderDetail.orderId || orderId
+      }
+    } catch (error) {
+      return {
+        orderId
+      }
+    }
+  }
+
+  const handleOpenExternalPayment = async (paymentPayloadOrOrderId) => {
     if (!paymentPayloadOrOrderId && !paymentData?.paymentUrl && !paymentData?.orderId) return
 
     const mergedPaymentData =
@@ -173,13 +193,12 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
         ? { ...paymentData, ...paymentPayloadOrOrderId }
         : paymentPayloadOrOrderId || paymentData
 
-    const { url, scheduleHash, orderId, isConsultantBooking } = resolveExternalPaymentContext(mergedPaymentData)
+    const { url, orderId } = resolveExternalPaymentContext(mergedPaymentData)
     if (!url) return
+    const hydratedPaymentIdentifiers = await hydratePaymentIdentifiers({ orderId })
 
     const backUrl = buildPaymentBackUrl({
-      isConsultantBooking,
-      orderId,
-      scheduleHash,
+      orderId: hydratedPaymentIdentifiers.orderId,
       bookingDetailPath: PATH.BOOKING_DETAIL_NO_ID
     })
     const redirectUrl = buildExternalPaymentUrl({
@@ -265,9 +284,8 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
         }
         setScheduleTypePopUp(values.scheduleType)
         if (paymentUrl?.length > 0) {
-          const scheduleHash = getScheduleHashFromPayload(data)
           setTimeout(() => {
-            handleOpenExternalPayment({ paymentUrl, scheduleHash, customerScheduleId, isConsultantBooking: true })
+            handleOpenExternalPayment({ paymentUrl, customerScheduleId, isConsultantBooking: true })
           }, 500)
         }
         form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
@@ -329,15 +347,13 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
           const scheduleData = buildScheduleData(values)
           const serviceData = buildServiceData('enableOnlinePayment')
           const paymentUrlFromRes = paymentUrl
-          const scheduleHash = getScheduleHashFromPayload(data)
           setPaymentData({
             customerScheduleId,
             schedulingType: 'ONLINE_PAYMENT',
             isConsultantBooking: true,
             scheduleData,
             serviceData,
-            paymentUrl: paymentUrlFromRes,
-            scheduleHash
+            paymentUrl: paymentUrlFromRes
           })
           
           form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
@@ -362,9 +378,8 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
         setScheduleTypePopUp(values.scheduleType)
         setIsModalOpen(true)
         if (paymentUrl?.length > 0) {
-          const scheduleHash = getScheduleHashFromPayload(data)
           setTimeout(() => {
-            handleOpenExternalPayment({ paymentUrl, scheduleHash, customerScheduleId, isConsultantBooking: true })
+            handleOpenExternalPayment({ paymentUrl, customerScheduleId, isConsultantBooking: true })
           }, 500)
         }
         form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
@@ -392,7 +407,6 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
     }
     const id = data[0]
     const paymentUrlFromRes = data?.paymentUrl
-    const scheduleHashFromRes = getScheduleHashFromPayload(data)
     form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
     setScheduleTypePopUp(values.scheduleType)
 
@@ -411,8 +425,7 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
         scheduleData,
         serviceData,
         formValues: values,
-        paymentUrl: paymentUrlFromRes,
-        scheduleHash: scheduleHashFromRes
+        paymentUrl: paymentUrlFromRes
       })
       setIsModalOpen(true)
       setIsLoading(false)
@@ -427,8 +440,7 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
         isConsultantBooking: false,
         scheduleData,
         serviceData,
-        formValues: values,
-        scheduleHash: scheduleHashFromRes
+        formValues: values
       })
       setIsLoading(false)
       return

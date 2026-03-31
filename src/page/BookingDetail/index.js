@@ -95,17 +95,11 @@ const BookingDetail = ({
   const { customerScheduleId } = useParams()
   const urlParams = new URLSearchParams(window.location.search);
   const orderIdFromQuery = (urlParams.get('orderId') || '').trim()
-  const scheduleHashFromQuery = (urlParams.get('schedulehash') || urlParams.get('scheduleHash') || '').trim()
-  const scheduleHash = scheduleHashFromQuery || (localStorage.getItem('schedulehash') || '').trim()
+  const preferredOrderIdFromQuery = orderIdFromQuery
   let apiKey = CheckApiKey()
   if (apiKey) {
     localStorage.setItem('apiKey', apiKey);
   }
-  useEffect(() => {
-    if (scheduleHashFromQuery) {
-      localStorage.setItem('schedulehash', scheduleHashFromQuery)
-    }
-  }, [scheduleHashFromQuery])
 
   let wab = []
   const [scheduleInformation, setScheduleInformation] = useState([])
@@ -181,8 +175,8 @@ const BookingDetail = ({
   }
 
   const loadOrderDetailFallback = () => {
-    if (!orderIdFromQuery) return Promise.resolve(false)
-    return PaymentService.checkOrderStatus(orderIdFromQuery)
+    if (!preferredOrderIdFromQuery) return Promise.resolve(false)
+    return PaymentService.checkOrderStatus(preferredOrderIdFromQuery)
       .then(async (orderDetail) => {
         if (!orderDetail) return false
         const fallbackData = buildScheduleInformationFromOrderDetail(orderDetail)
@@ -210,18 +204,9 @@ const BookingDetail = ({
 
   useEffect(() => {
     const fetchScheduleDetail = async () => {
-      if (orderIdFromQuery) {
-        await loadOrderDetailFallback()
-        return
-      }
-
-      if (scheduleHash) {
-        const result = await BookingService.findByHash({ scheduleHash: scheduleHash })
-        const { isSuccess, data } = result || {}
-        if (isSuccess && data) {
-          setScheduleInformation(data)
-          return
-        }
+      if (preferredOrderIdFromQuery) {
+        const isSuccess = await loadOrderDetailFallback()
+        if (isSuccess) return
       }
 
       if (customerScheduleId) {
@@ -233,7 +218,7 @@ const BookingDetail = ({
     }
 
     fetchScheduleDetail()
-  }, [customerScheduleId, orderIdFromQuery, scheduleHash])
+  }, [customerScheduleId, preferredOrderIdFromQuery])
 
   const history = useHistory()
   const BindPlate = ({ type, number }) => {
@@ -320,7 +305,7 @@ const BookingDetail = ({
           </div>
         }
         <div className="d-flex j-sb mgt-15">
-          {scheduleInformation?.scheduleCode && !orderIdFromQuery && (
+          {scheduleInformation?.scheduleCode && !preferredOrderIdFromQuery && (
             <div className="box w-50">
               <div className="title-i">Trạng thái</div>
              <RetunStatus status={scheduleInformation?.CustomerScheduleStatus} />
