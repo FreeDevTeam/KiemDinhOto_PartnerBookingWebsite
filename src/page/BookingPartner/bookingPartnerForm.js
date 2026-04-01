@@ -327,7 +327,7 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
       })
   }
 
-  const bookingConsultantSchedule = (values) => {
+  const bookingConsultantSchedule = (values, forceNoPayment = false) => {
     setIsLoading(true)
     BookingService.createConsultantSchedule(values)
       .then((result) => {
@@ -364,7 +364,7 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
         }
         
         // Gọi API thanh toán nếu ở môi trường GTEL
-        if (MINIAPP_GTELPAY) {
+        if (MINIAPP_GTELPAY && !forceNoPayment) {
           BookingService.createPayment({
             customerScheduleId,
             paymentMethodType: PAYMENT_TYPE.GTEL_PAY
@@ -377,7 +377,7 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
         }
         setScheduleTypePopUp(values.scheduleType)
         setIsModalOpen(true)
-        if (paymentUrl?.length > 0) {
+        if (!forceNoPayment && paymentUrl?.length > 0) {
           setTimeout(() => {
             handleOpenExternalPayment({ paymentUrl, customerScheduleId, isConsultantBooking: true })
           }, 500)
@@ -447,8 +447,8 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
     }
   }
 
-  const createBookingSchedule = (values) => {
-    const paymentCase = detectPaymentCase(stationServices, selectedServiceIds)
+  const createBookingSchedule = (values, forceNoPayment = false) => {
+    const paymentCase = forceNoPayment ? null : detectPaymentCase(stationServices, selectedServiceIds)
     setIsLoading(true)
     BookingService.createSchedule(values)
       .then((result) => handleBookingResult(result, values, paymentCase, 'schedule'))
@@ -671,6 +671,19 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
 
     // Detect phương thức thanh toán dựa trên service được chọn
     const paymentCase = detectPaymentCase(stationServices, selectedServiceIds)
+
+    if (
+      Number(stationServices.find((service) => service.stationServicesId === selectedServiceIds?.[0])?.servicePrice || 0) <= 0 &&
+      Number(scheduleTypes.find((item) => Number(item?.value) === Number(values?.scheduleType))?.priceTTDK || 0) <= 0
+    ) {
+      if (scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT) {
+        bookingConsultantSchedule(data, true)
+      } else if (scheduleCategory === SCHEDULE_BOOKING_TYPE.SCHEDULE) {
+        createBookingSchedule(data, true)
+      }
+      getBookingDate()
+      return
+    }
 
     // Miniapp environment (GTEL/ZALOPAY) luôn được ưu tiên trước
     if (scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT && MINIAPP_GTELPAY) {

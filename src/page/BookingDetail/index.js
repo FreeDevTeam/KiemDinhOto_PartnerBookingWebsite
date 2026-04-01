@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import './index.scss'
 import { Tag, Row, message, Button, Modal, Spin, Pagination, Empty, Radio, Space, Input } from 'antd'
+import { LeftOutlined } from '@ant-design/icons'
 import { VEHICLE_SUB_TYPE, VIHCLE_TYPES, SCHEDULE_STATUS, CUSTOMER_RECEIPT_STATUS, CUSTOMER_RECEIPT_STATUS_TO_TEXT, PAYMENT_OBJECT, SCHEDULE_STATUS_3_0 } from '../../constants/global'
 import _ from 'lodash'
 import { changeTime } from '../../helper/changeTime'
@@ -10,7 +11,7 @@ import BookingService from '../../services/addBookingService'
 import PaymentService from '../../services/paymentService'
 import PopupMessage from '../BookingPartner/PopupMessage'
 import { useParams } from 'react-router-dom/cjs/react-router-dom'
-import { CheckApiKey } from '../../helper/CheckApiKey'
+import { PATH } from '../../constants/router'
 
 const { TextArea } = Input
 
@@ -33,6 +34,9 @@ const parseJsonSafely = (value) => {
     return {}
   }
 }
+
+const isOrderPaymentSuccess = (paymentStatus) =>
+  String(paymentStatus || '').trim().toUpperCase() === String(CUSTOMER_RECEIPT_STATUS.SUCCESS).toUpperCase()
 
 const resolveServiceName = (item = {}) => {
   const orderItemName = String(item?.orderItemName || '').trim()
@@ -96,10 +100,6 @@ const BookingDetail = ({
   const urlParams = new URLSearchParams(window.location.search);
   const orderIdFromQuery = (urlParams.get('orderId') || '').trim()
   const preferredOrderIdFromQuery = orderIdFromQuery
-  let apiKey = CheckApiKey()
-  if (apiKey) {
-    localStorage.setItem('apiKey', apiKey);
-  }
 
   let wab = []
   const [scheduleInformation, setScheduleInformation] = useState([])
@@ -148,14 +148,14 @@ const BookingDetail = ({
     enablePaymentMethods.length > 0 && // trạm bật phương thức thanh toán
     scheduleInformation?.station?.enablePaymentGateway === 1 && // trạm bật thanh toán
     // (scheduleInformation?.CustomerScheduleStatus === status.confirmed) && // lịch chưa hoàn tất
-    scheduleInformation?.order?.paymentStatus !== CUSTOMER_RECEIPT_STATUS.SUCCESS && // chưa hoàn tất thanh toán
+    !isOrderPaymentSuccess(scheduleInformation?.order?.paymentStatus) && // chưa hoàn tất thanh toán
     scheduleInformation?.order?.totalPayment > 0 // số tiền phải > 0
 
   const isViewDetails =
     process.env.REACT_APP_ENABLE_PAYMENT * 1 === 1 &&
     (enablePaymentMethods.length === 0 || scheduleInformation?.station?.enablePaymentGateway === 0) && // trạm bật phương thức thanh toán
     // (scheduleInformation?.CustomerScheduleStatus === status.confirmed) && // lịch chưa hoàn tất
-    scheduleInformation?.order?.paymentStatus !== CUSTOMER_RECEIPT_STATUS.SUCCESS && // chưa hoàn tất thanh toán
+    !isOrderPaymentSuccess(scheduleInformation?.order?.paymentStatus) && // chưa hoàn tất thanh toán
     scheduleInformation?.order?.totalPayment > 0 // số tiền phải > 0
 
   const dataTime = scheduleInformation?.station?.stationWorkTimeConfig
@@ -221,6 +221,12 @@ const BookingDetail = ({
   }, [customerScheduleId, preferredOrderIdFromQuery])
 
   const history = useHistory()
+  const isPaymentSuccess = isOrderPaymentSuccess(scheduleInformation?.order?.paymentStatus)
+  const handleBackToBooking = () => {
+    const apiKeyFromStorage = localStorage.getItem('apiKey') || process.env.REACT_APP_APIKEY || ''
+    const bookingQueryString = apiKeyFromStorage ? `?apiKey=${encodeURIComponent(apiKeyFromStorage)}` : ''
+    history.push(`${PATH.BOOKING}${bookingQueryString}`)
+  }
   const BindPlate = ({ type, number }) => {
     const colors = {
       1: '#fffff',
@@ -254,6 +260,12 @@ const BookingDetail = ({
   return (
     <div className="detail-sche" style={{ maxWidth: 600, margin: 'auto', padding: '10px' }}>
      {isHeader && <div className="heads" style={{borderRadius:'30px 30px 0 0',padding:''}}>
+        {isPaymentSuccess && (
+          <button type="button" className="heads-back-btn" onClick={handleBackToBooking}>
+            <LeftOutlined />
+            <span>Quay lại</span>
+          </button>
+        )}
         Thông tin lịch hẹn
       </div>}
       <div className="content" style={{padding: '15px 10px 30px',backgroundColor:'#e6f7ff',borderRadius:'0 0 20px 20px'}}>
@@ -322,7 +334,7 @@ const BookingDetail = ({
 
         {scheduleInformation?.station?.enablePaymentGateway === 1 && (
           <div>
-            {scheduleInformation?.order?.paymentStatus !== CUSTOMER_RECEIPT_STATUS.SUCCESS ? (
+            {!isOrderPaymentSuccess(scheduleInformation?.order?.paymentStatus) ? (
               <>
                 <div className="d-flex j-sb mgt-15">
                   {scheduleInformation?.order?.totalPayment > 0 && (

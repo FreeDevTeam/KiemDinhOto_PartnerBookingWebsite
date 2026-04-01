@@ -25,10 +25,12 @@ import addKeyLocalStorage from './helper/localStorage';
 import MainLogo from './components/MainLogo';
 export const baseName = IS_ZALO_MINI_APP ? `/zapps/${process.env.REACT_APP_ZMP_APP_ID}` : '/'
 function App() {
+  const currentPathname = window.location.pathname || ''
+  const isBookingDetailPage = currentPathname.includes('/booking-detail')
   // Kiểm tra xem có APIKey trong URL không cho tính năng tự động đặt lịch
   const urlParams = new URLSearchParams(window.location.search);
   const apiKey = urlParams.get('apiKey') || urlParams.get('apikey') || process.env.REACT_APP_APIKEY || undefined;
-  if(apiKey) {
+  if(apiKey && !isBookingDetailPage) {
     localStorage.setItem('apiKey', apiKey)
   }
 
@@ -41,6 +43,7 @@ function App() {
   }, [])
   
   const handleCheckApiKey = ()=>{
+    if (isBookingDetailPage) return
     const params = getQueryParams()
     const API_KEY = params?.apiKey || params?.apikey || process.env.REACT_APP_APIKEY
     if(!API_KEY){
