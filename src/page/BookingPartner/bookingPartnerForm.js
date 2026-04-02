@@ -255,11 +255,7 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
 
   const GtelBookingConsultantSchedule = (values) => {
     setIsLoading(true)
-    const payload = {
-      ...values,
-      isImmediate: 1
-    }
-    BookingService.createOrderSchedule(payload)
+    BookingService.createOrderSchedule(values)
       .then((result) => {
         const { error: rsMess, statusCode, data } = result
         if (statusCode !== 200) {
