@@ -5,7 +5,7 @@ import { SCHEDULE_TYPE } from '../../constants/serviceOption'
 import { useAppParamsContext } from '../../context/AppParamsContext'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-const BookingSuccess = ({ isModalOpen, onClose, setIsModalOpen, scheduleType, paymentData, isPaymentPage, message, onOpenExternalPayment }) => {
+const BookingSuccess = ({ isModalOpen, onClose, setIsModalOpen, scheduleType, paymentData, isPaymentPage, message, onOpenExternalPayment, isEnablePaymentBookingService }) => {
   const consultantTypes = [
     SCHEDULE_TYPE.CONSULTANT_MAINTENANCE,
     SCHEDULE_TYPE.CONSULTANT_INSURANCE,
@@ -29,8 +29,9 @@ const BookingSuccess = ({ isModalOpen, onClose, setIsModalOpen, scheduleType, pa
     setIsModalOpen(false)
   }
 
-  const isPaymentFlow = paymentData?.schedulingType === 'ONLINE_PAYMENT' || paymentData?.schedulingType === 'PREPAY'
-  const canOpenPayment = typeof onOpenExternalPayment === 'function'
+  const isTicketSale = scheduleType === SCHEDULE_TYPE.E_TICKET_SALE
+  const isPaymentFlow = (paymentData?.schedulingType === 'ONLINE_PAYMENT' || paymentData?.schedulingType === 'PREPAY') && (isEnablePaymentBookingService || isTicketSale)
+  const canOpenPayment = typeof onOpenExternalPayment === 'function' && (isEnablePaymentBookingService || isTicketSale)
 
   // Nếu là trang thanh toán, khi đóng modal sẽ gọi onClose để về trang đặt lịch
   const handleModalClose = () => {
