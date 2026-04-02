@@ -29,9 +29,7 @@ const BookingSuccess = ({ isModalOpen, onClose, setIsModalOpen, scheduleType, pa
     setIsModalOpen(false)
   }
 
-  const isTicketSale = scheduleType === SCHEDULE_TYPE.E_TICKET_SALE
-  const isPaymentFlow = (paymentData?.schedulingType === 'ONLINE_PAYMENT' || paymentData?.schedulingType === 'PREPAY') && (isEnablePaymentBookingService || isTicketSale)
-  const canOpenPayment = typeof onOpenExternalPayment === 'function' && (isEnablePaymentBookingService || isTicketSale)
+  const isPaymentFlow = (paymentData?.schedulingType === 'ONLINE_PAYMENT' || paymentData?.schedulingType === 'PREPAY') && isEnablePaymentBookingService
 
   // Nếu là trang thanh toán, khi đóng modal sẽ gọi onClose để về trang đặt lịch
   const handleModalClose = () => {
@@ -72,7 +70,7 @@ const BookingSuccess = ({ isModalOpen, onClose, setIsModalOpen, scheduleType, pa
               </Button>
               </>
             )}
-            {isPaymentFlow && canOpenPayment && (
+            {isPaymentFlow && (
               <Button 
                 className="login__button df" 
                 onClick={handleGoToPayment} 
