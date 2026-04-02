@@ -6,7 +6,7 @@ import BookingSuccess from './BookingSuccessModal'
 import PopupMessage from './PopupMessage'
 import { changeTime } from '../../helper/changeTime'
 import { validatorPlateNumber } from './../../helper/validatorPlateNumber'
-import { getServiceTypeFilterByScheduleType, optionServiceType, SCHEDULE_TITLE, SCHEDULE_TYPE_MINIAPP } from '../../constants/serviceOption'
+import { getServiceTypeFilterByScheduleType, optionServiceType, SCHEDULE_TITLE, SCHEDULE_TYPE_MINIAPP, SCHEDULE_TYPE } from '../../constants/serviceOption'
 import { PATH } from '../../constants/router'
 import {
   PAYMENT_SUB_TYPE,
@@ -107,6 +107,7 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
   const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1 // ==> dùng cho miniApp
   const MINIAPP_GTELPAY = window?._env_?.REACT_APP_MINIAPP_GTELPAY == '1' 
   const MINIAPP_ZALOPAY = window?._env_?.REACT_APP_MINIAPP_ZALOPAY == '1' // dùng để tích hợp thanh toán qua ZALOPAY
+  const ENABLE_PAYMENT_BOOKING_SERVICE = process.env.REACT_APP_ENABLE_PAYMENT_BOOKING_SERVICE == '1' // bật logic thanh toán dịch vụ
 
   // state này để lấy thông tin trên params và hiển thị cho lần đầu tiên
   const [dataBookingParam, setDataBookingParam] = useState({})
@@ -1159,7 +1160,10 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
   // Fetch danh sách dịch vụ trạm khi chọn trạm khác
   useEffect(() => {
     const stationsId = resolvedStationsId
-    if (stationsId) {
+    const isTicketSale = selectedScheduleType === SCHEDULE_TYPE.E_TICKET_SALE // Mua vé (scheduleType === 27)
+    const shouldFetchService = ENABLE_PAYMENT_BOOKING_SERVICE || isTicketSale // Gọi API nếu: enable thanh toán HOẶC là mua vé
+    
+    if (stationsId && shouldFetchService) {
       BookingService.getListStationService({ filter: { stationsId: stationsId } })
         .then((response) => {
           if (response?.isSuccess && response?.data?.data) {
@@ -1177,7 +1181,7 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
       setSelectedServiceIds([])
       form.setFieldValue('stationServicesList', [])
     }
-  }, [resolvedStationsId, sortServicesByMetadataOrder])
+  }, [resolvedStationsId, sortServicesByMetadataOrder, selectedScheduleType])
 
   useEffect(() => {
     if (!selectedServiceIds.length) return
@@ -1632,6 +1636,7 @@ function BookingPartnerForm({ form, zaloUserName, zaloUserPhone, gtelpayUser }) 
         setIsModalOpen={setIsModalOpen}
         paymentData={paymentData}
         onOpenExternalPayment={handleOpenExternalPayment}
+        isEnablePaymentBookingService={ENABLE_PAYMENT_BOOKING_SERVICE}
         onClose={() => {
           setIsModalOpen(false)
           setPaymentData(null)
