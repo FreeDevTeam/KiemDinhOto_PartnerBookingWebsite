@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .container{
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: sans-serif;
+      color: #2F2B3DC7;
+      flex-direction: column;
+    }
+
+    .container .description{
+      text-align: center;
+      z-index: 1;
+    }
+
+    .container .description h1{
+      font-size: 2.375rem;
+      font-weight: 500;
+      line-height: 3.25rem;
+      letter-spacing: normal;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .container .description h4{
+      font-size: 1.375rem;
+      font-weight: 500;
+      line-height: 1.875rem;
+      letter-spacing: normal;
+      margin: 0 0 1rem 0;
+      font-weight: 600;
+    }
+
+    .container .image{
+      margin-top: -5.5rem;
+      width: 100%;
+      max-width: 450px;
+    }
+    
+    @media screen and (max-width: 280px) {
+      .container .image{
+        margin-top: -4rem;
+        width: 100%;
+        max-width: 450px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="description">
+      <h1>502</h1>
+      <h4>Đang nâng cấp ⚠️</h4>
+      <p>Nâng cấp hệ thông, vui lòng quay lại sau</p>
+    </div>
+    
+    <img class="image" src="./nangcap.png" alt="">
+  </div>
+</body>
+</html>
