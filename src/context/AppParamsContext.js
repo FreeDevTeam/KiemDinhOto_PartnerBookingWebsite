@@ -1,7 +1,7 @@
 import React from 'react'
 import { LocalStorageManager, SessionStorageManager } from '../helper/localStorage'
 import { getUrlParamValue, smartParseParam } from '../helper/params'
-import { PARAM_IS_HEADER_MINI_APP, PARAM_IS_WEB_VIEW, PARAM_REFER_STATION_ID, PARAM_REFER_USER_ID } from '../constants/params'
+import { PARAM_IS_HEADER_MINI_APP, PARAM_IS_WEB_VIEW, PARAM_REFER_STATION_ID, PARAM_REFER_USER_ID, PARAM_UUID } from '../constants/params'
 export const AppParamsContext = React.createContext(null)
 
 const getFirstUrlParamValue = (paramKey, search) => {
@@ -82,7 +82,15 @@ const PARAMS_MINIAPP_SCHEMA_SESSION_STORAGE = {
   }
 }
 
-const PARAMS_MINIAPP_SCHEMA_LOCAL_STORAGE = {}
+const PARAMS_MINIAPP_SCHEMA_LOCAL_STORAGE = {
+  uuid: {
+    paramKey: PARAM_UUID,
+    storageKey: PARAM_UUID,
+    envKey: undefined,
+    defaultValue: null,
+    parser: (v) => v
+  }
+}
 
 const matchesParamKey = (config, paramKey) => {
   if (!config || !paramKey) return false

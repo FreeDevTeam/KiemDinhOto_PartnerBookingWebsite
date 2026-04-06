@@ -8,4 +8,4 @@ export const PARAM_IS_HEADER_MINI_APP = 'isHeaderMiniApp';
 
 export const PARAM_REFER_USER_ID = 'referUserId' // id người giới thiệu
 export const PARAM_REFER_STATION_ID = 'referStationId' // id trạm giới thiệu
-
+export const PARAM_UUID = 'uuid';
