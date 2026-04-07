@@ -15,6 +15,7 @@ import { getHomePageConfigCache } from '../../../helper/getHomePageConfigCache'
 import Header from '../../../components/Header'
 import usePartnerBridge from '../../../sdk/usePartnerBridge'
 import { HOME_CONFIG_CATEGORY, HOME_CONFIG_CATEGORY_TEXT } from '../../../constants/Layout2Constants'
+import addKeyLocalStorage, { LocalStorageManager } from '../../../helper/localStorage'
 
 const HomeLayout2 = (props) => {
   const location = useLocation()
@@ -106,10 +107,30 @@ const HomeLayout2 = (props) => {
   }, [bottomBanner, hideNewsFromZaloMiniApp, isLoading])
 
   const getHomePageConfig = async (params) => {
-    getHomePageConfigCache(params).then((result) => {
-      setHomepageConfig(result || [])
-    })
+  const result = await getHomePageConfigCache(params);
+
+  const newData = (result || []).map((item) => ({
+    ...item,
+    linkNavigation: handleAttachLocalParamsToLinkNavigation(item?.linkNavigation),
+  }));
+
+  setHomepageConfig(newData);
+  } ;
+
+  // dùng để gán các params dưới localStorage vào field linkNavigation
+  const handleAttachLocalParamsToLinkNavigation = (linkNavigation) =>{
+    let tempLinkNavigation = linkNavigation
+    const paramsNeedAttach = ['uuid']
+    paramsNeedAttach.forEach(element => {
+      const paramValue = LocalStorageManager.getItem(element);
+      if(paramValue) {
+        const separator = tempLinkNavigation.includes("?") ? "&" : "?";
+        tempLinkNavigation += `${separator}${element}=${paramValue}`;
+      }
+    });
+    return tempLinkNavigation;
   }
+
   useEffect(() => {
     // if(!userToken){
     //   history.push(PATH.LOGIN)
