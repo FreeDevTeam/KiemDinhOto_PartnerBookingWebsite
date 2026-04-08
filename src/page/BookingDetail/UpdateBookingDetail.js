@@ -28,7 +28,7 @@ import BookingHoursPicker from '../../components/BookingHoursPicker'
 import CustomerScheduleService from '../../services/customerScheduleService'
 import MainLogo from '../../components/MainLogo'
 
-function UpdateBookingDetail({}) {
+function UpdateBookingDetail({ }) {
   const customStyles = {
     control: (base) => ({
       ...base,
@@ -135,9 +135,9 @@ function UpdateBookingDetail({}) {
         firstScheduleTypeHandler()
       }
     })
-    .catch((err) => {
-      firstScheduleTypeHandler()
-    })
+      .catch((err) => {
+        firstScheduleTypeHandler()
+      })
   }
 
   function parseStationBookingConfig(configStr) {
@@ -154,8 +154,8 @@ function UpdateBookingDetail({}) {
     const stationConfig = stationOrStationId?.stationBookingConfig
       ? parseStationBookingConfig(stationOrStationId.stationBookingConfig)
       : parseStationBookingConfig(
-          (listStation || []).find((item) => item?.stationsId == resolvedId || item?.value == resolvedId)?.stationBookingConfig
-        )
+        (listStation || []).find((item) => item?.stationsId == resolvedId || item?.value == resolvedId)?.stationBookingConfig
+      )
 
     if (stationConfig) {
       return stationConfig?.some((item) => item?.enableBooking) ? 1 : 0
@@ -272,7 +272,7 @@ function UpdateBookingDetail({}) {
     try {
       const vType = overrideVehicleType || workdayFilter.vehicleType || VEHICLE_SUB_TYPE[0].vehicleType
       const f = { ...workdayFilter, stationsId, vehicleType: vType }
-      
+
       const result = await findFirstAvailableDateRange(f)
       const actualFilter = result || f
       setWorkdayFilter(actualFilter)
@@ -318,11 +318,11 @@ function UpdateBookingDetail({}) {
 
       const firstAvailableTime = formattedHours.find((item) => !item.disabled)
       if (firstAvailableTime && fieldChanged.dateSchedule) {
-         form.setFieldValue('time', firstAvailableTime.scheduleTime)
-         setDataBookingParam((prev) => ({ ...prev, time: firstAvailableTime.scheduleTime }))
+        form.setFieldValue('time', firstAvailableTime.scheduleTime)
+        setDataBookingParam((prev) => ({ ...prev, time: firstAvailableTime.scheduleTime }))
       } else if (!formattedHours.find(item => item.scheduleTime === dataBookingParam?.time && !item.disabled)) {
-         form.setFieldValue('time', undefined)
-         setDataBookingParam((prev) => ({ ...prev, time: undefined }))
+        form.setFieldValue('time', undefined)
+        setDataBookingParam((prev) => ({ ...prev, time: undefined }))
       }
 
       setListBookingTime(formattedHours)
@@ -366,13 +366,13 @@ function UpdateBookingDetail({}) {
               onChangeDate(undefined, fetchFilter.stationsId, fetchFilter.vehicleType)
             }
           } else {
-             if (dataBookingParam?.dateSchedule && fetchFilter.stationsId && fetchFilter.vehicleType) {
-                getBookingHours({
-                  stationsId: fetchFilter.stationsId,
-                  date: dataBookingParam.dateSchedule,
-                  vehicleType: fetchFilter.vehicleType
-                })
-             }
+            if (dataBookingParam?.dateSchedule && fetchFilter.stationsId && fetchFilter.vehicleType) {
+              getBookingHours({
+                stationsId: fetchFilter.stationsId,
+                date: dataBookingParam.dateSchedule,
+                vehicleType: fetchFilter.vehicleType
+              })
+            }
           }
         } else {
           setListBookingDate([])
@@ -464,16 +464,16 @@ function UpdateBookingDetail({}) {
         } else {
           setListStation(stationList)
           if (fieldChanged.vntId && !dataBookingParam?.stationsId) {
-             const activeStations = stationList.filter((station) => station.stationStatus === 1)
-             const priorityStation = activeStations.find((station) => station.enablePriorityMode >= 1 && station.hasBookingEnabled)
-             const defaultStation = priorityStation || activeStations[0]
-             
-             const targetStationId = defaultStation?.stationsId
-             if (targetStationId) {
-                 onChangeStation(targetStationId)
-             } else {
-                 onChangeStation(undefined)
-             }
+            const activeStations = stationList.filter((station) => station.stationStatus === 1)
+            const priorityStation = activeStations.find((station) => station.enablePriorityMode >= 1 && station.hasBookingEnabled)
+            const defaultStation = priorityStation || activeStations[0]
+
+            const targetStationId = defaultStation?.stationsId
+            if (targetStationId) {
+              onChangeStation(targetStationId)
+            } else {
+              onChangeStation(undefined)
+            }
           }
         }
       })
@@ -495,7 +495,7 @@ function UpdateBookingDetail({}) {
         setErrorMessage('Lấy thông tin khu vực thất bại.')
         setIsModalErrOpen(true)
       })
-      .finally(() => {})
+      .finally(() => { })
   }
 
   const handleCategory = (evt) => {
@@ -528,7 +528,7 @@ function UpdateBookingDetail({}) {
 
   async function findFirstAvailableDateRange(baseDateFilter) {
     let current = moment() // ngày hiện tại
-    const endLimit = moment().add(1, 'year').endOf('year') // 31/12 năm sau
+    const endLimit = moment().add(3, 'month').endOf('month') // 31/12 năm sau
 
     while (current.isSameOrBefore(endLimit, 'month')) {
       const startDate = current.startOf('month').format('DD/MM/YYYY')
@@ -590,7 +590,7 @@ function UpdateBookingDetail({}) {
             setWorkdayFilter(result)
             getBookingDate(result)
           }
-        } catch (err) {}
+        } catch (err) { }
       }
     }
     initFetch()
@@ -854,7 +854,7 @@ function UpdateBookingDetail({}) {
                 onChange={(values) => {
                   form.setFieldValue('vntId', values)
                   setDataBookingParam((prev) => ({ ...prev, stationArea: values, stationsId: undefined, dateSchedule: undefined, time: undefined }))
-                  setFieldChanged((prev) => ({ ...prev, vntId: true, stationsId: true, dateSchedule: true}))
+                  setFieldChanged((prev) => ({ ...prev, vntId: true, stationsId: true, dateSchedule: true }))
                   setListStation([])
                   setListBookingDate([])
                   setListBookingTime([])
