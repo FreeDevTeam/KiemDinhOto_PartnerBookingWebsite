@@ -95,7 +95,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
   // Kiểm tra các biển trong ENV
   const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1 // ==> dùng cho miniApp
-  const MINIAPP_GTELPAY = window?._env_?.REACT_APP_MINIAPP_GTELPAY == '1' 
+  const MINIAPP_GTELPAY = window?._env_?.REACT_APP_MINIAPP_GTELPAY == '1'
   const MINIAPP_ZALOPAY = window?._env_?.REACT_APP_MINIAPP_ZALOPAY == '1' // dùng để tích hợp thanh toán qua ZALOPAY
 
   // state này để lấy thông tin trên params và hiển thị cho lần đầu tiên
@@ -491,8 +491,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     const stationConfig = stationOrStationId?.stationBookingConfig
       ? parseStationBookingConfig(stationOrStationId.stationBookingConfig)
       : parseStationBookingConfig(
-          (listStation || []).find((item) => item?.stationsId == resolvedId || item?.value == resolvedId)?.stationBookingConfig
-        )
+        (listStation || []).find((item) => item?.stationsId == resolvedId || item?.value == resolvedId)?.stationBookingConfig
+      )
 
     if (stationConfig) {
       return stationConfig?.some((item) => item?.enableBooking) ? 1 : 0
@@ -548,7 +548,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   const onChangeDate = (date, stationsId, vehicleType) => {
     setWorkdaySelectedDate(date)
     form.setFieldValue('dateSchedule', date)
-    
+
     // Reset Time
     form.setFieldValue('time', undefined)
     setListBookingTime([])
@@ -584,7 +584,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     try {
       const vType = overrideVehicleType || workdayFilter.vehicleType || VEHICLE_SUB_TYPE[0].vehicleType
       const f = { ...workdayFilter, stationsId, vehicleType: vType }
-      
+
       const result = await findFirstAvailableDateRange(f)
       const actualFilter = result || f
       setWorkdayFilter(actualFilter)
@@ -760,11 +760,11 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
           setStationSelected(targetStationId)
           form.setFieldValue('stationsId', targetStationId)
-          
+
           if (targetStationId) {
-             onChangeStation(targetStationId)
+            onChangeStation(targetStationId)
           } else {
-             onChangeStation(undefined)
+            onChangeStation(undefined)
           }
         }
       })
@@ -862,7 +862,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   //function lấy ra ngày đầu tiên có lịch làm
   async function findFirstAvailableDateRange(baseDateFilter) {
     let current = moment() // ngày hiện tại
-    const endLimit = moment().add(1, 'year').endOf('year') // 31/12 năm sau
+    const endLimit = moment().add(3, 'month').endOf('month') // 31/12 năm sau
 
     while (current.isSameOrBefore(endLimit, 'month')) {
       const startDate = current.startOf('month').format('DD/MM/YYYY')
@@ -1053,12 +1053,12 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
   useEffect(() => {
     const scheduleTypeWithParams = scheduleTypes.find((item) => item.value === +form.getFieldValue('scheduleType'))
-     setScheduleCategory(scheduleTypeWithParams?.scheduleCategory || SCHEDULE_BOOKING_TYPE.SCHEDULE)
+    setScheduleCategory(scheduleTypeWithParams?.scheduleCategory || SCHEDULE_BOOKING_TYPE.SCHEDULE)
   }, [scheduleTypes, form.getFieldValue('scheduleType')])
 
   return (
     <div className="position-relative">
-      {dataTheme?.partnerBackground && <img className="bg-partner" src={dataTheme?.partnerBackground} alt=""/>}
+      {dataTheme?.partnerBackground && <img className="bg-partner" src={dataTheme?.partnerBackground} alt="" />}
       <Form
         className={dataTheme?.partnerBackground ? 'styled-form' : ''}
         name="booking"
@@ -1120,15 +1120,15 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                   message: 'Vui lòng chọn mục đích đặt lịch'
                 }
               ]}
-              hidden = {String(dataBookingParam?.visible_scheduleType) === 'false'}
-              >
+              hidden={String(dataBookingParam?.visible_scheduleType) === 'false'}
+            >
               <SelectAntd
                 defaultValue={dataBookingParam?.scheduleType || optionServiceType[0]?.value}
                 className="cs-select ant-custom booking-input"
                 isSearchable={true}
                 placeholder="Vui lòng chọn mục đích đặt lịch"
                 styles={customStyles}
-                options={paramsScheduleTypeParams ? (scheduleTypes || optionServiceType)?.filter((item) => +item?.value === +paramsScheduleTypeParams ) : (scheduleTypes || optionServiceType)}
+                options={paramsScheduleTypeParams ? (scheduleTypes || optionServiceType)?.filter((item) => +item?.value === +paramsScheduleTypeParams) : (scheduleTypes || optionServiceType)}
                 menuPlacement="top"
                 onChange={(values, scheduleType) => {
                   setScheduleCategory(scheduleType?.scheduleCategory)
@@ -1234,7 +1234,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                       setWorkdayFilter(newFilter)
                       handleCategory(values)
                       if (newFilter.stationsId) {
-                         onChangeStation(newFilter.stationsId, vehicleType?.vehicleType)
+                        onChangeStation(newFilter.stationsId, vehicleType?.vehicleType)
                       }
                     }}
                   />
