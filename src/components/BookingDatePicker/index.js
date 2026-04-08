@@ -38,10 +38,12 @@ export default function BookingDatePicker({
     } else {
       setCurrentMonth(moment(currentMonth, DATE_DISPLAY_FORMAT).subtract(1, 'months'))
     }
+    if (setSelectedDate) setSelectedDate(undefined)
   }
 
   const increaseMonth = () => {
     setCurrentMonth(moment(currentMonth, DATE_DISPLAY_FORMAT).startOf('month').add(1, 'months'))
+    if (setSelectedDate) setSelectedDate(undefined)
   }
 
   const getDisplayTextByScheduleDateStatus = (element) => {
