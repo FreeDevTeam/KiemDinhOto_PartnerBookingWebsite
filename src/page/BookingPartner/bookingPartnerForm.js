@@ -452,7 +452,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     const hasBooking = !!element?.totalBookingSchedule
     const hasSchedule = !!element?.totalSchedule
 
-    // if (disableBookingHour) {
     if (element?.scheduleTimeStatus === 0) {
       if (fullSchedule) {
         return <div style={{ color: 'var(--error-btn-color)' }}>Đã đầy</div>
@@ -468,7 +467,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     if (hasSchedule || hasBooking) {
       return `${element.totalBookingSchedule || 0}/${element.totalSchedule}`
     }
-    // }
 
     const isEnableBooking = stationBookingConfig.some((item) => item?.enableBooking)
 
@@ -477,6 +475,74 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     ) : (
       `${element.totalBookingSchedule || 0} Lịch đang chờ`
     )
+  }
+
+  function parseStationBookingConfig(configStr) {
+    if (!configStr) return null
+    try {
+      return JSON.parse(configStr)
+    } catch (error) {
+      return null
+    }
+  }
+
+  function getStationAcceptBooking(stationOrStationId) {
+    const resolvedId = stationOrStationId || form.getFieldValue('stationsId')
+    const stationConfig = stationOrStationId?.stationBookingConfig
+      ? parseStationBookingConfig(stationOrStationId.stationBookingConfig)
+      : parseStationBookingConfig(
+          (listStation || []).find((item) => item?.stationsId == resolvedId || item?.value == resolvedId)?.stationBookingConfig
+        )
+
+    if (stationConfig) {
+      return stationConfig?.some((item) => item?.enableBooking) ? 1 : 0
+    }
+
+    return stationBookingConfig?.some((item) => item?.enableBooking) ? 1 : 0
+  }
+
+  function getScheduleDateDisplayConfig(item, stationAcceptBooking) {
+    const totalSchedule = item?.totalSchedule
+    const totalBookingSchedule = item?.totalBookingSchedule
+    const isMissingData = totalSchedule === null || totalSchedule === undefined || totalBookingSchedule === null || totalBookingSchedule === undefined
+    const isFull = totalSchedule > 0 && totalBookingSchedule >= totalSchedule
+
+    if (isMissingData) {
+      return { disabled: true, isFull: false, text: '' }
+    }
+
+    if (item?.scheduleDateStatus == 0) {
+      if (!stationAcceptBooking) {
+        return { disabled: false, isFull: false, text: `Đang chờ ${totalBookingSchedule || 0}` }
+      }
+      if (isFull) {
+        return { disabled: true, isFull: true, text: 'Đã đầy' }
+      }
+      return { disabled: true, isFull: false, text: '' }
+    }
+
+    if (item?.scheduleDateStatus == 1) {
+      if (totalSchedule <= 0) {
+        return { disabled: true, isFull: false, text: '' }
+      }
+      if (isFull) {
+        return { disabled: true, isFull: true, text: 'Đã đầy' }
+      }
+      return { disabled: false, isFull: false, text: `${totalBookingSchedule}/${totalSchedule}` }
+    }
+
+    return { disabled: true, isFull: false, text: '' }
+  }
+
+  function isDisabledScheduleTime(item) {
+    const totalSchedule = item?.totalSchedule
+    const totalBookingSchedule = item?.totalBookingSchedule
+    const isMissingData = totalSchedule === null || totalSchedule === undefined || totalBookingSchedule === null || totalBookingSchedule === undefined
+
+    if (isMissingData) return true
+    if (item?.scheduleTimeStatus !== 1) return true
+    if (totalSchedule <= 0) return true
+    return totalBookingSchedule >= totalSchedule
   }
 
   const onChangeDate = (date, stationsId, vehicleType) => {
@@ -533,37 +599,39 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     BookingService.getBookingHours(params)
       .then((data) => {
         if (data.statusCode == 505) {
-        } else {
-          let tmp = data || []
-          if (tmp.length > 0) {
-            tmp.forEach((element) => {
-              element.disabled = element.scheduleTimeStatus === 0 || element?.totalBookingSchedule >= element?.totalSchedule
-              // const enableBookingHandler = stationBookingConfig.some((item) => {
-              //   return item?.enableBooking
-              // })
-              element.label = (
-                <div className="ai-c j-sb w-100">
-                  <div>{changeTime(element.scheduleTime)}</div>
-                  <div className="text-primary">{getDisplayTextByScheduleTimeStatus(element)}</div>
-                </div>
-              )
-              element.value = element.disabled
-            })
-            const firstAvailableTime = tmp.find((item) => item.scheduleTimeStatus === 1 && item.totalBookingSchedule < item.totalSchedule)
-            form.setFieldValue('time', firstAvailableTime?.scheduleTime)
-            if (!firstAvailableTime) {
-              form.setFieldValue('time', undefined)
-            } else {
-              form.setFieldValue('time', firstAvailableTime)
-            }
-            setListBookingTime(tmp)
+          setListBookingTime([])
+          return
+        }
+
+        let tmp = data || []
+        if (tmp.length > 0) {
+          tmp.forEach((element) => {
+            element.disabled = isDisabledScheduleTime(element)
+            element.label = (
+              <div className="ai-c j-sb w-100">
+                <div>{changeTime(element.scheduleTime)}</div>
+                <div className="text-primary">{getDisplayTextByScheduleTimeStatus(element)}</div>
+              </div>
+            )
+            element.value = element.disabled
+          })
+
+          const firstAvailableTime = tmp.find((item) => !item.disabled)
+          if (firstAvailableTime) {
+            form.setFieldValue('time', firstAvailableTime)
+          } else {
+            form.setFieldValue('time', undefined)
           }
+          setListBookingTime(tmp)
+        } else {
+          setListBookingTime([])
+          form.setFieldValue('time', undefined)
         }
       })
       .catch(() => {
         setErrorMessage('Lấy thông tin giờ hẹn thất bại.')
         setIsModalErrOpen(true)
-        setLoadingHoursPicker(false)
+        setListBookingTime([])
       })
       .finally(() => {
         setLoadingHoursPicker(false)
@@ -572,36 +640,39 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
   const getBookingDate = (filterArgs) => {
     const fetchFilter = filterArgs || workdayFilter;
+    const stationAcceptBooking = getStationAcceptBooking(fetchFilter?.stationsId)
     setIsWorkdayLoading(true)
     BookingService.getBookingDate(fetchFilter)
       .then((data) => {
         if (data.statusCode == 505) {
-        } else {
-          if (data.length > 0) {
-            let tmp = data || []
-            if (tmp.length > 0) {
-              tmp.forEach((element) => {
-                if (element.scheduleDateStatus == 0) {
-                  element.disabled = false
-                }
-                element.value = element.scheduleDate
-              })
-              setListBookingDate(tmp)
+          setListBookingDate([])
+          return
+        }
 
-              const firstAvailableSchedule = tmp.find((item) => item.scheduleDateStatus === 1 && item.totalBookingSchedule < item.totalSchedule)
-              const tDate = firstAvailableSchedule?.scheduleDate
-              if (tDate) {
-                 onChangeDate(tDate, fetchFilter.stationsId, fetchFilter.vehicleType)
-              } else {
-                 onChangeDate(undefined, fetchFilter.stationsId, fetchFilter.vehicleType)
-              }
-            }
+        if (data.length > 0) {
+          let tmp = data || []
+          tmp.forEach((element) => {
+            const config = getScheduleDateDisplayConfig(element, stationAcceptBooking)
+            element.disabled = config.disabled
+            element.displayText = config.text
+            element.isFull = config.isFull
+            element.value = element.scheduleDate
+          })
+          setListBookingDate(tmp)
+
+          const firstAvailableSchedule = tmp.find((item) => !item.disabled)
+          const tDate = firstAvailableSchedule?.scheduleDate
+          if (tDate) {
+            onChangeDate(tDate, fetchFilter.stationsId, fetchFilter.vehicleType)
           } else {
-            setListBookingDate([])
+            onChangeDate(undefined, fetchFilter.stationsId, fetchFilter.vehicleType)
           }
+        } else {
+          setListBookingDate([])
         }
       })
       .catch(() => {
+        setListBookingDate([])
         setIsWorkdayLoading(false)
       })
       .finally(() => {
@@ -1306,9 +1377,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                     const vType = workdayFilter.vehicleType || VEHICLE_SUB_TYPE[0].vehicleType
                     onChangeDate(date, stId, vType)
                   }}
-                  disabled={listBookingDate.length === 0}
+                  disabled={!form.getFieldValue('stationsId') || isWorkdayLoading || loadingHoursPicker}
                   listBookingDate={listBookingDate}
-                  bookingConfig={stationBookingConfig}
                   currentMonth={workdayFilter.startDate}
                   loading={isWorkdayLoading}
                   setCurrentMonth={(selectedMonth) => {
@@ -1320,7 +1390,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                     setWorkdayFilter(nf)
                     getBookingDate(nf)
                   }}
-                  minAvailableMonth={minMonthAvailable} // Truyền giá trị hoặc mặc định tháng hiện tại
+                  minAvailableMonth={minMonthAvailable}
                 />
               </Form.Item>
             )}
@@ -1335,14 +1405,13 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                   }
                 ]}>
                 <BookingHoursPicker
-                  disabled={false}
+                  disabled={!workdaySelectedDate || loadingHoursPicker}
                   listBookingTime={listBookingTime}
                   loading={loadingHoursPicker}
                   setSelectedTime={(values) => {
                     form.setFieldValue('time', values)
                   }}
                   selectedTime={form.getFieldValue('time')}
-                  bookingConfig={stationBookingConfig}
                 />
               </Form.Item>
             )}
