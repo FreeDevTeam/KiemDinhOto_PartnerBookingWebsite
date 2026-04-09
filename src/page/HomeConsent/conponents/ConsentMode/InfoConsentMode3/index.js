@@ -4,7 +4,7 @@ import './index.scss'
 export default function InfoConsentMode3({ consentUserProfile, isLoading, onChangePhoneNumber, onChangeFullName }) {
   return (
     <div className="AutomatedTrafficFineNotificationAuthenticationInfo">
-      <img className="AuthenticationInfo_img" src={'/logoFull.png'} alt="" />
+      <img className="AuthenticationInfo_img" src={'/logo.png'} alt="" />
       <div className="AuthenticationInfo_attention">Các dữ liệu sau sẽ được chia sẻ, xử lý với hệ thống tra cứu và thông báo phạt nguội:</div>
       <div className="AuthenticationInfo_carInfo">
         {isLoading ? (
