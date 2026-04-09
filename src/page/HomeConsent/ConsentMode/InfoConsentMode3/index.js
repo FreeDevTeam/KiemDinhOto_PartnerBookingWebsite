@@ -1,12 +1,12 @@
 import { Checkbox } from 'antd'
 import { useState } from 'react'
 import './index.scss'
-import { AutomatedTrafficFineNotificationAuthenticationHideInfo, AutomatedTrafficFineNotificationAuthenticationShowInfo } from '../../../assets/icons'
-import Header from '../../../../../components/Header'
-import { useConsentContext } from '../../../../../context/ConsentContext'
-import FixedBottom from '../../../components/base/FixedBottom'
-import BaseButton from '../../../components/base/BaseButton'
-import BasePopupTerm from '../../../components/base/BasePopupTerm'
+import { AutomatedTrafficFineNotificationAuthenticationHideInfo, AutomatedTrafficFineNotificationAuthenticationShowInfo } from '../../assets/icons'
+import Header from '../../../../components/Header'
+import { useConsentContext } from '../../../../context/ConsentContext'
+import FixedBottom from '../../components/base/FixedBottom'
+import BaseButton from '../../components/base/BaseButton'
+import BasePopupTerm from '../../components/base/BasePopupTerm'
 
 const termsData = [
   {

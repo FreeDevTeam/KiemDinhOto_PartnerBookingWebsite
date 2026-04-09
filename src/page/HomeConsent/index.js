@@ -1,19 +1,8 @@
-import BaseButton from './components/base/BaseButton'
-import FixedBottom from './components/base/FixedBottom'
 import './index.scss'
-import { Checkbox } from 'antd'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import BasePopupTerm from './components/base/BasePopupTerm'
 import { useConsentContext } from '../../context/ConsentContext'
-import { useGlobalContext } from '../../context/GlobalContext'
-import { useAppParamsContext } from '../../context/AppParamsContext'
-import InfoConsentMode1 from './conponents/ConsentMode/InfoConsentMode1'
-import InfoConsentMode2 from './conponents/ConsentMode/InfoConsentMode2'
-import InfoConsentMode3 from './conponents/ConsentMode/InfoConsentMode3'
-import { EMPTY_MODE2_USER_PROFILE, getActiveMode2PartnerFlow, resetMode2PartnerFlow, resolveMode2PartnerData } from './mode2PartnerFlow'
-// import { PATH } from '../../constants/router'
-
-
+import InfoConsentMode1 from './ConsentMode/InfoConsentMode1'
+import InfoConsentMode2 from './ConsentMode/InfoConsentMode2'
+import InfoConsentMode3 from './ConsentMode/InfoConsentMode3'
 
 export default function HomeConsent() {
   const { consentSessionState } = useConsentContext()

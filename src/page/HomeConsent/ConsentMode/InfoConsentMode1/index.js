@@ -1,12 +1,12 @@
 import { Checkbox } from 'antd'
-import FixedBottom from '../../../components/base/FixedBottom'
+import FixedBottom from '../../components/base/FixedBottom'
 import './index.scss'
-import BaseButton from '../../../components/base/BaseButton'
-import BasePopupTerm from '../../../components/base/BasePopupTerm'
-import { useConsentContext } from '../../../../../context/ConsentContext'
+import BaseButton from '../../components/base/BaseButton'
+import BasePopupTerm from '../../components/base/BasePopupTerm'
+import { useConsentContext } from '../../../../context/ConsentContext'
 import { useState } from 'react'
-import companyInfo from '../../../../../constants/companyInfo'
-import Header from '../../../../../components/Header'
+import companyInfo from '../../../../constants/companyInfo'
+import Header from '../../../../components/Header'
 export default function InfoConsentMode1() {
   const termsData = [
     {
