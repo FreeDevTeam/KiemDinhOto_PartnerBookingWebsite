@@ -1,8 +1,8 @@
 import './index.scss'
 import { useConsentContext } from '../../context/ConsentContext'
-import InfoConsentMode1 from './ConsentMode/InfoConsentMode1'
-import InfoConsentMode2 from './ConsentMode/InfoConsentMode2'
-import InfoConsentMode3 from './ConsentMode/InfoConsentMode3'
+import InfoConsentMode1 from './consentMode/InfoConsentMode1'
+import InfoConsentMode2 from './consentMode/InfoConsentMode2'
+import InfoConsentMode3 from './consentMode/InfoConsentMode3'
 
 export default function HomeConsent() {
   const { consentSessionState } = useConsentContext()
