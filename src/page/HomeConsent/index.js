@@ -417,7 +417,7 @@ export default function HomeConsent() {
   return (
     <div style={{ maxWidth: 600, margin: 'auto', minHeight: '100vh' }}>
       {/* <HeaderPartner title="Xác nhận thông tin" /> */}
-      <div className="AutomatedTrafficFineNotificationAuthentication">
+      {/* <div className="AutomatedTrafficFineNotificationAuthentication"> */}
         {renderConsentModeInfo()}
         {shouldShowMode2Retry && (
           <div className="AutomatedTrafficFineNotificationAuthentication_retry">
@@ -425,7 +425,7 @@ export default function HomeConsent() {
             <BaseButton onClick={handleRetryMode2}>Thử lại</BaseButton>
           </div>
         )}
-      </div>
+      {/* </div> */}
 
       {/* <FixedBottom elementPaddingBottom={'LayoutPartner'}>
         {!isConsentLoading && (

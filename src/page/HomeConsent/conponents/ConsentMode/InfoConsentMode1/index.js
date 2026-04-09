@@ -6,6 +6,7 @@ import BasePopupTerm from '../../../components/base/BasePopupTerm'
 import { useConsentContext } from '../../../../../context/ConsentContext'
 import { useState } from 'react'
 import companyInfo from '../../../../../constants/companyInfo'
+import Header from '../../../../../components/Header'
 export default function InfoConsentMode1() {
   const termsData = [
     {
@@ -149,21 +150,24 @@ export default function InfoConsentMode1() {
 
   return (
     <div>
-      <div className="InfoConsentMode1">
-        <div className="InfoConsentMode1_img">
-          <img className="InfoConsentMode1_img" src={'/logo.png'} alt="" />
-        </div>
-        <div className="InfoConsentMode1_content">
-          <div>
-            Để sử dụng dịch vụ tra cứu phạt nguội và nhận thông báo vi phạm, Tamove cần thu thập và xử lý dữ liệu cá nhân của Quý khách (bao gồm số
-            điện thoại và biển số xe).
+      {process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE && <Header title={'Xác nhận đồng ý và xử lý dữ liệu'} onBack={() => {}} />}
+      <div>
+        <div className="InfoConsentMode1">
+          <div className="InfoConsentMode1_img">
+            <img className="InfoConsentMode1_img" src={'/logo.png'} alt="" />
           </div>
-          <div>Thông tin này sẽ được sử dụng nhằm:</div>
-          <ul>
-            <li>Tra cứu thông tin vi phạm giao thông</li>
-            <li>Gửi thông báo phạt nguội tới khách hàng</li>
-            <li>Cung cấp và duy trì dịch vụ</li>
-          </ul>
+          <div className="InfoConsentMode1_content">
+            <div>
+              Để sử dụng dịch vụ tra cứu phạt nguội và nhận thông báo vi phạm, Tamove cần thu thập và xử lý dữ liệu cá nhân của Quý khách (bao gồm số
+              điện thoại và biển số xe).
+            </div>
+            <div>Thông tin này sẽ được sử dụng nhằm:</div>
+            <ul>
+              <li>Tra cứu thông tin vi phạm giao thông</li>
+              <li>Gửi thông báo phạt nguội tới khách hàng</li>
+              <li>Cung cấp và duy trì dịch vụ</li>
+            </ul>
+          </div>
         </div>
       </div>
       <FixedBottom elementPaddingBottom={'LayoutPartner'}>

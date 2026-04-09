@@ -1,4 +1,4 @@
-.AutomatedTrafficFineNotificationAuthenticationInfo {
+.InfoConsentMode2 {
   color: var(--text-primary);
   padding: 12px;
   box-shadow: 0px 4px 12px 0px #00000014;
@@ -7,19 +7,19 @@
   gap: 12px;
   border-radius: 16px;
 
-  .AuthenticationInfo_img {
+  .InfoConsentMode2_img {
     height: 26px;
     width: fit-content;
   }
 
-  .AuthenticationInfo_attention {
+  .InfoConsentMode2_attention {
     font-weight: 700;
     font-size: 14px;
     line-height: 20px;
     color: var(--brand-primary);
   }
 
-  .AuthenticationInfo_carInfo {
+  .InfoConsentMode2_carInfo {
     width: 100%;
     border-radius: 16px;
     padding: 12px;
@@ -29,51 +29,51 @@
     gap: 16px;
     position: relative;
 
-    .AuthenticationInfo_carInfo_hideInfo {
+    .InfoConsentMode2_carInfo_hideInfo {
       display: flex;
       gap: 12px;
       align-items: center;
       cursor: pointer;
     }
 
-    .AuthenticationInfo_carInfo_loading {
+    .InfoConsentMode2_carInfo_loading {
       display: flex;
       justify-content: center;
       padding: 8px 0;
     }
 
-    .AuthenticationInfo_carInfo_item {
+    .InfoConsentMode2_carInfo_item {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
 
-      .AuthenticationInfo_carInfo_item_label {
+      .InfoConsentMode2_carInfo_item_label {
         font-size: 14px;
         line-height: 16px;
         color: var(--text-tertiary);
       }
-      .AuthenticationInfo_carInfo_item_value {
+      .InfoConsentMode2_carInfo_item_value {
         font-size: 14px;
         line-height: 16px;
         text-align: right;
       }
 
-      .AuthenticationInfo_carInfo_item_input {
+      .InfoConsentMode2_carInfo_item_input {
         max-width: 210px;
         border-radius: 12px;
       }
     }
   }
 
-  .AuthenticationInfo_purpose {
-    .AuthenticationInfo_purpose_title {
+  .InfoConsentMode2_purpose {
+    .InfoConsentMode2_purpose_title {
       font-weight: 700;
       font-size: 14px;
       line-height: 20px;
       margin-bottom: 8px;
     }
-    .AuthenticationInfo_purpose_content {
+    .InfoConsentMode2_purpose_content {
       font-size: 14px;
       line-height: 16px;
       color: var(--text-tertiary);

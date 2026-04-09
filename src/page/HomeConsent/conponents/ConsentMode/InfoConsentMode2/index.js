@@ -14,42 +14,42 @@ export default function InfoConsentMode2({ sdkUserProfile, isLoading }) {
   const hasSdkPhoneNumber = !!sdkUserProfile?.phoneNumber?.trim()
 
   return (
-    <div className="AutomatedTrafficFineNotificationAuthenticationInfo">
-      <img className="AuthenticationInfo_img" src={'/logo.png'} alt="" />
-      <div className="AuthenticationInfo_attention">Các dữ liệu sau sẽ được chia sẻ, xử lý với hệ thống tra cứu và thông báo phạt nguội:</div>
-      <div className="AuthenticationInfo_carInfo">
+    <div className="InfoConsentMode2">
+      <img className="InfoConsentMode2_img" src={'/logo.png'} alt="" />
+      <div className="InfoConsentMode2_attention">Các dữ liệu sau sẽ được chia sẻ, xử lý với hệ thống tra cứu và thông báo phạt nguội:</div>
+      <div className="InfoConsentMode2_carInfo">
         {isLoading ? (
-          <div className="AuthenticationInfo_carInfo_loading">
+          <div className="InfoConsentMode2_carInfo_loading">
             <Spin size="small" />
           </div>
         ) : (
           <>
             {(hasSdkFullName || hasSdkPhoneNumber) && (
-              <div className="AuthenticationInfo_carInfo_hideInfo" onClick={() => setHideInfo(!hideInfo)}>
+              <div className="InfoConsentMode2_carInfo_hideInfo" onClick={() => setHideInfo(!hideInfo)}>
                 {hideInfo ? <AutomatedTrafficFineNotificationAuthenticationHideInfo /> : <AutomatedTrafficFineNotificationAuthenticationShowInfo />}
                 {hideInfo ? (
-                  <div className="AuthenticationInfo_carInfo_hideInfo_text">Ẩn thông tin</div>
+                  <div className="InfoConsentMode2_carInfo_hideInfo_text">Ẩn thông tin</div>
                 ) : (
-                  <div className="AuthenticationInfo_carInfo_hideInfo_text">Hiện thông tin</div>
+                  <div className="InfoConsentMode2_carInfo_hideInfo_text">Hiện thông tin</div>
                 )}
               </div>
             )}
-            <div className="AuthenticationInfo_carInfo_item">
-              <div className="AuthenticationInfo_carInfo_item_label">Họ tên</div>
+            <div className="InfoConsentMode2_carInfo_item">
+              <div className="InfoConsentMode2_carInfo_item_label">Họ tên</div>
 
-              <div className="AuthenticationInfo_carInfo_item_value">{getDisplayValue(sdkUserProfile.fullName, hideInfo)}</div>
+              <div className="InfoConsentMode2_carInfo_item_value">{getDisplayValue(sdkUserProfile.fullName, hideInfo)}</div>
             </div>
-            <div className="AuthenticationInfo_carInfo_item">
-              <div className="AuthenticationInfo_carInfo_item_label">Số điện thoại</div>
+            <div className="InfoConsentMode2_carInfo_item">
+              <div className="InfoConsentMode2_carInfo_item_label">Số điện thoại</div>
 
-              <div className="AuthenticationInfo_carInfo_item_value">{getDisplayValue(sdkUserProfile.phoneNumber, hideInfo)}</div>
+              <div className="InfoConsentMode2_carInfo_item_value">{getDisplayValue(sdkUserProfile.phoneNumber, hideInfo)}</div>
             </div>
           </>
         )}
       </div>
-      <div className="AuthenticationInfo_purpose">
-        <p className="AuthenticationInfo_purpose_title">Mục đích chia sẻ, xử lý dữ liệu:</p>
-        <p className="AuthenticationInfo_purpose_content">
+      <div className="InfoConsentMode2_purpose">
+        <p className="InfoConsentMode2_purpose_title">Mục đích chia sẻ, xử lý dữ liệu:</p>
+        <p className="InfoConsentMode2_purpose_content">
           Các trường thông tin trên được chia sẻ để phục vụ đánh giá và cung cấp các sản phẩm, dịch vụ cho Quý khách.
         </p>
       </div>
