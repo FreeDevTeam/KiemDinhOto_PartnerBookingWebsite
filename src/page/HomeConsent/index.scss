@@ -1,0 +1,39 @@
+.AutomatedTrafficFineNotificationAuthentication {
+  padding: 24px 16px;
+}
+
+.AutomatedTrafficFineNotificationAuthentication_terms {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  .terms_item {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .terms_item_title {
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 20px;
+      text-transform: uppercase;
+    }
+
+    .terms_item_intro {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 20px;
+      .terms_item_intro_details {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        p {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}

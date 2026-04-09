@@ -221,6 +221,75 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --linear-gradient-active: linear-gradient(to top, var(--royal-blue-color), var(--slate-blue-color));
   --linear-gradient-button: #262FED;
   // ...Thêm biến sáng 
+
+
+    /* PAGE & SURFACE */
+  --bg-page: #f5f6f8;
+  --bg-layout: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f9fafb;
+  --bg-overlay: #00000099;
+  --bg-loading: #ffffff80;
+  --bg-floating: #ffffff;
+
+  /* TEXT COLORS – HIERARCHY */
+  --text-primary: #222222;
+  --text-secondary: #7a7a7a;
+  --text-tertiary: #909090;
+  --text-placeholder: #7a7a7a;
+  --text-disabled: #7a7a7a;
+  --text-inverse: #ffffff;
+
+  /* BORDER & DIVIDER */
+  --border-default: #e9e9e9;
+  --border-hover: #e9e9e9;
+  --border-focus: #ee0033;
+  --border-disabled: #f1f1f1;
+  --divider: #ededed;
+
+  /* BRAND / ACCENT */
+  --brand-primary: #ee0033;
+  --brand-primary-hover: #ee0033;
+  --brand-primary-soft: #ffdbdb;
+
+  /* BUTTON */
+  --btn-primary-bg: var(--brand-primary);
+  --btn-primary-bg-hover: var(--brand-primary-hover);
+  --btn-primary-text: var(--text-inverse);
+  --btn-secondary-bg: #ffdbdb;
+  --btn-secondary-bg-hover: #ffdbdb;
+  --btn-secondary-text: #ee0033;
+  --btn-danger-bg: #ff5f61;
+  --btn-danger-text: #ffffff;
+
+  /* INPUT / FORM */
+  --input-bg: #ffffff;
+  --input-bg-disabled: #f1f1f1;
+  --input-text: var(--text-primary);
+  --input-border: #e9e9e9;
+  --input-border-focus: #a7a7a7;
+  --input-border-error: #ee0033;
+
+  /* STATUS / FEEDBACK */
+  --success-bg: #d7f4de;
+  --success-text: #34c759;
+  --warning-bg: #fff2d9;
+  --warning-text: #ff8d28;
+  --error-bg: #ffdbdb;
+  --error-text: #ee0033;
+  --info-bg: #eff6ff;
+  --info-text: #1e40af;
+
+  /* ICON */
+  --icon-default: #909090;
+  --icon-muted: #a9a9a9;
+  --icon-disabled: #909090;
+  --icon-brand: #ee0033;
+  --icon-inverse: var(--text-inverse);
+
+  /* LOADING / SKELETON */
+  --skeleton-base: #e5e7eb;
+  --skeleton-highlight: #f3f4f6;
 }
 
 [data-theme='DKON'] {
