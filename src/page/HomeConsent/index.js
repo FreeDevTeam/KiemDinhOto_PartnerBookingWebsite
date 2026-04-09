@@ -1,11 +1,14 @@
-import { useHistory } from 'react-router-dom'
 import BaseButton from './components/base/BaseButton'
 import FixedBottom from './components/base/FixedBottom'
 import './index.scss'
 import { Checkbox } from 'antd'
-import { useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import BasePopupTerm from './components/base/BasePopupTerm'
-import AutomatedTrafficFineNotificationAuthenticationInfo from './conponents/ConsentMode/ConsentMode2'
+import { useConsentContext } from '../../context/ConsentContext'
+import { useGlobalContext } from '../../context/GlobalContext'
+import { getGtelpayUserInfo } from '../../context/GtelpayContext'
+import InfoConsentMode1 from './conponents/ConsentMode/InfoConsentMode1'
+import InfoConsentMode2 from './conponents/ConsentMode/InfoConsentMode2'
 // import { PATH } from '../../constants/router'
 
 const termsData = [
@@ -142,38 +145,207 @@ const termsData = [
     ]
   }
 ]
+
+const CONSENT_MODE_1 = 1
+const CONSENT_MODE_2 = 2
+
+const EMPTY_SDK_USER_PROFILE = {
+  uuid: '',
+  phoneNumber: '',
+  fullName: ''
+}
+
+const normalizeProfileValue = (value) => {
+  if (typeof value === 'string') return value
+  return ''
+}
+
+const mapGtelpayUserProfile = (userInfo) => {
+  return {
+    uuid: normalizeProfileValue(userInfo?.uuid || userInfo?.rawData?.uuid),
+    phoneNumber: normalizeProfileValue(userInfo?.phoneNumber),
+    fullName: normalizeProfileValue(userInfo?.fullName)
+  }
+}
+
 export default function HomeConsent() {
-  const history = useHistory()
   const [confirmTerm, setConfirmTerm] = useState(false)
   const [confirmTermSheetVisible, setConfirmTermSheetVisible] = useState(false)
+  const [submitError, setSubmitError] = useState(false)
+  const [sdkUserProfile, setSdkUserProfile] = useState(EMPTY_SDK_USER_PROFILE)
+  const hasLoadedMode2UserInfoRef = useRef(false)
+
+  const { globalState, handleGetUserPhone, handleGetUserName } = useGlobalContext()
+  const { acceptConsentSession, consentSessionState, consentUserProfile, updateConsentSessionState, updateConsentUserProfile } = useConsentContext()
+
+  const consentMode = consentSessionState?.consentMode
+  const isConsentMode1 = consentMode === CONSENT_MODE_1
+  const isConsentMode2 = consentMode === CONSENT_MODE_2
+  const isConsentLoading = consentSessionState?.isLoading === true
+
+  useEffect(() => {
+    if (!isConsentMode2 || hasLoadedMode2UserInfoRef.current) return
+
+    hasLoadedMode2UserInfoRef.current = true
+    let isMounted = true
+
+    const loadMode2UserInfo = async () => {
+      updateConsentSessionState({ isLoading: true })
+
+      try {
+        let nextSdkUserProfile = EMPTY_SDK_USER_PROFILE
+        const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1
+
+        if (isZaloApp) {
+          let fullName = normalizeProfileValue(globalState?.userName)
+          let phoneNumber = normalizeProfileValue(globalState?.phoneNumber)
+
+          if (!fullName) {
+            try {
+              fullName = normalizeProfileValue(await handleGetUserName())
+            } catch (error) {}
+          }
+
+          if (!phoneNumber) {
+            try {
+              phoneNumber = normalizeProfileValue(await handleGetUserPhone())
+            } catch (error) {}
+          }
+
+          nextSdkUserProfile = {
+            ...EMPTY_SDK_USER_PROFILE,
+            fullName,
+            phoneNumber
+          }
+        } else {
+          const gtelpayUserInfo = await getGtelpayUserInfo()
+
+          if (gtelpayUserInfo) {
+            nextSdkUserProfile = mapGtelpayUserProfile(gtelpayUserInfo)
+          }
+        }
+
+        if (!isMounted) return
+
+        setSdkUserProfile(nextSdkUserProfile)
+        updateConsentUserProfile((prev) => ({
+          ...prev,
+          uuid: nextSdkUserProfile.uuid || prev.uuid,
+          phoneNumber: nextSdkUserProfile.phoneNumber || prev.phoneNumber,
+          fullName: nextSdkUserProfile.fullName || prev.fullName
+        }))
+      } catch (error) {
+        console.error('HomeConsent: failed to load consent mode 2 user info', error)
+
+        if (!isMounted) return
+
+        setSdkUserProfile(EMPTY_SDK_USER_PROFILE)
+      } finally {
+        if (!isMounted) return
+
+        updateConsentSessionState({ isLoading: false })
+      }
+    }
+
+    loadMode2UserInfo()
+
+    return () => {
+      isMounted = false
+    }
+  }, [globalState?.phoneNumber, globalState?.userName, handleGetUserName, handleGetUserPhone, isConsentMode2, updateConsentSessionState, updateConsentUserProfile])
+
+  const isMode2SubmitEnabled = useMemo(() => {
+    if (!isConsentMode2) return false
+
+    const fullName = normalizeProfileValue(consentUserProfile?.fullName).trim()
+    const phoneNumber = normalizeProfileValue(consentUserProfile?.phoneNumber).trim()
+
+    return !!fullName && !!phoneNumber && confirmTerm
+  }, [confirmTerm, consentUserProfile?.fullName, consentUserProfile?.phoneNumber, isConsentMode2])
+
+  const handleChangeConsentProfileField = (field, value) => {
+    setSubmitError(false)
+    updateConsentUserProfile({
+      [field]: value
+    })
+  }
+
+  const handleSubmitConsent = () => {
+    setSubmitError(false)
+    let isSuccess = false
+
+    if (isConsentMode1) {
+      if (!confirmTerm) {
+        return
+      }
+
+      isSuccess = acceptConsentSession()
+    }
+
+    if (isConsentMode2) {
+      if (!isMode2SubmitEnabled) {
+        return
+      }
+
+      isSuccess = acceptConsentSession({
+        uuid: normalizeProfileValue(sdkUserProfile?.uuid || consentUserProfile?.uuid).trim(),
+        phoneNumber: normalizeProfileValue(consentUserProfile?.phoneNumber).trim(),
+        fullName: normalizeProfileValue(consentUserProfile?.fullName).trim()
+      })
+    }
+
+    if (!isSuccess) {
+      setSubmitError(true)
+    }
+  }
+
   return (
-     <div className="layout2-body" style={{ maxWidth: 600, margin: 'auto',minHeight: '100vh'}}>
-      {/* <HeaderPartner title="Xác nhận thông tin" /> */}
+    <div style={{ maxWidth: 600, margin: 'auto', minHeight: '100vh' }}>
+      {/* <HeaderPartner title="Xác nhận thông tin" /> */}
       <div className="AutomatedTrafficFineNotificationAuthentication">
-        <AutomatedTrafficFineNotificationAuthenticationInfo />
+        {isConsentMode2 ? (
+          <InfoConsentMode2
+            consentUserProfile={consentUserProfile}
+            sdkUserProfile={sdkUserProfile}
+            isLoading={isConsentLoading}
+            onChangeFullName={(value) => handleChangeConsentProfileField('fullName', value)}
+            onChangePhoneNumber={(value) => handleChangeConsentProfileField('phoneNumber', value)}
+          />
+        ) : (
+          <InfoConsentMode1 />
+        )}
       </div>
 
       <FixedBottom elementPaddingBottom={'LayoutPartner'}>
-        <div style={{ marginBottom: '12px' }}>
-          <Checkbox checked={confirmTerm} className="Base_Checkbox" onChange={(e) => setConfirmTerm(e.target.checked)}>
-            <span>
-              Tôi đã đọc Mục đích chia sẻ, xử lý dữ liệu,{' '}
-              <span
-                style={{ color: 'var(--brand-primary)' }}
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  setConfirmTermSheetVisible(true)
-                }}>
-                Quyền, nghĩa vụ của chủ thể dữ liệu{' '}
-              </span>
-              và đồng ý chia sẻ, xử lý dữ liệu cá nhân.
-            </span>
-          </Checkbox>
-        </div>
-        <BaseButton disabled={!confirmTerm} onClick={() => {}}>
-          Tiếp theo
-        </BaseButton>
+        {!isConsentLoading && (
+          <>
+            <div style={{ marginBottom: '12px' }}>
+              <Checkbox checked={confirmTerm} className="Base_Checkbox" onChange={(event) => setConfirmTerm(event.target.checked)}>
+                <span>
+                  Tôi đã đọc Mục đích chia sẻ, xử lý dữ liệu,{' '}
+                  <span
+                    style={{ color: 'var(--brand-primary)' }}
+                    onClick={(event) => {
+                      event.preventDefault()
+                      event.stopPropagation()
+                      setConfirmTermSheetVisible(true)
+                    }}>
+                    Quyền, nghĩa vụ của chủ thể dữ liệu{' '}
+                  </span>
+                  và đồng ý chia sẻ, xử lý dữ liệu cá nhân.
+                </span>
+              </Checkbox>
+            </div>
+            {submitError && (
+              <div style={{ marginBottom: '12px', color: 'var(--error-color, #ff4d4f)' }}>
+                Không thể lưu xác nhận. Vui lòng thử lại.
+              </div>
+            )}
+            <BaseButton disabled={isConsentMode2 ? !isMode2SubmitEnabled : !confirmTerm} onClick={handleSubmitConsent}>
+              Tiếp theo
+            </BaseButton>
+          </>
+        )}
       </FixedBottom>
 
       <BasePopupTerm
@@ -186,12 +358,12 @@ export default function HomeConsent() {
           {termsData.map((item, index) => (
             <div key={index} className="terms_item">
               <div className="terms_item_title">{item.title}</div>
-              {item.intro.map((intro, index) => (
-                <div key={index}>
+              {item.intro.map((intro, childIndex) => (
+                <div key={childIndex}>
                   <div className="terms_item_intro">
                     <div className="terms_item_intro_content">{intro.content}</div>
                     <div className="terms_item_intro_details">
-                      {intro.details && intro.details.map((detail, index) => <p key={index}>{detail}</p>)}
+                      {intro.details && intro.details.map((detail, detailIndex) => <p key={detailIndex}>{detail}</p>)}
                     </div>
                   </div>
                 </div>
