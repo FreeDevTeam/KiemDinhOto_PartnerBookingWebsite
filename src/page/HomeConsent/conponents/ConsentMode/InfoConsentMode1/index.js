@@ -151,7 +151,7 @@ export default function InfoConsentMode1() {
   return (
     <div>
       {process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE && <Header title={'Xác nhận đồng ý và xử lý dữ liệu'} onBack={() => {}} />}
-      <div>
+      <div className="HomeConsentLaypout">
         <div className="InfoConsentMode1">
           <div className="InfoConsentMode1_img">
             <img className="InfoConsentMode1_img" src={'/logo.png'} alt="" />
@@ -202,7 +202,7 @@ export default function InfoConsentMode1() {
         title="Chi tiết"
         textButton="Đóng"
         onConfirm={() => setConfirmTermSheetVisible(false)}>
-        <div className="AutomatedTrafficFineNotificationAuthentication_terms">
+        <div className="HomeConsent_terms">
           {termsData.map((item, index) => (
             <div key={index} className="terms_item">
               <div className="terms_item_title">{item.title}</div>

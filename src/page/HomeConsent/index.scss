@@ -1,19 +1,8 @@
-.AutomatedTrafficFineNotificationAuthentication {
+.HomeConsentLaypout {
   padding: 24px 16px;
-
-  .AutomatedTrafficFineNotificationAuthentication_retry {
-    margin-top: 16px;
-
-    .AutomatedTrafficFineNotificationAuthentication_retryMessage {
-      margin-bottom: 12px;
-      color: var(--error-color, #ff4d4f);
-      font-size: 14px;
-      line-height: 20px;
-    }
-  }
 }
 
-.AutomatedTrafficFineNotificationAuthentication_terms {
+.HomeConsent_terms {
   display: flex;
   flex-direction: column;
   gap: 20px;

@@ -84,7 +84,7 @@ const PARAMS_MINIAPP_SCHEMA_SESSION_STORAGE = {
     paramKey: PARAM_HOME_MINIAPP_CONSENT_MODE,
     storageKey: PARAM_HOME_MINIAPP_CONSENT_MODE,
     envKey: "REACT_APP_HOME_MINIAPP_CONSENT_MODE" ,
-    defaultValue: 1,
+    defaultValue: 2,
     parser: (v) => v
   }
 }
