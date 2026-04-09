@@ -1,5 +1,5 @@
 import { Checkbox, Spin } from 'antd'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './index.scss'
 import { AutomatedTrafficFineNotificationAuthenticationHideInfo, AutomatedTrafficFineNotificationAuthenticationShowInfo } from '../../assets/icons'
 import Header from '../../../../components/Header'
@@ -7,6 +7,7 @@ import { useConsentContext } from '../../../../context/ConsentContext'
 import FixedBottom from '../../components/base/FixedBottom'
 import BaseButton from '../../components/base/BaseButton'
 import BasePopupTerm from '../../components/base/BasePopupTerm'
+import { getDataUserFromSDK } from '../../sdkPartnerGetData'
 
 const termsData = [
   {
@@ -165,16 +166,16 @@ export default function InfoConsentMode2() {
       return
     }
     try {
-      let userProfile = {}
-      if (process.env.REACT_APP_MINIAPP_VNPAY) {
-  
-      }
+      const { data, error } = await getDataUserFromSDK()
+      setSdkDataState((prev) => ({ ...prev, userProfile: data, error: error, isLoading: false }))
     } catch (error) {
       setSdkDataState((prev) => ({ ...prev, isLoading: false }))
     }
-
   }
 
+  useEffect(() => {
+    getDataFromSDK()
+  }, [])
 
   return (
     <div>
@@ -194,7 +195,7 @@ export default function InfoConsentMode2() {
             </div>
             <div className="InfoConsentMode2_carInfo_item">
               <div className="InfoConsentMode2_carInfo_item_label">Họ tên</div>
-              {consentSessionState?.isLoading === true ? (
+              {consentSessionState?.isLoading === true || sdkDataState?.isLoading || !sdkDataState?.userProfile?.fullName ? (
                 <Spin size="small" />
               ) : (
                 <div className="InfoConsentMode2_carInfo_item_value">{getDisplayValue(sdkDataState?.userProfile?.fullName, hideInfo)}</div>
@@ -203,7 +204,7 @@ export default function InfoConsentMode2() {
             <div className="InfoConsentMode2_carInfo_item">
               <div className="InfoConsentMode2_carInfo_item_label">Số điện thoại</div>
 
-              {consentSessionState?.isLoading === true ? (
+              {consentSessionState?.isLoading === true || sdkDataState?.isLoading || !sdkDataState?.userProfile?.phoneNumber ? (
                 <Spin size="small" />
               ) : (
                 <div className="InfoConsentMode2_carInfo_item_value">{getDisplayValue(sdkDataState?.userProfile?.phoneNumber, hideInfo)}</div>
@@ -216,6 +217,7 @@ export default function InfoConsentMode2() {
               Các trường thông tin trên được chia sẻ để phục vụ đánh giá và cung cấp các sản phẩm, dịch vụ cho Quý khách.
             </p>
           </div>
+          {sdkDataState?.error && <button onClick={getDataFromSDK}>Thử lại</button>}
         </div>
       </div>
       <FixedBottom elementPaddingBottom={'LayoutPartner'}>
