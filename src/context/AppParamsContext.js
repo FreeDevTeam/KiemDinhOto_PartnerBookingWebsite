@@ -1,7 +1,7 @@
 import React from 'react'
 import { LocalStorageManager, SessionStorageManager } from '../helper/localStorage'
 import { getUrlParamValue, smartParseParam } from '../helper/params'
-import { PARAM_IS_HEADER_MINI_APP, PARAM_IS_WEB_VIEW, PARAM_REFER_STATION_ID, PARAM_REFER_USER_ID } from '../constants/params'
+import { PARAM_HOME_MINIAPP_CONSENT_MODE, PARAM_IS_HEADER_MINI_APP, PARAM_IS_WEB_VIEW, PARAM_REFER_STATION_ID, PARAM_REFER_USER_ID } from '../constants/params'
 export const AppParamsContext = React.createContext(null)
 
 const getFirstUrlParamValue = (paramKey, search) => {
@@ -77,6 +77,13 @@ const PARAMS_MINIAPP_SCHEMA_SESSION_STORAGE = {
     paramKey: PARAM_REFER_STATION_ID,
     storageKey: PARAM_REFER_STATION_ID,
     envKey: undefined,
+    defaultValue: undefined,
+    parser: (v) => v
+  },
+  homeMiniappConsentMode: {
+    paramKey: PARAM_HOME_MINIAPP_CONSENT_MODE,
+    storageKey: PARAM_HOME_MINIAPP_CONSENT_MODE,
+    envKey: "REACT_APP_HOME_MINIAPP_CONSENT_MODE" ,
     defaultValue: undefined,
     parser: (v) => v
   }
