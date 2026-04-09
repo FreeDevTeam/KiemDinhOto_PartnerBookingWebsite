@@ -17,6 +17,14 @@ export const getDataUserFromSDK = async () => {
         error
       }
     }
+    return{
+      data: {
+        fullName: 'Nam Nguyễn',
+        phoneNumber: '07464648',
+        uuid: '12345677'
+      },
+      error: false
+    }
   } catch (error) {
     return {
       data: {},

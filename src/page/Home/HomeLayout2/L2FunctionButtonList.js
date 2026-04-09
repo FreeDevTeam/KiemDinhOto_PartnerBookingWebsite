@@ -5,9 +5,11 @@ import { useGlobalContext } from './../../../context/GlobalContext'
 import Slider from 'react-slick'
 import useWindowDimensions from '../../../hooks/window-dimensions'
 import { handleDirect } from '../../../components/Slider/SliderHome'
+import { useConsentContext } from '../../../context/ConsentContext'
 
 const L2FunctionButtonList = (props) => {
   const { handleZaloAuthorize,globalState } = useGlobalContext();
+  const { buildConsentHref } = useConsentContext()
   const {setSheetVisible, setDataBtn, slider}=props
   const { list ,title,className } = props
   const history = useHistory()
@@ -39,7 +41,7 @@ const L2FunctionButtonList = (props) => {
 
     const isZaloLink = link.includes('zalo.me')
     if (link) {
-      handleDirect(link, element?.navigationType  , history)
+      handleDirect(link, element?.navigationType, history, buildConsentHref)
     }
     // if (isZaloLink) {
     //   await setSheetVisible(false)

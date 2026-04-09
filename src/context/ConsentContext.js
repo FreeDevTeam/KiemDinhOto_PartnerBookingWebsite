@@ -1,5 +1,6 @@
 import React from 'react'
 import { SessionStorageManager } from '../helper/localStorage'
+import { mergeUrlParams } from '../helper/params'
 
 export const ConsentContext = React.createContext(null)
 
@@ -10,6 +11,11 @@ const DEFAULT_CONSENT_USER_PROFILE = {
   uuid: '',
   phoneNumber: '',
   fullName: ''
+}
+
+const normalizeUrlParamValue = (value) => {
+  if (value === '' || value === null || value === undefined) return undefined
+  return value
 }
 
 const normalizeConsentMode = (value) => {
@@ -119,15 +125,18 @@ export const ConsentContextProvider = ({ children, initialConsentMode }) => {
     })
   }, [])
 
-  const updateConsentUserProfile = React.useCallback((value) => {
-    setConsentUserProfile((prev) => {
-      const patch = typeof value === 'function' ? value(prev) : value
-      return {
-        ...prev,
-        ...(patch || {})
-      }
-    })
-  }, [setConsentUserProfile])
+  const updateConsentUserProfile = React.useCallback(
+    (value) => {
+      setConsentUserProfile((prev) => {
+        const patch = typeof value === 'function' ? value(prev) : value
+        return {
+          ...prev,
+          ...(patch || {})
+        }
+      })
+    },
+    [setConsentUserProfile]
+  )
 
   const setConsentSessionState = React.useCallback((value) => {
     setConsentState((prev) => {
@@ -170,27 +179,30 @@ export const ConsentContextProvider = ({ children, initialConsentMode }) => {
     })
   }, [])
 
-  const updateConsentSessionState = React.useCallback((value) => {
-    setConsentSessionState((prev) => {
-      const patch = typeof value === 'function' ? value(prev) : value
-      const nextConsentMode = normalizeConsentMode(patch?.consentMode ?? prev.consentMode)
-      const shouldResetAcceptedConsent =
-        patch &&
-        Object.prototype.hasOwnProperty.call(patch, 'consentMode') &&
-        !Object.prototype.hasOwnProperty.call(patch, 'hasAcceptedConsent') &&
-        nextConsentMode !== prev.consentMode
+  const updateConsentSessionState = React.useCallback(
+    (value) => {
+      setConsentSessionState((prev) => {
+        const patch = typeof value === 'function' ? value(prev) : value
+        const nextConsentMode = normalizeConsentMode(patch?.consentMode ?? prev.consentMode)
+        const shouldResetAcceptedConsent =
+          patch &&
+          Object.prototype.hasOwnProperty.call(patch, 'consentMode') &&
+          !Object.prototype.hasOwnProperty.call(patch, 'hasAcceptedConsent') &&
+          nextConsentMode !== prev.consentMode
 
-      return {
-        ...prev,
-        ...(patch || {}),
-        ...(shouldResetAcceptedConsent
-          ? {
-              hasAcceptedConsent: false
-            }
-          : {})
-      }
-    })
-  }, [setConsentSessionState])
+        return {
+          ...prev,
+          ...(patch || {}),
+          ...(shouldResetAcceptedConsent
+            ? {
+                hasAcceptedConsent: false
+              }
+            : {})
+        }
+      })
+    },
+    [setConsentSessionState]
+  )
 
   const hydrateConsentSession = React.useCallback(() => {
     const nextConsentState = buildInitialConsentState(initialConsentMode)
@@ -212,8 +224,7 @@ export const ConsentContextProvider = ({ children, initialConsentMode }) => {
       const nextConsentSessionState = {
         ...prev.consentSessionState,
         consentMode: normalizedConsentMode,
-        hasAcceptedConsent:
-          prev.consentSessionState.hasAcceptedConsent && prev.consentSessionState.consentMode === normalizedConsentMode,
+        hasAcceptedConsent: prev.consentSessionState.hasAcceptedConsent && prev.consentSessionState.consentMode === normalizedConsentMode,
         isHydrated: true
       }
 
@@ -237,58 +248,80 @@ export const ConsentContextProvider = ({ children, initialConsentMode }) => {
     })
   }, [initialConsentMode])
 
-  const acceptConsentSession = React.useCallback((value) => {
-    const nextConsentUserProfile = value === undefined ? consentState.consentUserProfile : sanitizeConsentUserProfile(value)
-    const nextConsentSessionState = {
-      ...consentState.consentSessionState,
-      hasAcceptedConsent: true,
-      isLoading: false,
-      isHydrated: true
-    }
-
-    if (!isSameConsentUserProfile(consentState.consentUserProfile, nextConsentUserProfile)) {
-      const isProfileSaved = trySetSessionItem(STORAGE_KEY_CONSENT_USER_PROFILE, nextConsentUserProfile)
-      if (!isProfileSaved) {
-        return false
-      }
-    }
-
-    const isSaved = trySetSessionItem(STORAGE_KEY_CONSENT_SESSION_STATE, {
-      consentMode: nextConsentSessionState.consentMode,
-      hasAcceptedConsent: nextConsentSessionState.hasAcceptedConsent,
-      isLoading: nextConsentSessionState.isLoading
-    })
-
-    if (!isSaved) {
-      return false
-    }
-
-    setConsentState((prev) => {
-      const resolvedConsentSessionState = {
-        ...prev.consentSessionState,
+  const acceptConsentSession = React.useCallback(
+    (value) => {
+      const nextConsentUserProfile = value === undefined ? consentState.consentUserProfile : sanitizeConsentUserProfile(value)
+      const nextConsentSessionState = {
+        ...consentState.consentSessionState,
         hasAcceptedConsent: true,
         isLoading: false,
         isHydrated: true
       }
 
-      if (isSameConsentSessionState(prev.consentSessionState, resolvedConsentSessionState)) {
-        return prev
+      if (!isSameConsentUserProfile(consentState.consentUserProfile, nextConsentUserProfile)) {
+        const isProfileSaved = trySetSessionItem(STORAGE_KEY_CONSENT_USER_PROFILE, nextConsentUserProfile)
+        if (!isProfileSaved) {
+          return false
+        }
       }
 
-      return {
-        ...prev,
-        consentUserProfile: nextConsentUserProfile,
-        consentSessionState: resolvedConsentSessionState
-      }
-    })
+      const isSaved = trySetSessionItem(STORAGE_KEY_CONSENT_SESSION_STATE, {
+        consentMode: nextConsentSessionState.consentMode,
+        hasAcceptedConsent: nextConsentSessionState.hasAcceptedConsent,
+        isLoading: nextConsentSessionState.isLoading
+      })
 
-    return true
-  }, [consentState.consentSessionState, consentState.consentUserProfile])
+      if (!isSaved) {
+        return false
+      }
+
+      setConsentState((prev) => {
+        const resolvedConsentSessionState = {
+          ...prev.consentSessionState,
+          hasAcceptedConsent: true,
+          isLoading: false,
+          isHydrated: true
+        }
+
+        if (isSameConsentSessionState(prev.consentSessionState, resolvedConsentSessionState)) {
+          return prev
+        }
+
+        return {
+          ...prev,
+          consentUserProfile: nextConsentUserProfile,
+          consentSessionState: resolvedConsentSessionState
+        }
+      })
+
+      return true
+    },
+    [consentState.consentSessionState, consentState.consentUserProfile]
+  )
+
+  const buildConsentHref = React.useCallback(
+    (href, extraParams = {}) => {
+      const [pathname, rawSearch = ''] = href.split('?')
+      const search = rawSearch ? `?${rawSearch}` : ''
+
+      const queryString = mergeUrlParams(
+        {
+          ...extraParams,
+          uuid: normalizeUrlParamValue(consentState.consentUserProfile?.uuid),
+          phoneNumber: normalizeUrlParamValue(consentState.consentUserProfile?.phoneNumber),
+          fullName: normalizeUrlParamValue(consentState.consentUserProfile?.fullName)
+        },
+        search
+      )
+
+      return queryString ? `${pathname}?${queryString}` : pathname
+    },
+    [consentState.consentUserProfile]
+  )
 
   const contextValue = React.useMemo(() => {
     const { consentUserProfile, consentSessionState } = consentState
-    const isConsentEnabled =
-      consentSessionState.consentMode === 1 || consentSessionState.consentMode === 2 || consentSessionState.consentMode === 3
+    const isConsentEnabled = consentSessionState.consentMode === 1 || consentSessionState.consentMode === 2 || consentSessionState.consentMode === 3
 
     return {
       consentUserProfile,
@@ -300,9 +333,19 @@ export const ConsentContextProvider = ({ children, initialConsentMode }) => {
       setConsentSessionState,
       updateConsentSessionState,
       hydrateConsentSession,
-      acceptConsentSession
+      acceptConsentSession,
+      buildConsentHref
     }
-  }, [acceptConsentSession, consentState, hydrateConsentSession, setConsentSessionState, setConsentUserProfile, updateConsentSessionState, updateConsentUserProfile])
+  }, [
+    acceptConsentSession,
+    consentState,
+    hydrateConsentSession,
+    setConsentSessionState,
+    setConsentUserProfile,
+    updateConsentSessionState,
+    updateConsentUserProfile,
+    buildConsentHref
+  ])
 
   return React.createElement(
     ConsentContext.Provider,

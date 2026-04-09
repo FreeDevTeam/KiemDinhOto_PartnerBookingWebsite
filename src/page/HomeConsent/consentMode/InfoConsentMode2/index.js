@@ -157,9 +157,10 @@ export default function InfoConsentMode2() {
   const [sdkDataState, setSdkDataState] = useState({
     userProfile: {},
     error: false,
-    isLoading: true
+    isLoading: true,
+    isComplete: true,
   })
-  const isSubmitDisabled = !(sdkDataState.isEnoughInfo && confirmTerm)
+  const isSubmitDisabled = !(sdkDataState.isComplete && confirmTerm)
 
   const getDataFromSDK = async () => {
     if (consentSessionState?.isLoading === true) {

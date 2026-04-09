@@ -10,23 +10,26 @@ import { PATH } from '../../constants/router'
 import { PARAM_IFRAME_URL } from '../../constants/params'
 import { encodeLink } from '../../helper/common'
 import { NAVIGATION_TYPE } from '../../constants/global'
+import { useConsentContext } from '../../context/ConsentContext'
 
-export const handleDirect = (link, type, history) => {
+export const handleDirect = (link, type, history, buildConsentHref) => {
+  let linkAppendData = buildConsentHref(link)
   if (type === NAVIGATION_TYPE.DIRECT) {
-    window.location.href = link
+    window.location.href = linkAppendData
   } else if (type === NAVIGATION_TYPE.EXTERNAL) {
-    window.open(link, '_blank')
+    window.open(linkAppendData, '_blank')
   } else {
-    if (!(link?.startsWith("https://") || link?.startsWith("http://"))) {
-      history.push(link)
+    if (!(linkAppendData?.startsWith("https://") || linkAppendData?.startsWith("http://"))) {
+      history.push(linkAppendData)
     } else{
-      history.push(`${PATH.IFRAME_VIEW}?${PARAM_IFRAME_URL}=${encodeLink(link)}`)
+      history.push(`${PATH.IFRAME_VIEW}?${PARAM_IFRAME_URL}=${encodeLink(linkAppendData)}`)
     }
   }
 }
 
 const CLICK_STORAGE_KEY = 'recordClickData'
 export const SliderHome = (props) => {
+  const { buildConsentHref } = useConsentContext()
   const { setting, isLoading, className, tramId, hideNewsFromZaloMiniApp } = props
   const [popupUrl, setPopupUrl] = useState(null)
   const [sheetVisible, setSheetVisible] = useState(false)
@@ -71,7 +74,7 @@ export const SliderHome = (props) => {
       }
 
       if (link) {
-        handleDirect(item?.bannerUrl, item?.bannerNavigationType  , history)
+        handleDirect(item?.bannerUrl, item?.bannerNavigationType  , history, buildConsentHref)
       }
     }
   }

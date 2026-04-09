@@ -3,10 +3,12 @@ import { useHistory } from 'react-router-dom'
 import { useGlobalContext } from '../../context/GlobalContext'
 import './index.scss'
 import { handleDirect } from '../Slider/SliderHome'
+import { useConsentContext } from '../../context/ConsentContext'
 
 const MainButton = ({ setSheetVisible, setDataBtn, list, title, className }) => {
   const history = useHistory()
   const { handleZaloAuthorize, globalState } = useGlobalContext()
+  const { buildConsentHref } = useConsentContext()
   const isAuthorizingRef = useRef(false)
 
   const handleRouter = async (path) => {
@@ -29,7 +31,7 @@ const MainButton = ({ setSheetVisible, setDataBtn, list, title, className }) => 
 
       const isZaloLink = link.includes('zalo.me')
       if (link) {
-        handleDirect(link, element?.navigationType  , history)
+        handleDirect(link, element?.navigationType, history, buildConsentHref)
       }
     } finally {
       isAuthorizingRef.current = false
