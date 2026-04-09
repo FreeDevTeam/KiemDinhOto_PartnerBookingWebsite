@@ -1,4 +1,4 @@
-import { Input, Spin } from 'antd'
+import { Spin } from 'antd'
 import { useState } from 'react'
 import './index.scss'
 import { AutomatedTrafficFineNotificationAuthenticationHideInfo, AutomatedTrafficFineNotificationAuthenticationShowInfo } from '../../../assets/icons'
@@ -8,13 +8,7 @@ const getDisplayValue = (value, hideInfo) => {
   return hideInfo ? '*********' : value
 }
 
-export default function InfoConsentMode2({
-  consentUserProfile,
-  sdkUserProfile,
-  isLoading,
-  onChangePhoneNumber,
-  onChangeFullName
-}) {
+export default function InfoConsentMode2({ sdkUserProfile, isLoading }) {
   const [hideInfo, setHideInfo] = useState(true)
   const hasSdkFullName = !!sdkUserProfile?.fullName?.trim()
   const hasSdkPhoneNumber = !!sdkUserProfile?.phoneNumber?.trim()
@@ -42,29 +36,13 @@ export default function InfoConsentMode2({
             )}
             <div className="AuthenticationInfo_carInfo_item">
               <div className="AuthenticationInfo_carInfo_item_label">Họ tên</div>
-              {hasSdkFullName ? (
-                <div className="AuthenticationInfo_carInfo_item_value">{getDisplayValue(sdkUserProfile.fullName, hideInfo)}</div>
-              ) : (
-                <Input
-                  className="AuthenticationInfo_carInfo_item_input"
-                  placeholder="Nhập họ tên"
-                  value={consentUserProfile?.fullName || ''}
-                  onChange={(event) => onChangeFullName?.(event.target.value)}
-                />
-              )}
+
+              <div className="AuthenticationInfo_carInfo_item_value">{getDisplayValue(sdkUserProfile.fullName, hideInfo)}</div>
             </div>
             <div className="AuthenticationInfo_carInfo_item">
               <div className="AuthenticationInfo_carInfo_item_label">Số điện thoại</div>
-              {hasSdkPhoneNumber ? (
-                <div className="AuthenticationInfo_carInfo_item_value">{getDisplayValue(sdkUserProfile.phoneNumber, hideInfo)}</div>
-              ) : (
-                <Input
-                  className="AuthenticationInfo_carInfo_item_input"
-                  placeholder="Nhập số điện thoại"
-                  value={consentUserProfile?.phoneNumber || ''}
-                  onChange={(event) => onChangePhoneNumber?.(event.target.value)}
-                />
-              )}
+
+              <div className="AuthenticationInfo_carInfo_item_value">{getDisplayValue(sdkUserProfile.phoneNumber, hideInfo)}</div>
             </div>
           </>
         )}

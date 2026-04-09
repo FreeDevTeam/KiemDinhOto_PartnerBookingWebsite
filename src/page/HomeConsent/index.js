@@ -2,13 +2,15 @@ import BaseButton from './components/base/BaseButton'
 import FixedBottom from './components/base/FixedBottom'
 import './index.scss'
 import { Checkbox } from 'antd'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import BasePopupTerm from './components/base/BasePopupTerm'
 import { useConsentContext } from '../../context/ConsentContext'
 import { useGlobalContext } from '../../context/GlobalContext'
-import { getGtelpayUserInfo } from '../../context/GtelpayContext'
+import { useAppParamsContext } from '../../context/AppParamsContext'
 import InfoConsentMode1 from './conponents/ConsentMode/InfoConsentMode1'
 import InfoConsentMode2 from './conponents/ConsentMode/InfoConsentMode2'
+import InfoConsentMode3 from './conponents/ConsentMode/InfoConsentMode3'
+import { EMPTY_MODE2_USER_PROFILE, getActiveMode2PartnerFlow, resetMode2PartnerFlow, resolveMode2PartnerData } from './mode2PartnerFlow'
 // import { PATH } from '../../constants/router'
 
 const termsData = [
@@ -148,11 +150,28 @@ const termsData = [
 
 const CONSENT_MODE_1 = 1
 const CONSENT_MODE_2 = 2
+const CONSENT_MODE_3 = 3
 
-const EMPTY_SDK_USER_PROFILE = {
-  uuid: '',
-  phoneNumber: '',
-  fullName: ''
+const MODE2_FIELD_LABELS = {
+  fullName: 'Họ tên',
+  phoneNumber: 'Số điện thoại',
+  uuid: 'UUID'
+}
+
+const createInitialMode2ConsentState = () => {
+  return {
+    partnerKey: '',
+    partnerLabel: '',
+    userProfile: {
+      ...EMPTY_MODE2_USER_PROFILE
+    },
+    requiredParams: {},
+    missingUserProfileFields: [],
+    missingRequiredParams: [],
+    errorMessage: '',
+    hasLoaded: false,
+    isComplete: false
+  }
 }
 
 const normalizeProfileValue = (value) => {
@@ -160,11 +179,11 @@ const normalizeProfileValue = (value) => {
   return ''
 }
 
-const mapGtelpayUserProfile = (userInfo) => {
+const getTrimmedConsentUserProfile = (value) => {
   return {
-    uuid: normalizeProfileValue(userInfo?.uuid || userInfo?.rawData?.uuid),
-    phoneNumber: normalizeProfileValue(userInfo?.phoneNumber),
-    fullName: normalizeProfileValue(userInfo?.fullName)
+    uuid: normalizeProfileValue(value?.uuid).trim(),
+    phoneNumber: normalizeProfileValue(value?.phoneNumber).trim(),
+    fullName: normalizeProfileValue(value?.fullName).trim()
   }
 }
 
@@ -172,96 +191,167 @@ export default function HomeConsent() {
   const [confirmTerm, setConfirmTerm] = useState(false)
   const [confirmTermSheetVisible, setConfirmTermSheetVisible] = useState(false)
   const [submitError, setSubmitError] = useState(false)
-  const [sdkUserProfile, setSdkUserProfile] = useState(EMPTY_SDK_USER_PROFILE)
-  const hasLoadedMode2UserInfoRef = useRef(false)
+  const [mode2ConsentState, setMode2ConsentState] = useState(() => createInitialMode2ConsentState())
+  const latestMode2ContextRef = useRef(null)
+  const mode2RequestIdRef = useRef(0)
 
+  const appParams = useAppParamsContext()
   const { globalState, handleGetUserPhone, handleGetUserName } = useGlobalContext()
   const { acceptConsentSession, consentSessionState, consentUserProfile, updateConsentSessionState, updateConsentUserProfile } = useConsentContext()
 
   const consentMode = consentSessionState?.consentMode
   const isConsentMode1 = consentMode === CONSENT_MODE_1
   const isConsentMode2 = consentMode === CONSENT_MODE_2
+  const isConsentMode3 = consentMode === CONSENT_MODE_3
   const isConsentLoading = consentSessionState?.isLoading === true
 
   useEffect(() => {
-    if (!isConsentMode2 || hasLoadedMode2UserInfoRef.current) return
+    latestMode2ContextRef.current = {
+      appParams,
+      globalState,
+      handleGetUserName,
+      handleGetUserPhone,
+      search: window.location.search
+    }
+  }, [appParams, globalState, handleGetUserName, handleGetUserPhone])
 
-    hasLoadedMode2UserInfoRef.current = true
-    let isMounted = true
+  useEffect(() => {
+    return () => {
+      mode2RequestIdRef.current += 1
+    }
+  }, [])
 
-    const loadMode2UserInfo = async () => {
+  const loadMode2PartnerInfo = useCallback(
+    async ({ shouldResetFlow = false } = {}) => {
+      const requestId = mode2RequestIdRef.current + 1
+      const activeFlow = getActiveMode2PartnerFlow()
+
+      mode2RequestIdRef.current = requestId
+      setSubmitError(false)
+      setMode2ConsentState((prev) => ({
+        ...prev,
+        errorMessage: ''
+      }))
       updateConsentSessionState({ isLoading: true })
 
       try {
-        let nextSdkUserProfile = EMPTY_SDK_USER_PROFILE
-        const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1
-
-        if (isZaloApp) {
-          let fullName = normalizeProfileValue(globalState?.userName)
-          let phoneNumber = normalizeProfileValue(globalState?.phoneNumber)
-
-          if (!fullName) {
-            try {
-              fullName = normalizeProfileValue(await handleGetUserName())
-            } catch (error) {}
-          }
-
-          if (!phoneNumber) {
-            try {
-              phoneNumber = normalizeProfileValue(await handleGetUserPhone())
-            } catch (error) {}
-          }
-
-          nextSdkUserProfile = {
-            ...EMPTY_SDK_USER_PROFILE,
-            fullName,
-            phoneNumber
-          }
-        } else {
-          const gtelpayUserInfo = await getGtelpayUserInfo()
-
-          if (gtelpayUserInfo) {
-            nextSdkUserProfile = mapGtelpayUserProfile(gtelpayUserInfo)
-          }
+        if (shouldResetFlow) {
+          await resetMode2PartnerFlow()
         }
 
-        if (!isMounted) return
+        const result = await resolveMode2PartnerData(latestMode2ContextRef.current || {})
 
-        setSdkUserProfile(nextSdkUserProfile)
-        updateConsentUserProfile((prev) => ({
-          ...prev,
-          uuid: nextSdkUserProfile.uuid || prev.uuid,
-          phoneNumber: nextSdkUserProfile.phoneNumber || prev.phoneNumber,
-          fullName: nextSdkUserProfile.fullName || prev.fullName
-        }))
+        if (mode2RequestIdRef.current !== requestId) {
+          return false
+        }
+
+        setMode2ConsentState({
+          partnerKey: result.flow.key,
+          partnerLabel: result.flow.label,
+          userProfile: result.userProfile,
+          requiredParams: result.requiredParams,
+          missingUserProfileFields: result.missingUserProfileFields,
+          missingRequiredParams: result.missingRequiredParams,
+          errorMessage: '',
+          hasLoaded: true,
+          isComplete: result.isComplete
+        })
+        updateConsentUserProfile(result.userProfile)
+
+        return true
       } catch (error) {
-        console.error('HomeConsent: failed to load consent mode 2 user info', error)
+        console.error('HomeConsent: failed to load consent mode 2 partner info', error)
 
-        if (!isMounted) return
+        if (mode2RequestIdRef.current !== requestId) {
+          return false
+        }
 
-        setSdkUserProfile(EMPTY_SDK_USER_PROFILE)
+        setMode2ConsentState({
+          ...createInitialMode2ConsentState(),
+          partnerKey: activeFlow.key,
+          partnerLabel: activeFlow.label,
+          hasLoaded: true,
+          errorMessage: activeFlow.label
+            ? `Không thể lấy thông tin từ ${activeFlow.label}. Vui lòng thử lại.`
+            : 'Không thể lấy thông tin từ đối tác. Vui lòng thử lại.'
+        })
+        updateConsentUserProfile({
+          ...EMPTY_MODE2_USER_PROFILE
+        })
+
+        return false
       } finally {
-        if (!isMounted) return
-
-        updateConsentSessionState({ isLoading: false })
+        if (mode2RequestIdRef.current === requestId) {
+          updateConsentSessionState({ isLoading: false })
+        }
       }
+    },
+    [updateConsentSessionState, updateConsentUserProfile]
+  )
+
+  useEffect(() => {
+    if (!isConsentMode2) {
+      mode2RequestIdRef.current += 1
+      setMode2ConsentState(createInitialMode2ConsentState())
+      updateConsentSessionState({ isLoading: false })
+      return
     }
 
-    loadMode2UserInfo()
+    loadMode2PartnerInfo()
+  }, [isConsentMode2, loadMode2PartnerInfo, updateConsentSessionState])
 
-    return () => {
-      isMounted = false
-    }
-  }, [globalState?.phoneNumber, globalState?.userName, handleGetUserName, handleGetUserPhone, isConsentMode2, updateConsentSessionState, updateConsentUserProfile])
+  const trimmedConsentUserProfile = useMemo(() => {
+    return getTrimmedConsentUserProfile(consentUserProfile)
+  }, [consentUserProfile])
 
   const isMode2SubmitEnabled = useMemo(() => {
     if (!isConsentMode2) return false
+    return mode2ConsentState.isComplete && confirmTerm
+  }, [confirmTerm, isConsentMode2, mode2ConsentState.isComplete])
 
-    const fullName = normalizeProfileValue(consentUserProfile?.fullName).trim()
-    const phoneNumber = normalizeProfileValue(consentUserProfile?.phoneNumber).trim()
+  const isMode3SubmitEnabled = useMemo(() => {
+    if (!isConsentMode3) return false
 
-    return !!fullName && !!phoneNumber && confirmTerm
-  }, [confirmTerm, consentUserProfile?.fullName, consentUserProfile?.phoneNumber, isConsentMode2])
+    return !!trimmedConsentUserProfile.fullName && !!trimmedConsentUserProfile.phoneNumber && confirmTerm
+  }, [confirmTerm, isConsentMode3, trimmedConsentUserProfile.fullName, trimmedConsentUserProfile.phoneNumber])
+
+  const mode2StatusMessage = useMemo(() => {
+    if (!isConsentMode2 || !mode2ConsentState.hasLoaded || isConsentLoading || mode2ConsentState.isComplete) {
+      return ''
+    }
+
+    const partnerLabel = mode2ConsentState.partnerLabel ? ` từ ${mode2ConsentState.partnerLabel}` : ' từ đối tác'
+
+    if (mode2ConsentState.errorMessage) {
+      return mode2ConsentState.errorMessage
+    }
+
+    const missingFields = [
+      ...mode2ConsentState.missingUserProfileFields.map((field) => MODE2_FIELD_LABELS[field] || field),
+      ...mode2ConsentState.missingRequiredParams
+    ]
+
+    if (missingFields.length > 0) {
+      return `Thiếu dữ liệu bắt buộc${partnerLabel}: ${missingFields.join(', ')}.`
+    }
+
+    return `Không thể lấy đầy đủ thông tin${partnerLabel}. Vui lòng thử lại.`
+  }, [
+    isConsentLoading,
+    isConsentMode2,
+    mode2ConsentState.errorMessage,
+    mode2ConsentState.hasLoaded,
+    mode2ConsentState.isComplete,
+    mode2ConsentState.partnerLabel,
+    mode2ConsentState.missingRequiredParams,
+    mode2ConsentState.missingUserProfileFields
+  ])
+
+  const shouldShowMode2Retry = isConsentMode2 && mode2ConsentState.hasLoaded && !isConsentLoading && !mode2ConsentState.isComplete
+
+  const handleRetryMode2 = useCallback(() => {
+    loadMode2PartnerInfo({ shouldResetFlow: true })
+  }, [loadMode2PartnerInfo])
 
   const handleChangeConsentProfileField = (field, value) => {
     setSubmitError(false)
@@ -287,11 +377,15 @@ export default function HomeConsent() {
         return
       }
 
-      isSuccess = acceptConsentSession({
-        uuid: normalizeProfileValue(sdkUserProfile?.uuid || consentUserProfile?.uuid).trim(),
-        phoneNumber: normalizeProfileValue(consentUserProfile?.phoneNumber).trim(),
-        fullName: normalizeProfileValue(consentUserProfile?.fullName).trim()
-      })
+      isSuccess = acceptConsentSession(mode2ConsentState.userProfile)
+    }
+
+    if (isConsentMode3) {
+      if (!isMode3SubmitEnabled) {
+        return
+      }
+
+      isSuccess = acceptConsentSession(trimmedConsentUserProfile)
     }
 
     if (!isSuccess) {
@@ -299,20 +393,37 @@ export default function HomeConsent() {
     }
   }
 
+  const renderConsentModeInfo = () => {
+    if (isConsentMode2) {
+      return <InfoConsentMode2 sdkUserProfile={mode2ConsentState.userProfile} isLoading={isConsentLoading} />
+    }
+
+    if (isConsentMode3) {
+      return (
+        <InfoConsentMode3
+          consentUserProfile={consentUserProfile}
+          isLoading={false}
+          onChangeFullName={(value) => handleChangeConsentProfileField('fullName', value)}
+          onChangePhoneNumber={(value) => handleChangeConsentProfileField('phoneNumber', value)}
+        />
+      )
+    }
+
+    return <InfoConsentMode1 />
+  }
+
+  const isSubmitDisabled = isConsentMode2 ? !isMode2SubmitEnabled : isConsentMode3 ? !isMode3SubmitEnabled : !confirmTerm
+
   return (
     <div style={{ maxWidth: 600, margin: 'auto', minHeight: '100vh' }}>
       {/* <HeaderPartner title="Xác nhận thông tin" /> */}
       <div className="AutomatedTrafficFineNotificationAuthentication">
-        {isConsentMode2 ? (
-          <InfoConsentMode2
-            consentUserProfile={consentUserProfile}
-            sdkUserProfile={sdkUserProfile}
-            isLoading={isConsentLoading}
-            onChangeFullName={(value) => handleChangeConsentProfileField('fullName', value)}
-            onChangePhoneNumber={(value) => handleChangeConsentProfileField('phoneNumber', value)}
-          />
-        ) : (
-          <InfoConsentMode1 />
+        {renderConsentModeInfo()}
+        {shouldShowMode2Retry && (
+          <div className="AutomatedTrafficFineNotificationAuthentication_retry">
+            {mode2StatusMessage && <div className="AutomatedTrafficFineNotificationAuthentication_retryMessage">{mode2StatusMessage}</div>}
+            <BaseButton onClick={handleRetryMode2}>Thử lại</BaseButton>
+          </div>
         )}
       </div>
 
@@ -341,7 +452,7 @@ export default function HomeConsent() {
                 Không thể lưu xác nhận. Vui lòng thử lại.
               </div>
             )}
-            <BaseButton disabled={isConsentMode2 ? !isMode2SubmitEnabled : !confirmTerm} onClick={handleSubmitConsent}>
+            <BaseButton disabled={isSubmitDisabled} onClick={handleSubmitConsent}>
               Tiếp theo
             </BaseButton>
           </>

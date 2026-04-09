@@ -15,6 +15,7 @@ const DEFAULT_CONSENT_USER_PROFILE = {
 const normalizeConsentMode = (value) => {
   if (value === 1 || value === '1') return 1
   if (value === 2 || value === '2') return 2
+  if (value === 3 || value === '3') return 3
   return undefined
 }
 
@@ -286,7 +287,8 @@ export const ConsentContextProvider = ({ children, initialConsentMode }) => {
 
   const contextValue = React.useMemo(() => {
     const { consentUserProfile, consentSessionState } = consentState
-    const isConsentEnabled = consentSessionState.consentMode === 1 || consentSessionState.consentMode === 2
+    const isConsentEnabled =
+      consentSessionState.consentMode === 1 || consentSessionState.consentMode === 2 || consentSessionState.consentMode === 3
 
     return {
       consentUserProfile,
