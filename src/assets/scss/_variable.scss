@@ -233,7 +233,7 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --bg-floating: #ffffff;
 
   /* TEXT COLORS – HIERARCHY */
-  --text-primary: #222222;
+  --text-primary: #000000;
   --text-secondary: #7a7a7a;
   --text-tertiary: #909090;
   --text-placeholder: #7a7a7a;
@@ -243,22 +243,22 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   /* BORDER & DIVIDER */
   --border-default: #e9e9e9;
   --border-hover: #e9e9e9;
-  --border-focus: #ee0033;
+  --border-focus: #0e57b7;
   --border-disabled: #f1f1f1;
   --divider: #ededed;
 
   /* BRAND / ACCENT */
-  --brand-primary: #ee0033;
-  --brand-primary-hover: #ee0033;
-  --brand-primary-soft: #ffdbdb;
+  --brand-primary: #0e57b7;
+  --brand-primary-hover: #0e57b7;
+  --brand-primary-soft: #4b7fed;
 
   /* BUTTON */
   --btn-primary-bg: var(--brand-primary);
   --btn-primary-bg-hover: var(--brand-primary-hover);
   --btn-primary-text: var(--text-inverse);
-  --btn-secondary-bg: #ffdbdb;
-  --btn-secondary-bg-hover: #ffdbdb;
-  --btn-secondary-text: #ee0033;
+  --btn-secondary-bg: #4b7fed;
+  --btn-secondary-bg-hover: #4b7fed;
+  --btn-secondary-text: #ffffff;
   --btn-danger-bg: #ff5f61;
   --btn-danger-text: #ffffff;
 
@@ -284,7 +284,7 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --icon-default: #909090;
   --icon-muted: #a9a9a9;
   --icon-disabled: #909090;
-  --icon-brand: #ee0033;
+  --icon-brand: #0e57b7;
   --icon-inverse: var(--text-inverse);
 
   /* LOADING / SKELETON */

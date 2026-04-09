@@ -427,7 +427,7 @@ export default function HomeConsent() {
         )}
       </div>
 
-      <FixedBottom elementPaddingBottom={'LayoutPartner'}>
+      {/* <FixedBottom elementPaddingBottom={'LayoutPartner'}>
         {!isConsentLoading && (
           <>
             <div style={{ marginBottom: '12px' }}>
@@ -482,7 +482,7 @@ export default function HomeConsent() {
             </div>
           ))}
         </div>
-      </BasePopupTerm>
+      </BasePopupTerm> */}
     </div>
   )
 }
