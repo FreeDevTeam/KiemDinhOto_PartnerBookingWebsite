@@ -1,4 +1,5 @@
 import { parseFromLocalStorage } from '../../../helper/localStorage'
+import { getDataSDKFromF88 } from './sdkF88'
 import { getDataSDKFromVnpay } from './sdkVnpay'
 
 export const getDataUserFromSDK = async () => {
@@ -11,13 +12,13 @@ export const getDataUserFromSDK = async () => {
       }
     }
     if (parseFromLocalStorage(process.env.REACT_APP_MINIAPP_F88) === 1 || parseFromLocalStorage(process.env.REACT_APP_MINIAPP_F88) === true) {
-      const { data, error } = await getDataSDKFromVnpay()
+      const { data, error } = await getDataSDKFromF88()
       return {
         data,
         error
       }
     }
-    return{
+    return {
       data: {
         fullName: 'Nam Nguyễn',
         phoneNumber: '07464648',
