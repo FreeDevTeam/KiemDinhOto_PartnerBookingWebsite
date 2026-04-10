@@ -21,8 +21,8 @@ export const getDataUserFromSDK = async () => {
     return {
       data: {
         fullName: 'Nam Nguyễn',
-        phoneNumber: '07464648',
-        uuid: '12345677'
+        phoneNumber: '0978745645',
+        uuid: '00000011231'
       },
       error: false
     }
