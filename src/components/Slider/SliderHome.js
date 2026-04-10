@@ -7,17 +7,18 @@ import addKeyLocalStorage, { saveClickToLocalStorage } from '../../helper/localS
 import LogService from '../../services/logService'
 import { useHistory } from 'react-router-dom'
 import { PATH } from '../../constants/router'
-import { PARAM_IFRAME_URL } from '../../constants/params'
+import { PARAM_BACK_TO_HOME_MINI_APP_URL, PARAM_IFRAME_URL } from '../../constants/params'
 import { encodeLink } from '../../helper/common'
 import { NAVIGATION_TYPE } from '../../constants/global'
 import { useConsentContext } from '../../context/ConsentContext'
 
 export const handleDirect = (link, type, history, buildConsentHref) => {
-  let linkAppendData = buildConsentHref(link)
+  const linkAppendData = buildConsentHref(link)
+  const linkAppendDataHref = buildConsentHref(link, { [PARAM_BACK_TO_HOME_MINI_APP_URL]: encodeLink(window.location.href) })
   if (type === NAVIGATION_TYPE.DIRECT) {
-    window.location.href = linkAppendData
+    window.location.href = linkAppendDataHref
   } else if (type === NAVIGATION_TYPE.EXTERNAL) {
-    window.open(linkAppendData, '_blank')
+    window.open(linkAppendDataHref, '_blank')
   } else {
     if (!(linkAppendData?.startsWith("https://") || linkAppendData?.startsWith("http://"))) {
       history.push(linkAppendData)

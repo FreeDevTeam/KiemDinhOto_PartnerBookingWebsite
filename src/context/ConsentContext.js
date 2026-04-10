@@ -307,9 +307,9 @@ export const ConsentContextProvider = ({ children, initialConsentMode }) => {
       const queryString = mergeUrlParams(
         {
           ...extraParams,
-          uuid: normalizeUrlParamValue(consentState.consentUserProfile?.uuid),
-          phoneNumber: normalizeUrlParamValue(consentState.consentUserProfile?.phoneNumber),
-          fullName: normalizeUrlParamValue(consentState.consentUserProfile?.fullName)
+          sdkUsername: normalizeUrlParamValue(consentState.consentUserProfile?.uuid),
+          sdkPhoneNumber: normalizeUrlParamValue(consentState.consentUserProfile?.phoneNumber),
+          sdkFullName: normalizeUrlParamValue(consentState.consentUserProfile?.fullName)
         },
         search
       )
