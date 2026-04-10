@@ -402,6 +402,43 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   // ...Thêm biến sáng 
 }
 
+[data-theme='F88'] {
+  --primary-gradient: linear-gradient(138.28deg, #fdb813 10.08%, #00844a 90.4%);
+  --primary-color: #00844a;
+  --hover-color: #e6f7ff;
+  --gray-color: grey;
+  --transparent-color: transparent;
+  --title-color: #00844a;
+  --primary-button-color: #00844a;
+  --stop-receiving-color: #aa8934;
+  --error-btn-color: #ff1001;
+  --step-line-booking: #fdb813;
+  --step-line-booking-opacity30: rgba(24, 144, 255, 0.18823529411764706);
+  --float-btn-color: #fdb813;
+  --attention-color: #34aa44;
+  --blue-ribbon: #34aa44;
+
+  /* BORDER & DIVIDER */
+  --border-focus: #00844a;
+
+  /* BRAND / ACCENT */
+  --brand-primary: #00844a;
+  --brand-primary-hover: #00844a;
+  --brand-primary-soft: #34aa44;
+
+  /* BUTTON */
+  --btn-primary-bg: var(--brand-primary);
+  --btn-primary-bg-hover: var(--brand-primary-hover);
+  --btn-primary-text: var(--text-inverse);
+  --btn-secondary-bg: #34aa44;
+  --btn-secondary-bg-hover: #00844a;
+  --input-text: var(--text-primary);
+
+  /* ICON */
+  --icon-brand: #00844a;
+  --icon-inverse: var(--text-inverse);
+}
+
 // Màu sắc cho chủ đề tối
 body.dark {
   --primary-color: #0e57b7; // Màu chính cho chủ đề tối
