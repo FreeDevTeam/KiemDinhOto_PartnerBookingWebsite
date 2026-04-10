@@ -6,7 +6,7 @@ import { Form, Input, Button, Spin, Select as SelectAntd, Row, Col } from 'antd'
 import BookingSuccess from '../BookingPartner/BookingSuccessModal'
 import PopupMessage from '../BookingPartner/PopupMessage'
 import { changeTime } from '../../helper/changeTime'
-import { validatorPlateNumber } from './../../helper/validatorPlateNumber'
+import { validatorPlateNumber, normalizePlate } from './../../helper/validatorPlateNumber'
 import { CONSULTANT_TYPE, optionServiceType, SCHEDULE_TITLE, SCHEDULE_TYPE_MINIAPP } from '../../constants/serviceOption'
 import {
   PLATE_COLOR,
@@ -617,7 +617,7 @@ function UpdateBookingDetail({ }) {
         licensePlateColor: dataBookingParam.licensePlateColor || licensePlateColorList[0]?.value,
         vehicleSubCategory: dataBookingParam.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
         certificateSeries: dataBookingParam.certificateSeries || undefined,
-        licensePlates: dataBookingParam.licensePlates || undefined,
+        licensePlates: normalizePlate(dataBookingParam.licensePlates) || undefined,
         vntId: dataBookingParam.stationArea || undefined,
         stationsId: dataBookingParam.stationsId || undefined,
         time: dataBookingParam.time || undefined,
@@ -724,7 +724,7 @@ function UpdateBookingDetail({ }) {
                 type="text"
                 size="large"
                 onInput={(e) => {
-                  e.target.value = e.target.value.toUpperCase().replace(/\s/g, '')
+                  e.target.value = normalizePlate(e.target.value)
                 }}
               />
             </Form.Item>

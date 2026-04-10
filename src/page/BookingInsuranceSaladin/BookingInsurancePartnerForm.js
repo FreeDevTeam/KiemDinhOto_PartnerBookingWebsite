@@ -7,7 +7,7 @@ import { PLATE_COLOR, TTDK_INSURANCE_PARTNER, VEHICLE_SUB_TYPE } from '../../con
 import { SCHEDULE_ERROR } from '../../constants/errorMessage'
 import { useLocation } from 'react-router-dom'
 import addKeyLocalStorage from '../../helper/localStorage'
-import { validatorPlateNumber } from '../../helper/validatorPlateNumber'
+import { validatorPlateNumber, normalizePlate } from '../../helper/validatorPlateNumber'
 import PopupMessage from '../BookingPartner/PopupMessage'
 import BookingSuccess from '../BookingPartner/BookingSuccessModal'
 import redirectToInsurancePartner from './redirectToInsurancePartner'
@@ -82,7 +82,7 @@ function BookingInsuranceSaladinForm({form, setTabKey, zaloUserName,zaloUserPhon
   const onFinish = (values) => {
     setIsLoading(true)
     const newData = {
-      licensePlates: values.licensePlates.toUpperCase(),
+      licensePlates: normalizePlate(values.licensePlates),
       phone: values.phone,
       fullnameSchedule: values.fullnameSchedule.trim(),
       email: values.email,
@@ -297,16 +297,16 @@ function BookingInsuranceSaladinForm({form, setTabKey, zaloUserName,zaloUserPhon
                 }
                 ]}>
               <div className="login__input__icon">
-                <Input defaultValue={dataBookingParam?.licensePlates?.toUpperCase() || dataLocal?.licensePlates?.toUpperCase()} 
+                <Input defaultValue={normalizePlate(dataBookingParam?.licensePlates || dataLocal?.licensePlates)}
                   className="login__input booking-input" 
                   style={{textTransform:'uppercase'}} 
                   placeholder="59B16856" 
                   type="text" 
                   // readOnly={dataVihcle?.vehicleIdentity}
                   size="large"
-                  onInput={(e)=>{
-                    e.target.value = e.target.value.toUpperCase().replace(/\s/g, '')
-                    saveDataLocal('licensePlates',e.target.value)
+                  onInput={(e) => {
+                    e.target.value = normalizePlate(e.target.value)
+                    saveDataLocal('licensePlates', e.target.value)
                   }} />
               </div>
             </Form.Item>
