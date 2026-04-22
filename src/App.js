@@ -27,7 +27,7 @@ export const baseName = IS_ZALO_MINI_APP ? `/zapps/${process.env.REACT_APP_ZMP_A
 function App() {
   // Kiểm tra xem có APIKey trong URL không cho tính năng tự động đặt lịch
   const urlParams = new URLSearchParams(window.location.search);
-  const apiKey = urlParams.get('apiKey') || urlParams.get('apikey') || process.env.REACT_APP_APIKEY || undefined;
+  const apiKey = urlParams.get('apiKey') || urlParams.get('apikey') || localStorage.getItem('apiKey') || process.env.REACT_APP_APIKEY || undefined;
   if(apiKey) {
     localStorage.setItem('apiKey', apiKey)
   }
@@ -42,7 +42,7 @@ function App() {
   
   const handleCheckApiKey = ()=>{
     const params = getQueryParams()
-    const API_KEY = params?.apiKey || params?.apikey || process.env.REACT_APP_APIKEY
+    const API_KEY = params?.apiKey || params?.apikey || localStorage.getItem('apiKey') || process.env.REACT_APP_APIKEY
     if(!API_KEY){
       // const domain = 'dangkiem1406D.ttdk.com.vn' // dùng cho trường hợp localhost
       const domain = window.location.origin.split('//')[1]
@@ -58,7 +58,7 @@ function App() {
   const getStationConfigByApiKeyAndSetTheme = async () => {
     const apiKeyLocal = (JSON.parse(localStorage.getItem(addKeyLocalStorage('dataTheme'))) || {})?.apiKey
     const params = getQueryParams()
-    const apiKey = params?.apiKey || params?.apikey || process.env.REACT_APP_APIKEY
+    const apiKey = params?.apiKey || params?.apikey || localStorage.getItem('apiKey') || process.env.REACT_APP_APIKEY
     if (apiKeyLocal !== apiKey || !apiKey) {
       localStorage.removeItem(addKeyLocalStorage('dataTheme'))
     }
