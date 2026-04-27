@@ -1,5 +1,5 @@
-import { Checkbox, Spin } from 'antd'
-import { useCallback, useEffect, useState } from 'react'
+import { Checkbox } from 'antd'
+import { useState } from 'react'
 import './index.scss'
 import { AutomatedTrafficFineNotificationAuthenticationHideInfo, AutomatedTrafficFineNotificationAuthenticationShowInfo } from '../../assets/icons'
 import Header from '../../../../components/Header'
@@ -7,8 +7,6 @@ import { useConsentContext } from '../../../../context/ConsentContext'
 import FixedBottom from '../../components/base/FixedBottom'
 import BaseButton from '../../components/base/BaseButton'
 import BasePopupTerm from '../../components/base/BasePopupTerm'
-import { getDataUserFromSDK } from '../../sdkPartnerGetData'
-import MainLogo from '../../../../components/MainLogo'
 
 const termsData = [
   {
@@ -150,87 +148,19 @@ const getDisplayValue = (value, hideInfo) => {
   return hideInfo ? '*********' : value
 }
 
-const checkIsCompleteUserProfile = (userProfile) => {
-  return Boolean(userProfile?.fullName?.trim() && userProfile?.phoneNumber?.trim())
-}
-
 export default function InfoConsentMode2() {
-  const { acceptConsentSession, consentSessionState, consentUserProfile, updateConsentSessionState, setConsentUserProfile } = useConsentContext()
+  const { acceptConsentSession, consentSessionState } = useConsentContext()
   const [hideInfo, setHideInfo] = useState(true)
   const [confirmTerm, setConfirmTerm] = useState(false)
   const [confirmTermSheetVisible, setConfirmTermSheetVisible] = useState(false)
-  const [sdkDataState, setSdkDataState] = useState({
-    userProfile: consentUserProfile || {},
-    error: false,
-    isLoading: !checkIsCompleteUserProfile(consentUserProfile),
-    isComplete: checkIsCompleteUserProfile(consentUserProfile)
-  })
-  const isSubmitDisabled = !(sdkDataState.isComplete && confirmTerm) || sdkDataState.isLoading || consentSessionState?.isLoading === true
-
-  const getDataFromSDK = useCallback(async () => {
-    if (checkIsCompleteUserProfile(consentUserProfile)) {
-      setSdkDataState({
-        userProfile: consentUserProfile,
-        error: false,
-        isLoading: false,
-        isComplete: true
-      })
-      return
-    }
-
-    setSdkDataState((prev) => ({
-      ...prev,
-      error: false,
-      isLoading: true
-    }))
-
-    updateConsentSessionState({
-      isLoading: true
-    })
-
-    try {
-      const { data, error } = await getDataUserFromSDK()
-      const nextUserProfile = data || {}
-      const isComplete = checkIsCompleteUserProfile(nextUserProfile)
-
-      if (isComplete) {
-        setConsentUserProfile(nextUserProfile)
-      }
-
-      setSdkDataState({
-        userProfile: isComplete ? nextUserProfile : {},
-        error: error || !isComplete,
-        isLoading: false,
-        isComplete
-      })
-
-      updateConsentSessionState({
-        isLoading: false
-      })
-    } catch (error) {
-      setSdkDataState((prev) => ({
-        ...prev,
-        error: true,
-        isLoading: false,
-        isComplete: false
-      }))
-
-      updateConsentSessionState({
-        isLoading: false
-      })
-    }
-  }, [consentUserProfile, setConsentUserProfile, updateConsentSessionState])
-
-  useEffect(() => {
-    getDataFromSDK()
-  }, [getDataFromSDK])
+  const isSubmitDisabled = !confirmTerm
 
   return (
     <div>
       {process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE && <Header title={'Xác nhận thông tin'} onBack={() => {}} />}
       <div className="HomeConsentLaypout">
         <div className="InfoConsentMode2">
-          <MainLogo className="InfoConsentMode2_img" />
+          <img className="InfoConsentMode2_img" src={'/logo.png'} alt="" />
           <div className="InfoConsentMode2_attention">Các dữ liệu sau sẽ được chia sẻ, xử lý với hệ thống tra cứu và thông báo phạt nguội:</div>
           <div className="InfoConsentMode2_carInfo">
             <div className="InfoConsentMode2_carInfo_hideInfo" onClick={() => setHideInfo(!hideInfo)}>
@@ -243,19 +173,9 @@ export default function InfoConsentMode2() {
             </div>
             <div className="InfoConsentMode2_carInfo_item">
               <div className="InfoConsentMode2_carInfo_item_label">Họ tên</div>
-              {consentSessionState?.isLoading === true || sdkDataState?.isLoading ? (
-                <Spin size="small" />
-              ) : (
-                <div className="InfoConsentMode2_carInfo_item_value">{getDisplayValue(sdkDataState?.userProfile?.fullName, hideInfo)}</div>
-              )}
             </div>
             <div className="InfoConsentMode2_carInfo_item">
               <div className="InfoConsentMode2_carInfo_item_label">Số điện thoại</div>
-              {consentSessionState?.isLoading === true || sdkDataState?.isLoading ? (
-                <Spin size="small" />
-              ) : (
-                <div className="InfoConsentMode2_carInfo_item_value">{getDisplayValue(sdkDataState?.userProfile?.phoneNumber, hideInfo)}</div>
-              )}
             </div>
           </div>
           <div className="InfoConsentMode2_purpose">
@@ -264,7 +184,6 @@ export default function InfoConsentMode2() {
               Các trường thông tin trên được chia sẻ để phục vụ đánh giá và cung cấp các sản phẩm, dịch vụ cho Quý khách.
             </p>
           </div>
-          {sdkDataState?.error && <button onClick={getDataFromSDK}>Thử lại</button>}
         </div>
       </div>
       <FixedBottom elementPaddingBottom={'LayoutPartner'}>
@@ -288,10 +207,7 @@ export default function InfoConsentMode2() {
         <BaseButton
           disabled={isSubmitDisabled}
           onClick={() => {
-            if (!sdkDataState.isComplete) {
-              return
-            }
-            acceptConsentSession(sdkDataState.userProfile)
+            acceptConsentSession({})
           }}>
           Tiếp theo
         </BaseButton>

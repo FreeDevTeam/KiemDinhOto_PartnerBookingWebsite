@@ -8,7 +8,6 @@ import FixedBottom from '../../components/base/FixedBottom'
 import BaseButton from '../../components/base/BaseButton'
 import BasePopupTerm from '../../components/base/BasePopupTerm'
 import { getDataUserFromSDK } from '../../sdkPartnerGetData'
-import MainLogo from '../../../../components/MainLogo'
 
 const termsData = [
   {
@@ -227,7 +226,7 @@ export default function InfoConsentMode2() {
       {process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE && <Header title={'Xác nhận thông tin'} onBack={() => {}} />}
       <div className="HomeConsentLaypout">
         <div className="InfoConsentMode2">
-          <MainLogo className="InfoConsentMode2_img" />
+          <img className="InfoConsentMode2_img" src={'/logo.png'} alt="" />
           <div className="InfoConsentMode2_attention">Các dữ liệu sau sẽ được chia sẻ, xử lý với hệ thống tra cứu và thông báo phạt nguội:</div>
           <div className="InfoConsentMode2_carInfo">
             <div className="InfoConsentMode2_carInfo_hideInfo" onClick={() => setHideInfo(!hideInfo)}>

@@ -93,11 +93,6 @@ export const ROUTERS = {
         component: handleCheckLayout(),
         isZaloApp: 0,
     },
-    homeLoginWeb: {
-        path: PATH.LOGIN,
-        component: HomePageLogin,
-        isZaloApp: 0
-    },
     checkVihcle: {
         path: PATH.CHECK_VIHCLE,
         component:CheckVihcle,

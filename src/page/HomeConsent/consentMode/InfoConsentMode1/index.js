@@ -7,7 +7,6 @@ import { useConsentContext } from '../../../../context/ConsentContext'
 import { useState } from 'react'
 import companyInfo from '../../../../constants/companyInfo'
 import Header from '../../../../components/Header'
-import MainLogo from '../../../../components/MainLogo'
 export default function InfoConsentMode1() {
   const termsData = [
     {
@@ -155,7 +154,7 @@ export default function InfoConsentMode1() {
       <div className="HomeConsentLaypout">
         <div className="InfoConsentMode1">
           <div className="InfoConsentMode1_img">
-            <MainLogo className="InfoConsentMode1_img" />
+            <img className="InfoConsentMode1_img" src={'/logo.png'} alt="" />
           </div>
           <div className="InfoConsentMode1_content">
             <div>
