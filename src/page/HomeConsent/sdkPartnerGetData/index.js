@@ -1,10 +1,10 @@
 import { parseFromLocalStorage } from '../../../helper/localStorage'
 import { getDataSDKFromF88 } from './sdkF88'
-import { getDataSDKFromVnpay } from './sdkVnpay'
+import { getDataSDKFromVnpay, hasVnpayLoginData } from './sdkVnpay'
 
 export const getDataUserFromSDK = async () => {
   try {
-    if (parseFromLocalStorage(process.env.REACT_APP_MINIAPP_VNPAY) === 1 || parseFromLocalStorage(process.env.REACT_APP_MINIAPP_VNPAY) === true) {
+    if (hasVnpayLoginData() || parseFromLocalStorage(process.env.REACT_APP_MINIAPP_VNPAY) === 1 || parseFromLocalStorage(process.env.REACT_APP_MINIAPP_VNPAY) === true) {
       const { data, error } = await getDataSDKFromVnpay()
       return {
         data,

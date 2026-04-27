@@ -10,6 +10,7 @@ const BookingHistory = React.lazy(() => import('./page/BookingHistory/index'))
 const HomeLayout2 = React.lazy(() => import('./page/Home/HomeLayout'))
 const HomeLayout3 = React.lazy(() => import('./page/Home/HomeLayout3/index'))
 const HomePageLogin = React.lazy(() => import('./page/Login/index'))
+const VnpayLoginPage = React.lazy(() => import('./page/VnpayLogin/index'))
 const ResetPassword = React.lazy(() => import('./page/ResetPassword'))
 const MyBookingHistory = React.lazy(() => import('./page/MyBookingHistory/index'))
 const BookingDetail = React.lazy(() => import('./page/BookingDetail/index'))
@@ -57,6 +58,11 @@ export const ROUTERS = {
         component: HomePageLogin,
         isZaloApp: 1
     },
+    vnpayLogin: {
+        path: PATH.VNPAY_LOGIN,
+        component: VnpayLoginPage,
+        isZaloApp: 1
+    },
     bookingDetail: {
         path: PATH.BOOKING_DETAIL,
         component: BookingDetail,
@@ -96,6 +102,11 @@ export const ROUTERS = {
     checkVihcle: {
         path: PATH.CHECK_VIHCLE,
         component:CheckVihcle,
+        isZaloApp: 0,
+    },
+    vnpayLoginWeb: {
+        path: PATH.VNPAY_LOGIN,
+        component: VnpayLoginPage,
         isZaloApp: 0,
     },
     bookingHome: {

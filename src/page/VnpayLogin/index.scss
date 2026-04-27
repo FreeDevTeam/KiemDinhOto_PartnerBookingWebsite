@@ -1,0 +1,55 @@
+.VnpayLoginPage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(180deg, #f7fafc 0%, #eef5ff 100%);
+}
+
+.VnpayLoginPage_card {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.VnpayLoginPage_logo {
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+  animation: VnpayLoginPagePulse 1.6s ease-in-out infinite;
+}
+
+.VnpayLoginPage_loadingText,
+.VnpayLoginPage_errorText {
+  color: #102a43;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.VnpayLoginPage_errorText {
+  max-width: 320px;
+}
+
+@keyframes VnpayLoginPagePulse {
+  0% {
+    transform: scale(0.96);
+    opacity: 0.82;
+  }
+
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.96);
+    opacity: 0.82;
+  }
+}

@@ -39,3 +39,9 @@ rawData: Any(String, JSON ….) (optional) dữ liệu động theo từng dự 
 - tối đa màn hình này sẽ xử lý trong 3 giây. nếu xử lý xong sớm, thì phải đợi đủ 3 giây mới được chuyển qua màn hình kế tiếp.
 - Sau 3 giây nếu logic xử lý thông tin chưa xong thì sẽ hiển thị thông báo ở giữa màn hình với nội dung là "Tải dữ liệu thất bại. Vui lòng liên hệ CSKH để được hỗ trợ". 
 - Thông tin sẽ được lưu xuống localstorage. tên và số điện thoại sẽ được hiển thị lên màn hình consent
+- Bổ sung cả parameter cho cả khi mã hoá và không mã hoá. 
+- Các dữ liệu mẫu mà VNPAY mobile app sẽ truyền vào cũng lưu vào comment trực tiếp trên code để khi đọc thì nhớ cho các việc lần sau.
+- Phần xử lý này nên tách thành 1 trang mới, không sử trên trang /login cũ mà hãy tách thành trang /vnpay/login
+- Logo để hiển thị loading là VNPAY.png theo parameter "logo=VNPAY", không hiển thị icon loading mặc định của reactjs. khi không tìm thấy file thì mới hiển thị logo.png
+- Các ENV cần thiết thì hãy đặt giá trị mặc định và tên ENV kèm chữ "VNPAY" theo sau "REACT_APP_". Ví dụ: REACT_APP_VNPAY_AES_KEY
+
