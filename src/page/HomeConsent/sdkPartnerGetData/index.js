@@ -4,6 +4,16 @@ import { getDataSDKFromVnpay } from './sdkVnpay'
 
 export const getDataUserFromSDK = async () => {
   try {
+    const hasVnpayData = Boolean(localStorage.getItem('vnpayWebviewData') || localStorage.getItem('vnpayPhoneNumber'))
+
+    if (hasVnpayData) {
+      const { data, error } = await getDataSDKFromVnpay()
+      return {
+        data,
+        error
+      }
+    }
+
     if (parseFromLocalStorage(process.env.REACT_APP_MINIAPP_VNPAY) === 1 || parseFromLocalStorage(process.env.REACT_APP_MINIAPP_VNPAY) === true) {
       const { data, error } = await getDataSDKFromVnpay()
       return {
@@ -19,12 +29,8 @@ export const getDataUserFromSDK = async () => {
       }
     }
     return {
-      data: {
-        fullName: 'Nam Nguyễn',
-        phoneNumber: '0978745645',
-        uuid: '00000011231'
-      },
-      error: false
+      data: {},
+      error: true
     }
   } catch (error) {
     return {

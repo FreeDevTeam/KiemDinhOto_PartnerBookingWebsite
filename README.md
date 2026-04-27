@@ -1,5 +1,8 @@
 # KiemDinhOto_PartnerBookingWebsite 
 
+# Run Test command
+docker rm -f $(docker ps -aq --filter ancestor=demopartnerbooking) 2>/dev/null; docker rmi -f demopartnerbooking && docker build . -t demopartnerbooking && docker run -p 3000:80 demopartnerbooking
+
 # Build source lên Zalo Test
 
 ## 1. Tạo ứng dụng zalo - Không cần tạo OA
