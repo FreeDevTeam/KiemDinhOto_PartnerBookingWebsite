@@ -27,6 +27,20 @@ description: "Use when refactoring or designing a new feature that involves comp
 - Sử dụng tên hàm, biến rõ ràng để thể hiện ý định của code
 - Tách biệt rõ ràng giữa UI và logic để dễ test và maintain
 
+## Mandatory Separation Checklist
+
+- `UI` chỉ render state và emit user event, **không** parse query, decrypt/encrypt, validate business rule, gọi API trực tiếp
+- `action` điều phối flow: đọc input, gọi logic/model/API, cập nhật state cho UI
+- `model/helper` xử lý parse/decrypt/transform/validate dữ liệu, ưu tiên pure function
+- `API` chỉ chứa giao tiếp backend, không chứa render hoặc điều hướng UI
+- Code review phải reject khi thấy logic nghiệp vụ nằm trong component UI
+
+## Anti-patterns (Must Avoid)
+
+- đặt logic giải mã AES/RSA trong component React
+- đọc và xử lý URL param trực tiếp trong JSX render branch
+- trộn call API + business transform + setState trong cùng một component function dài
+
 ## Expected Output
 
 - flow nghiệp vụ dễ follow
