@@ -4,7 +4,23 @@ export function normalizePlate(raw = '') {
     .replace(/[^0-9A-ZĐa-zđ]/g, '')
     .toUpperCase()
 }
+function checkSpecialSerialPlate(plateNumber) {
+  const specialSerialChar = 'KT,LD,DA,MK,MD,MĐ,TD,TĐ,HC,NG,QT,NN,CV,CD,LB,RM'.split(',')
+  const includedSpecialSerialChars = specialSerialChar.filter(char => plateNumber.includes(char))
 
+  if (includedSpecialSerialChars.length !== 1) {
+    return false
+  }
+
+  const specialChar = includedSpecialSerialChars[0]
+  const specialSerialIndex = plateNumber.indexOf(specialChar)
+  const specialSerialLength = specialChar.length
+
+  const beforeSpecialSerial = plateNumber.slice(0, specialSerialIndex)
+  const afterSpecialSerial = plateNumber.slice(specialSerialIndex + specialSerialLength)
+
+  return /^\d+$/.test(beforeSpecialSerial) && /^\d+$/.test(afterSpecialSerial)
+}
 function checkValidVehicleIdentity(vehicleIdentity, vehicleType, plateColor) {
   let isValidVehicle = true;
   
@@ -62,6 +78,17 @@ function checkValidVehicleIdentity(vehicleIdentity, vehicleType, plateColor) {
   let serialIndex = -1;
   let serialLength = 0;
 
+  if (checkSpecialSerialPlate(vehicleIdentity)) {
+    const MAX_LENGTH = 12;
+    const MIN_LENGTH = 6;
+
+    if (vehicleIdentity.length < MIN_LENGTH || vehicleIdentity.length > MAX_LENGTH) {
+      return false;
+    }
+
+    return true;
+  }
+    
   if (includedSpecialSerialChars.length > 0) {
     if (includedSpecialSerialChars.length !== 1) {
       isValidVehicle = false;
