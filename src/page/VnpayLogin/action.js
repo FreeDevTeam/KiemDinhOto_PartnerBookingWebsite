@@ -1,6 +1,11 @@
 import { PATH } from '../../constants/router'
-import { VNPAY_ENV } from '../../constants/vnpay'
-import { getVnpayPayloadFromSearch, persistVnpayLoginState, resolveVnpayLogoPath } from '../../helper/vnpay'
+import { VNPAY_ENV } from '../../constants/VnpayLoginConstants'
+import {
+  getVnpayLoginRequestFromSearch,
+  persistVnpayLoginState,
+  resolveVnpayLogoPath
+} from '../../helper/VnpayLoginHelper'
+import VnpayService from '../../services/vnpayService'
 
 const wait = (timeout) => new Promise((resolve) => {
   window.setTimeout(resolve, timeout)
@@ -19,9 +24,43 @@ export const getVnpayLoginViewModel = (search = window.location.search) => {
 export const runVnpayLoginFlow = async ({ search = window.location.search } = {}) => {
   const startedAt = Date.now()
   const flowPromise = (async () => {
-    const { payload } = await getVnpayPayloadFromSearch(search)
-    persistVnpayLoginState(payload)
-    return payload
+    const loginRequest = getVnpayLoginRequestFromSearch(search)
+    const loginByVnpayResult = await VnpayService.loginByVnpayAppData({
+      stationCode: loginRequest.stationCode,
+      apikey: loginRequest.apikey,
+      vnpayAppData: {
+        data: loginRequest.vnpayAppData.data // Only include the data field
+      }
+    })
+
+    if (!loginByVnpayResult.isSuccess || !loginByVnpayResult.data) {
+      throw new Error(loginByVnpayResult.message || loginByVnpayResult.error || 'VNPAY login API failed')
+    }
+
+    const apiData = loginByVnpayResult.data
+    const phoneNumber = apiData.phoneNumber || ''
+    const fullName = apiData.fullName || ''
+    const email = apiData.email || ''
+
+    persistVnpayLoginState(
+      {
+        mobile: phoneNumber,
+        fname: fullName,
+        email
+      },
+      {
+        uuid: phoneNumber,
+        phoneNumber,
+        fullName,
+        email
+      }
+    )
+
+    return {
+      status: 'success',
+      redirectTo: PATH.HOME,
+      payload: apiData
+    }
   })()
 
   const raceResult = await Promise.race([
@@ -37,8 +76,16 @@ export const runVnpayLoginFlow = async ({ search = window.location.search } = {}
     }))
   ])
 
+  let flowResult = raceResult
   if (raceResult.status === 'timeout') {
-    return raceResult
+    // Keep waiting after timeout to avoid showing false failure when API response is slow.
+    flowResult = await flowPromise.then((payload) => ({
+      status: 'success',
+      payload
+    })).catch((error) => ({
+      status: 'error',
+      error
+    }))
   }
 
   const remainingTime = Math.max(0, VNPAY_ENV.MIN_LOADING_MS - (Date.now() - startedAt))
@@ -46,14 +93,14 @@ export const runVnpayLoginFlow = async ({ search = window.location.search } = {}
     await wait(remainingTime)
   }
 
-  if (raceResult.status === 'error') {
-    console.error('VNPAY login flow failed', raceResult.error)
-    return raceResult
+  if (flowResult.status === 'error') {
+    console.error('VNPAY login flow failed', flowResult.error)
+    return flowResult
   }
 
   return {
     status: 'success',
-    redirectTo: PATH.HOME,
-    payload: raceResult.payload
+    redirectTo: flowResult.payload.redirectTo,
+    payload: flowResult.payload.payload
   }
 }

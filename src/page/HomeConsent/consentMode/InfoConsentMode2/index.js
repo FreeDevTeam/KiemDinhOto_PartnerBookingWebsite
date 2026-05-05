@@ -150,7 +150,8 @@ const getDisplayValue = (value, hideInfo) => {
 }
 
 const checkIsCompleteUserProfile = (userProfile) => {
-  return Boolean(userProfile?.fullName?.trim() && userProfile?.phoneNumber?.trim())
+  // VNPAY API can return empty fullName; phoneNumber is the required field to continue consent flow.
+  return Boolean(userProfile?.phoneNumber?.trim())
 }
 
 export default function InfoConsentMode2() {
@@ -167,7 +168,13 @@ export default function InfoConsentMode2() {
   const isSubmitDisabled = !(sdkDataState.isComplete && confirmTerm) || sdkDataState.isLoading || consentSessionState?.isLoading === true
 
   const getDataFromSDK = useCallback(async () => {
+    console.log('[CONSENT][Mode2] getDataFromSDK start', {
+      consentUserProfile,
+      isCompleteConsentProfile: checkIsCompleteUserProfile(consentUserProfile)
+    })
+
     if (checkIsCompleteUserProfile(consentUserProfile)) {
+      console.log('[CONSENT][Mode2] Using consentUserProfile from context')
       setSdkDataState({
         userProfile: consentUserProfile,
         error: false,
@@ -182,6 +189,7 @@ export default function InfoConsentMode2() {
       error: false,
       isLoading: true
     }))
+    console.log('[CONSENT][Mode2] Set loading=true, fetching from SDK')
     updateConsentSessionState({
       isLoading: true
     })
@@ -190,13 +198,19 @@ export default function InfoConsentMode2() {
       const { data, error } = await getDataUserFromSDK()
       const nextUserProfile = data || {}
       const isComplete = checkIsCompleteUserProfile(nextUserProfile)
+      console.log('[CONSENT][Mode2] SDK result', {
+        nextUserProfile,
+        error,
+        isComplete
+      })
 
       if (isComplete) {
+        console.log('[CONSENT][Mode2] Persisting profile into consent context')
         setConsentUserProfile(nextUserProfile)
       }
 
       setSdkDataState({
-        userProfile: isComplete ? nextUserProfile : {},
+        userProfile: nextUserProfile,
         error: error || !isComplete,
         isLoading: false,
         isComplete
@@ -205,6 +219,7 @@ export default function InfoConsentMode2() {
         isLoading: false
       })
     } catch (error) {
+      console.error('[CONSENT][Mode2] getDataFromSDK error', error)
       setSdkDataState((prev) => ({
         ...prev,
         error: true,
@@ -220,6 +235,14 @@ export default function InfoConsentMode2() {
   useEffect(() => {
     getDataFromSDK()
   }, [getDataFromSDK])
+
+  useEffect(() => {
+    console.log('[CONSENT][Mode2] sdkDataState changed', sdkDataState)
+  }, [sdkDataState])
+
+  useEffect(() => {
+    console.log('[CONSENT][Mode2] consentSessionState changed', consentSessionState)
+  }, [consentSessionState])
 
   return (
     <div>
@@ -285,9 +308,16 @@ export default function InfoConsentMode2() {
         <BaseButton
           disabled={isSubmitDisabled}
           onClick={() => {
+            console.log('[CONSENT][Mode2] Submit click', {
+              isSubmitDisabled,
+              isComplete: sdkDataState.isComplete,
+              userProfile: sdkDataState.userProfile
+            })
             if (!sdkDataState.isComplete) {
+              console.warn('[CONSENT][Mode2] Block submit because profile is incomplete')
               return
             }
+            console.log('[CONSENT][Mode2] Accept consent session with profile')
             acceptConsentSession(sdkDataState.userProfile)
           }}>
           Tiếp theo
