@@ -2,6 +2,7 @@ import { VNPAY_ENV, VNPAY_STORAGE_KEYS } from '../constants/VnpayLoginConstants'
 import { LocalStorageManager, SessionStorageManager, parseFromLocalStorage } from './localStorage'
 import addKeyLocalStorage from './localStorage'
 import { getAllUrlParams, smartParseParam } from './UrlParamsHelper'
+import { CheckApiKey } from './CheckApiKey'
 
 const VNPAY_REQUIRED_FIELDS = ['mobile', 'bankCode', 'bankName']
 const API_KEY_QUERY_KEYS = ['apikey', 'apiKey']
@@ -106,15 +107,10 @@ export const getVnpayLoginRequestFromSearch = (search = window.location.search) 
 
   const apikey =
     getFirstValueFromSearchParams(searchParams, API_KEY_QUERY_KEYS) ||
-    normalizeString(localStorage.getItem('apiKey')) ||
-    normalizeString(process.env.REACT_APP_APIKEY);
+    normalizeString(CheckApiKey())
 
   if (!stationCode) {
     throw new Error('Missing stationCode');
-  }
-
-  if (!apikey) {
-    throw new Error('Missing apikey');
   }
 
   return {

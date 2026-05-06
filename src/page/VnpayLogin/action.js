@@ -25,13 +25,18 @@ export const runVnpayLoginFlow = async ({ search = window.location.search } = {}
   const startedAt = Date.now()
   const flowPromise = (async () => {
     const loginRequest = getVnpayLoginRequestFromSearch(search)
-    const loginByVnpayResult = await VnpayService.loginByVnpayAppData({
+    const loginPayload = {
       stationCode: loginRequest.stationCode,
-      apikey: loginRequest.apikey,
       vnpayAppData: {
         data: loginRequest.vnpayAppData.data // Only include the data field
       }
-    })
+    }
+
+    if (loginRequest.apikey) {
+      loginPayload.apikey = loginRequest.apikey
+    }
+
+    const loginByVnpayResult = await VnpayService.loginByVnpayAppData(loginPayload)
 
     if (!loginByVnpayResult.isSuccess || !loginByVnpayResult.data) {
       throw new Error(loginByVnpayResult.message || loginByVnpayResult.error || 'VNPAY login API failed')
