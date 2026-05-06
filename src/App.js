@@ -95,7 +95,7 @@ function App() {
     }
   }, []);
   const getRedirectPath = () => {
-    return process.env.REACT_APP_DEFAULT_HOME_PATH === '/' ? '/vnpay/login' : process.env.REACT_APP_DEFAULT_HOME_PATH;
+    return process.env.REACT_APP_DEFAULT_HOME_PATH === '/' ? PATH.VNPAY_LOGIN : process.env.REACT_APP_DEFAULT_HOME_PATH;
   };
   return (
     <GlobalProvider>
