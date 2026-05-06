@@ -1,3 +1,5 @@
+import { CheckApiKey } from './CheckApiKey'
+
 /**
  * URL Param Manager
  * -----------------
@@ -126,4 +128,35 @@ export const buildQueryString = (params = {}, prefix = '?') => {
 
   const str = urlParams.toString()
   return str ? `${prefix}${str}` : ''
+}
+
+/**
+ * Append sdk params vào link nếu localStorage có đủ phoneNumber và apikey.
+ * Nếu thiếu data hoặc lỗi truy cập localStorage, luôn trả về link gốc.
+ */
+export const AppendSdkPhoneApiParamsFromLocalStorage = (link) => {
+  if (!link) {
+    return link
+  }
+
+  try {
+    const phoneNumber = (localStorage.getItem('phoneNumber') || '').trim()
+    const apikey = (CheckApiKey() || '').trim()
+
+    if (!phoneNumber || !apikey) {
+      return link
+    }
+
+    const [pathname, rawSearch = ''] = link.split('?')
+    const params = new URLSearchParams(rawSearch)
+
+    params.set('sdkPhoneNumber', phoneNumber)
+    params.set('phoneNumber', phoneNumber)
+    params.set('apikey', apikey)
+
+    const queryString = params.toString()
+    return queryString ? `${pathname}?${queryString}` : pathname
+  } catch (error) {
+    return link
+  }
 }

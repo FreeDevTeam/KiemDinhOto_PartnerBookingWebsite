@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 import { ReactComponent as ArrowLeft } from '../../assets/icons/arrows.svg'
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
 import { MESSAGE_BACK_TO_HOME_MINI_APP, PARAM_IFRAME_HEADER_TITLE } from '../../constants/params'
-import { smartParseParam } from '../../helper/params'
+import { smartParseParam } from '../../helper/UrlParamsHelper'
 import { checkIsBackToHomeMiniApp } from '../../helper/checkIsEmbeddedView'
 
 export default function Header({ title, onBack }) {

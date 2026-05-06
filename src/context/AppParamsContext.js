@@ -1,6 +1,6 @@
 import React from 'react'
 import { LocalStorageManager, SessionStorageManager } from '../helper/localStorage'
-import { getUrlParamValue, smartParseParam } from '../helper/params'
+import { getUrlParamValue, smartParseParam } from '../helper/UrlParamsHelper'
 import { PARAM_HOME_MINIAPP_CONSENT_MODE, PARAM_IS_HEADER_MINI_APP, PARAM_IS_WEB_VIEW, PARAM_REFER_STATION_ID, PARAM_REFER_USER_ID } from '../constants/params'
 export const AppParamsContext = React.createContext(null)
 

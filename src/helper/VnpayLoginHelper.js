@@ -1,7 +1,7 @@
 import { VNPAY_ENV, VNPAY_STORAGE_KEYS } from '../constants/VnpayLoginConstants'
 import { LocalStorageManager, SessionStorageManager, parseFromLocalStorage } from './localStorage'
 import addKeyLocalStorage from './localStorage'
-import { getAllUrlParams, smartParseParam } from './params'
+import { getAllUrlParams, smartParseParam } from './UrlParamsHelper'
 
 const VNPAY_REQUIRED_FIELDS = ['mobile', 'bankCode', 'bankName']
 const API_KEY_QUERY_KEYS = ['apikey', 'apiKey']

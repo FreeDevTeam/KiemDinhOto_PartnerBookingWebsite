@@ -1,6 +1,6 @@
 import React from 'react'
 import { SessionStorageManager } from '../helper/localStorage'
-import { mergeUrlParams } from '../helper/params'
+import { mergeUrlParams } from '../helper/UrlParamsHelper'
 
 export const ConsentContext = React.createContext(null)
 
