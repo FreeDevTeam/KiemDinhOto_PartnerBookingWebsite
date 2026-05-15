@@ -1,32 +1,25 @@
-import { PARAM_BACK_TO_HOME_MINI_APP_URL } from '../constants/params'
-import { resolveParamsMiniAppLocalStorage } from '../context/AppParamsContext'
-import { decodeLink } from '../helper/common'
+import { MOBILE_APP_CONTAINER } from '../constants/MobileAppContainer'
+import { ENV } from '../constants/EnvironmentVariables'
+import { parseFromLocalStorage } from '../helper/localStorage'
 
-export const resolveMiniAppBackUrl = () => {
-  const backUrl = resolveParamsMiniAppLocalStorage({
-    paramKey: PARAM_BACK_TO_HOME_MINI_APP_URL,
-    storageKey: PARAM_BACK_TO_HOME_MINI_APP_URL,
-    defaultValue: '',
-    parser: (value) => `${value || ''}`.trim()
-  })
+const parseBooleanStorageValue = (value) => {
+  return value === true || value === 1 || value === '1' || value === 'true' || value === 'TRUE'
+}
 
-  if (!backUrl) {
-    return ''
+const isVnpayMiniAppEnabled = () => {
+  return parseBooleanStorageValue(parseFromLocalStorage(ENV.REACT_APP_MINIAPP_VNPAY))
+}
+
+export const getBackToPartnerAppUrl = () => {
+  if (isVnpayMiniAppEnabled()) {
+    return MOBILE_APP_CONTAINER.VNPAY_INAPP.BackToAppUrl
   }
 
-  try {
-    return decodeLink(backUrl)
-  } catch {
-    try {
-      return decodeURIComponent(backUrl)
-    } catch {
-      return backUrl
-    }
-  }
+  return ''
 }
 
 export const redirectByMiniAppBackUrl = () => {
-  const resolvedBackUrl = resolveMiniAppBackUrl()
+  const resolvedBackUrl = getBackToPartnerAppUrl()
 
   if (!resolvedBackUrl) {
     return false
