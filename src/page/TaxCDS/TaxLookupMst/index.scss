@@ -1,0 +1,293 @@
+.tax-mst-page {
+  width: 100%;
+  min-height: 100vh;
+  background: #edf2f5;
+}
+
+.tax-mst-container {
+  width: 100%;
+  max-width: 390px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background: #edf2f5;
+}
+
+.tax-mst-banner-section {
+  padding: 14px 12px 0;
+  background: #edf2f5;
+}
+
+.tax-mst-banner {
+  width: 100%;
+  height: 150px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  display: block;
+  overflow: hidden;
+}
+
+.tax-mst-banner img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.tax-mst-white-panel {
+  width: 100%;
+  min-height: calc(100vh - 92px - 164px);
+  margin-top: 12px;
+  padding: 12px 12px 24px;
+  background: #ffffff;
+  border-radius: 16px 16px 0 0;
+  box-sizing: border-box;
+}
+
+.tax-mst-search-card {
+  width: 100%;
+  min-height: 132px;
+  padding: 16px 12px;
+  border: 1px solid #e7e7e7;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+}
+
+.tax-mst-result {
+  margin-top: 12px;
+}
+
+.tax-mst-result-title {
+  color: #1f1f1f;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 18px;
+}
+.tax-mst-history {
+  margin-top: 14px;
+}
+
+.tax-mst-history-title {
+  color: #1f1f1f;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 18px;
+}
+.tax-mst-history-toggle {
+  width: 100%;
+  margin-top: 4px;
+  border: none;
+  background: transparent;
+  color: #cc0001;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 4px 0 0;
+}
+
+.tax-mst-history-toggle span {
+  display: inline-flex;
+  align-items: center;
+  height: 16px;
+  line-height: 16px;
+}
+
+.tax-mst-history-toggle-icon {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  border-right: 1.5px solid #cc0001;
+  border-bottom: 1.5px solid #cc0001;
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 0.2s ease;
+}
+
+.tax-mst-history-toggle-icon.is-expanded {
+  transform: rotate(225deg) translateY(-2px);
+}
+.tax-mst-skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.tax-mst-skeleton-card {
+  position: relative;
+  overflow: hidden;
+  padding: 14px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid #edf0f5;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.tax-mst-skeleton-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tax-mst-skeleton-avatar {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 14px;
+}
+
+.tax-mst-skeleton-header-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.tax-mst-skeleton-pill {
+  width: 72px;
+  height: 26px;
+  flex: 0 0 72px;
+  border-radius: 999px;
+}
+
+.tax-mst-skeleton-body {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tax-mst-skeleton-info-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tax-mst-skeleton-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  border-radius: 6px;
+}
+
+.tax-mst-skeleton-footer {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed #edf0f5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  
+}
+
+.tax-mst-skeleton-service {
+  flex: 1;
+  min-width: 0;
+}
+
+.tax-mst-skeleton-button {
+  width: 92px;
+  height: 36px;
+  flex: 0 0 92px;
+  border-radius: 999px;
+}
+
+.tax-mst-skeleton-line {
+  height: 10px;
+  border-radius: 999px;
+}
+
+.tax-mst-skeleton-title {
+  width: 78%;
+  height: 15px;
+  margin-bottom: 8px;
+}
+
+.tax-mst-skeleton-code {
+  width: 46%;
+  height: 11px;
+}
+
+.tax-mst-skeleton-line-full {
+  width: 100%;
+}
+
+.tax-mst-skeleton-line-medium {
+  width: 72%;
+}
+
+.tax-mst-skeleton-line-short {
+  width: 52%;
+}
+
+.tax-mst-skeleton-service-title {
+  width: 64%;
+  height: 12px;
+  margin-bottom: 8px;
+}
+
+.tax-mst-skeleton-service-desc {
+  width: 42%;
+  height: 10px;
+}
+
+.tax-mst-skeleton-avatar,
+.tax-mst-skeleton-pill,
+.tax-mst-skeleton-icon,
+.tax-mst-skeleton-button,
+.tax-mst-skeleton-line {
+  background: linear-gradient(
+    100deg,
+    #eef2f7 0%,
+    #f7f9fc 30%,
+    #e8edf5 50%,
+    #f7f9fc 70%,
+    #eef2f7 100%
+  );
+  background-size: 300% 100%;
+  animation: tax-mst-skeleton-wave 2.4s linear infinite;
+}
+
+@keyframes tax-mst-skeleton-wave {
+  0% {
+    background-position: 150% 0;
+  }
+
+  100% {
+    background-position: -150% 0;
+  }
+}
+
+@media (max-width: 575px) {
+  .tax-mst-skeleton-card {
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .tax-mst-skeleton-avatar {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+
+  .tax-mst-skeleton-pill {
+    width: 56px;
+    height: 24px;
+    flex-basis: 56px;
+  }
+
+  .tax-mst-skeleton-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .tax-mst-skeleton-button {
+    width: 100%;
+    flex-basis: 36px;
+  }
+}
