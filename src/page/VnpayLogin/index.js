@@ -1,5 +1,7 @@
 import React from 'react'
+import { LeftOutlined } from '@ant-design/icons'
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
+import { redirectByMiniAppBackUrl } from '../../actions/miniAppBackAction'
 import { getVnpayLoginViewModel, runVnpayLoginFlow } from './action'
 import './index.scss'
 
@@ -10,6 +12,20 @@ export default function VnpayLoginPage() {
   const viewModel = React.useMemo(() => getVnpayLoginViewModel(), [])
   const [logoPath, setLogoPath] = React.useState(viewModel.logoPath)
   const [status, setStatus] = React.useState('loading')
+
+  const handleBack = React.useCallback(() => {
+    const hasRedirected = redirectByMiniAppBackUrl()
+    if (hasRedirected) {
+      return
+    }
+
+    if (window.history.length > 1) {
+      history.goBack()
+      return
+    }
+
+    history.replace('/')
+  }, [history])
 
   React.useEffect(() => {
     let isMounted = true
@@ -39,6 +55,16 @@ export default function VnpayLoginPage() {
 
   return (
     <div className="VnpayLoginPage">
+      <div className="VnpayLoginPage_header">
+        <button
+          className="VnpayLoginPage_backButton"
+          type="button"
+          onClick={handleBack}
+          aria-label="Quay lại"
+        >
+          <LeftOutlined />
+        </button>
+      </div>
       <div className="VnpayLoginPage_card">
         <img
           className="VnpayLoginPage_logo"

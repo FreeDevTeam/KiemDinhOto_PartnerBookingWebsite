@@ -3,8 +3,38 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: 72px 24px 24px;
   background: linear-gradient(180deg, #f7fafc 0%, #eef5ff 100%);
+  position: relative;
+}
+
+.VnpayLoginPage_header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  background: transparent;
+}
+
+.VnpayLoginPage_backButton {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 18px;
+  background: rgba(16, 42, 67, 0.08);
+  color: #102a43;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.VnpayLoginPage_backButton:active {
+  transform: scale(0.96);
 }
 
 .VnpayLoginPage_card {
