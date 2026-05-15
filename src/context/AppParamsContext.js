@@ -32,7 +32,7 @@ const resolveParamsMiniAppSessionStorage = (config) => {
   return config.parser ? config.parser(raw) : raw
 }
 
-const resolveParamsMiniAppLocalStorage = (config) => {
+export const resolveParamsMiniAppLocalStorage = (config) => {
   // 1. param (raw)
   const param = getFirstUrlParamValue(config.paramKey)
 

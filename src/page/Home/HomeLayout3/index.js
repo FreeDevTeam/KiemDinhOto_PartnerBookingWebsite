@@ -21,6 +21,8 @@ import { encodeLink } from '../../../helper/common'
 import useWindowDimensions from '../../../hooks/window-dimensions'
 import Header from '../../../components/Header'
 import usePartnerBridge from '../../../sdk/usePartnerBridge'
+import { redirectByMiniAppBackUrl } from '../../../actions/miniAppBackAction'
+import { ENV } from '../../../constants/EnvironmentVariables'
 
 const HomeLayout3 = (props) => {
   const location = useLocation()
@@ -56,6 +58,10 @@ const HomeLayout3 = (props) => {
   const { init: initBridge, exit: exitBridge, isSupported: isPartnerBridgeSupported } = usePartnerBridge()
 
   const handleExit = async () => {
+    if (redirectByMiniAppBackUrl()) {
+      return
+    }
+
     try {
       await exitBridge()
     } catch (e) {
@@ -191,8 +197,8 @@ const HomeLayout3 = (props) => {
 
   return (
     <>
-      {process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE && 
-        <Header title={process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE} onBack={() => {handleExit()}} />
+      {ENV.REACT_APP_HOME_MINIAPP_HEADER_TITLE && 
+        <Header title={ENV.REACT_APP_HOME_MINIAPP_HEADER_TITLE} onBack={() => {handleExit()}} />
       }
       <sc.Container>
         <PageLayout>{renderSlider}</PageLayout>

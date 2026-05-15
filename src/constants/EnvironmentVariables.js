@@ -1,0 +1,5 @@
+export const ENV = {
+  REACT_APP_HOME_MINIAPP_HEADER_TITLE: process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE || 'Giao thông số',
+  REACT_APP_RUNTIME_MODE: process.env.REACT_APP_RUNTIME_MODE || 'developer',
+  REACT_APP_MINIAPP_VNPAY: process.env.REACT_APP_MINIAPP_VNPAY || '0'
+}
