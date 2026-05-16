@@ -1,11 +1,11 @@
 import React from 'react'
 import { LeftOutlined } from '@ant-design/icons'
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
+import { initWebviewContainer } from '../../actions'
 import { redirectByMiniAppBackUrl } from '../../actions/miniAppBackAction'
+import { MOBILE_APP_CONTAINER } from '../../constants/MobileAppContainer'
 import { getVnpayLoginViewModel, runVnpayLoginFlow } from './action'
 import './index.scss'
-
-const VNPAY_LOGIN_FAILURE_MESSAGE = 'Tải dữ liệu thất bại. Vui lòng liên hệ CSKH để được hỗ trợ'
 
 export default function VnpayLoginPage() {
   const history = useHistory()
@@ -29,6 +29,8 @@ export default function VnpayLoginPage() {
 
   React.useEffect(() => {
     let isMounted = true
+
+    initWebviewContainer(MOBILE_APP_CONTAINER.VNPAY_INAPP)
 
     runVnpayLoginFlow()
       .then((result) => {
@@ -79,7 +81,7 @@ export default function VnpayLoginPage() {
         {status === 'loading' ? (
           <div className="VnpayLoginPage_loadingText">{viewModel.loadingText}</div>
         ) : (
-          <div className="VnpayLoginPage_errorText">{VNPAY_LOGIN_FAILURE_MESSAGE}</div>
+          <div className="VnpayLoginPage_errorText">{MOBILE_APP_CONTAINER.VNPAY_INAPP.LoginFailureMessage}</div>
         )}
       </div>
     </div>

@@ -1,21 +1,17 @@
 import { MOBILE_APP_CONTAINER } from '../constants/MobileAppContainer'
-import { ENV } from '../constants/EnvironmentVariables'
-import { parseFromLocalStorage } from '../helper/localStorage'
-
-const parseBooleanStorageValue = (value) => {
-  return value === true || value === 1 || value === '1' || value === 'true' || value === 'TRUE'
-}
-
-const isVnpayMiniAppEnabled = () => {
-  return parseBooleanStorageValue(parseFromLocalStorage(ENV.REACT_APP_MINIAPP_VNPAY))
-}
+import { LOCAL_STORAGE_KEYS, LocalStorageManager } from '../helper/localStorage'
 
 export const getBackToPartnerAppUrl = () => {
-  if (isVnpayMiniAppEnabled()) {
-    return MOBILE_APP_CONTAINER.VNPAY_INAPP.BackToAppUrl
-  }
+  const webviewContainerCode = LocalStorageManager.getItem(LOCAL_STORAGE_KEYS.WEBVIEW_CONTAINER_CODE)
 
-  return ''
+  switch (webviewContainerCode) {
+    case MOBILE_APP_CONTAINER.VNPAY_INAPP.ContainerCode:
+      return MOBILE_APP_CONTAINER.VNPAY_INAPP.BackToAppUrl
+    case MOBILE_APP_CONTAINER.MYF88_INAPP.ContainerCode:
+      return MOBILE_APP_CONTAINER.MYF88_INAPP.BackToAppUrl
+    default:
+      return undefined;
+  }
 }
 
 export const redirectByMiniAppBackUrl = () => {

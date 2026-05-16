@@ -1,11 +1,11 @@
 import React from 'react'
 import { LeftOutlined } from '@ant-design/icons'
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
+import { initWebviewContainer } from '../../actions'
 import { redirectByMiniAppBackUrl } from '../../actions/miniAppBackAction'
+import { MOBILE_APP_CONTAINER } from '../../constants/MobileAppContainer'
 import { getMyf88LoginViewModel, runMyf88LoginFlow } from './action'
 import './index.scss'
-
-const MYF88_LOGIN_FAILURE_MESSAGE = 'Tải dữ liệu thất bại. Vui lòng liên hệ CSKH để được hỗ trợ'
 
 export default function Myf88LoginPage() {
   const history = useHistory()
@@ -29,6 +29,8 @@ export default function Myf88LoginPage() {
 
   React.useEffect(() => {
     let isMounted = true
+
+    initWebviewContainer(MOBILE_APP_CONTAINER.MYF88_INAPP)
 
     runMyf88LoginFlow()
       .then((result) => {
@@ -79,7 +81,7 @@ export default function Myf88LoginPage() {
         {status === 'loading' ? (
           <div className="Myf88LoginPage_loadingText">{viewModel.loadingText}</div>
         ) : (
-          <div className="Myf88LoginPage_errorText">{MYF88_LOGIN_FAILURE_MESSAGE}</div>
+          <div className="Myf88LoginPage_errorText">{MOBILE_APP_CONTAINER.MYF88_INAPP.LoginFailureMessage}</div>
         )}
       </div>
     </div>

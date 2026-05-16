@@ -10,6 +10,10 @@ const addKeyLocalStorage = (key) => {
 
 export default addKeyLocalStorage
 
+export const LOCAL_STORAGE_KEYS = {
+  WEBVIEW_CONTAINER_CODE: 'WebviewContainerCode'
+}
+
 export const saveClickToLocalStorage = ({ localStorageKey, targetId }) => {
   const existingData = JSON.parse(localStorage.getItem(addKeyLocalStorage(localStorageKey))) || {}
   if (existingData[targetId]) {
