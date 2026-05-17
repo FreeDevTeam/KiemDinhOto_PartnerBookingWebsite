@@ -67,7 +67,7 @@ export const ROUTERS = {
     myf88Login: {
         path: PATH.MYF88_LOGIN,
         component: Myf88LoginPage,
-        isZaloApp: null
+        isZaloApp: 0
     },
     bookingDetail: {
         path: PATH.BOOKING_DETAIL,

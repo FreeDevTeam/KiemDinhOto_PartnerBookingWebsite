@@ -193,7 +193,7 @@ const HomeLayout2 = (props) => {
 
   return (
     <div>
-      {ENV.REACT_APP_HOME_MINIAPP_HEADER_TITLE && 
+      {ENV.REACT_APP_HOME_MINIAPP_HEADER_HIDDEN * 1 !== 0 && 
         <Header title={ENV.REACT_APP_HOME_MINIAPP_HEADER_TITLE} onBack={() => {handleExit()}} />
       }
 

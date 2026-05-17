@@ -1,5 +1,5 @@
 ---
-name: init-environments-variables
+name: environments-variables-usage
 description: "Use when using environment variables coding in the project. They must have initial values to avoid errors when running the project on local or deploying to production. This skill covers how to set up and manage environment variables effectively in the codebase."
 ---
 

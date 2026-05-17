@@ -248,7 +248,7 @@ export default function InfoConsentMode2() {
 
   return (
     <div>
-      {ENV.REACT_APP_HOME_MINIAPP_HEADER_TITLE && <Header title={'Xác nhận thông tin'} onBack={() => redirectByMiniAppBackUrl()} />}
+      {ENV.REACT_APP_HOME_MINIAPP_HEADER_HIDDEN * 1 !== 0 && <Header title={'Xác nhận thông tin'} onBack={() => redirectByMiniAppBackUrl()} />}
       <div className="HomeConsentLaypout">
         <div className="InfoConsentMode2">
           <img className="InfoConsentMode2_img" src={'/logo.png'} alt="" />

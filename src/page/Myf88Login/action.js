@@ -45,7 +45,7 @@ export const runMyf88LoginFlow = async ({ search = window.location.search } = {}
     }
 
     if (loginRequest.stationCode) {
-      loginPayload.stationCode = loginRequest.stationCode
+      loginPayload.clientId = loginRequest.stationCode
     }
 
     if (loginRequest.apikey) {

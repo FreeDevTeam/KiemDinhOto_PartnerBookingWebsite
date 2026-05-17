@@ -14,13 +14,23 @@ export const getBackToPartnerAppUrl = () => {
   }
 }
 
-export const redirectByMiniAppBackUrl = () => {
+export const redirectByMiniAppBackUrl = (history) => {
   const resolvedBackUrl = getBackToPartnerAppUrl()
 
-  if (!resolvedBackUrl) {
+  if (resolvedBackUrl) {
+    window.location.href = resolvedBackUrl
+    return true
+  }
+
+  if (!history) {
     return false
   }
 
-  window.location.href = resolvedBackUrl
+  if (window.history.length > 1) {
+    history.goBack()
+    return true
+  }
+
+  history.replace('/')
   return true
 }
