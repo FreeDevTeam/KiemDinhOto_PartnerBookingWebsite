@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import TaxPageHeader from '../components/TaxPageHeader'
-import TaxSearchForm, { TAX_SEARCH_TYPE } from '../components/TaxSearchForm'
+import TaxSearchForm from '../components/TaxSearchForm'
+import { TAX_SEARCH_TYPE, validateTaxKeyword } from '../constants/taxLookup'
 import { getBannerBySectionCache } from '../../../helper/getBannerBySectionCache'
 import TaxSupportSection from '../components/TaxSupportSection'
 import TaxUtilitySection from '../components/TaxUtilitySection'
@@ -36,52 +37,21 @@ const saveLookupCacheToLocalStorage = (lookupList = []) => {
 }
 
 const mapTaxLookupResult = (item = {}) => {
-  const isRegistered = Boolean(item.isRegistered || item.is_registered)
+  const isRegistered = Boolean(item.isRegistered)
 
   return {
-    taxCDSMstLookupId:
-      item.taxCDSMstLookupId ||
-      item.tax_cds_mst_lookup_id ||
-      null,
-
-    taxCode: item.taxCode || item.tax_code || item.mst || item.taxNumber || '',
-
-    name:
-      item.name ||
-      item.taxpayerName ||
-      item.taxpayer_name ||
-      item.companyName ||
-      '',
-
-    address:
-      item.address ||
-      item.businessAddress ||
-      item.business_address ||
-      item.taxRegistrationAddress ||
-      item.tax_registration_address ||
-      item.taxpayerAddress ||
-      item.taxpayer_address ||
-      item.companyAddress ||
-      '',
-
-    taxDepartment: item.taxDepartment || item.tax_department || '',
-    identityNumber: item.identityNumber || item.identity_number || '',
+    taxCDSMstLookupId: item.taxCDSMstLookupId || null,
+    taxCode: item.taxCode || '',
+    name: item.taxpayerName || '',
+    address: item.businessAddress || item.taxRegistrationAddress || '',
+    taxDepartment: item.taxDepartment || '',
+    identityNumber: item.identityNumber || '',
     status: item.status || '',
-    statusText: item.statusText || item.status_text || '',
+    statusText: item.statusText || '',
     note: item.note || '',
-
-    serviceName:
-      item.serviceName ||
-      item.service_name ||
-      'Thuê Trợ lý thuế thông minh',
-
-    actionText:
-      item.actionText ||
-      item.action_text ||
-      (isRegistered ? 'Quản lý' : 'Đăng ký'),
-
-    isRegistered,
-    subscriptionId: item.subscriptionId || item.subscription_id || null
+    serviceName: 'Thuê Trợ lý thuế thông minh',
+    actionText: isRegistered ? 'Quản lý' : 'Đăng ký',
+    isRegistered
   }
 }
 
@@ -187,17 +157,10 @@ const TaxLookupMst = () => {
   }
 
   const validateKeyword = () => {
-    if (!keyword) return 'Vui lòng nhập thông tin tra cứu'
-
-    if (searchType === TAX_SEARCH_TYPE.MST && ![10, 13].includes(keyword.length)) {
-      return 'Mã số thuế phải có 10 hoặc 13 số'
-    }
-
-    if (searchType === TAX_SEARCH_TYPE.CCCD && keyword.length !== 12) {
-      return 'CCCD phải có 12 số'
-    }
-
-    return ''
+    return validateTaxKeyword({
+      searchType,
+      keyword
+    })
   }
 
   const saveLookupCache = (nextResults) => {
@@ -233,8 +196,16 @@ const TaxLookupMst = () => {
 
     try {
       const response = await TaxCdsService.lookupTaxCode({
-        searchType,
-        keyword
+        filter: {
+          searchType: searchType
+        },
+        skip: 0,
+        limit: 10,
+        searchText: keyword,
+        order: {
+          key: 'createdAt',
+          value: 'desc'
+        }
       })
 
       setSearched(true)
@@ -245,7 +216,8 @@ const TaxLookupMst = () => {
         return
       }
 
-      const nextResults = mapTaxLookupResults(response.data)
+      const list = Array.isArray(response?.data?.data) ? response.data.data : []
+      const nextResults = mapTaxLookupResults(list)
 
       setResults(nextResults)
       saveLookupCache(nextResults)

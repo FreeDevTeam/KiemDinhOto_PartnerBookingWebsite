@@ -1,25 +1,6 @@
 import React from 'react'
+import { TAX_SEARCH_TYPE, TAX_SEARCH_TYPE_OPTIONS } from '../../constants/taxLookup'
 import './index.scss'
-
-export const TAX_SEARCH_TYPE = {
-  MST: 'MST',
-  CCCD: 'CCCD',
-}
-
-const SEARCH_TYPE_OPTIONS = [
-  {
-    value: TAX_SEARCH_TYPE.MST,
-    label: 'Mã số thuế',
-    placeholder: 'Nhập mã số thuế',
-    maxLength: 13,
-  },
-  {
-    value: TAX_SEARCH_TYPE.CCCD,
-    label: 'CCCD',
-    placeholder: 'Nhập số CCCD',
-    maxLength: 12,
-  },
-]
 
 const normalizeDigits = (value) => String(value || '').replace(/\D/g, '')
 
@@ -32,11 +13,11 @@ const TaxSearchForm = ({
   submitText = 'Tìm kiếm',
   onChangeSearchType,
   onChangeValue,
-  onSubmit,
+  onSubmit
 }) => {
   const currentOption =
-    SEARCH_TYPE_OPTIONS.find((item) => item.value === searchType) ||
-    SEARCH_TYPE_OPTIONS[0]
+    TAX_SEARCH_TYPE_OPTIONS.find((item) => item.value === searchType) ||
+    TAX_SEARCH_TYPE_OPTIONS[0]
 
   const isSubmitDisabled = disabled || loading || !value
 
@@ -69,7 +50,7 @@ const TaxSearchForm = ({
   return (
     <form className="tax-search-form" onSubmit={handleSubmit}>
       <div className="tax-search-form__tabs">
-        {SEARCH_TYPE_OPTIONS.map((item) => (
+        {TAX_SEARCH_TYPE_OPTIONS.map((item) => (
           <button
             key={item.value}
             type="button"
@@ -109,3 +90,4 @@ const TaxSearchForm = ({
 }
 
 export default TaxSearchForm
+export { TAX_SEARCH_TYPE }
