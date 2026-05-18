@@ -1,4 +1,64 @@
-.IframeView{
-    height: calc(100dvh - 7px);
-    width: 100%;
+.IframeView {
+  width: 100%;
+  height: 100vh;
+  background: #edf2f5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.IframeView_header {
+  width: 100%;
+  max-width: 600px;
+  flex-shrink: 0;
+}
+
+.IframeView_header .tax-page-header {
+  width: 100%;
+  max-width: 600px;
+}
+
+.IframeView_body {
+  width: 100%;
+  max-width: 600px;
+  flex: 1;
+  min-height: 0;
+  margin: 0 auto;
+  background: #ffffff;
+}
+
+.IframeView iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.IframeView_banner {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 14px 20px 14px;
+  background: #edf2f5;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.IframeView_bannerButton {
+  width: 100%;
+  aspect-ratio: 343 / 128;
+  height: auto;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  display: block;
+  overflow: hidden;
+}
+
+.IframeView_bannerButton img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }

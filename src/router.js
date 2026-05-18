@@ -16,6 +16,8 @@ const PartnerGuide = React.lazy(() => import('./page/Guide/partnerGuide'))
 const PersonalGuide = React.lazy(() => import('./page/Guide/personalGuide'))
 const UpdateBookingDetail = React.lazy(() => import('./page/BookingDetail/UpdateBookingDetail'))
 const IframeView = React.lazy(() => import('./page/IframeView'))
+const TaxLookupMst = React.lazy(() => import('./page/TaxCDS/TaxLookupMst'))
+const MaintenancePage = React.lazy(() => import('./page/Maintenance/index'));
 
 const BookingType=process.env.REACT_APP_BHTNDS
 const DEFAULT_HOME_LAYOUT=process.env.REACT_APP_DEFAULT_HOME_LAYOUT
@@ -86,6 +88,17 @@ export const ROUTERS = {
         component: UpdateBookingDetail,
         isZaloApp: 1,
     },
+    taxLookupMst: {
+        path: PATH.TAX_LOOKUP_MST,
+        component: TaxLookupMst,
+        isZaloApp: 1
+    },
+    maintenance: {
+        path: '/maintenance',
+        component: MaintenancePage,
+        isZaloApp: 1 // nếu muốn cho Zalo app
+    },
+
     // page on web
     homePageWeb: {
         path: PATH.HOME,
@@ -136,6 +149,16 @@ export const ROUTERS = {
         path: PATH.IFRAME_VIEW,
         component: IframeView,
         isZaloApp: 0,
+    },
+    taxLookupMstWeb: {
+        path: PATH.TAX_LOOKUP_MST,
+        component: TaxLookupMst,
+        isZaloApp: 0
+    },
+    maintenanceWeb: {
+        path: '/maintenance',
+        component: MaintenancePage,
+        isZaloApp: 0 // nếu muốn cho web
     },
     // bookingPartnerIframe: {
     //     path: PATH.BOOKING_PARTNER_IFRAME,

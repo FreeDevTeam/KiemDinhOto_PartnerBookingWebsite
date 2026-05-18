@@ -31,24 +31,22 @@ const L2FunctionButtonList = (props) => {
     slidesToScroll: smallMobile ? 3 : 4,
     rows: 2,
   }
-  const handleClick= async (element)=>{
-    if(!globalState?.isAuthorize){
-      await handleZaloAuthorize()
-    }
-    const link = element?.linkNavigation
-
-    const isZaloLink = link.includes('zalo.me')
-    if (link) {
-      handleDirect(link, element?.navigationType  , history)
-    }
-    // if (isZaloLink) {
-    //   await setSheetVisible(false)
-    //   window.open(link, '_blank')
-    // } else {
-    //   await setSheetVisible(true);
-    //   await setDataBtn(element)
-    // }
+const handleClick = async (element) => {
+  if (!globalState?.isAuthorize) {
+    await handleZaloAuthorize()
   }
+
+  const link = element?.linkNavigation
+
+  if (link) {
+    sessionStorage.setItem(
+      'IFRAME_HEADER_TITLE',
+      element?.title || element?.label || ''
+    )
+
+    handleDirect(link, element?.navigationType, history)
+  }
+}
   const renderBtns = () => {
     return (
       <div style={{marginBottom:'1rem'}}>
