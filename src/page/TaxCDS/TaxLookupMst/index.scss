@@ -6,20 +6,25 @@
 
 .tax-mst-container {
   width: 100%;
-  max-width: 390px;
+  max-width: 600px;
   min-height: 100vh;
   margin: 0 auto;
   background: #edf2f5;
 }
 
 .tax-mst-banner-section {
-  padding: 14px 12px 0;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 14px 20px 0;
   background: #edf2f5;
+  box-sizing: border-box;
 }
 
 .tax-mst-banner {
   width: 100%;
-  height: 150px;
+  aspect-ratio: 343 / 128;
+  height: auto;
   padding: 0;
   border: none;
   border-radius: 8px;
@@ -37,7 +42,7 @@
 
 .tax-mst-white-panel {
   width: 100%;
-  min-height: calc(100vh - 92px - 164px);
+  min-height: calc(100vh - 92px);
   margin-top: 12px;
   padding: 12px 12px 24px;
   background: #ffffff;

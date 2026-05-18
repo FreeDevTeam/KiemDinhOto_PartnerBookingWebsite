@@ -13,6 +13,7 @@ import { getBannerBySectionCache } from '../../../helper/getBannerBySectionCache
 import MainLogo from '../../../components/MainLogo'
 import { getHomePageConfigCache } from '../../../helper/getHomePageConfigCache'
 import Header from '../../../components/Header'
+import HomeTaxHeader from '../../../components/HomeTaxHeader'
 import usePartnerBridge from '../../../sdk/usePartnerBridge'
 import { HOME_CONFIG_CATEGORY, HOME_CONFIG_CATEGORY_TEXT } from '../../../constants/Layout2Constants'
 
@@ -187,9 +188,18 @@ const HomeLayout2 = (props) => {
 
   return (
     <div>
-      {process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE && 
-        <Header title={process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE} onBack={() => {handleExit()}} />
-      }
+      {process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE && (
+      <Header
+        title={process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE}
+        onBack={() => {
+          handleExit()
+        }}
+      />
+    )}
+
+    {process.env.REACT_APP_SHOW_HOME_TAX_HEADER === 'true' && (
+      <HomeTaxHeader title={process.env.REACT_APP_HOME_HEADER_TITLE || 'Giao thông số'} />
+    )}
 
       <PageLayout>{renderSlider}</PageLayout>
       <div className="more mt-3">
