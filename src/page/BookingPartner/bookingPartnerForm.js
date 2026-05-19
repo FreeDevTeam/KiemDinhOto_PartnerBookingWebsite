@@ -471,7 +471,7 @@ console.log(dataBookingParam);
       return `${element.totalBookingSchedule || 0}/${element.totalSchedule}`
     }
 
-    const isEnableBooking = stationBookingConfig.some((item) => item?.enableBooking)
+    const isEnableBooking = hasEnabledBooking(stationBookingConfig)
 
     return isEnableBooking ? (
       <div style={{ color: 'var(--error-btn-color)' }}>Ngưng nhận lịch</div>
@@ -489,19 +489,23 @@ console.log(dataBookingParam);
     }
   }
 
-  function getStationAcceptBooking(stationOrStationId) {
+  function hasEnabledBooking(config = []) {
+    return (config || []).some((item) => Number(item?.enableBooking) === 1)
+  }
+
+  function getStationBookingConfig(stationOrStationId) {
     const resolvedId = stationOrStationId || form.getFieldValue('stationsId')
     const stationConfig = stationOrStationId?.stationBookingConfig
       ? parseStationBookingConfig(stationOrStationId.stationBookingConfig)
       : parseStationBookingConfig(
-        (listStation || []).find((item) => item?.stationsId == resolvedId || item?.value == resolvedId)?.stationBookingConfig
+        (listStation || []).find((item) => `${item?.stationsId}` === `${resolvedId}` || `${item?.value}` === `${resolvedId}`)?.stationBookingConfig
       )
 
-    if (stationConfig) {
-      return stationConfig?.some((item) => item?.enableBooking) ? 1 : 0
-    }
+    return stationConfig || stationBookingConfig || []
+  }
 
-    return stationBookingConfig?.some((item) => item?.enableBooking) ? 1 : 0
+  function getStationAcceptBooking(stationOrStationId) {
+    return hasEnabledBooking(getStationBookingConfig(stationOrStationId)) ? 1 : 0
   }
 
   function getScheduleDateDisplayConfig(item, stationAcceptBooking, minSelectableDate = null) {
@@ -581,7 +585,7 @@ console.log(dataBookingParam);
     }
   }
 
-  const onChangeStation = async (stationsId, overrideVehicleType = null) => {
+  const onChangeStation = async (stationsId, overrideVehicleType = null, stationOption = null) => {
     // Reset Date & Time
     form.setFieldValue('dateSchedule', undefined)
     form.setFieldValue('time', undefined)
@@ -590,10 +594,20 @@ console.log(dataBookingParam);
     setListBookingTime([])
 
     if (!stationsId) {
+      setStationSelected(null)
+      setStationBookingConfig([])
       setWorkdayFilter((prev) => ({ ...prev, stationsId: undefined }))
       setIsWorkdayLoading(false)
       return
     }
+
+    const selectedStation =
+      stationOption || (listStation || []).find((item) => `${item?.stationsId}` === `${stationsId}` || `${item?.value}` === `${stationsId}`) || null
+    const selectedStationConfig = getStationBookingConfig(selectedStation || stationsId)
+    const stationAcceptBooking = hasEnabledBooking(selectedStationConfig) ? 1 : 0
+
+    setStationSelected(selectedStation)
+    setStationBookingConfig(selectedStationConfig)
 
     getStationServices(stationsId).then((services) => {
       const allowedLabels = E_TICKET_SALE_OPTIONS.map((option) => option?.label?.toLowerCase())
@@ -606,7 +620,7 @@ console.log(dataBookingParam);
       const f = { ...workdayFilter, stationsId, vehicleType: vType }
 
       setIsWorkdayLoading(true)
-      const result = await findFirstAvailableDateRange(f)
+      const result = await findFirstAvailableDateRange(f, stationAcceptBooking)
       if (!result) {
         setErrorMessage('Không tìm thấy ngày giờ hẹn còn trống.')
         setIsModalErrOpen(true)
@@ -616,7 +630,7 @@ console.log(dataBookingParam);
 
       const actualFilter = result.filter
       setWorkdayFilter(actualFilter)
-      getBookingDate(actualFilter, result.bookingDates, result.selectedDate)
+      getBookingDate(actualFilter, result.bookingDates, result.selectedDate, stationAcceptBooking)
     } catch (err) {
       console.error(err)
       form.setFieldValue('dateSchedule', undefined)
@@ -672,9 +686,9 @@ console.log(dataBookingParam);
       })
   }
 
-  const getBookingDate = (filterArgs, bookingDatesData = null, selectedDateOverride = null) => {
+  const getBookingDate = (filterArgs, bookingDatesData = null, selectedDateOverride = null, stationAcceptBookingOverride = null) => {
     const fetchFilter = filterArgs || workdayFilter
-    const stationAcceptBooking = getStationAcceptBooking(fetchFilter?.stationsId)
+    const stationAcceptBooking = stationAcceptBookingOverride === null ? getStationAcceptBooking(fetchFilter?.stationsId) : stationAcceptBookingOverride
     const handleBookingDateResponse = (data) => {
       if (data?.statusCode == 505) {
         setListBookingDate([])
@@ -745,9 +759,8 @@ console.log(dataBookingParam);
           }
 
           // Check stationBookingConfig
-          const bookingConfig = JSON.parse(station?.stationBookingConfig || '[]')
-          setStationBookingConfig(bookingConfig || '[]')
-          const hasBookingEnabled = bookingConfig.some((item) => item?.enableBooking)
+          const bookingConfig = parseStationBookingConfig(station?.stationBookingConfig) || []
+          const hasBookingEnabled = hasEnabledBooking(bookingConfig)
 
           if (!hasBookingEnabled) {
             label = (
@@ -795,18 +808,20 @@ console.log(dataBookingParam);
           const priorityStation = activeStations.find((station) => station.enablePriorityMode >= 1 && station.hasBookingEnabled)
           const defaultStation = priorityStation || activeStations[0]
 
-          const hasStationIdByConfig = stationList?.find((item) => item?.stationsId === dataBookingParam?.stationsId)
+          const hasStationIdByConfig = stationList?.find((item) => `${item?.stationsId}` === `${dataBookingParam?.stationsId}`)
           let targetStationId = defaultStation?.stationsId
 
           if (dataBookingParam?.stationsId && hasStationIdByConfig) {
             targetStationId = dataBookingParam?.stationsId
           }
 
-          setStationSelected(targetStationId)
+          const targetStation = stationList?.find((item) => `${item?.stationsId}` === `${targetStationId}`) || null
+
+          setStationSelected(targetStation)
           form.setFieldValue('stationsId', targetStationId)
 
           if (targetStationId) {
-            onChangeStation(targetStationId)
+            onChangeStation(targetStationId, null, targetStation)
           } else {
             onChangeStation(undefined)
           }
@@ -911,11 +926,11 @@ console.log(dataBookingParam);
   }
 
   //function lấy ra ngày và giờ đầu tiên có thể đặt lịch
-  async function findFirstAvailableDateRange(baseDateFilter) {
+  async function findFirstAvailableDateRange(baseDateFilter, stationAcceptBookingOverride = null) {
     const searchStartDate = getBookingSearchStartDate()
     let current = searchStartDate.clone().startOf('month')
     const endLimit = searchStartDate.clone().add(3, 'month').endOf('month')
-    const stationAcceptBooking = getStationAcceptBooking(baseDateFilter?.stationsId)
+    const stationAcceptBooking = stationAcceptBookingOverride === null ? getStationAcceptBooking(baseDateFilter?.stationsId) : stationAcceptBookingOverride
 
     while (current.isSameOrBefore(endLimit, 'month')) {
       const startDate = current.isSame(searchStartDate, 'month')
@@ -1316,7 +1331,7 @@ console.log(dataBookingParam);
                       setWorkdayFilter(newFilter)
                       handleCategory(values)
                       if (newFilter.stationsId) {
-                        onChangeStation(newFilter.stationsId, vehicleType?.vehicleType)
+                        onChangeStation(newFilter.stationsId, vehicleType?.vehicleType, stationSelected)
                       }
                     }}
                   />
@@ -1413,6 +1428,7 @@ console.log(dataBookingParam);
                   disabled={isStationAreaLoading}
                   onChange={() => {
                     setStationSelected(null)
+                    setStationBookingConfig([])
                     setListStation([])
                     setETicketOptions([])
                     setWorkdaySelectedDate(undefined)
@@ -1462,7 +1478,7 @@ console.log(dataBookingParam);
                   onChange={(value, station) => {
                     form.setFieldValue('stationsId', value)
                     setStationSelected(station)
-                    onChangeStation(value)
+                    onChangeStation(value, null, station)
                   }}
                 />
               </Form.Item>
