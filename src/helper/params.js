@@ -3,67 +3,149 @@
  * -----------------
  * File này gom tất cả logic liên quan đến query params từ URL.
  * Bao gồm:
- * - Lấy param với smart parse (số, boolean, null, JSON, string)
+ * - Lấy param với smart parse
  * - Lấy tất cả params dưới dạng object
  * - Xoá param khỏi query
  * - Merge / build query string mới
- *
- * Dùng chung trong toàn project, tránh việc parse query lung tung ở nhiều chỗ.
  */
 
 /**
+ * Chỉ parse các số "bình thường":
+ * - 0
+ * - 123
+ * - -123
+ * - 12.34
+ * - -12.34
+ *
+ * Không parse các kiểu:
+ * - 00123
+ * - +10
+ * - .5
+ * - 1.
+ * - 1e3
+ * - NaN
+ * - Infinity
+ * - 0x10
+ */
+const NORMAL_NUMBER_REGEX = /^-?(?:0|[1-9]\d*)(?:\.\d+)?$/
+
+const isPlainObject = (value) => {
+  return Object.prototype.toString.call(value) === '[object Object]'
+}
+
+const canParseAsNormalNumber = (value) => {
+  if (!NORMAL_NUMBER_REGEX.test(value)) return false
+
+  const parsed = Number(value)
+
+  if (Number.isNaN(parsed)) return false
+  if (!Number.isSafeInteger(parsed) && !value.includes('.')) return false
+
+  return true
+}
+
+/**
  * Smart parser cho URL param
- * - "123" => number 123
- * - "true" => boolean true
- * - "false" => boolean false
- * - "null" / "undefined" / "" => null
+ *
+ * Rules:
+ * - null => null
+ * - undefined => undefined
+ * - '' / '   ' => ''
+ * - 'null' => null
+ * - 'undefined' => undefined
+ * - 'true' / 'false' => boolean
+ * - số thường => number
  * - JSON object / array => parse JSON
- * - decode URI
- * - khác => string nguyên vẹn
+ * - còn lại => string nguyên bản
+ *
+ * NOTE:
+ * URLSearchParams đã tự decode rồi, không decodeURIComponent thêm nữa.
  */
 export const smartParseParam = (value) => {
-  if (value === null || value === undefined) return null
+  if (value === null) return null
+  if (value === undefined) return undefined
+
+  if (typeof value !== 'string') return value
 
   const trimmed = value.trim()
 
-  if (trimmed === '' || trimmed === 'null' || trimmed === 'undefined') {
-    return null
-  }
+  if (trimmed === '') return ''
+
+  if (trimmed === 'null') return null
+  if (trimmed === 'undefined') return undefined
 
   if (trimmed === 'true') return true
   if (trimmed === 'false') return false
 
-  if (!isNaN(trimmed) && trimmed !== '') {
-    return Number(trimmed)
+  if (canParseAsNormalNumber(trimmed)) {
+    const parsedNumber = Number(trimmed)
+
+    // Với integer thì chặn vượt safe integer
+    if (Number.isInteger(parsedNumber) && !Number.isSafeInteger(parsedNumber)) {
+      return value
+    }
+
+    return parsedNumber
   }
 
-  if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+  const looksLikeJson = (trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))
+
+  if (looksLikeJson) {
     try {
       return JSON.parse(trimmed)
-    } catch {}
+    } catch {
+      return value
+    }
   }
 
-  try {
-    return decodeURIComponent(trimmed)
-  } catch {
-    return trimmed
+  return value
+}
+
+/**
+ * Serialize value để đưa lên URL sao cho parse lại đúng được
+ */
+export const serializeUrlParam = (value) => {
+  if (value === null) return 'null'
+  if (value === undefined) return 'undefined'
+
+  if (typeof value === 'string') return value
+  if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') {
+    return String(value)
   }
+
+  if (value instanceof Date) {
+    return value.toISOString()
+  }
+
+  if (Array.isArray(value) || isPlainObject(value)) {
+    return JSON.stringify(value)
+  }
+
+  return String(value)
+}
+
+/**
+ * Lấy value cuối cùng nếu param bị lặp key
+ * Ví dụ: ?a=1&a=2 => lấy 2
+ */
+const getLastParamValue = (params, key) => {
+  const values = params.getAll(key)
+  if (!values.length) return null
+  return values[values.length - 1]
 }
 
 /**
  * Lấy giá trị param từ URL theo key, đã parse sẵn
- * Ví dụ: getUrlParamValue("referUserId"),
- * Mặc định lấy từ window.location.search, nếu truyền search của location.search của useLocaltion thì truyền vào
  */
 export const getUrlParamValue = (key, search = window.location.search) => {
   const params = new URLSearchParams(search)
-  const rawValue = params.get(key)
+  const rawValue = getLastParamValue(params, key)
   return smartParseParam(rawValue)
 }
 
 /**
  * Lấy tất cả params từ URL, trả về object { key: parsedValue }
- * Mặc định lấy từ window.location.search, nếu truyền search của location.search của useLocaltion thì truyền vào
+ * Nếu duplicate key thì lấy value cuối cùng
  */
 export const getAllUrlParams = (search = window.location.search) => {
   const params = new URLSearchParams(search)
@@ -80,21 +162,21 @@ export const getAllUrlParams = (search = window.location.search) => {
  * Xoá các param khỏi query string
  * - keys: mảng key muốn xoá
  * - return: query string mới (không bao gồm ?)
- * Mặc định lấy từ window.location.search, nếu truyền search của location.search của useLocaltion thì truyền vào
  */
 export const removeUrlParams = (keys = [], search = window.location.search) => {
   const params = new URLSearchParams(search)
 
   keys.forEach((key) => params.delete(key))
 
-  return params.toString() // trả về "a=1&b=2"
+  return params.toString()
 }
 
 /**
  * Merge params vào URL hiện tại
  * - newParams: object { key: value }
+ * - null / undefined => xoá key khỏi query
+ * - object / array => JSON.stringify để parse ngược lại được
  * - return: query string mới (không bao gồm ?)
- * Mặc định lấy từ window.location.search, nếu truyền search của location.search của useLocaltion thì truyền vào
  */
 export const mergeUrlParams = (newParams = {}, search = window.location.search) => {
   const params = new URLSearchParams(search)
@@ -103,7 +185,7 @@ export const mergeUrlParams = (newParams = {}, search = window.location.search) 
     if (value === null || value === undefined) {
       params.delete(key)
     } else {
-      params.set(key, value.toString())
+      params.set(key, serializeUrlParam(value))
     }
   })
 
@@ -114,13 +196,14 @@ export const mergeUrlParams = (newParams = {}, search = window.location.search) 
  * Build query string từ object
  * - params: object { key: value }
  * - prefix: "?" hoặc "&" nếu muốn
+ * - null / undefined => bỏ qua
  */
 export const buildQueryString = (params = {}, prefix = '?') => {
   const urlParams = new URLSearchParams()
 
   Object.entries(params).forEach(([key, value]) => {
     if (value !== null && value !== undefined) {
-      urlParams.set(key, value.toString())
+      urlParams.set(key, serializeUrlParam(value))
     }
   })
 
