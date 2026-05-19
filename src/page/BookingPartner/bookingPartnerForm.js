@@ -504,7 +504,12 @@ console.log(dataBookingParam);
     return stationBookingConfig?.some((item) => item?.enableBooking) ? 1 : 0
   }
 
-  function getScheduleDateDisplayConfig(item, stationAcceptBooking) {
+  function getScheduleDateDisplayConfig(item, stationAcceptBooking, minSelectableDate = null) {
+    const scheduleDate = moment(item?.scheduleDate, DATE_DISPLAY_FORMAT, true)
+    if (minSelectableDate && scheduleDate.isValid() && scheduleDate.isBefore(minSelectableDate, 'day')) {
+      return { disabled: true, isFull: false, text: '' }
+    }
+
     const totalSchedule = item?.totalSchedule
     const totalBookingSchedule = item?.totalBookingSchedule
     const isMissingData = totalSchedule === null || totalSchedule === undefined || totalBookingSchedule === null || totalBookingSchedule === undefined
@@ -546,6 +551,17 @@ console.log(dataBookingParam);
     if (item?.scheduleTimeStatus !== 1) return true
     if (totalSchedule <= 0) return true
     return totalBookingSchedule >= totalSchedule
+  }
+
+  function getBookingSearchStartDate() {
+    const configuredDate = moment(dataBookingParam?.dateSchedule, [DATE_DISPLAY_FORMAT, moment.ISO_8601], true)
+    const today = moment()
+
+    if (configuredDate.isValid() && configuredDate.isAfter(today, 'day')) {
+      return configuredDate
+    }
+
+    return today
   }
 
   const onChangeDate = (date, stationsId, vehicleType) => {
@@ -591,11 +607,23 @@ console.log(dataBookingParam);
 
       setIsWorkdayLoading(true)
       const result = await findFirstAvailableDateRange(f)
-      const actualFilter = result?.filter || f
+      if (!result) {
+        setErrorMessage('Không tìm thấy ngày giờ hẹn còn trống.')
+        setIsModalErrOpen(true)
+        setIsWorkdayLoading(false)
+        return
+      }
+
+      const actualFilter = result.filter
       setWorkdayFilter(actualFilter)
-      getBookingDate(actualFilter, result?.bookingDates)
+      getBookingDate(actualFilter, result.bookingDates, result.selectedDate)
     } catch (err) {
       console.error(err)
+      form.setFieldValue('dateSchedule', undefined)
+      form.setFieldValue('time', undefined)
+      setWorkdaySelectedDate(undefined)
+      setListBookingDate([])
+      setListBookingTime([])
       setIsWorkdayLoading(false)
     }
   }
@@ -644,11 +672,11 @@ console.log(dataBookingParam);
       })
   }
 
-  const getBookingDate = (filterArgs, bookingDatesData = null) => {
+  const getBookingDate = (filterArgs, bookingDatesData = null, selectedDateOverride = null) => {
     const fetchFilter = filterArgs || workdayFilter
     const stationAcceptBooking = getStationAcceptBooking(fetchFilter?.stationsId)
     const handleBookingDateResponse = (data) => {
-      if (data.statusCode == 505) {
+      if (data?.statusCode == 505) {
         setListBookingDate([])
         return undefined
       }
@@ -656,7 +684,7 @@ console.log(dataBookingParam);
       if (data.length > 0) {
         let tmp = data || []
         tmp.forEach((element) => {
-          const config = getScheduleDateDisplayConfig(element, stationAcceptBooking)
+          const config = getScheduleDateDisplayConfig(element, stationAcceptBooking, getBookingSearchStartDate())
           element.disabled = config.disabled
           element.displayText = config.text
           element.isFull = config.isFull
@@ -664,7 +692,9 @@ console.log(dataBookingParam);
         })
         setListBookingDate(tmp)
 
-        const firstAvailableSchedule = tmp.find((item) => !item.disabled)
+        const firstAvailableSchedule =
+          tmp.find((item) => item.scheduleDate === selectedDateOverride && !item.disabled) ||
+          tmp.find((item) => !item.disabled)
         return firstAvailableSchedule?.scheduleDate
       } else {
         setListBookingDate([])
@@ -880,14 +910,18 @@ console.log(dataBookingParam);
     form.setFieldsValue({ [fieldName]: value })
   }
 
-  //function lấy ra ngày đầu tiên có lịch làm
+  //function lấy ra ngày và giờ đầu tiên có thể đặt lịch
   async function findFirstAvailableDateRange(baseDateFilter) {
-    let current = moment() // ngày hiện tại
-    const endLimit = moment().add(3, 'month').endOf('month') // 31/12 năm sau
+    const searchStartDate = getBookingSearchStartDate()
+    let current = searchStartDate.clone().startOf('month')
+    const endLimit = searchStartDate.clone().add(3, 'month').endOf('month')
+    const stationAcceptBooking = getStationAcceptBooking(baseDateFilter?.stationsId)
 
     while (current.isSameOrBefore(endLimit, 'month')) {
-      const startDate = current.startOf('month').format('DD/MM/YYYY')
-      const endDate = current.endOf('month').format('DD/MM/YYYY')
+      const startDate = current.isSame(searchStartDate, 'month')
+        ? searchStartDate.clone().format(DATE_DISPLAY_FORMAT)
+        : current.clone().startOf('month').format(DATE_DISPLAY_FORMAT)
+      const endDate = current.clone().endOf('month').format(DATE_DISPLAY_FORMAT)
 
       const requestParams = {
         ...baseDateFilter,
@@ -897,23 +931,37 @@ console.log(dataBookingParam);
 
       try {
         const data = await BookingService.getBookingDate(requestParams)
-        const validDates = data?.filter((d) => d.scheduleDateStatus === 1) || []
-        if (validDates.length > 0) {
-          setMinMonthAvailable(requestParams.startDate)
-          return {
-            filter: requestParams,
-            bookingDates: data
+        const bookingDates = Array.isArray(data) ? data : []
+        const availableDates = bookingDates.filter((item) => {
+          const config = getScheduleDateDisplayConfig(item, stationAcceptBooking, searchStartDate)
+          return !config.disabled
+        })
+
+        for (const bookingDate of availableDates) {
+          const bookingTimes = await BookingService.getBookingHours({
+            stationsId: baseDateFilter?.stationsId,
+            date: bookingDate.scheduleDate,
+            vehicleType: baseDateFilter?.vehicleType
+          })
+          const selectedTime = Array.isArray(bookingTimes) ? bookingTimes.find((item) => !isDisabledScheduleTime(item)) : null
+
+          if (selectedTime) {
+            setMinMonthAvailable(requestParams.startDate)
+            return {
+              filter: requestParams,
+              bookingDates: data,
+              selectedDate: bookingDate.scheduleDate
+            }
           }
         }
       } catch (err) {
         console.error(`Lỗi khi gọi API tháng ${current.format('MM/YYYY')}:`, err)
-        // Bạn có thể break nếu lỗi không thể phục hồi
       }
 
-      current = current.add(1, 'month')
+      current = current.clone().add(1, 'month')
     }
 
-    return null // Không tìm thấy tháng nào có ngày làm việc
+    return null
   }
 
   async function getStationByApiKey(apiKey) {
