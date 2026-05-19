@@ -1218,10 +1218,12 @@ console.log(dataBookingParam);
             <Form.Item
               name="licensePlateColor"
               label="Màu biển số"
-              hidden={dataBookingParam?.visible_scheduleType === false}
+              // hidden={dataBookingParam?.visible_scheduleType === false}
+              hidden={dataBookingParam?.visible_vehiclePlateColor === false}
               rules={[
                 {
-                  required: dataBookingParam?.visible_scheduleType !== false && dataBookingParam?.require_vehiclePlateColor === true,
+                  // required: dataBookingParam?.visible_scheduleType !== false && dataBookingParam?.require_vehiclePlateColor === true,
+                  required: dataBookingParam?.visible_vehiclePlateColor !== false,
                   message: 'Vui lòng chọn màu biển số'
                 }
               ]}>
@@ -1239,15 +1241,18 @@ console.log(dataBookingParam);
               />
             </Form.Item>
             <Row className="justify-content-between">
-              <Col span={11}>
+              {dataBookingParam?.visible_vehicleSubType !== false && (
+                <Col span={dataBookingParam?.visible_vehicleSubCategory !== false ? 11 : 24}>
                 <Form.Item
                   className="radio-label"
                   label="Loại phương tiện"
                   name="vehicleSubType"
-                  hidden={dataBookingParam?.visible_vehicleSubCategory === false}
+                  // hidden={dataBookingParam?.visible_vehicleSubCategory === false}
+                  hidden={dataBookingParam?.visible_vehicleSubType === false}
                   rules={[
                     {
-                      required: dataBookingParam?.visible_vehicleSubCategory !== false && dataBookingParam?.require_vehicleSubType === true,
+                      // required: dataBookingParam?.visible_vehicleSubCategory !== false && dataBookingParam?.require_vehicleSubType === true,
+                      required: dataBookingParam?.visible_vehicleSubType !== false,
                       message: 'Vui lòng nhập'
                     }
                   ]}>
@@ -1268,8 +1273,10 @@ console.log(dataBookingParam);
                     }}
                   />
                 </Form.Item>
-              </Col>
-              <Col span={11}>
+                </Col>
+              )}
+              {dataBookingParam?.visible_vehicleSubCategory !== false && (
+                <Col span={dataBookingParam?.visible_vehicleSubType !== false ? 11 : 24}>
                 <Form.Item
                   className="radio-label"
                   label="Phân loại"
@@ -1277,9 +1284,10 @@ console.log(dataBookingParam);
                   hidden={dataBookingParam?.visible_vehicleSubCategory === false}
                   rules={[
                     {
-                      required:
-                        dataBookingParam?.visible_vehicleSubCategory !== false &&
-                        (dataBookingParam?.require_vehicleSubCategory === 'true' ? true : false),
+                      // required:
+                      //   dataBookingParam?.visible_vehicleSubCategory !== false &&
+                      //   (dataBookingParam?.require_vehicleSubCategory === 'true' ? true : false),
+                      required: dataBookingParam?.visible_vehicleSubCategory !== false,
                       message: 'Vui lòng chọn phân loại'
                     }
                   ]}>
@@ -1292,7 +1300,8 @@ console.log(dataBookingParam);
                     }}
                   />
                 </Form.Item>
-              </Col>
+                </Col>
+              )}
             </Row>
             <Form.Item
               name="certificateSeries"
@@ -1315,8 +1324,9 @@ console.log(dataBookingParam);
               }
               rules={[
                 {
-                  required:
-                    dataBookingParam?.visible_certificateSeries !== false && (dataBookingParam?.require_certificateSeries === 'true' ? true : false),
+                  // required:
+                  //   dataBookingParam?.visible_certificateSeries !== false && (dataBookingParam?.require_certificateSeries === 'true' ? true : false),
+                  required: dataBookingParam?.visible_certificateSeries !== false && dataBookingParam?.require_certificateSeries !== false,
                   message: 'Vui lòng nhập số seri GCN'
                 },
                 {
