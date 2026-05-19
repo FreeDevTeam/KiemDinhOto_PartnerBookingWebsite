@@ -649,6 +649,8 @@ console.log(dataBookingParam);
       .then((data) => {
         if (data.statusCode == 505) {
           setListBookingTime([])
+          setErrorMessage('Không tìm thấy giờ hẹn còn trống.')
+          setIsModalErrOpen(true)
           return
         }
 
@@ -670,11 +672,15 @@ console.log(dataBookingParam);
             form.setFieldValue('time', firstAvailableTime)
           } else {
             form.setFieldValue('time', undefined)
+            setErrorMessage('Không tìm thấy giờ hẹn còn trống.')
+            setIsModalErrOpen(true)
           }
           setListBookingTime(tmp)
         } else {
           setListBookingTime([])
           form.setFieldValue('time', undefined)
+          setErrorMessage('Không tìm thấy giờ hẹn còn trống.')
+          setIsModalErrOpen(true)
         }
       })
       .catch(() => {
@@ -693,6 +699,8 @@ console.log(dataBookingParam);
     const handleBookingDateResponse = (data) => {
       if (data?.statusCode == 505) {
         setListBookingDate([])
+        setErrorMessage('Không tìm thấy ngày hẹn còn trống.')
+        setIsModalErrOpen(true)
         return undefined
       }
 
@@ -710,9 +718,15 @@ console.log(dataBookingParam);
         const firstAvailableSchedule =
           tmp.find((item) => item.scheduleDate === selectedDateOverride && !item.disabled) ||
           tmp.find((item) => !item.disabled)
+        if (!firstAvailableSchedule) {
+          setErrorMessage('Không tìm thấy ngày hẹn còn trống.')
+          setIsModalErrOpen(true)
+        }
         return firstAvailableSchedule?.scheduleDate
       } else {
         setListBookingDate([])
+        setErrorMessage('Không tìm thấy ngày hẹn còn trống.')
+        setIsModalErrOpen(true)
         return undefined
       }
     }
