@@ -1348,10 +1348,16 @@ console.log(dataBookingParam);
             </Form.Item>
             {isShowStationDateTime.showAreaField && (
               <Form.Item
-                required={dataBookingParam?.visible_StationArea !== false}
+                /* required={dataBookingParam?.visible_StationArea !== false} */
                 label="Khu vực"
                 name="vntId"
-                hidden={dataBookingParam?.visible_StationArea === false}>
+                hidden={dataBookingParam?.visible_StationArea === false}
+                rules={[
+                  {
+                    required: dataBookingParam?.visible_StationArea !== false,
+                    message: 'Vui lòng chọn khu vực'
+                  }
+                ]}>
                 <SelectAntd
                   className="cs-select ant-custom booking-input"
                   showSearch
@@ -1386,7 +1392,7 @@ console.log(dataBookingParam);
                 rules={[
                   {
                     required: dataBookingParam?.visible_StationsCode !== false,
-                    message: 'Vui lòng nhập'
+                    message: 'Vui lòng chọn trạm'
                   }
                 ]}
                 hidden={dataBookingParam?.visible_StationsCode === false}>
@@ -1418,9 +1424,11 @@ console.log(dataBookingParam);
                 name="dateSchedule"
                 label="Ngày hẹn"
                 extra="Đặt lịch hẹn qua App để được nhắc hẹn tự động"
+                hidden={dataBookingParam?.visible_dateSchedule === false}
                 rules={[
                   {
-                    required: true,
+                    // required: true,
+                    required: dataBookingParam?.visible_dateSchedule !== false,
                     message: 'Vui lòng nhập'
                   }
                 ]}>
@@ -1452,9 +1460,11 @@ console.log(dataBookingParam);
               <Form.Item
                 label="Giờ hẹn"
                 name="time"
+                hidden={dataBookingParam?.visible_timeSchedule === false}
                 rules={[
                   {
-                    required: true,
+                    // required: true,
+                    required: dataBookingParam?.visible_timeSchedule !== false,
                     message: 'Vui lòng chọn giờ hẹn'
                   }
                 ]}>
