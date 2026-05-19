@@ -103,6 +103,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   // state này để lấy thông tin trên params và hiển thị cho lần đầu tiên
   const [dataBookingParam, setDataBookingParam] = useState({})
 console.log(dataBookingParam);
+  const [isInitLoading, setIsInitLoading] = useState(true)
 
   // state của các modal hiển thị thông báo
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -127,7 +128,7 @@ console.log(dataBookingParam);
   const getStationConfigByApiKey = (paramsFromUrl) => {
     setIsLoading(true)
     const apiKey = paramsFromUrl?.apiKey || paramsFromUrl?.apikey || localStorage.getItem('apiKey') || process.env.REACT_APP_APIKEY || undefined
-    SystemConfigurationsService.getStationConfigByApiKey({ apiKey: apiKey })
+    return SystemConfigurationsService.getStationConfigByApiKey({ apiKey: apiKey })
       .then((result) => {
         const stationMiniAppLink = JSON.parse(result?.[0]?.stationMiniAppLink || '{}')
         setDataBookingParam({ ...stationMiniAppLink, ...paramsFromUrl })
@@ -420,7 +421,7 @@ console.log(dataBookingParam);
   }
 
   const getMetaData = () => {
-    fetchMetadataWithCache()
+    return fetchMetadataWithCache()
       .then((result) => {
         const { statusCode, data } = result
         if (statusCode === 200 && data?.SCHEDULE_TYPE) {
@@ -996,13 +997,24 @@ console.log(dataBookingParam);
 
   // ------------USE EFFECT------------------
   useEffect(() => {
+    let isMounted = true
     const init = async () => {
-      await Promise.all([loadInitialData(), loadStationAreas()])
-      await handleParams()
-      await finalizeSetup()
+      setIsInitLoading(true)
+      try {
+        await Promise.all([loadInitialData(), loadStationAreas()])
+        await handleParams()
+        await finalizeSetup()
+      } finally {
+        if (isMounted) {
+          setIsInitLoading(false)
+        }
+      }
     }
 
     init()
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   const loadInitialData = async () => {
@@ -1020,7 +1032,7 @@ console.log(dataBookingParam);
     }
   }
 
-  const handleParams = () => {
+  const handleParams = async () => {
     const paramsFromUrl = getQueryParams()
 
     handleCategory(paramsFromUrl?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
@@ -1034,7 +1046,7 @@ console.log(dataBookingParam);
       paramsFromUrl[key] = value
       // fillFormValue(key, value)
     })
-    getStationConfigByApiKey(paramsFromUrl)
+    await getStationConfigByApiKey(paramsFromUrl)
   }
 
   const finalizeSetup = () => {
@@ -1157,7 +1169,7 @@ console.log(dataBookingParam);
     (isWorkdayLoading && !isDateFieldVisible && !canInteractWithAreaField && !canInteractWithStationField) ||
     (loadingHoursPicker && !isTimeFieldVisible && !canInteractWithAreaField && !canInteractWithStationField && !canInteractWithDateField)
 
-  const isSubmitDisabled = isLoading || isStationAreaLoading || isStationLoading || isWorkdayLoading || loadingHoursPicker
+  const isSubmitDisabled = isInitLoading || isLoading || isStationAreaLoading || isStationLoading || isWorkdayLoading || loadingHoursPicker
 
   return (
     <div className="position-relative">
@@ -1587,7 +1599,7 @@ console.log(dataBookingParam);
           text={errorMessage}></PopupMessage>
       )}
       {/* Hiển thị loading */}
-      {(isLoading || shouldShowHiddenFieldLoading) && (
+      {(isInitLoading || isLoading || shouldShowHiddenFieldLoading) && (
         <div className="loading">
           <div className="text-center">
             <MainLogo height={60} width={60}></MainLogo>
