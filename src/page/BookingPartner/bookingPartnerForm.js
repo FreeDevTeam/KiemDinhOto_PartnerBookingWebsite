@@ -1143,6 +1143,20 @@ console.log(dataBookingParam);
     setScheduleCategory(scheduleTypeWithParams?.scheduleCategory || SCHEDULE_BOOKING_TYPE.SCHEDULE)
   }, [scheduleTypes, form.getFieldValue('scheduleType')])
 
+  const isAreaFieldVisible = isShowStationDateTime.showAreaField && dataBookingParam?.visible_StationArea !== false
+  const isStationFieldVisible = isShowStationDateTime.showStationField && dataBookingParam?.visible_StationsCode !== false
+  const isDateFieldVisible = isShowStationDateTime.showDateField && dataBookingParam?.visible_dateSchedule !== false
+  const isTimeFieldVisible = isShowStationDateTime.showTimeField && dataBookingParam?.visible_timeSchedule !== false
+
+  const canInteractWithAreaField = isAreaFieldVisible && !isStationAreaLoading
+  const canInteractWithStationField = isStationFieldVisible && !!form.getFieldValue('vntId') && !isStationLoading
+  const canInteractWithDateField = isDateFieldVisible && !!form.getFieldValue('stationsId') && !isWorkdayLoading
+  const shouldShowHiddenFieldLoading =
+    (isStationAreaLoading && !isAreaFieldVisible) ||
+    (isStationLoading && !isStationFieldVisible && !canInteractWithAreaField) ||
+    (isWorkdayLoading && !isDateFieldVisible && !canInteractWithAreaField && !canInteractWithStationField) ||
+    (loadingHoursPicker && !isTimeFieldVisible && !canInteractWithAreaField && !canInteractWithStationField && !canInteractWithDateField)
+
   const isSubmitDisabled = isLoading || isStationAreaLoading || isStationLoading || isWorkdayLoading || loadingHoursPicker
 
   return (
@@ -1573,7 +1587,7 @@ console.log(dataBookingParam);
           text={errorMessage}></PopupMessage>
       )}
       {/* Hiển thị loading */}
-      {isLoading && (
+      {(isLoading || shouldShowHiddenFieldLoading) && (
         <div className="loading">
           <div className="text-center">
             <MainLogo height={60} width={60}></MainLogo>
