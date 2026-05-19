@@ -28,68 +28,80 @@ export const saveClickToLocalStorage = ({ localStorageKey, targetId }) => {
   }
 }
 
-export function formatLocalStorageValue(value) {
-  // 1. Null → trả về "null"
-  if (value === null) {
-    return 'null'
-  }
+// Chỉ parse number dạng decimal bình thường
+// Parse:
+// - 0
+// - 10
+// - -10
+// - 1.5
+// - -1.5
+//
+// Không parse:
+// - 00123
+// - +10
+// - .5
+// - 1.
+// - 1e3
+// - NaN
+// - Infinity
+// - 0x10
+const STRICT_NUMBER_REGEX = /^-?(0|[1-9]\d*)(\.\d+)?$/
 
-  // 2. Undefined → trả về "undefined"
+export function formatLocalStorageValue(value) {
+  // LocalStorage chỉ lưu string
+  // stringify để khi get lên có thể restore lại đúng kiểu dữ liệu thường gặp
   if (value === undefined) {
     return 'undefined'
   }
 
-  // 3. Number, boolean → stringify
-  if (typeof value === 'number' || typeof value === 'boolean') {
-    return String(value)
+  try {
+    return JSON.stringify(value)
+  } catch (e) {
+    console.error('formatLocalStorageValue: JSON stringify failed', e)
+    return 'undefined'
   }
-
-  // 4. String → giữ nguyên
-  if (typeof value === 'string') {
-    return value
-  }
-
-  // 5. Array / Object → JSON stringify
-  if (typeof value === 'object') {
-    try {
-      return JSON.stringify(value)
-    } catch (e) {
-      console.error('formatLocalStorageValue: JSON stringify failed', e)
-      return 'undefined' // hoặc null tùy bạn
-    }
-  }
-
-  // 6. Function / Symbol → không hỗ trợ
-  console.warn(`formatLocalStorageValue: unsupported value type`, value)
-  return 'undefined'
 }
 
 export function parseFromLocalStorage(raw) {
-  // Nếu value truyền vào là null hoặc undefined → return ngay
+  // null / undefined -> return ngay
   if (raw === null) return null
   if (raw === undefined) return undefined
 
-  // Chỉ xử lý string, còn type khác thì trả luôn
+  // chỉ xử lý string
   if (typeof raw !== 'string') return raw
 
-  // Các giá trị primitive dạng string
-  if (raw === 'null') return null
-  if (raw === 'undefined') return undefined
-  if (raw === 'true') return true
-  if (raw === 'false') return false
+  const trimmed = raw.trim()
 
-  // Số (kể cả 0, số dương, số âm)
-  if (!isNaN(raw) && raw.trim() !== '') {
-    return Number(raw)
+  // giữ nguyên chuỗi rỗng hoặc toàn khoảng trắng
+  if (trimmed === '') return raw
+
+  // special literals
+  if (trimmed === 'undefined') return undefined
+  if (trimmed === 'null') return null
+  if (trimmed === 'true') return true
+  if (trimmed === 'false') return false
+
+  // chỉ parse number nếu là decimal bình thường
+  if (STRICT_NUMBER_REGEX.test(trimmed)) {
+    return Number(trimmed)
   }
 
-  // Thử parse JSON (object, array, string)
-  try {
-    return JSON.parse(raw)
-  } catch (e) {
-    // Không phải JSON → trả lại chuỗi gốc
-    return raw
+  // parse JSON cho object / array / string đã stringify
+  const looksLikeJson =
+    (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
+    (trimmed.startsWith('[') && trimmed.endsWith(']')) ||
+    (trimmed.startsWith('"') && trimmed.endsWith('"'))
+
+  if (looksLikeJson) {
+    try {
+      return JSON.parse(trimmed)
+    } catch (e) {
+      return raw
+    }
   }
+
+  // còn lại giữ nguyên string gốc
+  return raw
 }
 
 export const LocalStorageManager = {
