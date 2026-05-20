@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { useHistory } from 'react-router-dom'
 import moment from 'moment'
 import { SHA256 } from 'crypto-js'
-import { Form, Input, Button, Spin, Select as SelectAntd, Row, Col } from 'antd'
+import { Form, Input, Button, Spin, Select as SelectAntd, Row, Col, Checkbox, Modal } from 'antd'
 
 import BookingSuccess from './BookingSuccessModal'
 import PopupMessage from './PopupMessage'
@@ -110,6 +110,8 @@ console.log(dataBookingParam);
   const [scheduleTypePopUp, setScheduleTypePopUp] = useState([])
   const [isModalErrOpen, setIsModalErrOpen] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [isRedirectConsentChecked, setIsRedirectConsentChecked] = useState(false)
+  const [isConfirmTermModalOpen, setIsConfirmTermModalOpen] = useState(false)
 
   // states cho phương thức thanh toán
   const [zalopayPaymentMethod, setZalopayPaymentMethod] = useState(null)
@@ -124,6 +126,15 @@ console.log(dataBookingParam);
       console.log('error', error)
     }
   }
+
+  const isConfigEnabled = (value) => value === true || value === 1 || `${value}`.toLowerCase() === 'true' || `${value}` === '1'
+  const getConfigText = (value) => (typeof value === 'string' ? value.trim() : '')
+  const isNormalBookingFlow = !MINIAPP_GTELPAY && !MINIAPP_ZALOPAY
+  const isConfirmBookingScheduleEnabled = isConfigEnabled(dataBookingParam?.confirmBookingScheduleEnabled)
+  const confirmBookingScheduleUrl = getConfigText(dataBookingParam?.confirmBookingScheduleUrl)
+  const confirmBookingScheduleTerm = getConfigText(dataBookingParam?.confirmBookingScheduleTerm)
+  const shouldUseConfirmBookingSchedule = isNormalBookingFlow && isConfirmBookingScheduleEnabled && !!confirmBookingScheduleUrl
+  const shouldShowConfirmBookingTerm = shouldUseConfirmBookingSchedule && !!confirmBookingScheduleTerm
 
   const getStationConfigByApiKey = (paramsFromUrl) => {
     setIsLoading(true)
@@ -383,6 +394,18 @@ console.log(dataBookingParam);
   }
 
   const onFinish = (values) => {
+    if (shouldUseConfirmBookingSchedule && !confirmBookingScheduleTerm) {
+      setErrorMessage('Vui lòng cấu hình Điều khoản chia sẻ dữ liệu trước khi bật link điều hướng.')
+      setIsModalErrOpen(true)
+      return
+    }
+
+    if (shouldShowConfirmBookingTerm && !isRedirectConsentChecked) {
+      setErrorMessage('Vui lòng đọc và đồng ý với Điều khoản chia sẻ dữ liệu trước khi đặt lịch.')
+      setIsModalErrOpen(true)
+      return
+    }
+
     const data = {
       licensePlates: normalizePlate(values.licensePlates),
       phone: values.phone,
@@ -1169,6 +1192,12 @@ console.log(dataBookingParam);
     setScheduleCategory(scheduleTypeWithParams?.scheduleCategory || SCHEDULE_BOOKING_TYPE.SCHEDULE)
   }, [scheduleTypes, form.getFieldValue('scheduleType')])
 
+  useEffect(() => {
+    if (!shouldShowConfirmBookingTerm) {
+      setIsRedirectConsentChecked(false)
+    }
+  }, [shouldShowConfirmBookingTerm])
+
   const isAreaFieldVisible = isShowStationDateTime.showAreaField && dataBookingParam?.visible_StationArea !== false
   const isStationFieldVisible = isShowStationDateTime.showStationField && dataBookingParam?.visible_StationsCode !== false
   const isDateFieldVisible = isShowStationDateTime.showDateField && dataBookingParam?.visible_dateSchedule !== false
@@ -1583,6 +1612,28 @@ console.log(dataBookingParam);
                 />
               </Form.Item>
             )}
+            {shouldShowConfirmBookingTerm && (
+              <div className="booking-confirm-consent">
+                <Checkbox
+                  checked={isRedirectConsentChecked}
+                  onChange={(event) => {
+                    setIsRedirectConsentChecked(event.target.checked)
+                  }}>
+                  Tôi đã đọc và đồng ý với{' '}
+                  <button
+                    type="button"
+                    className="booking-confirm-term-link"
+                    onClick={(event) => {
+                      event.preventDefault()
+                      event.stopPropagation()
+                      setIsConfirmTermModalOpen(true)
+                    }}>
+                    Điều khoản chia sẻ dữ liệu
+                  </button>
+                  .
+                </Checkbox>
+              </div>
+            )}
             <div className="w-100 d-flex justify-content-center mgt-40">
               {
                 <Button className="login__button df" type="primary" htmlType="submit" size="large" disabled={isSubmitDisabled} style={{ opacity: isSubmitDisabled ? 0.5 : 1 }}>
@@ -1603,7 +1654,20 @@ console.log(dataBookingParam);
         onClose={() => {
           setIsModalOpen(false)
           // history.goBack()
-        }}></BookingSuccess>
+        }}
+        redirectUrl={shouldUseConfirmBookingSchedule ? confirmBookingScheduleUrl : undefined}></BookingSuccess>
+      <Modal
+        title="Điều khoản chia sẻ dữ liệu"
+        visible={isConfirmTermModalOpen}
+        onCancel={() => setIsConfirmTermModalOpen(false)}
+        footer={
+          <Button className="login__button df" type="primary" onClick={() => setIsConfirmTermModalOpen(false)}>
+            Đã hiểu
+          </Button>
+        }
+        className="booking-confirm-term-modal">
+        <div className="booking-confirm-term-content">{confirmBookingScheduleTerm}</div>
+      </Modal>
       {isModalErrOpen && (
         <PopupMessage
           isModalOpen={isModalErrOpen}
