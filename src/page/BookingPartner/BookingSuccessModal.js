@@ -41,7 +41,7 @@ const BookingSuccess = ({ isModalOpen, onClose,setTabKey,setIsModalOpen,schedule
 
   return (
     <>
-      <Modal title="" visible={isModalOpen} footer={null} closable={false} maskClosable={false} keyboard={false} className="text-center">
+      <Modal title="" visible={isModalOpen} footer={null} closable={false} maskClosable={false} keyboard={false} className="text-center" centered >
         <div className={'register app-container'} style={{ maxWidth: 600, margin: 'auto', padding:15}}>
           <div className="register-success text-center">
             <SuccessIcon className={'text-center'} />

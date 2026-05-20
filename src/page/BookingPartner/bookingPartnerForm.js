@@ -1213,6 +1213,7 @@ console.log(dataBookingParam);
     (loadingHoursPicker && !isTimeFieldVisible && !canInteractWithAreaField && !canInteractWithStationField && !canInteractWithDateField)
 
   const isSubmitDisabled = isInitLoading || isLoading || isStationAreaLoading || isStationLoading || isWorkdayLoading || loadingHoursPicker
+  const isBookingSubmitDisabled = isSubmitDisabled || (shouldShowConfirmBookingTerm && !isRedirectConsentChecked)
 
   return (
     <div className="position-relative">
@@ -1619,24 +1620,22 @@ console.log(dataBookingParam);
                   onChange={(event) => {
                     setIsRedirectConsentChecked(event.target.checked)
                   }}>
-                  Tôi đã đọc và đồng ý với{' '}
-                  <button
-                    type="button"
-                    className="booking-confirm-term-link"
-                    onClick={(event) => {
-                      event.preventDefault()
-                      event.stopPropagation()
-                      setIsConfirmTermModalOpen(true)
-                    }}>
-                    Điều khoản chia sẻ dữ liệu
-                  </button>
-                  .
+                  <span>
+                    Tôi đã đọc và đồng ý với{' '}
+                  </span>
+                  <span onClick={(event) => {
+                    event.preventDefault()
+                    event.stopPropagation()
+                    setIsConfirmTermModalOpen(true)
+                  }} className="booking-confirm-term-link">
+                   Điều khoản chia sẻ dữ liệu.
+                  </span>
                 </Checkbox>
               </div>
             )}
-            <div className="w-100 d-flex justify-content-center mgt-40">
+            <div className={`w-100 d-flex justify-content-center ${shouldShowConfirmBookingTerm ? '' : 'mgt-40'}`}>
               {
-                <Button className="login__button df" type="primary" htmlType="submit" size="large" disabled={isSubmitDisabled} style={{ opacity: isSubmitDisabled ? 0.5 : 1 }}>
+                <Button className="login__button df" type="primary" htmlType="submit" size="large" disabled={isBookingSubmitDisabled} style={{ opacity: isBookingSubmitDisabled ? 0.5 : 1 }}>
                   Đặt lịch
                 </Button>
               }
@@ -1657,7 +1656,7 @@ console.log(dataBookingParam);
         }}
         redirectUrl={shouldUseConfirmBookingSchedule ? confirmBookingScheduleUrl : undefined}></BookingSuccess>
       <Modal
-        title="Điều khoản chia sẻ dữ liệu"
+        centered 
         visible={isConfirmTermModalOpen}
         onCancel={() => setIsConfirmTermModalOpen(false)}
         footer={
@@ -1666,7 +1665,8 @@ console.log(dataBookingParam);
           </Button>
         }
         className="booking-confirm-term-modal">
-        <div className="booking-confirm-term-content">{confirmBookingScheduleTerm}</div>
+        <div className='title-normal text-uppercase m-2 text-center'>Điều khoản chia sẻ dữ liệu</div>
+        <div className="booking-confirm-term-content" dangerouslySetInnerHTML={{ __html: confirmBookingScheduleTerm }}></div>
       </Modal>
       {isModalErrOpen && (
         <PopupMessage
