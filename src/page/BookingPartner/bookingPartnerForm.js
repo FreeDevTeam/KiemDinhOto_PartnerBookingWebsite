@@ -409,7 +409,7 @@ console.log(dataBookingParam);
     const data = {
       licensePlates: normalizePlate(values.licensePlates),
       phone: values.phone,
-      fullnameSchedule: values.name,
+      fullnameSchedule: values.name || undefined,
       email: values.email,
       dateSchedule: workdaySelectedDate,
       time: values?.time?.scheduleTime,
