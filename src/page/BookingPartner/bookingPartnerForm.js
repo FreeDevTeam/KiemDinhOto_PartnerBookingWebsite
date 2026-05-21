@@ -440,7 +440,13 @@ console.log(dataBookingParam);
     } else if (scheduleCategory === SCHEDULE_BOOKING_TYPE.SCHEDULE) {
       createBookingSchedule(data)
     }
-    getBookingDate()
+
+    // Gọi lại API để lấy ngày giờ trống mới nhất sau khi đặt lịch thành công
+    const currentStationId = form.getFieldValue('stationsId') || workdayFilter?.stationsId
+    const currentVehicleType = workdayFilter?.vehicleType || VEHICLE_SUB_TYPE[0]?.vehicleType
+    if (currentStationId && currentVehicleType) {
+      onChangeStation(currentStationId, currentVehicleType, stationSelected)
+    }
   }
 
   const getMetaData = () => {
