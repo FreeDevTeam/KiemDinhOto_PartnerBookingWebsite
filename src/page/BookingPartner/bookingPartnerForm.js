@@ -184,7 +184,6 @@ console.log(dataBookingParam);
             window.open(paymentUrl, '_blank')
           }, 500)
         }
-        form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
         return true
       })
       .finally(() => {
@@ -217,7 +216,6 @@ console.log(dataBookingParam);
             }
           })
         }
-        form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
         return true
       })
       .finally(() => {
@@ -255,7 +253,6 @@ console.log(dataBookingParam);
             window.open(paymentUrl, '_blank')
           }, 500)
         }
-        form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
         return true
       })
       .finally(() => {
@@ -288,7 +285,6 @@ console.log(dataBookingParam);
           })
         }
         setIsModalOpen(true)
-        form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
         return true
       })
       .finally(() => {
@@ -357,7 +353,6 @@ console.log(dataBookingParam);
   //           window.open(paymentUrl, '_blank')
   //         }, 500)
   //       }
-  //       form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
   //     })
   //     .finally(() => {
   //       setIsLoading(false)
@@ -390,7 +385,6 @@ console.log(dataBookingParam);
             }
           })
         }
-        form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
         return true
       })
       .finally(() => {
