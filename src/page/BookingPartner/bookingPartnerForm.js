@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { useHistory } from 'react-router-dom'
 import moment from 'moment'
 import { SHA256 } from 'crypto-js'
-import { Form, Input, Button, Spin, Select as SelectAntd, Row, Col } from 'antd'
+import { Form, Input, Button, Spin, Select as SelectAntd, Row, Col, Checkbox, Modal } from 'antd'
 
 import BookingSuccess from './BookingSuccessModal'
 import PopupMessage from './PopupMessage'
@@ -102,12 +102,16 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
   // state này để lấy thông tin trên params và hiển thị cho lần đầu tiên
   const [dataBookingParam, setDataBookingParam] = useState({})
+console.log(dataBookingParam);
+  const [isInitLoading, setIsInitLoading] = useState(true)
 
   // state của các modal hiển thị thông báo
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [scheduleTypePopUp, setScheduleTypePopUp] = useState([])
   const [isModalErrOpen, setIsModalErrOpen] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [isRedirectConsentChecked, setIsRedirectConsentChecked] = useState(false)
+  const [isConfirmTermModalOpen, setIsConfirmTermModalOpen] = useState(false)
 
   // states cho phương thức thanh toán
   const [zalopayPaymentMethod, setZalopayPaymentMethod] = useState(null)
@@ -123,10 +127,19 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     }
   }
 
+  const isConfigEnabled = (value) => value === true || value === 1 || `${value}`.toLowerCase() === 'true' || `${value}` === '1'
+  const getConfigText = (value) => (typeof value === 'string' ? value.trim() : '')
+  const isNormalBookingFlow = !MINIAPP_GTELPAY && !MINIAPP_ZALOPAY
+  const isConfirmBookingScheduleEnabled = isConfigEnabled(dataBookingParam?.confirmBookingScheduleEnabled)
+  const confirmBookingScheduleUrl = getConfigText(dataBookingParam?.confirmBookingScheduleUrl)
+  const confirmBookingScheduleTerm = getConfigText(dataBookingParam?.confirmBookingScheduleTerm)
+  const shouldUseConfirmBookingSchedule = isNormalBookingFlow && isConfirmBookingScheduleEnabled && !!confirmBookingScheduleUrl
+  const shouldShowConfirmBookingTerm = shouldUseConfirmBookingSchedule && !!confirmBookingScheduleTerm
+
   const getStationConfigByApiKey = (paramsFromUrl) => {
     setIsLoading(true)
     const apiKey = paramsFromUrl?.apiKey || paramsFromUrl?.apikey || localStorage.getItem('apiKey') || process.env.REACT_APP_APIKEY || undefined
-    SystemConfigurationsService.getStationConfigByApiKey({ apiKey: apiKey })
+    return SystemConfigurationsService.getStationConfigByApiKey({ apiKey: apiKey })
       .then((result) => {
         const stationMiniAppLink = JSON.parse(result?.[0]?.stationMiniAppLink || '{}')
         setDataBookingParam({ ...stationMiniAppLink, ...paramsFromUrl })
@@ -381,10 +394,22 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   }
 
   const onFinish = (values) => {
+    if (shouldUseConfirmBookingSchedule && !confirmBookingScheduleTerm) {
+      setErrorMessage('Vui lòng cấu hình Điều khoản chia sẻ dữ liệu trước khi bật link điều hướng.')
+      setIsModalErrOpen(true)
+      return
+    }
+
+    if (shouldShowConfirmBookingTerm && !isRedirectConsentChecked) {
+      setErrorMessage('Vui lòng đọc và đồng ý với Điều khoản chia sẻ dữ liệu trước khi đặt lịch.')
+      setIsModalErrOpen(true)
+      return
+    }
+
     const data = {
       licensePlates: normalizePlate(values.licensePlates),
       phone: values.phone,
-      fullnameSchedule: values.name,
+      fullnameSchedule: values.name || undefined,
       email: values.email,
       dateSchedule: workdaySelectedDate,
       time: values?.time?.scheduleTime,
@@ -415,11 +440,17 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     } else if (scheduleCategory === SCHEDULE_BOOKING_TYPE.SCHEDULE) {
       createBookingSchedule(data)
     }
-    getBookingDate()
+
+    // Gọi lại API để lấy ngày giờ trống mới nhất sau khi đặt lịch thành công
+    const currentStationId = form.getFieldValue('stationsId') || workdayFilter?.stationsId
+    const currentVehicleType = workdayFilter?.vehicleType || VEHICLE_SUB_TYPE[0]?.vehicleType
+    if (currentStationId && currentVehicleType) {
+      onChangeStation(currentStationId, currentVehicleType, stationSelected)
+    }
   }
 
   const getMetaData = () => {
-    fetchMetadataWithCache()
+    return fetchMetadataWithCache()
       .then((result) => {
         const { statusCode, data } = result
         if (statusCode === 200 && data?.SCHEDULE_TYPE) {
@@ -470,7 +501,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       return `${element.totalBookingSchedule || 0}/${element.totalSchedule}`
     }
 
-    const isEnableBooking = stationBookingConfig.some((item) => item?.enableBooking)
+    const isEnableBooking = hasEnabledBooking(stationBookingConfig)
 
     return isEnableBooking ? (
       <div style={{ color: 'var(--error-btn-color)' }}>Ngưng nhận lịch</div>
@@ -488,22 +519,31 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     }
   }
 
-  function getStationAcceptBooking(stationOrStationId) {
+  function hasEnabledBooking(config = []) {
+    return (config || []).some((item) => Number(item?.enableBooking) === 1)
+  }
+
+  function getStationBookingConfig(stationOrStationId) {
     const resolvedId = stationOrStationId || form.getFieldValue('stationsId')
     const stationConfig = stationOrStationId?.stationBookingConfig
       ? parseStationBookingConfig(stationOrStationId.stationBookingConfig)
       : parseStationBookingConfig(
-        (listStation || []).find((item) => item?.stationsId == resolvedId || item?.value == resolvedId)?.stationBookingConfig
+        (listStation || []).find((item) => `${item?.stationsId}` === `${resolvedId}` || `${item?.value}` === `${resolvedId}`)?.stationBookingConfig
       )
 
-    if (stationConfig) {
-      return stationConfig?.some((item) => item?.enableBooking) ? 1 : 0
-    }
-
-    return stationBookingConfig?.some((item) => item?.enableBooking) ? 1 : 0
+    return stationConfig || stationBookingConfig || []
   }
 
-  function getScheduleDateDisplayConfig(item, stationAcceptBooking) {
+  function getStationAcceptBooking(stationOrStationId) {
+    return hasEnabledBooking(getStationBookingConfig(stationOrStationId)) ? 1 : 0
+  }
+
+  function getScheduleDateDisplayConfig(item, stationAcceptBooking, minSelectableDate = null) {
+    const scheduleDate = moment(item?.scheduleDate, DATE_DISPLAY_FORMAT, true)
+    if (minSelectableDate && scheduleDate.isValid() && scheduleDate.isBefore(minSelectableDate, 'day')) {
+      return { disabled: true, isFull: false, text: '' }
+    }
+
     const totalSchedule = item?.totalSchedule
     const totalBookingSchedule = item?.totalBookingSchedule
     const isMissingData = totalSchedule === null || totalSchedule === undefined || totalBookingSchedule === null || totalBookingSchedule === undefined
@@ -547,6 +587,17 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     return totalBookingSchedule >= totalSchedule
   }
 
+  function getBookingSearchStartDate() {
+    const configuredDate = moment(dataBookingParam?.dateSchedule, [DATE_DISPLAY_FORMAT, moment.ISO_8601], true)
+    const today = moment()
+
+    if (configuredDate.isValid() && configuredDate.isAfter(today, 'day')) {
+      return configuredDate
+    }
+
+    return today
+  }
+
   const onChangeDate = (date, stationsId, vehicleType) => {
     setWorkdaySelectedDate(date)
     form.setFieldValue('dateSchedule', date)
@@ -564,7 +615,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     }
   }
 
-  const onChangeStation = async (stationsId, overrideVehicleType = null) => {
+  const onChangeStation = async (stationsId, overrideVehicleType = null, stationOption = null) => {
     // Reset Date & Time
     form.setFieldValue('dateSchedule', undefined)
     form.setFieldValue('time', undefined)
@@ -573,10 +624,20 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     setListBookingTime([])
 
     if (!stationsId) {
+      setStationSelected(null)
+      setStationBookingConfig([])
       setWorkdayFilter((prev) => ({ ...prev, stationsId: undefined }))
       setIsWorkdayLoading(false)
       return
     }
+
+    const selectedStation =
+      stationOption || (listStation || []).find((item) => `${item?.stationsId}` === `${stationsId}` || `${item?.value}` === `${stationsId}`) || null
+    const selectedStationConfig = getStationBookingConfig(selectedStation || stationsId)
+    const stationAcceptBooking = hasEnabledBooking(selectedStationConfig) ? 1 : 0
+
+    setStationSelected(selectedStation)
+    setStationBookingConfig(selectedStationConfig)
 
     getStationServices(stationsId).then((services) => {
       const allowedLabels = E_TICKET_SALE_OPTIONS.map((option) => option?.label?.toLowerCase())
@@ -589,12 +650,24 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       const f = { ...workdayFilter, stationsId, vehicleType: vType }
 
       setIsWorkdayLoading(true)
-      const result = await findFirstAvailableDateRange(f)
-      const actualFilter = result?.filter || f
+      const result = await findFirstAvailableDateRange(f, stationAcceptBooking)
+      if (!result) {
+        setErrorMessage('Không tìm thấy ngày giờ hẹn còn trống.')
+        setIsModalErrOpen(true)
+        setIsWorkdayLoading(false)
+        return
+      }
+
+      const actualFilter = result.filter
       setWorkdayFilter(actualFilter)
-      getBookingDate(actualFilter, result?.bookingDates)
+      getBookingDate(actualFilter, result.bookingDates, result.selectedDate, stationAcceptBooking)
     } catch (err) {
       console.error(err)
+      form.setFieldValue('dateSchedule', undefined)
+      form.setFieldValue('time', undefined)
+      setWorkdaySelectedDate(undefined)
+      setListBookingDate([])
+      setListBookingTime([])
       setIsWorkdayLoading(false)
     }
   }
@@ -605,6 +678,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       .then((data) => {
         if (data.statusCode == 505) {
           setListBookingTime([])
+          setErrorMessage('Không tìm thấy giờ hẹn còn trống.')
+          setIsModalErrOpen(true)
           return
         }
 
@@ -626,11 +701,15 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
             form.setFieldValue('time', firstAvailableTime)
           } else {
             form.setFieldValue('time', undefined)
+            setErrorMessage('Không tìm thấy giờ hẹn còn trống.')
+            setIsModalErrOpen(true)
           }
           setListBookingTime(tmp)
         } else {
           setListBookingTime([])
           form.setFieldValue('time', undefined)
+          setErrorMessage('Không tìm thấy giờ hẹn còn trống.')
+          setIsModalErrOpen(true)
         }
       })
       .catch(() => {
@@ -643,19 +722,21 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       })
   }
 
-  const getBookingDate = (filterArgs, bookingDatesData = null) => {
+  const getBookingDate = (filterArgs, bookingDatesData = null, selectedDateOverride = null, stationAcceptBookingOverride = null) => {
     const fetchFilter = filterArgs || workdayFilter
-    const stationAcceptBooking = getStationAcceptBooking(fetchFilter?.stationsId)
+    const stationAcceptBooking = stationAcceptBookingOverride === null ? getStationAcceptBooking(fetchFilter?.stationsId) : stationAcceptBookingOverride
     const handleBookingDateResponse = (data) => {
-      if (data.statusCode == 505) {
+      if (data?.statusCode == 505) {
         setListBookingDate([])
+        setErrorMessage('Không tìm thấy ngày hẹn còn trống.')
+        setIsModalErrOpen(true)
         return undefined
       }
 
       if (data.length > 0) {
         let tmp = data || []
         tmp.forEach((element) => {
-          const config = getScheduleDateDisplayConfig(element, stationAcceptBooking)
+          const config = getScheduleDateDisplayConfig(element, stationAcceptBooking, getBookingSearchStartDate())
           element.disabled = config.disabled
           element.displayText = config.text
           element.isFull = config.isFull
@@ -663,10 +744,18 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
         })
         setListBookingDate(tmp)
 
-        const firstAvailableSchedule = tmp.find((item) => !item.disabled)
+        const firstAvailableSchedule =
+          tmp.find((item) => item.scheduleDate === selectedDateOverride && !item.disabled) ||
+          tmp.find((item) => !item.disabled)
+        if (!firstAvailableSchedule) {
+          setErrorMessage('Không tìm thấy ngày hẹn còn trống.')
+          setIsModalErrOpen(true)
+        }
         return firstAvailableSchedule?.scheduleDate
       } else {
         setListBookingDate([])
+        setErrorMessage('Không tìm thấy ngày hẹn còn trống.')
+        setIsModalErrOpen(true)
         return undefined
       }
     }
@@ -714,9 +803,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           }
 
           // Check stationBookingConfig
-          const bookingConfig = JSON.parse(station?.stationBookingConfig || '[]')
-          setStationBookingConfig(bookingConfig || '[]')
-          const hasBookingEnabled = bookingConfig.some((item) => item?.enableBooking)
+          const bookingConfig = parseStationBookingConfig(station?.stationBookingConfig) || []
+          const hasBookingEnabled = hasEnabledBooking(bookingConfig)
 
           if (!hasBookingEnabled) {
             label = (
@@ -764,18 +852,20 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           const priorityStation = activeStations.find((station) => station.enablePriorityMode >= 1 && station.hasBookingEnabled)
           const defaultStation = priorityStation || activeStations[0]
 
-          const hasStationIdByConfig = stationList?.find((item) => item?.stationsId === dataBookingParam?.stationsId)
+          const hasStationIdByConfig = stationList?.find((item) => `${item?.stationsId}` === `${dataBookingParam?.stationsId}`)
           let targetStationId = defaultStation?.stationsId
 
           if (dataBookingParam?.stationsId && hasStationIdByConfig) {
             targetStationId = dataBookingParam?.stationsId
           }
 
-          setStationSelected(targetStationId)
+          const targetStation = stationList?.find((item) => `${item?.stationsId}` === `${targetStationId}`) || null
+
+          setStationSelected(targetStation)
           form.setFieldValue('stationsId', targetStationId)
 
           if (targetStationId) {
-            onChangeStation(targetStationId)
+            onChangeStation(targetStationId, null, targetStation)
           } else {
             onChangeStation(undefined)
           }
@@ -879,14 +969,18 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     form.setFieldsValue({ [fieldName]: value })
   }
 
-  //function lấy ra ngày đầu tiên có lịch làm
-  async function findFirstAvailableDateRange(baseDateFilter) {
-    let current = moment() // ngày hiện tại
-    const endLimit = moment().add(3, 'month').endOf('month') // 31/12 năm sau
+  //function lấy ra ngày và giờ đầu tiên có thể đặt lịch
+  async function findFirstAvailableDateRange(baseDateFilter, stationAcceptBookingOverride = null) {
+    const searchStartDate = getBookingSearchStartDate()
+    let current = searchStartDate.clone().startOf('month')
+    const endLimit = searchStartDate.clone().add(3, 'month').endOf('month')
+    const stationAcceptBooking = stationAcceptBookingOverride === null ? getStationAcceptBooking(baseDateFilter?.stationsId) : stationAcceptBookingOverride
 
     while (current.isSameOrBefore(endLimit, 'month')) {
-      const startDate = current.startOf('month').format('DD/MM/YYYY')
-      const endDate = current.endOf('month').format('DD/MM/YYYY')
+      const startDate = current.isSame(searchStartDate, 'month')
+        ? searchStartDate.clone().format(DATE_DISPLAY_FORMAT)
+        : current.clone().startOf('month').format(DATE_DISPLAY_FORMAT)
+      const endDate = current.clone().endOf('month').format(DATE_DISPLAY_FORMAT)
 
       const requestParams = {
         ...baseDateFilter,
@@ -896,23 +990,37 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
       try {
         const data = await BookingService.getBookingDate(requestParams)
-        const validDates = data?.filter((d) => d.scheduleDateStatus === 1) || []
-        if (validDates.length > 0) {
-          setMinMonthAvailable(requestParams.startDate)
-          return {
-            filter: requestParams,
-            bookingDates: data
+        const bookingDates = Array.isArray(data) ? data : []
+        const availableDates = bookingDates.filter((item) => {
+          const config = getScheduleDateDisplayConfig(item, stationAcceptBooking, searchStartDate)
+          return !config.disabled
+        })
+
+        for (const bookingDate of availableDates) {
+          const bookingTimes = await BookingService.getBookingHours({
+            stationsId: baseDateFilter?.stationsId,
+            date: bookingDate.scheduleDate,
+            vehicleType: baseDateFilter?.vehicleType
+          })
+          const selectedTime = Array.isArray(bookingTimes) ? bookingTimes.find((item) => !isDisabledScheduleTime(item)) : null
+
+          if (selectedTime) {
+            setMinMonthAvailable(requestParams.startDate)
+            return {
+              filter: requestParams,
+              bookingDates: data,
+              selectedDate: bookingDate.scheduleDate
+            }
           }
         }
       } catch (err) {
         console.error(`Lỗi khi gọi API tháng ${current.format('MM/YYYY')}:`, err)
-        // Bạn có thể break nếu lỗi không thể phục hồi
       }
 
-      current = current.add(1, 'month')
+      current = current.clone().add(1, 'month')
     }
 
-    return null // Không tìm thấy tháng nào có ngày làm việc
+    return null
   }
 
   async function getStationByApiKey(apiKey) {
@@ -932,13 +1040,24 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
   // ------------USE EFFECT------------------
   useEffect(() => {
+    let isMounted = true
     const init = async () => {
-      await Promise.all([loadInitialData(), loadStationAreas()])
-      await handleParams()
-      await finalizeSetup()
+      setIsInitLoading(true)
+      try {
+        await Promise.all([loadInitialData(), loadStationAreas()])
+        await handleParams()
+        await finalizeSetup()
+      } finally {
+        if (isMounted) {
+          setIsInitLoading(false)
+        }
+      }
     }
 
     init()
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   const loadInitialData = async () => {
@@ -956,7 +1075,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     }
   }
 
-  const handleParams = () => {
+  const handleParams = async () => {
     const paramsFromUrl = getQueryParams()
 
     handleCategory(paramsFromUrl?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
@@ -970,7 +1089,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       paramsFromUrl[key] = value
       // fillFormValue(key, value)
     })
-    getStationConfigByApiKey(paramsFromUrl)
+    await getStationConfigByApiKey(paramsFromUrl)
   }
 
   const finalizeSetup = () => {
@@ -1079,7 +1198,28 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     setScheduleCategory(scheduleTypeWithParams?.scheduleCategory || SCHEDULE_BOOKING_TYPE.SCHEDULE)
   }, [scheduleTypes, form.getFieldValue('scheduleType')])
 
-  const isSubmitDisabled = isLoading || isStationAreaLoading || isStationLoading || isWorkdayLoading || loadingHoursPicker
+  useEffect(() => {
+    if (!shouldShowConfirmBookingTerm) {
+      setIsRedirectConsentChecked(false)
+    }
+  }, [shouldShowConfirmBookingTerm])
+
+  const isAreaFieldVisible = isShowStationDateTime.showAreaField && dataBookingParam?.visible_StationArea !== false
+  const isStationFieldVisible = isShowStationDateTime.showStationField && dataBookingParam?.visible_StationsCode !== false
+  const isDateFieldVisible = isShowStationDateTime.showDateField && dataBookingParam?.visible_dateSchedule !== false
+  const isTimeFieldVisible = isShowStationDateTime.showTimeField && dataBookingParam?.visible_timeSchedule !== false
+
+  const canInteractWithAreaField = isAreaFieldVisible && !isStationAreaLoading
+  const canInteractWithStationField = isStationFieldVisible && !!form.getFieldValue('vntId') && !isStationLoading
+  const canInteractWithDateField = isDateFieldVisible && !!form.getFieldValue('stationsId') && !isWorkdayLoading
+  const shouldShowHiddenFieldLoading =
+    (isStationAreaLoading && !isAreaFieldVisible) ||
+    (isStationLoading && !isStationFieldVisible && !canInteractWithAreaField) ||
+    (isWorkdayLoading && !isDateFieldVisible && !canInteractWithAreaField && !canInteractWithStationField) ||
+    (loadingHoursPicker && !isTimeFieldVisible && !canInteractWithAreaField && !canInteractWithStationField && !canInteractWithDateField)
+
+  const isSubmitDisabled = isInitLoading || isLoading || isStationAreaLoading || isStationLoading || isWorkdayLoading || loadingHoursPicker
+  const isBookingSubmitDisabled = isSubmitDisabled || (shouldShowConfirmBookingTerm && !isRedirectConsentChecked)
 
   return (
     <div className="position-relative">
@@ -1103,7 +1243,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
               label="Họ và tên chủ xe"
               rules={[
                 {
-                  required: dataBookingParam?.visible_firstName !== false && dataBookingParam?.require_firstName === true,
+                  // required: dataBookingParam?.visible_firstName !== false && dataBookingParam?.require_firstName === true,
+                  required: dataBookingParam?.visible_firstName !== false && dataBookingParam?.require_firstName !== false,
                   message: 'Vui lòng nhập tên'
                 },
                 {
@@ -1120,7 +1261,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
               hidden={dataBookingParam?.visible_phoneNumber === false}
               rules={[
                 {
-                  required: dataBookingParam?.visible_phoneNumber !== false && (!isZaloApp || dataBookingParam?.require_phoneNumber === true),
+                  // required: dataBookingParam?.visible_phoneNumber !== false && (!isZaloApp || dataBookingParam?.require_phoneNumber === true),
+                  required: dataBookingParam?.visible_phoneNumber !== false,
                   message: 'Vui lòng nhập số điện thoại'
                 },
                 {
@@ -1192,7 +1334,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                 required
                 rules={[
                   {
-                    required: dataBookingParam?.require_vehicleIdentity === true,
+                    // required: dataBookingParam?.require_vehicleIdentity === true,
+                    required: dataBookingParam?.visible_vehicleIdentity !== false,
                     validator(_, value) {
                       return validatorPlateNumber(value?.toUpperCase())
                     }
@@ -1214,10 +1357,12 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
             <Form.Item
               name="licensePlateColor"
               label="Màu biển số"
-              hidden={dataBookingParam?.visible_scheduleType === false}
+              // hidden={dataBookingParam?.visible_scheduleType === false}
+              hidden={dataBookingParam?.visible_vehiclePlateColor === false}
               rules={[
                 {
-                  required: dataBookingParam?.visible_scheduleType !== false && dataBookingParam?.require_vehiclePlateColor === true,
+                  // required: dataBookingParam?.visible_scheduleType !== false && dataBookingParam?.require_vehiclePlateColor === true,
+                  required: dataBookingParam?.visible_vehiclePlateColor !== false,
                   message: 'Vui lòng chọn màu biển số'
                 }
               ]}>
@@ -1235,15 +1380,18 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
               />
             </Form.Item>
             <Row className="justify-content-between">
-              <Col span={11}>
+              {dataBookingParam?.visible_vehicleSubType !== false && (
+                <Col span={dataBookingParam?.visible_vehicleSubCategory !== false ? 11 : 24}>
                 <Form.Item
                   className="radio-label"
                   label="Loại phương tiện"
                   name="vehicleSubType"
-                  hidden={dataBookingParam?.visible_vehicleSubCategory === false}
+                  // hidden={dataBookingParam?.visible_vehicleSubCategory === false}
+                  hidden={dataBookingParam?.visible_vehicleSubType === false}
                   rules={[
                     {
-                      required: dataBookingParam?.visible_vehicleSubCategory !== false && dataBookingParam?.require_vehicleSubType === true,
+                      // required: dataBookingParam?.visible_vehicleSubCategory !== false && dataBookingParam?.require_vehicleSubType === true,
+                      required: dataBookingParam?.visible_vehicleSubType !== false,
                       message: 'Vui lòng nhập'
                     }
                   ]}>
@@ -1259,13 +1407,15 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                       setWorkdayFilter(newFilter)
                       handleCategory(values)
                       if (newFilter.stationsId) {
-                        onChangeStation(newFilter.stationsId, vehicleType?.vehicleType)
+                        onChangeStation(newFilter.stationsId, vehicleType?.vehicleType, stationSelected)
                       }
                     }}
                   />
                 </Form.Item>
-              </Col>
-              <Col span={11}>
+                </Col>
+              )}
+              {dataBookingParam?.visible_vehicleSubCategory !== false && (
+                <Col span={dataBookingParam?.visible_vehicleSubType !== false ? 11 : 24}>
                 <Form.Item
                   className="radio-label"
                   label="Phân loại"
@@ -1273,9 +1423,10 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                   hidden={dataBookingParam?.visible_vehicleSubCategory === false}
                   rules={[
                     {
-                      required:
-                        dataBookingParam?.visible_vehicleSubCategory !== false &&
-                        (dataBookingParam?.require_vehicleSubCategory === 'true' ? true : false),
+                      // required:
+                      //   dataBookingParam?.visible_vehicleSubCategory !== false &&
+                      //   (dataBookingParam?.require_vehicleSubCategory === 'true' ? true : false),
+                      required: dataBookingParam?.visible_vehicleSubCategory !== false,
                       message: 'Vui lòng chọn phân loại'
                     }
                   ]}>
@@ -1288,7 +1439,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                     }}
                   />
                 </Form.Item>
-              </Col>
+                </Col>
+              )}
             </Row>
             <Form.Item
               name="certificateSeries"
@@ -1311,8 +1463,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
               }
               rules={[
                 {
-                  required:
-                    dataBookingParam?.visible_certificateSeries !== false && (dataBookingParam?.require_certificateSeries === 'true' ? true : false),
+                  // required:
+                  //   dataBookingParam?.visible_certificateSeries !== false && (dataBookingParam?.require_certificateSeries === 'true' ? true : false),
+                  required: dataBookingParam?.visible_certificateSeries !== false && dataBookingParam?.require_certificateSeries !== false,
                   message: 'Vui lòng nhập số seri GCN'
                 },
                 {
@@ -1334,10 +1487,16 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
             </Form.Item>
             {isShowStationDateTime.showAreaField && (
               <Form.Item
-                required={dataBookingParam?.visible_StationArea !== false}
+                /* required={dataBookingParam?.visible_StationArea !== false} */
                 label="Khu vực"
                 name="vntId"
-                hidden={dataBookingParam?.visible_StationArea === false}>
+                hidden={dataBookingParam?.visible_StationArea === false}
+                rules={[
+                  {
+                    required: dataBookingParam?.visible_StationArea !== false,
+                    message: 'Vui lòng chọn khu vực'
+                  }
+                ]}>
                 <SelectAntd
                   className="cs-select ant-custom booking-input"
                   showSearch
@@ -1345,6 +1504,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                   disabled={isStationAreaLoading}
                   onChange={() => {
                     setStationSelected(null)
+                    setStationBookingConfig([])
                     setListStation([])
                     setETicketOptions([])
                     setWorkdaySelectedDate(undefined)
@@ -1372,7 +1532,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                 rules={[
                   {
                     required: dataBookingParam?.visible_StationsCode !== false,
-                    message: 'Vui lòng nhập'
+                    message: 'Vui lòng chọn trạm'
                   }
                 ]}
                 hidden={dataBookingParam?.visible_StationsCode === false}>
@@ -1394,7 +1554,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                   onChange={(value, station) => {
                     form.setFieldValue('stationsId', value)
                     setStationSelected(station)
-                    onChangeStation(value)
+                    onChangeStation(value, null, station)
                   }}
                 />
               </Form.Item>
@@ -1404,9 +1564,11 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                 name="dateSchedule"
                 label="Ngày hẹn"
                 extra="Đặt lịch hẹn qua App để được nhắc hẹn tự động"
+                hidden={dataBookingParam?.visible_dateSchedule === false}
                 rules={[
                   {
-                    required: true,
+                    // required: true,
+                    required: dataBookingParam?.visible_dateSchedule !== false,
                     message: 'Vui lòng nhập'
                   }
                 ]}>
@@ -1438,9 +1600,11 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
               <Form.Item
                 label="Giờ hẹn"
                 name="time"
+                hidden={dataBookingParam?.visible_timeSchedule === false}
                 rules={[
                   {
-                    required: true,
+                    // required: true,
+                    required: dataBookingParam?.visible_timeSchedule !== false,
                     message: 'Vui lòng chọn giờ hẹn'
                   }
                 ]}>
@@ -1455,9 +1619,29 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                 />
               </Form.Item>
             )}
-            <div className="w-100 d-flex justify-content-center mgt-40">
+            {shouldShowConfirmBookingTerm && (
+              <div className="booking-confirm-consent">
+                <Checkbox
+                  checked={isRedirectConsentChecked}
+                  onChange={(event) => {
+                    setIsRedirectConsentChecked(event.target.checked)
+                  }}>
+                  <span>
+                    Tôi đã đọc và đồng ý với{' '}
+                  </span>
+                  <span onClick={(event) => {
+                    event.preventDefault()
+                    event.stopPropagation()
+                    setIsConfirmTermModalOpen(true)
+                  }} className="booking-confirm-term-link">
+                   Điều khoản chia sẻ dữ liệu.
+                  </span>
+                </Checkbox>
+              </div>
+            )}
+            <div className={`w-100 d-flex justify-content-center ${shouldShowConfirmBookingTerm ? '' : 'mgt-40'}`}>
               {
-                <Button className="login__button df" type="primary" htmlType="submit" size="large" disabled={isSubmitDisabled} style={{ opacity: isSubmitDisabled ? 0.5 : 1 }}>
+                <Button className="login__button df" type="primary" htmlType="submit" size="large" disabled={isBookingSubmitDisabled} style={{ opacity: isBookingSubmitDisabled ? 0.5 : 1 }}>
                   Đặt lịch
                 </Button>
               }
@@ -1475,7 +1659,21 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
         onClose={() => {
           setIsModalOpen(false)
           // history.goBack()
-        }}></BookingSuccess>
+        }}
+        redirectUrl={shouldUseConfirmBookingSchedule ? confirmBookingScheduleUrl : undefined}></BookingSuccess>
+      <Modal
+        centered 
+        visible={isConfirmTermModalOpen}
+        onCancel={() => setIsConfirmTermModalOpen(false)}
+        footer={
+          <Button className="login__button df" type="primary" onClick={() => setIsConfirmTermModalOpen(false)}>
+            Đã hiểu
+          </Button>
+        }
+        className="booking-confirm-term-modal">
+        <div className='title-normal text-uppercase m-2 text-center'>Điều khoản chia sẻ dữ liệu</div>
+        <div className="booking-confirm-term-content" dangerouslySetInnerHTML={{ __html: confirmBookingScheduleTerm }}></div>
+      </Modal>
       {isModalErrOpen && (
         <PopupMessage
           isModalOpen={isModalErrOpen}
@@ -1485,7 +1683,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           text={errorMessage}></PopupMessage>
       )}
       {/* Hiển thị loading */}
-      {isLoading && (
+      {(isInitLoading || isLoading || shouldShowHiddenFieldLoading) && (
         <div className="loading">
           <div className="text-center">
             <MainLogo height={60} width={60}></MainLogo>
