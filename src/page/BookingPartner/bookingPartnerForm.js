@@ -155,13 +155,13 @@ console.log(dataBookingParam);
 
   const GtelBookingConsultantSchedule = (values) => {
     setIsLoading(true)
-    BookingService.createOrderSchedule(values)
+    return BookingService.createOrderSchedule(values)
       .then((result) => {
         const { error: rsMess, statusCode, data } = result
         if (statusCode !== 200) {
           setIsModalErrOpen(true)
           setErrorMessage(SCHEDULE_ERROR[rsMess] || SCHEDULE_ERROR.INVALID_REQUEST)
-          return
+          return false
         }
         const { paymentUrl } = data
         const customerScheduleId = data?.[0]
@@ -185,6 +185,7 @@ console.log(dataBookingParam);
           }, 500)
         }
         form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
+        return true
       })
       .finally(() => {
         setIsLoading(false)
@@ -193,14 +194,14 @@ console.log(dataBookingParam);
 
   const GtelCreateBookingSchedule = (values) => {
     setIsLoading(true)
-    BookingService.createOrderSchedule(values)
+    return BookingService.createOrderSchedule(values)
       .then((result) => {
         const { error: rsMess, statusCode, data } = result
 
         if (statusCode !== 200) {
           setIsModalErrOpen(true)
           setErrorMessage(SCHEDULE_ERROR[rsMess] || SCHEDULE_ERROR.INVALID_REQUEST)
-          return
+          return false
         }
         const scheduleId = data?.[0]
         if (MINIAPP_GTELPAY && scheduleId) {
@@ -217,6 +218,7 @@ console.log(dataBookingParam);
           })
         }
         form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
+        return true
       })
       .finally(() => {
         setIsLoading(false)
@@ -225,13 +227,13 @@ console.log(dataBookingParam);
 
   const bookingConsultantSchedule = (values) => {
     setIsLoading(true)
-    BookingService.createConsultantSchedule(values)
+    return BookingService.createConsultantSchedule(values)
       .then((result) => {
         const { error: rsMess, statusCode, data } = result
         if (statusCode !== 200) {
           setIsModalErrOpen(true)
           setErrorMessage(SCHEDULE_ERROR[rsMess] || SCHEDULE_ERROR.INVALID_REQUEST)
-          return
+          return false
         }
         const { customerScheduleId, paymentUrl } = data
         // Gọi API thanh toán nếu ở môi trường GTEL
@@ -254,6 +256,7 @@ console.log(dataBookingParam);
           }, 500)
         }
         form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
+        return true
       })
       .finally(() => {
         setIsLoading(false)
@@ -262,14 +265,14 @@ console.log(dataBookingParam);
 
   const createBookingSchedule = (values) => {
     setIsLoading(true)
-    BookingService.createSchedule(values)
+    return BookingService.createSchedule(values)
       .then((result) => {
         const { error: rsMess, statusCode, data } = result
 
         if (statusCode !== 200) {
           setIsModalErrOpen(true)
           setErrorMessage(SCHEDULE_ERROR[rsMess] || SCHEDULE_ERROR.INVALID_REQUEST)
-          return
+          return false
         }
         const scheduleId = data?.[0]
         if (MINIAPP_GTELPAY && scheduleId) {
@@ -286,6 +289,7 @@ console.log(dataBookingParam);
         }
         setIsModalOpen(true)
         form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
+        return true
       })
       .finally(() => {
         setIsLoading(false)
@@ -362,14 +366,14 @@ console.log(dataBookingParam);
 
   const ZaloPayCreateBookingSchedule = (values) => {
     setIsLoading(true)
-    BookingService.createOrderSchedule(values)
+    return BookingService.createOrderSchedule(values)
       .then((result) => {
         const { error: rsMess, statusCode, data } = result
 
         if (statusCode !== 200) {
           setIsModalErrOpen(true)
           setErrorMessage(SCHEDULE_ERROR[rsMess] || SCHEDULE_ERROR.INVALID_REQUEST)
-          return
+          return false
         }
         const scheduleId = data?.[0]
         if (MINIAPP_ZALOPAY && scheduleId) {
@@ -387,13 +391,14 @@ console.log(dataBookingParam);
           })
         }
         form.resetFields(['name', 'licensePlates', 'certificateSeries', 'time'])
+        return true
       })
       .finally(() => {
         setIsLoading(false)
       })
   }
 
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     if (shouldUseConfirmBookingSchedule && !confirmBookingScheduleTerm) {
       setErrorMessage('Vui lòng cấu hình Điều khoản chia sẻ dữ liệu trước khi bật link điều hướng.')
       setIsModalErrOpen(true)
@@ -429,23 +434,23 @@ console.log(dataBookingParam);
     //   ZaloPayBookingConsultantSchedule(data)
     // }
 
+    let isBookingCreated = false
+
     if (scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT && MINIAPP_GTELPAY) {
-      GtelBookingConsultantSchedule(data)
+      isBookingCreated = await GtelBookingConsultantSchedule(data)
     } else if (scheduleCategory === SCHEDULE_BOOKING_TYPE.SCHEDULE && MINIAPP_GTELPAY) {
-      GtelCreateBookingSchedule(data)
+      isBookingCreated = await GtelCreateBookingSchedule(data)
     } else if (scheduleCategory === SCHEDULE_BOOKING_TYPE.SCHEDULE && MINIAPP_ZALOPAY) {
-      ZaloPayCreateBookingSchedule(data)
+      isBookingCreated = await ZaloPayCreateBookingSchedule(data)
     } else if (scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT) {
-      bookingConsultantSchedule(data)
+      isBookingCreated = await bookingConsultantSchedule(data)
     } else if (scheduleCategory === SCHEDULE_BOOKING_TYPE.SCHEDULE) {
-      createBookingSchedule(data)
+      isBookingCreated = await createBookingSchedule(data)
     }
 
     // Gọi lại API để lấy ngày giờ trống mới nhất sau khi đặt lịch thành công
-    const currentStationId = form.getFieldValue('stationsId') || workdayFilter?.stationsId
-    const currentVehicleType = workdayFilter?.vehicleType || VEHICLE_SUB_TYPE[0]?.vehicleType
-    if (currentStationId && currentVehicleType) {
-      onChangeStation(currentStationId, currentVehicleType, stationSelected)
+    if (isBookingCreated && data.stationsId && data.vehicleType) {
+      await onChangeStation(data.stationsId, data.vehicleType, stationSelected)
     }
   }
 
