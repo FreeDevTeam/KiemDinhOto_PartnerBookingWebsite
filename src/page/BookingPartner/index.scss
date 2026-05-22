@@ -380,3 +380,65 @@
     text-align: center;
     color: #ffffff;
 }
+
+.booking-confirm-consent {
+  width: 100%;
+  margin: 40px 0 0;
+  display: flex;
+  align-items: center;
+
+  .ant-checkbox-wrapper {
+    align-items: flex-start;
+    color: #222222;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .ant-checkbox {
+    margin-top: 2px;
+  }
+
+  .ant-checkbox-inner {
+    border-color: var(--title-color) !important;
+  }
+
+  .ant-checkbox-checked .ant-checkbox-inner {
+    background: var(--linear-gradient-active, var(--title-color)) !important;
+    border-color: var(--title-color) !important;
+  }
+}
+
+.booking-confirm-term-link {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--title-color);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.booking-confirm-term-modal {
+  .ant-modal-title {
+    color: var(--title-color);
+    font-weight: 600;
+  }
+
+  .ant-modal-footer {
+    margin-top: 16px;
+  }
+
+  .login__button.df {
+    margin-top: 0;
+  }
+}
+
+.booking-confirm-term-content {
+  max-height: 60vh;
+  overflow: auto;
+  color: #333333;
+  font-size: 14px;
+  line-height: 22px;
+  text-align: left;
+  white-space: pre-wrap;
+}
