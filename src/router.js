@@ -1,12 +1,13 @@
 import { PATH } from './constants/router';
 import React, { createContext, useState } from 'react';
+import HomeLayout from './page/Home/HomeLayout';
 const BookingPartner = React.lazy(() => import('./page/BookingPartner/index'))
 const CheckVihcle = React.lazy(() => import('./page/CheckVihcle/index'))
 const BookingInsurancePartner = React.lazy(() => import('./page/BookingInsurancePartner/index'))
 const BookingInsuranceSaladin = React.lazy(() => import('./page/BookingInsuranceSaladin/index'))
 const BookingPartnerIframe = React.lazy(() => import('./page/Booking/index'))
 const BookingHistory = React.lazy(() => import('./page/BookingHistory/index'))
-const HomeLayout2 = React.lazy(() => import('./page/Home/HomeLayout2/index'))
+const HomeLayout2 = React.lazy(() => import('./page/Home/HomeLayout'))
 const HomeLayout3 = React.lazy(() => import('./page/Home/HomeLayout3/index'))
 const HomePageLogin = React.lazy(() => import('./page/Login/index'))
 const ResetPassword = React.lazy(() => import('./page/ResetPassword'))
@@ -40,7 +41,7 @@ const handleCheckLayout=()=>{
         case '3':
             return (HomeLayout3)
         default:
-            return (HomeLayout2)
+            return (HomeLayout)
     }
 }
 

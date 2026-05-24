@@ -221,6 +221,75 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --linear-gradient-active: linear-gradient(to top, var(--royal-blue-color), var(--slate-blue-color));
   --linear-gradient-button: #262FED;
   // ...Thêm biến sáng 
+
+
+    /* PAGE & SURFACE */
+  --bg-page: #f5f6f8;
+  --bg-layout: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f9fafb;
+  --bg-overlay: #00000099;
+  --bg-loading: #ffffff80;
+  --bg-floating: #ffffff;
+
+  /* TEXT COLORS – HIERARCHY */
+  --text-primary: #000000;
+  --text-secondary: #7a7a7a;
+  --text-tertiary: #909090;
+  --text-placeholder: #7a7a7a;
+  --text-disabled: #7a7a7a;
+  --text-inverse: #ffffff;
+
+  /* BORDER & DIVIDER */
+  --border-default: #e9e9e9;
+  --border-hover: #e9e9e9;
+  --border-focus: #0e57b7;
+  --border-disabled: #f1f1f1;
+  --divider: #ededed;
+
+  /* BRAND / ACCENT */
+  --brand-primary: #0e57b7;
+  --brand-primary-hover: #0e57b7;
+  --brand-primary-soft: #4b7fed;
+
+  /* BUTTON */
+  --btn-primary-bg: var(--brand-primary);
+  --btn-primary-bg-hover: var(--brand-primary-hover);
+  --btn-primary-text: var(--text-inverse);
+  --btn-secondary-bg: #4b7fed;
+  --btn-secondary-bg-hover: #4b7fed;
+  --btn-secondary-text: #ffffff;
+  --btn-danger-bg: #ff5f61;
+  --btn-danger-text: #ffffff;
+
+  /* INPUT / FORM */
+  --input-bg: #ffffff;
+  --input-bg-disabled: #f1f1f1;
+  --input-text: var(--text-primary);
+  --input-border: #e9e9e9;
+  --input-border-focus: #a7a7a7;
+  --input-border-error: #ee0033;
+
+  /* STATUS / FEEDBACK */
+  --success-bg: #d7f4de;
+  --success-text: #34c759;
+  --warning-bg: #fff2d9;
+  --warning-text: #ff8d28;
+  --error-bg: #ffdbdb;
+  --error-text: #ee0033;
+  --info-bg: #eff6ff;
+  --info-text: #1e40af;
+
+  /* ICON */
+  --icon-default: #909090;
+  --icon-muted: #a9a9a9;
+  --icon-disabled: #909090;
+  --icon-brand: #0e57b7;
+  --icon-inverse: var(--text-inverse);
+
+  /* LOADING / SKELETON */
+  --skeleton-base: #e5e7eb;
+  --skeleton-highlight: #f3f4f6;
 }
 
 [data-theme='DKON'] {
@@ -331,6 +400,43 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --linear-gradient-active: linear-gradient(to top, var(--royal-blue-color), var(--slate-blue-color));
   --linear-gradient-button: #262FED;
   // ...Thêm biến sáng 
+}
+
+[data-theme='F88'] {
+  --primary-gradient: linear-gradient(138.28deg, #fdb813 10.08%, #00844a 90.4%);
+  --primary-color: #00844a;
+  --hover-color: #e6f7ff;
+  --gray-color: grey;
+  --transparent-color: transparent;
+  --title-color: #00844a;
+  --primary-button-color: #00844a;
+  --stop-receiving-color: #aa8934;
+  --error-btn-color: #ff1001;
+  --step-line-booking: #fdb813;
+  --step-line-booking-opacity30: rgba(24, 144, 255, 0.18823529411764706);
+  --float-btn-color: #fdb813;
+  --attention-color: #34aa44;
+  --blue-ribbon: #34aa44;
+
+  /* BORDER & DIVIDER */
+  --border-focus: #00844a;
+
+  /* BRAND / ACCENT */
+  --brand-primary: #00844a;
+  --brand-primary-hover: #00844a;
+  --brand-primary-soft: #34aa44;
+
+  /* BUTTON */
+  --btn-primary-bg: var(--brand-primary);
+  --btn-primary-bg-hover: var(--brand-primary-hover);
+  --btn-primary-text: var(--text-inverse);
+  --btn-secondary-bg: #34aa44;
+  --btn-secondary-bg-hover: #00844a;
+  --input-text: var(--text-primary);
+
+  /* ICON */
+  --icon-brand: #00844a;
+  --icon-inverse: var(--text-inverse);
 }
 
 // Màu sắc cho chủ đề tối

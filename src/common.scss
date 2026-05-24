@@ -915,3 +915,16 @@ a.menu-item {
     padding: 20px 24px !important;
   }
 }
+
+.Base_Checkbox {
+  .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: var(--brand-primary);
+    border-color: var(--brand-primary);
+  }
+  &:hover {
+    .ant-checkbox-checked .ant-checkbox-inner {
+      background-color: var(--brand-primary) !important;
+      border-color: var(--brand-primary) !important;
+    }
+  }
+}
