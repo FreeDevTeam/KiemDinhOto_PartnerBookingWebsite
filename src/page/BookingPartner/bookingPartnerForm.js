@@ -786,6 +786,16 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       })
   }
 
+  const pickDefaultStation = (stations = []) => {
+    const activeStations = stations.filter((station) => station.stationStatus === 1)
+    return (
+      activeStations.find((station) => station.enablePriorityMode >= 1 && station.hasBookingEnabled) ||
+      activeStations[0] ||
+      stations.find((station) => !station.disabled) ||
+      stations[0]
+    )
+  }
+
   function getStations(filter = null, callback = null) {
     setIsStationLoading(true)
     BookingService.getStationList(filter)
@@ -853,9 +863,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           callback(stationList)
         } else {
           setListStation(stationList)
-          const activeStations = stationList.filter((station) => station.stationStatus === 1)
-          const priorityStation = activeStations.find((station) => station.enablePriorityMode >= 1 && station.hasBookingEnabled)
-          const defaultStation = priorityStation || activeStations[0]
+          const defaultStation = pickDefaultStation(stationList)
           const selectedScheduleType = form.getFieldValue('scheduleType') || dataBookingParam?.scheduleType
           const selectedScheduleTypeOption = [...(scheduleTypes || []), ...(optionServiceType || [])]
             .find((item) => `${item?.value}` === `${selectedScheduleType}`)
@@ -865,7 +873,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           let targetStationId = defaultStation?.stationsId
 
           if (dataBookingParam?.stationsId === null) {
-            targetStationId = isConsultantByScheduleType ? null : defaultStation?.stationsId
+            const isConsultantFlow = isConsultantByScheduleType
+            targetStationId = isConsultantFlow ? null : defaultStation?.stationsId
           } else if (dataBookingParam?.stationsId && hasStationIdByConfig) {
             targetStationId = dataBookingParam?.stationsId
           }
@@ -1325,6 +1334,16 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                 onChange={(values, scheduleType) => {
                   setScheduleCategory(scheduleType?.scheduleCategory)
                   form.setFieldValue('scheduleType', values)
+                  // Nếu config trạm là null, khi đổi mục đích sẽ tự đồng bộ lại trạm:
+                  // luồng tư vấn giữ null, luồng đăng kiểm tự chọn trạm mặc định từ danh sách đã có.
+                  if (dataBookingParam?.stationsId === null && listStation?.length > 0) {
+                    const defaultStation = pickDefaultStation(listStation)
+                    const nextStation = scheduleType?.scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT ? null : defaultStation
+                    const nextStationId = nextStation?.stationsId ?? null
+                    form.setFieldValue('stationsId', nextStationId)
+                    setStationSelected(nextStation)
+                    onChangeStation(nextStationId, null, nextStation)
+                  }
                 }}
               />
             </Form.Item>
