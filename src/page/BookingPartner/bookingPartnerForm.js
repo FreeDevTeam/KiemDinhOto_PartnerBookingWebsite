@@ -406,6 +406,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
     const stationsId = values?.stationsId ?? form.getFieldValue('stationsId') ?? dataBookingParam?.stationsId
     const vehicleSubCategory = values?.vehicleSubCategory ?? form.getFieldValue('vehicleSubCategory') ?? dataBookingParam?.vehicleSubCategory
+    const isConsultantOrder = scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT
+    const isStationFieldHidden = dataBookingParam?.visible_StationsCode === false
 
     const data = {
       licensePlates: normalizePlate(values.licensePlates),
@@ -413,6 +415,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       fullnameSchedule: values.name || undefined,
       email: values.email,
       dateSchedule: workdaySelectedDate,
+      time: values?.time?.scheduleTime || form.getFieldValue('time')?.scheduleTime,
       vehicleType: workdayFilter.vehicleType,
       licensePlateColor: values.licensePlateColor,
       scheduleType: values.scheduleType,
@@ -420,9 +423,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       vehicleSubCategory: vehicleSubCategory,
       certificateSeries: values.certificateSeries
     }
-    if (stationsId != null) {
+    if (stationsId != null && !(isConsultantOrder && isStationFieldHidden)) {
       data.stationsId = stationsId
-      data.time = values?.time?.scheduleTime || form.getFieldValue('time')?.scheduleTime
     }
     if (values.serviceId) {
       data.stationServicesList = [values.serviceId]
@@ -866,13 +868,17 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           const selectedScheduleTypeOption = [...(scheduleTypes || []), ...(optionServiceType || [])]
             .find((item) => `${item?.value}` === `${selectedScheduleType}`)
           const isConsultantByScheduleType = selectedScheduleTypeOption?.scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT
+          const isStationFieldVisibleByConfig = selectedScheduleTypeOption?.requireScheduleStation === 1 && dataBookingParam?.visible_StationsCode !== false
 
           const hasStationIdByConfig = stationList?.find((item) => `${item?.stationsId}` === `${dataBookingParam?.stationsId}`)
           let targetStationId = defaultStation?.stationsId
 
           if (dataBookingParam?.stationsId === null) {
-            const isConsultantFlow = isConsultantByScheduleType
-            targetStationId = isConsultantFlow ? null : defaultStation?.stationsId
+            if (isConsultantByScheduleType && !isStationFieldVisibleByConfig) {
+              targetStationId = null
+            } else {
+              targetStationId = defaultStation?.stationsId
+            }
           } else if (dataBookingParam?.stationsId && hasStationIdByConfig) {
             targetStationId = dataBookingParam?.stationsId
           }
@@ -1185,19 +1191,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     }
   }, [form.getFieldValue('scheduleType'), scheduleTypes])
 
-  const stationOptions = useMemo(() => {
-    if (scheduleCategory !== SCHEDULE_BOOKING_TYPE.CONSULTANT) return listStation
-    return [
-      {
-        label: <div className="text-station-select">Tất cả</div>,
-        value: null,
-        stationsId: null,
-        disabled: false,
-        hasBookingEnabled: true
-      },
-      ...listStation
-    ]
-  }, [listStation, scheduleCategory])
+  const stationOptions = useMemo(() => listStation, [listStation])
 
   useEffect(() => {
     if (form.getFieldValue('scheduleType') === SCHEDULE_TYPE_MINIAPP.E_TICKET_SALE) {
@@ -1336,7 +1330,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                   // luồng tư vấn giữ null, luồng đăng kiểm tự chọn trạm mặc định từ danh sách đã có.
                   if (dataBookingParam?.stationsId === null && listStation?.length > 0) {
                     const defaultStation = pickDefaultStation(listStation)
-                    const nextStation = scheduleType?.scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT ? null : defaultStation
+                    const isStationFieldVisibleByConfig = scheduleType?.requireScheduleStation === 1 && dataBookingParam?.visible_StationsCode !== false
+                    const nextStation = scheduleType?.scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT && !isStationFieldVisibleByConfig ? null : defaultStation
                     const nextStationId = nextStation?.stationsId ?? null
                     form.setFieldValue('stationsId', nextStationId)
                     setStationSelected(nextStation)
