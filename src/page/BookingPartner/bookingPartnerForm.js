@@ -404,8 +404,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       return
     }
 
-    const selectedTime = values?.time?.scheduleTime || form.getFieldValue('time')?.scheduleTime
-
     const stationsId = values?.stationsId ?? form.getFieldValue('stationsId') ?? dataBookingParam?.stationsId
     const vehicleSubCategory = values?.vehicleSubCategory ?? form.getFieldValue('vehicleSubCategory') ?? dataBookingParam?.vehicleSubCategory
 
@@ -415,7 +413,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       fullnameSchedule: values.name || undefined,
       email: values.email,
       dateSchedule: workdaySelectedDate,
-      time: selectedTime,
       vehicleType: workdayFilter.vehicleType,
       licensePlateColor: values.licensePlateColor,
       scheduleType: values.scheduleType,
@@ -425,6 +422,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     }
     if (stationsId != null) {
       data.stationsId = stationsId
+      data.time = values?.time?.scheduleTime || form.getFieldValue('time')?.scheduleTime
     }
     if (values.serviceId) {
       data.stationServicesList = [values.serviceId]
