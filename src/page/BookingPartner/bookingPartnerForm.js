@@ -102,7 +102,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
   // state này để lấy thông tin trên params và hiển thị cho lần đầu tiên
   const [dataBookingParam, setDataBookingParam] = useState({})
-console.log(dataBookingParam);
   const [isInitLoading, setIsInitLoading] = useState(true)
 
   // state của các modal hiển thị thông báo
@@ -405,20 +404,27 @@ console.log(dataBookingParam);
       return
     }
 
+    const stationsId = values?.stationsId ?? form.getFieldValue('stationsId') ?? dataBookingParam?.stationsId
+    const vehicleSubCategory = values?.vehicleSubCategory ?? form.getFieldValue('vehicleSubCategory') ?? dataBookingParam?.vehicleSubCategory
+    const isConsultantOrder = scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT
+    const isStationFieldHidden = dataBookingParam?.visible_StationsCode === false
+
     const data = {
       licensePlates: normalizePlate(values.licensePlates),
       phone: values.phone,
       fullnameSchedule: values.name || undefined,
       email: values.email,
       dateSchedule: workdaySelectedDate,
-      time: values?.time?.scheduleTime,
-      stationsId: values.stationsId,
+      time: values?.time?.scheduleTime || form.getFieldValue('time')?.scheduleTime,
       vehicleType: workdayFilter.vehicleType,
       licensePlateColor: values.licensePlateColor,
       scheduleType: values.scheduleType,
       vehicleSubType: values.vehicleSubType,
-      vehicleSubCategory: values.vehicleSubCategory,
+      vehicleSubCategory: vehicleSubCategory,
       certificateSeries: values.certificateSeries
+    }
+    if (stationsId != null && !(isConsultantOrder && isStationFieldHidden)) {
+      data.stationsId = stationsId
     }
     if (values.serviceId) {
       data.stationServicesList = [values.serviceId]
@@ -780,6 +786,16 @@ console.log(dataBookingParam);
       })
   }
 
+  const pickDefaultStation = (stations = []) => {
+    const activeStations = stations.filter((station) => station.stationStatus === 1)
+    return (
+      activeStations.find((station) => station.enablePriorityMode >= 1 && station.hasBookingEnabled) ||
+      activeStations[0] ||
+      stations.find((station) => !station.disabled) ||
+      stations[0]
+    )
+  }
+
   function getStations(filter = null, callback = null) {
     setIsStationLoading(true)
     BookingService.getStationList(filter)
@@ -847,14 +863,23 @@ console.log(dataBookingParam);
           callback(stationList)
         } else {
           setListStation(stationList)
-          const activeStations = stationList.filter((station) => station.stationStatus === 1)
-          const priorityStation = activeStations.find((station) => station.enablePriorityMode >= 1 && station.hasBookingEnabled)
-          const defaultStation = priorityStation || activeStations[0]
+          const defaultStation = pickDefaultStation(stationList)
+          const selectedScheduleType = form.getFieldValue('scheduleType') || dataBookingParam?.scheduleType
+          const selectedScheduleTypeOption = [...(scheduleTypes || []), ...(optionServiceType || [])]
+            .find((item) => `${item?.value}` === `${selectedScheduleType}`)
+          const isConsultantByScheduleType = selectedScheduleTypeOption?.scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT
+          const isStationFieldVisibleByConfig = selectedScheduleTypeOption?.requireScheduleStation === 1 && dataBookingParam?.visible_StationsCode !== false
 
           const hasStationIdByConfig = stationList?.find((item) => `${item?.stationsId}` === `${dataBookingParam?.stationsId}`)
           let targetStationId = defaultStation?.stationsId
 
-          if (dataBookingParam?.stationsId && hasStationIdByConfig) {
+          if (dataBookingParam?.stationsId === null) {
+            if (isConsultantByScheduleType && !isStationFieldVisibleByConfig) {
+              targetStationId = null
+            } else {
+              targetStationId = defaultStation?.stationsId
+            }
+          } else if (dataBookingParam?.stationsId && hasStationIdByConfig) {
             targetStationId = dataBookingParam?.stationsId
           }
 
@@ -1166,6 +1191,8 @@ console.log(dataBookingParam);
     }
   }, [form.getFieldValue('scheduleType'), scheduleTypes])
 
+  const stationOptions = useMemo(() => listStation, [listStation])
+
   useEffect(() => {
     if (form.getFieldValue('scheduleType') === SCHEDULE_TYPE_MINIAPP.E_TICKET_SALE) {
       if (scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT) {
@@ -1261,7 +1288,7 @@ console.log(dataBookingParam);
               rules={[
                 {
                   // required: dataBookingParam?.visible_phoneNumber !== false && (!isZaloApp || dataBookingParam?.require_phoneNumber === true),
-                  required: dataBookingParam?.visible_phoneNumber !== false,
+                  required: dataBookingParam?.visible_phoneNumber !== false && dataBookingParam?.require_phoneNumber !== false,
                   message: 'Vui lòng nhập số điện thoại'
                 },
                 {
@@ -1282,7 +1309,7 @@ console.log(dataBookingParam);
               required
               rules={[
                 {
-                  required: true,
+                  required: dataBookingParam?.visible_scheduleType !== false && dataBookingParam?.require_scheduleType !== false,
                   message: 'Vui lòng chọn mục đích đặt lịch'
                 }
               ]}
@@ -1299,6 +1326,17 @@ console.log(dataBookingParam);
                 onChange={(values, scheduleType) => {
                   setScheduleCategory(scheduleType?.scheduleCategory)
                   form.setFieldValue('scheduleType', values)
+                  // Nếu config trạm là null, khi đổi mục đích sẽ tự đồng bộ lại trạm:
+                  // luồng tư vấn giữ null, luồng đăng kiểm tự chọn trạm mặc định từ danh sách đã có.
+                  if (dataBookingParam?.stationsId === null && listStation?.length > 0) {
+                    const defaultStation = pickDefaultStation(listStation)
+                    const isStationFieldVisibleByConfig = scheduleType?.requireScheduleStation === 1 && dataBookingParam?.visible_StationsCode !== false
+                    const nextStation = scheduleType?.scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT && !isStationFieldVisibleByConfig ? null : defaultStation
+                    const nextStationId = nextStation?.stationsId ?? null
+                    form.setFieldValue('stationsId', nextStationId)
+                    setStationSelected(nextStation)
+                    onChangeStation(nextStationId, null, nextStation)
+                  }
                 }}
               />
             </Form.Item>
@@ -1330,11 +1368,11 @@ console.log(dataBookingParam);
               <Form.Item
                 name="licensePlates"
                 label="Biển số xe"
-                required
+                required={dataBookingParam?.visible_vehicleIdentity !== false && isConfigEnabled(dataBookingParam?.require_vehicleIdentity)}
                 rules={[
                   {
                     // required: dataBookingParam?.require_vehicleIdentity === true,
-                    required: dataBookingParam?.visible_vehicleIdentity !== false,
+                    required: dataBookingParam?.visible_vehicleIdentity !== false && isConfigEnabled(dataBookingParam?.require_vehicleIdentity),
                     validator(_, value) {
                       return validatorPlateNumber(value?.toUpperCase())
                     }
@@ -1361,7 +1399,7 @@ console.log(dataBookingParam);
               rules={[
                 {
                   // required: dataBookingParam?.visible_scheduleType !== false && dataBookingParam?.require_vehiclePlateColor === true,
-                  required: dataBookingParam?.visible_vehiclePlateColor !== false,
+                  required: dataBookingParam?.visible_vehiclePlateColor !== false && dataBookingParam?.require_vehiclePlateColor !== false,
                   message: 'Vui lòng chọn màu biển số'
                 }
               ]}>
@@ -1390,7 +1428,7 @@ console.log(dataBookingParam);
                   rules={[
                     {
                       // required: dataBookingParam?.visible_vehicleSubCategory !== false && dataBookingParam?.require_vehicleSubType === true,
-                      required: dataBookingParam?.visible_vehicleSubType !== false,
+                      required: dataBookingParam?.visible_vehicleSubType !== false && dataBookingParam?.require_vehicleSubType !== false,
                       message: 'Vui lòng nhập'
                     }
                   ]}>
@@ -1425,7 +1463,7 @@ console.log(dataBookingParam);
                       // required:
                       //   dataBookingParam?.visible_vehicleSubCategory !== false &&
                       //   (dataBookingParam?.require_vehicleSubCategory === 'true' ? true : false),
-                      required: dataBookingParam?.visible_vehicleSubCategory !== false,
+                      required: dataBookingParam?.visible_vehicleSubCategory !== false && dataBookingParam?.require_vehicleSubCategory !== false,
                       message: 'Vui lòng chọn phân loại'
                     }
                   ]}>
@@ -1492,7 +1530,7 @@ console.log(dataBookingParam);
                 hidden={dataBookingParam?.visible_StationArea === false}
                 rules={[
                   {
-                    required: dataBookingParam?.visible_StationArea !== false,
+                    required: dataBookingParam?.visible_StationArea !== false && dataBookingParam?.require_StationArea !== false,
                     message: 'Vui lòng chọn khu vực'
                   }
                 ]}>
@@ -1530,7 +1568,7 @@ console.log(dataBookingParam);
                 name="stationsId"
                 rules={[
                   {
-                    required: dataBookingParam?.visible_StationsCode !== false,
+                    required: dataBookingParam?.visible_StationsCode !== false && dataBookingParam?.require_StationsCode !== false,
                     message: 'Vui lòng chọn trạm'
                   }
                 ]}
@@ -1548,7 +1586,7 @@ console.log(dataBookingParam);
                       lineHeight: 48
                     }
                   }}
-                  options={listStation}
+                  options={stationOptions}
                   menuPlacement="top"
                   onChange={(value, station) => {
                     form.setFieldValue('stationsId', value)
@@ -1567,7 +1605,7 @@ console.log(dataBookingParam);
                 rules={[
                   {
                     // required: true,
-                    required: dataBookingParam?.visible_dateSchedule !== false,
+                    required: dataBookingParam?.visible_dateSchedule !== false && dataBookingParam?.require_dateSchedule !== false,
                     message: 'Vui lòng nhập'
                   }
                 ]}>
@@ -1603,7 +1641,7 @@ console.log(dataBookingParam);
                 rules={[
                   {
                     // required: true,
-                    required: dataBookingParam?.visible_timeSchedule !== false,
+                    required: dataBookingParam?.visible_timeSchedule !== false && dataBookingParam?.require_timeSchedule !== false,
                     message: 'Vui lòng chọn giờ hẹn'
                   }
                 ]}>
@@ -1695,3 +1733,4 @@ console.log(dataBookingParam);
 }
 
 export default BookingPartnerForm
+
