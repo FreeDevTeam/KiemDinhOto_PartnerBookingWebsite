@@ -128,6 +128,13 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
   const isConfigEnabled = (value) => value === true || value === 1 || `${value}`.toLowerCase() === 'true' || `${value}` === '1'
   const getConfigText = (value) => (typeof value === 'string' ? value.trim() : '')
+  // Sẽ ưu tiên biến miniAppVisible nếu có, nếu không mới dùng biến metadataRequired để check
+  const getVisibleByMiniAppThenMetadata = (miniAppVisible, metadataRequired) => {
+    if (miniAppVisible !== undefined && miniAppVisible !== null) {
+      return miniAppVisible !== false && `${miniAppVisible}` !== 'false'
+    }
+    return metadataRequired === 1
+  }
   const isNormalBookingFlow = !MINIAPP_GTELPAY && !MINIAPP_ZALOPAY
   const isConfirmBookingScheduleEnabled = isConfigEnabled(dataBookingParam?.confirmBookingScheduleEnabled)
   const confirmBookingScheduleUrl = getConfigText(dataBookingParam?.confirmBookingScheduleUrl)
@@ -868,7 +875,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           const selectedScheduleTypeOption = [...(scheduleTypes || []), ...(optionServiceType || [])]
             .find((item) => `${item?.value}` === `${selectedScheduleType}`)
           const isConsultantByScheduleType = selectedScheduleTypeOption?.scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT
-          const isStationFieldVisibleByConfig = selectedScheduleTypeOption?.requireScheduleStation === 1 && dataBookingParam?.visible_StationsCode !== false
+          const isStationFieldVisibleByConfig = getVisibleByMiniAppThenMetadata(dataBookingParam?.visible_StationsCode, selectedScheduleTypeOption?.requireScheduleStation)
 
           const hasStationIdByConfig = stationList?.find((item) => `${item?.stationsId}` === `${dataBookingParam?.stationsId}`)
           let targetStationId = defaultStation?.stationsId
@@ -1179,17 +1186,18 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
   const isShowStationDateTime = useMemo(() => {
     const selectedOption = scheduleTypes.find((item) => item.value === form.getFieldValue('scheduleType'))
-    const showStationField = selectedOption?.requireScheduleStation === 1
-    const showDateField = selectedOption?.requireScheduleDate === 1
-    const showTimeField = selectedOption?.requireScheduleTime === 1
+    const showStationField = getVisibleByMiniAppThenMetadata(dataBookingParam?.visible_StationsCode, selectedOption?.requireScheduleStation)
+    const showDateField = getVisibleByMiniAppThenMetadata(dataBookingParam?.visible_dateSchedule, selectedOption?.requireScheduleDate)
+    const showTimeField = getVisibleByMiniAppThenMetadata(dataBookingParam?.visible_timeSchedule, selectedOption?.requireScheduleTime)
+    const showAreaField = getVisibleByMiniAppThenMetadata(dataBookingParam?.visible_StationArea, showStationField || showDateField || showTimeField ? 1 : 0)
 
     return {
       showStationField,
       showDateField,
       showTimeField,
-      showAreaField: showStationField || showDateField || showTimeField
+      showAreaField
     }
-  }, [form.getFieldValue('scheduleType'), scheduleTypes])
+  }, [dataBookingParam, form.getFieldValue('scheduleType'), scheduleTypes])
 
   const stationOptions = useMemo(() => listStation, [listStation])
 
@@ -1330,7 +1338,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                   // luồng tư vấn giữ null, luồng đăng kiểm tự chọn trạm mặc định từ danh sách đã có.
                   if (dataBookingParam?.stationsId === null && listStation?.length > 0) {
                     const defaultStation = pickDefaultStation(listStation)
-                    const isStationFieldVisibleByConfig = scheduleType?.requireScheduleStation === 1 && dataBookingParam?.visible_StationsCode !== false
+                    const isStationFieldVisibleByConfig = getVisibleByMiniAppThenMetadata(dataBookingParam?.visible_StationsCode, scheduleType?.requireScheduleStation)
                     const nextStation = scheduleType?.scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT && !isStationFieldVisibleByConfig ? null : defaultStation
                     const nextStationId = nextStation?.stationsId ?? null
                     form.setFieldValue('stationsId', nextStationId)
