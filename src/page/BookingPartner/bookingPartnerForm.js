@@ -23,7 +23,7 @@ import {
   VIHCLE_CATEGORY_SPECIALIZED,
   VIHCLE_CATEGORY_TRUCK
 } from '../../constants/global'
-import BookingService, { fetchMetadataWithCache } from '../../services/addBookingService'
+import BookingService, { fetchFullMetadataWithCache, fetchMetadataWithCache } from '../../services/addBookingService'
 import { DATE_DISPLAY_FORMAT } from '../../constants/dateFormats'
 
 import BookingDatePicker from '../../components/BookingDatePicker'
@@ -111,6 +111,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   const [errorMessage, setErrorMessage] = useState('')
   const [isRedirectConsentChecked, setIsRedirectConsentChecked] = useState(false)
   const [isConfirmTermModalOpen, setIsConfirmTermModalOpen] = useState(false)
+  const stationSearchTimeoutRef = React.useRef(null)
 
   // states cho phương thức thanh toán
   const [zalopayPaymentMethod, setZalopayPaymentMethod] = useState(null)
@@ -411,10 +412,11 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       return
     }
 
-    const stationsId = values?.stationsId ?? form.getFieldValue('stationsId') ?? dataBookingParam?.stationsId
+    const stationsId = values?.stationsId ?? form.getFieldValue('stationsId')
     const vehicleSubCategory = values?.vehicleSubCategory ?? form.getFieldValue('vehicleSubCategory') ?? dataBookingParam?.vehicleSubCategory
     const isConsultantOrder = scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT
     const isStationFieldHidden = dataBookingParam?.visible_StationsCode === false
+    const isConfigStationNull = !`${dataBookingParam?.stationsCode || ''}`.trim()
 
     const data = {
       licensePlates: normalizePlate(values.licensePlates),
@@ -430,7 +432,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       vehicleSubCategory: vehicleSubCategory,
       certificateSeries: values.certificateSeries
     }
-    if (stationsId != null && !(isConsultantOrder && isStationFieldHidden)) {
+    const isSystemConsultantOrder = isConsultantOrder && isStationFieldHidden && isConfigStationNull
+    if (stationsId != null && !isSystemConsultantOrder) {
       data.stationsId = stationsId
     }
     if (values.serviceId) {
@@ -463,31 +466,53 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
   const getMetaData = () => {
     return fetchMetadataWithCache()
-      .then((result) => {
+      .then(async (result) => {
         const { statusCode, data } = result
-        if (statusCode === 200 && data?.SCHEDULE_TYPE) {
-          const newValues = Object.values(data.SCHEDULE_TYPE).map((item) => ({
-            value: item.scheduleType,
-            requireScheduleDate: item?.requireScheduleDate,
-            requireScheduleStation: item?.requireScheduleStation,
-            requireScheduleTime: item?.requireScheduleTime,
-            scheduleCategory: item?.scheduleCategory,
-            priceTTDK: item?.priceTTDK,
-            disabled: !item.scheduleTypeEnable,
-            label: (
-              <div className="d-flex ai-c j-sb w-100">
-                <span className={item.scheduleTypeEnable ? '' : 'disable-item'}>{item.scheduleTypeName}</span>
-              </div>
-            )
-          }))
-          const scheduleTypeWithParams = newValues.find((item) => item.value === +form.getFieldValue('scheduleType'))
-          setScheduleCategory(scheduleTypeWithParams?.scheduleCategory || SCHEDULE_BOOKING_TYPE.SCHEDULE)
-          setScheduleTypes(newValues)
-        } else {
+        if (statusCode !== 200 || !data?.SCHEDULE_TYPE) {
           firstScheduleTypeHandler()
+          return
         }
+
+        const newValues = Object.values(data.SCHEDULE_TYPE).filter((item) => item?.scheduleType && item?.scheduleTypeEnable).map((item) => ({
+          value: item?.scheduleType,
+          requireScheduleDate: item?.requireScheduleDate,
+          requireScheduleStation: item?.requireScheduleStation,
+          requireScheduleTime: item?.requireScheduleTime,
+          scheduleCategory: item?.scheduleCategory,
+          priceTTDK: item?.priceTTDK,
+          label: (
+            <div className="d-flex ai-c j-sb w-100">
+              <span>{item?.scheduleTypeName || SCHEDULE_TITLE[item?.scheduleType]?.title}</span>
+            </div>
+          )
+        }))
+
+        const configScheduleType = +dataBookingParam?.scheduleType
+        if (configScheduleType && !newValues.some((item) => +item?.value === configScheduleType)) {
+          const fullMetadataResult = await fetchFullMetadataWithCache().catch(() => null)
+          const fullScheduleType = Object.values(fullMetadataResult?.data?.SCHEDULE_TYPE || {}).find((item) => +item?.scheduleType === configScheduleType)
+          if (fullScheduleType) {
+            newValues.push({
+              value: fullScheduleType?.scheduleType,
+              requireScheduleDate: fullScheduleType?.requireScheduleDate,
+              requireScheduleStation: fullScheduleType?.requireScheduleStation,
+              requireScheduleTime: fullScheduleType?.requireScheduleTime,
+              scheduleCategory: fullScheduleType?.scheduleCategory,
+              priceTTDK: fullScheduleType?.priceTTDK,
+              label: (
+                <div className="d-flex ai-c j-sb w-100">
+                  <span>{fullScheduleType?.scheduleTypeName || SCHEDULE_TITLE[fullScheduleType?.scheduleType]?.title}</span>
+                </div>
+              )
+            })
+          }
+        }
+
+        const scheduleTypeWithParams = newValues.find((item) => item.value === +form.getFieldValue('scheduleType'))
+        setScheduleCategory(scheduleTypeWithParams?.scheduleCategory || SCHEDULE_BOOKING_TYPE.SCHEDULE)
+        setScheduleTypes(newValues)
       })
-      .catch((err) => {
+      .catch(() => {
         firstScheduleTypeHandler()
       })
   }
@@ -806,7 +831,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   function getStations(filter = null, callback = null) {
     setIsStationLoading(true)
     BookingService.getStationList(filter)
-      .then((res) => {
+      .then(async (res) => {
         const stationList = (res?.data || []).map((station) => {
           const name = `${station.stationCode} - ${station.stationsAddress || station.stationsName}`
           let label = <div className="text-station-select">{name}</div>
@@ -880,17 +905,44 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           const hasStationIdByConfig = stationList?.find((item) => `${item?.stationsId}` === `${dataBookingParam?.stationsId}`)
           let targetStationId = defaultStation?.stationsId
 
-          if (dataBookingParam?.stationsId === null) {
-            if (isConsultantByScheduleType && !isStationFieldVisibleByConfig) {
-              targetStationId = null
-            } else {
-              targetStationId = defaultStation?.stationsId
-            }
-          } else if (dataBookingParam?.stationsId && hasStationIdByConfig) {
-            targetStationId = dataBookingParam?.stationsId
+          const stationsCode = `${dataBookingParam?.stationsCode || ''}`.trim()
+          const isSystemStationConfig = !stationsCode
+          const stationArea = form.getFieldValue('vntId') || dataBookingParam?.vntId
+          const searchResult = !isSystemStationConfig
+            ? await BookingService.searchStationList({
+                filter: {
+                  stationType: 0,
+                  stationArea
+                },
+                searchText: stationsCode,
+                skip: 0,
+                limit: 20
+              }).catch(() => null)
+            : null
+          const resolvedStationByCode = (searchResult?.data || []).find((item) => `${item?.stationCode}`.toUpperCase() === stationsCode.toUpperCase())
+
+          if (isSystemStationConfig) {
+            targetStationId = isConsultantByScheduleType && !isStationFieldVisibleByConfig ? null : defaultStation?.stationsId
+          } else {
+            targetStationId = resolvedStationByCode?.stationsId || (dataBookingParam?.stationsId && hasStationIdByConfig ? dataBookingParam?.stationsId : targetStationId)
           }
 
-          const targetStation = stationList?.find((item) => `${item?.stationsId}` === `${targetStationId}`) || null
+          let finalStationList = stationList
+          if (resolvedStationByCode?.stationsId && !stationList.some((item) => `${item?.stationsId}` === `${resolvedStationByCode.stationsId}`)) {
+            const name = `${resolvedStationByCode.stationCode} - ${resolvedStationByCode.stationsAddress || resolvedStationByCode.stationsName}`
+            finalStationList = [
+              {
+                ...resolvedStationByCode,
+                label: <div className="text-station-select">{name}</div>,
+                value: resolvedStationByCode.stationsId,
+                disabled: resolvedStationByCode.stationStatus === 0
+              },
+              ...stationList
+            ]
+            setListStation(finalStationList)
+          }
+
+          const targetStation = finalStationList?.find((item) => `${item?.stationsId}` === `${targetStationId}`) || null
 
           setStationSelected(targetStation)
           form.setFieldValue('stationsId', targetStationId)
@@ -909,6 +961,76 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       .finally(() => {
         setIsStationLoading(false)
       })
+  }
+
+  const handleSearchStation = (keyword) => {
+    const searchText = `${keyword || ''}`.trim()
+    const isValidSearchText = /^[a-zA-Z0-9]+$/.test(searchText)
+
+    if (stationSearchTimeoutRef.current) {
+      clearTimeout(stationSearchTimeoutRef.current)
+    }
+
+    if (!searchText || !isValidSearchText) {
+      if (form.getFieldValue('vntId')) {
+        getStations({ filter: { stationArea: form.getFieldValue('vntId') } }, (stationList) => {
+          setListStation(stationList)
+        })
+      }
+      return
+    }
+
+    stationSearchTimeoutRef.current = setTimeout(() => {
+      setIsStationLoading(true)
+      const params = {
+        filter: {
+          stationArea: form.getFieldValue('vntId'),
+          stationType: 0
+        },
+        searchText,
+        skip: 0,
+        limit: 50,
+        order: {
+          key: 'enablePriorityMode',
+          value: 'desc'
+        }
+      }
+
+      BookingService.searchStationList(params)
+        .then((res) => {
+          const stationList = (res?.data || []).map((station) => {
+            const name = `${station.stationCode} - ${station.stationsAddress || station.stationsName}`
+            let label = <div className="text-station-select">{name}</div>
+            let disabled = false
+
+            if (station.enablePriorityMode >= 1) {
+              label = (
+                <div className="text-station-select" style={{ display: 'flex', flexWrap: 'wrap' }}>
+                  <div className="ai-c" style={{ display: 'inline-flex', paddingRight: '4px' }}>
+                    <span className="priority-mode">Được ưu tiên</span>
+                  </div>
+                  {name}
+                </div>
+              )
+            }
+
+            if (station.stationStatus === 0) {
+              disabled = true
+            }
+
+            return {
+              ...station,
+              label,
+              value: station.stationsId,
+              disabled
+            }
+          })
+          setListStation(stationList)
+        })
+        .finally(() => {
+          setIsStationLoading(false)
+        })
+    }, 400)
   }
 
   const stringToRealValue = (value) => {
@@ -1176,6 +1298,21 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     }
   }, [isZaloApp, zaloUserPhone, zaloUserName])
 
+  useEffect(() => {
+    const configuredScheduleType = +dataBookingParam?.scheduleType
+    if (!configuredScheduleType) return
+    if (scheduleTypes.some((item) => +item?.value === configuredScheduleType)) return
+    getMetaData()
+  }, [dataBookingParam?.scheduleType])
+
+  useEffect(() => {
+    return () => {
+      if (stationSearchTimeoutRef.current) {
+        clearTimeout(stationSearchTimeoutRef.current)
+      }
+    }
+  }, [])
+
   // GTEL: Fill user data
   useEffect(() => {
     if (gtelpayUser?.phoneNumber && !isZaloApp) {
@@ -1336,7 +1473,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                   form.setFieldValue('scheduleType', values)
                   // Nếu config trạm là null, khi đổi mục đích sẽ tự đồng bộ lại trạm:
                   // luồng tư vấn giữ null, luồng đăng kiểm tự chọn trạm mặc định từ danh sách đã có.
-                  if (dataBookingParam?.stationsId === null && listStation?.length > 0) {
+                  const isConfigStationNull = !`${dataBookingParam?.stationsCode || ''}`.trim()
+                  if (isConfigStationNull && listStation?.length > 0) {
                     const defaultStation = pickDefaultStation(listStation)
                     const isStationFieldVisibleByConfig = getVisibleByMiniAppThenMetadata(dataBookingParam?.visible_StationsCode, scheduleType?.requireScheduleStation)
                     const nextStation = scheduleType?.scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT && !isStationFieldVisibleByConfig ? null : defaultStation
@@ -1583,10 +1721,11 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                 hidden={dataBookingParam?.visible_StationsCode === false}>
                 <SelectAntd
                   className="cs-select ant-custom booking-input"
-                  isSearchable={true}
+                  showSearch
+                  filterOption={false}
                   size="middle"
                   loading={isStationLoading}
-                  disabled={!form.getFieldValue('vntId') || isStationLoading}
+                  disabled={!form.getFieldValue('vntId')}
                   placeholder="Vui lòng chọn trạm đăng kiểm"
                   style={{
                     customStyles,
@@ -1596,10 +1735,17 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                   }}
                   options={stationOptions}
                   menuPlacement="top"
+                  onSearch={handleSearchStation}
                   onChange={(value, station) => {
                     form.setFieldValue('stationsId', value)
                     setStationSelected(station)
                     onChangeStation(value, null, station)
+                    const stationArea = form.getFieldValue('vntId')
+                    if (stationArea) {
+                      getStations({ filter: { stationArea } }, (stationList) => {
+                        setListStation(stationList)
+                      })
+                    }
                   }}
                 />
               </Form.Item>
