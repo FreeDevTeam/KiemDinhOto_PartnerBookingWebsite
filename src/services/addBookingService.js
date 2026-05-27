@@ -289,6 +289,38 @@ export default class BookingService {
       })
     })
   }
+  static async getMetaDataFull(data = {}) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/SystemConfigurations/getMetaData',
+        data: data
+      }).then((result = {}) => {
+        const { statusCode } = result
+        if (statusCode === 200) {
+          return resolve(result)
+        } else {
+          resolve(result)
+        }
+      })
+    })
+  }
+  static async searchStationList(data = {}) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/PartnerAPI/Stations/user/getList',
+        data: data
+      }).then((result = {}) => {
+        const { statusCode, data } = result
+        if (statusCode === 200) {
+          return resolve(data)
+        } else {
+          resolve([])
+        }
+      })
+    })
+  }
   static async getBookingDate(data = {}) {
     return new Promise((resolve) => {
       Request.send({
@@ -686,6 +718,38 @@ export async function fetchMetadataWithCache() {
     throw new Error(`Empty data for key meta data`)
   } catch (err) {
     console.error(`❌ fetchWithCache(meta data) error:`, err)
+    throw err
+  }
+}
+
+export async function fetchFullMetadataWithCache() {
+  const cacheKey = addKeyLocalStorage('api_cache_meta_data_full')
+  const CACHE_TTL = 7 * 24 * 60 * 60 * 1000
+
+  try {
+    const cached = localStorage.getItem(cacheKey)
+    if (cached) {
+      const parsed = JSON.parse(cached)
+      const isExpired = Date.now() - parsed.timestamp > CACHE_TTL
+      if (!isExpired && parsed.data) {
+        return parsed.data
+      }
+    }
+
+    const data = await BookingService.getMetaDataFull()
+    if (data) {
+      localStorage.setItem(
+        cacheKey,
+        JSON.stringify({
+          data,
+          timestamp: Date.now()
+        })
+      )
+      return data
+    }
+
+    throw new Error(`Empty data for key meta data full`)
+  } catch (err) {
     throw err
   }
 }
