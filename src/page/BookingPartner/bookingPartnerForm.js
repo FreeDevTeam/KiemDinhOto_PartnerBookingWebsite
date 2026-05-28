@@ -141,7 +141,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   const confirmBookingScheduleUrl = getConfigText(dataBookingParam?.confirmBookingScheduleUrl)
   const confirmBookingScheduleTerm = getConfigText(dataBookingParam?.confirmBookingScheduleTerm)
   const shouldUseConfirmBookingSchedule = isNormalBookingFlow && isConfirmBookingScheduleEnabled && !!confirmBookingScheduleUrl
-  const shouldShowConfirmBookingTerm = shouldUseConfirmBookingSchedule && !!confirmBookingScheduleTerm
+  const shouldShowConfirmBookingTerm = isNormalBookingFlow && isConfirmBookingScheduleEnabled && !!confirmBookingScheduleTerm
 
   const getStationConfigByApiKey = (paramsFromUrl) => {
     setIsLoading(true)
@@ -400,12 +400,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   }
 
   const onFinish = async (values) => {
-    if (shouldUseConfirmBookingSchedule && !confirmBookingScheduleTerm) {
-      setErrorMessage('Vui lòng cấu hình Điều khoản chia sẻ dữ liệu trước khi bật link điều hướng.')
-      setIsModalErrOpen(true)
-      return
-    }
-
     if (shouldShowConfirmBookingTerm && !isRedirectConsentChecked) {
       setErrorMessage('Vui lòng đọc và đồng ý với Điều khoản chia sẻ dữ liệu trước khi đặt lịch.')
       setIsModalErrOpen(true)
