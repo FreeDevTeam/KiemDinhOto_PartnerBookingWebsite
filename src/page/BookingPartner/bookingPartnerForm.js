@@ -1951,7 +1951,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           </Button>
         }
         className="booking-confirm-term-modal">
-        <div className='title-normal text-uppercase m-2 text-center'>Điều khoản chia sẻ dữ liệu</div>
+        <div className='booking-confirm-term-title'>Điều khoản chia sẻ dữ liệu</div>
         <div className="booking-confirm-term-content" dangerouslySetInnerHTML={{ __html: confirmBookingScheduleTerm }}></div>
       </Modal>
       {isModalErrOpen && (
