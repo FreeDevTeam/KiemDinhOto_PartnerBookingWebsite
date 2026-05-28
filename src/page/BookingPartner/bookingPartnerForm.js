@@ -69,6 +69,11 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   const [licensePlateColorList, setLicensePlateColorList] = useState(PLATE_COLOR)
   const [vehicleSubCategoryOptions, setVehicleSubCategoryOptions] = useState([])
   const [listStationArea, setListStationArea] = useState([])
+  const [stationTypeOptions, setStationTypeOptions] = useState([])
+  const defaultStationType =
+    stationTypeOptions.find((item) => `${item?.label || ''}`.toLowerCase().includes('trung tâm đăng kiểm'))?.value ??
+    stationTypeOptions?.[0]?.value ??
+    0
   const [listStation, setListStation] = useState([])
   const [listBookingDate, setListBookingDate] = useState([])
   const [stationBookingConfig, setStationBookingConfig] = useState([])
@@ -112,6 +117,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   const [isRedirectConsentChecked, setIsRedirectConsentChecked] = useState(false)
   const [isConfirmTermModalOpen, setIsConfirmTermModalOpen] = useState(false)
   const stationSearchTimeoutRef = React.useRef(null)
+  const stationTypeDefaultAppliedRef = React.useRef(false)
 
   // states cho phương thức thanh toán
   const [zalopayPaymentMethod, setZalopayPaymentMethod] = useState(null)
@@ -511,6 +517,13 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
         const scheduleTypeWithParams = newValues.find((item) => item.value === +form.getFieldValue('scheduleType'))
         setScheduleCategory(scheduleTypeWithParams?.scheduleCategory || SCHEDULE_BOOKING_TYPE.SCHEDULE)
         setScheduleTypes(newValues)
+        const stationTypes = Object.values(data?.STATION_TYPE_OBJECTS || data?.STATION_TYPE || {})
+          .filter((item) => item?.stationType !== undefined && item?.stationTypeName)
+          .map((item) => ({
+            value: item.stationType,
+            label: item.stationTypeName
+          }))
+        setStationTypeOptions(stationTypes)
       })
       .catch(() => {
         firstScheduleTypeHandler()
@@ -830,8 +843,25 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
   function getStations(filter = null, callback = null) {
     setIsStationLoading(true)
-    BookingService.getStationList(filter)
-      .then(async (res) => {
+    const stationsCode = `${dataBookingParam?.stationsCode || ''}`.trim()
+    const isSystemStationConfig = !stationsCode
+    const stationArea = form.getFieldValue('vntId') || dataBookingParam?.vntId
+
+    const stationListPromise = BookingService.getStationList(filter)
+    const stationByCodePromise = !isSystemStationConfig
+      ? BookingService.searchStationList({
+          filter: {
+            stationArea,
+            stationType: 0
+          },
+          searchText: stationsCode,
+          skip: 0,
+          limit: 20
+        }).catch(() => null)
+      : Promise.resolve(null)
+
+    Promise.all([stationListPromise, stationByCodePromise])
+      .then(([res, searchResult]) => {
         const stationList = (res?.data || []).map((station) => {
           const name = `${station.stationCode} - ${station.stationsAddress || station.stationsName}`
           let label = <div className="text-station-select">{name}</div>
@@ -902,29 +932,18 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           const isConsultantByScheduleType = selectedScheduleTypeOption?.scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT
           const isStationFieldVisibleByConfig = getVisibleByMiniAppThenMetadata(dataBookingParam?.visible_StationsCode, selectedScheduleTypeOption?.requireScheduleStation)
 
-          const hasStationIdByConfig = stationList?.find((item) => `${item?.stationsId}` === `${dataBookingParam?.stationsId}`)
           let targetStationId = defaultStation?.stationsId
 
-          const stationsCode = `${dataBookingParam?.stationsCode || ''}`.trim()
-          const isSystemStationConfig = !stationsCode
-          const stationArea = form.getFieldValue('vntId') || dataBookingParam?.vntId
-          const searchResult = !isSystemStationConfig
-            ? await BookingService.searchStationList({
-                filter: {
-                  stationType: 0,
-                  stationArea
-                },
-                searchText: stationsCode,
-                skip: 0,
-                limit: 20
-              }).catch(() => null)
-            : null
-          const resolvedStationByCode = (searchResult?.data || []).find((item) => `${item?.stationCode}`.toUpperCase() === stationsCode.toUpperCase())
+          let resolvedStationByCode = (searchResult?.data || []).find((item) => `${item?.stationCode}`.toUpperCase() === stationsCode.toUpperCase())
+          if (!resolvedStationByCode && !isSystemStationConfig) {
+            resolvedStationByCode = stationList.find((item) => `${item?.stationCode}`.toUpperCase() === stationsCode.toUpperCase())
+          }
 
           if (isSystemStationConfig) {
             targetStationId = isConsultantByScheduleType && !isStationFieldVisibleByConfig ? null : defaultStation?.stationsId
           } else {
-            targetStationId = resolvedStationByCode?.stationsId || (dataBookingParam?.stationsId && hasStationIdByConfig ? dataBookingParam?.stationsId : targetStationId)
+            // Khi đã cấu hình stationsCode thì chỉ ưu tiên station resolve từ search theo code
+            targetStationId = resolvedStationByCode?.stationsId || null
           }
 
           let finalStationList = stationList
@@ -973,9 +992,17 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
     if (!searchText || !isValidSearchText) {
       if (form.getFieldValue('vntId')) {
-        getStations({ filter: { stationArea: form.getFieldValue('vntId') } }, (stationList) => {
-          setListStation(stationList)
-        })
+        getStations(
+          {
+            filter: {
+              stationArea: form.getFieldValue('vntId'),
+              stationType: Number(form.getFieldValue('stationType') ?? dataBookingParam?.stationType ?? defaultStationType)
+            }
+          },
+          (stationList) => {
+            setListStation(stationList)
+          }
+        )
       }
       return
     }
@@ -985,7 +1012,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       const params = {
         filter: {
           stationArea: form.getFieldValue('vntId'),
-          stationType: 0
+          stationType: Number(form.getFieldValue('stationType') ?? dataBookingParam?.stationType ?? defaultStationType)
         },
         searchText,
         skip: 0,
@@ -1253,11 +1280,12 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     if (form.getFieldValue('vntId')) {
       getStations({
         filter: {
-          stationArea: form.getFieldValue('vntId')
+          stationArea: form.getFieldValue('vntId'),
+          stationType: Number(form.getFieldValue('stationType') ?? dataBookingParam?.stationType ?? defaultStationType)
         }
       })
     }
-  }, [form.getFieldValue('vntId')])
+  }, [form.getFieldValue('vntId'), form.getFieldValue('stationType')])
 
   useEffect(() => {
     if (dataBookingParam?.vehicleSubType || form.getFieldValue('vehicleSubType')) {
@@ -1282,10 +1310,29 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
         vehicleSubCategory: dataBookingParam.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
         certificateSeries: dataBookingParam.certificateSeries || undefined,
         licensePlates: normalizePlate(dataBookingParam.licensePlates) || undefined,
+        stationType: dataBookingParam.stationType ?? defaultStationType,
         stationsId: dataBookingParam.stationsId || undefined
       })
     }
   }, [dataBookingParam])
+
+  useEffect(() => {
+    if (stationTypeDefaultAppliedRef.current) return
+    if (!stationTypeOptions || stationTypeOptions.length <= 0) return
+
+    const hasConfiguredStationType =
+      dataBookingParam?.stationType !== undefined &&
+      dataBookingParam?.stationType !== null &&
+      dataBookingParam?.stationType !== ''
+
+    if (hasConfiguredStationType) {
+      stationTypeDefaultAppliedRef.current = true
+      return
+    }
+
+    form.setFieldValue('stationType', defaultStationType)
+    stationTypeDefaultAppliedRef.current = true
+  }, [stationTypeOptions, dataBookingParam?.stationType, defaultStationType])
 
   useEffect(() => {
     if (isZaloApp) {
@@ -1707,6 +1754,40 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                 />
               </Form.Item>
             )}
+            {isShowStationDateTime.showStationField && (
+              <Form.Item
+                label="Loại trung tâm"
+                name="stationType"
+                rules={[
+                  {
+                    required: dataBookingParam?.visible_StationType === true && dataBookingParam?.require_StationType !== false,
+                    message: 'Vui lòng chọn loại trung tâm'
+                  }
+                ]}
+                hidden={dataBookingParam?.visible_StationType !== true}>
+                <SelectAntd
+                  className="cs-select ant-custom booking-input"
+                  placeholder="Vui lòng chọn loại trung tâm"
+                  options={stationTypeOptions}
+                  onChange={() => {
+                    setStationSelected(null)
+                    setStationBookingConfig([])
+                    setListStation([])
+                    setETicketOptions([])
+                    setWorkdaySelectedDate(undefined)
+                    setListBookingDate([])
+                    setListBookingTime([])
+                    setWorkdayFilter((prev) => ({ ...prev, stationsId: undefined }))
+                    form.setFieldsValue({
+                      stationsId: undefined,
+                      dateSchedule: undefined,
+                      time: undefined,
+                      serviceId: undefined
+                    })
+                  }}
+                />
+              </Form.Item>
+            )}
 
             {isShowStationDateTime.showStationField && (
               <Form.Item
@@ -1742,9 +1823,17 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                     onChangeStation(value, null, station)
                     const stationArea = form.getFieldValue('vntId')
                     if (stationArea) {
-                      getStations({ filter: { stationArea } }, (stationList) => {
-                        setListStation(stationList)
-                      })
+                      getStations(
+                        {
+                          filter: {
+                            stationArea,
+                            stationType: Number(form.getFieldValue('stationType') ?? dataBookingParam?.stationType ?? defaultStationType)
+                          }
+                        },
+                        (stationList) => {
+                          setListStation(stationList)
+                        }
+                      )
                     }
                   }}
                 />
