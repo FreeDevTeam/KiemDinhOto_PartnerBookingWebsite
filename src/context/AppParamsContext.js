@@ -1,7 +1,7 @@
 import React from 'react'
 import { LocalStorageManager, SessionStorageManager } from '../helper/localStorage'
 import { getUrlParamValue, smartParseParam } from '../helper/params'
-import { PARAM_HOME_MINIAPP_CONSENT_MODE, PARAM_IS_HEADER_MINI_APP, PARAM_IS_WEB_VIEW, PARAM_REFER_STATION_ID, PARAM_REFER_USER_ID } from '../constants/params'
+import { PARAM_HOME_MINIAPP_CONSENT_MODE, PARAM_IS_HEADER_MINI_APP, PARAM_IS_HEADER_MINI_APP_EXPAND, PARAM_IS_WEB_VIEW, PARAM_REFER_STATION_ID, PARAM_REFER_USER_ID } from '../constants/params'
 export const AppParamsContext = React.createContext(null)
 
 const getFirstUrlParamValue = (paramKey, search) => {
@@ -66,6 +66,13 @@ const PARAMS_MINIAPP_SCHEMA_SESSION_STORAGE = {
     defaultValue: false,
     parser: (v) => v === true || v === 1
   },
+  isHeaderMiniAppExpand: {
+    paramKey: PARAM_IS_HEADER_MINI_APP_EXPAND,
+    storageKey: PARAM_IS_HEADER_MINI_APP_EXPAND,
+    envKey: 'REACT_APP_HOME_MINIAPP_HEADER_EXPAND',
+    defaultValue: false,
+    parser: (v) => v === true || v === 1
+  },
   referUserId: {
     paramKey: PARAM_REFER_USER_ID,
     storageKey: PARAM_REFER_USER_ID,
@@ -83,7 +90,7 @@ const PARAMS_MINIAPP_SCHEMA_SESSION_STORAGE = {
   homeMiniappConsentMode: {
     paramKey: PARAM_HOME_MINIAPP_CONSENT_MODE,
     storageKey: PARAM_HOME_MINIAPP_CONSENT_MODE,
-    envKey: "REACT_APP_HOME_MINIAPP_CONSENT_MODE" ,
+    envKey: "REACT_APP_HOME_MINIAPP_CONSENT_MODE",
     defaultValue: 2,
     parser: (v) => v
   }

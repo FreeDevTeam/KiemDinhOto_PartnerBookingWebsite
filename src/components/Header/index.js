@@ -6,6 +6,7 @@ import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
 import { MESSAGE_BACK_TO_HOME_MINI_APP, PARAM_IFRAME_HEADER_TITLE } from '../../constants/params'
 import { smartParseParam } from '../../helper/params'
 import { checkIsBackToHomeMiniApp } from '../../helper/checkIsEmbeddedView'
+import { useAppParamsContext } from '../../context/AppParamsContext'
 
 export default function Header({ title, onBack }) {
   const location = useLocation()
@@ -13,10 +14,11 @@ export default function Header({ title, onBack }) {
   const params = new URLSearchParams(searchparam)
   const headerTitle = smartParseParam(params.get(PARAM_IFRAME_HEADER_TITLE)) || 'Thông tin lịch hẹn'
   const history = useHistory()
+  const { isHeaderMiniAppExpand } = useAppParamsContext()
 
   const isBackToHomeMiniApp = checkIsBackToHomeMiniApp(window.location.href)
   return (
-    <div className={`Header ${smartParseParam(process.env.REACT_APP_HOME_MINIAPP_HEADER_EXPAND) ? 'Header_expand' : ''}`}>
+    <div className={`Header ${isHeaderMiniAppExpand ? 'Header_expand' : ''}`}>
       <div className="Header_fixed">
         <ArrowLeft
           onClick={() => {
