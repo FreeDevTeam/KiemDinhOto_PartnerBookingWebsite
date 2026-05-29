@@ -841,7 +841,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     const isSystemStationConfig = !stationsCode
     const stationArea = form.getFieldValue('vntId') || dataBookingParam?.vntId
 
-    const stationListPromise = BookingService.getStationList(filter)
+    const stationListPromise = BookingService.searchStationList(filter)
     const stationByCodePromise = !isSystemStationConfig
       ? BookingService.searchStationList({
           filter: {
@@ -936,8 +936,14 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           if (isSystemStationConfig) {
             targetStationId = isConsultantByScheduleType && !isStationFieldVisibleByConfig ? null : defaultStation?.stationsId
           } else {
-            // Khi đã cấu hình stationsCode thì chỉ ưu tiên station resolve từ search theo code
-            targetStationId = resolvedStationByCode?.stationsId || null
+            // Có cấu hình stationsCode:
+            // - Consultant + ẩn field trạm: chỉ dùng station theo cấu hình, không có thì null.
+            // - Các luồng còn lại: không có thì fallback station mặc định từ dropdown.
+            if (isConsultantByScheduleType && !isStationFieldVisibleByConfig) {
+              targetStationId = resolvedStationByCode?.stationsId || null
+            } else {
+              targetStationId = resolvedStationByCode?.stationsId || defaultStation?.stationsId || null
+            }
           }
 
           let finalStationList = stationList
