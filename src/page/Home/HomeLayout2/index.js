@@ -15,6 +15,7 @@ import { getHomePageConfigCache } from '../../../helper/getHomePageConfigCache'
 import Header from '../../../components/Header'
 import usePartnerBridge from '../../../sdk/usePartnerBridge'
 import { HOME_CONFIG_CATEGORY, HOME_CONFIG_CATEGORY_TEXT } from '../../../constants/Layout2Constants'
+import usePreconnectExternalLinks from '../../../hooks/usePreconnectExternalLinks'
 
 const HomeLayout2 = (props) => {
   const location = useLocation()
@@ -149,6 +150,11 @@ const HomeLayout2 = (props) => {
       console.error(e);
     }
   };
+
+  // DNS Prefetch & Preconnect: warm up connections cho các domain external
+  // Mục đích là để xử lý gọi link nhanh hơn khi người dùng click vào button, tránh bị chậm quá mức 
+  usePreconnectExternalLinks(homepageConfig)
+  // -----------------------------------------------------------------------
 
   const dataHomePageConfig = useMemo(() => {
   const keyToRender = [

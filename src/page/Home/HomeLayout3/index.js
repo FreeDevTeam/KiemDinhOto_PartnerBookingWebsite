@@ -21,6 +21,7 @@ import { encodeLink } from '../../../helper/common'
 import useWindowDimensions from '../../../hooks/window-dimensions'
 import Header from '../../../components/Header'
 import usePartnerBridge from '../../../sdk/usePartnerBridge'
+import usePreconnectExternalLinks from '../../../hooks/usePreconnectExternalLinks'
 
 const HomeLayout3 = (props) => {
   const location = useLocation()
@@ -50,6 +51,11 @@ const HomeLayout3 = (props) => {
   const [violationList, setViolationList] = useState(storageHomePageConfigViolation ? (JSON.parse(storageHomePageConfigViolation))?.data : [])
   const [homeMainServicesList, setHomeMainServicesList] = useState(storageHomePageConfigHomeMainServices ? (JSON.parse(storageHomePageConfigHomeMainServices))?.data : [])
   const [recommendedServicesList, setRecommendedServicesList] = useState(storageHomePageConfigRecommendedServices ? (JSON.parse(storageHomePageConfigRecommendedServices))?.data : [])
+
+  const combinedServicesList = useMemo(() => {
+    return [...(homeMainServicesList || []), ...(recommendedServicesList || [])]
+  }, [homeMainServicesList, recommendedServicesList])
+  usePreconnectExternalLinks(combinedServicesList)
 
   const [listNews, setListNews] = useState([])
 
@@ -191,8 +197,8 @@ const HomeLayout3 = (props) => {
 
   return (
     <>
-      {process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE && 
-        <Header title={process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE} onBack={() => {handleExit()}} />
+      {process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE &&
+        <Header title={process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE} onBack={() => { handleExit() }} />
       }
       <sc.Container>
         <PageLayout>{renderSlider}</PageLayout>
@@ -213,26 +219,26 @@ const HomeLayout3 = (props) => {
                 )}
               </div>
             </div>
-              <div className='layout2-bg mb-4'>
-                {listNews?.length > 0 && (
-                  <div className="home-container mb-1 mt-1">
-                    <div className="d-flex justify-content-between align-items-center news-center" >
-                      <div className='text-large title-homelayout' style={{padding:'0 10px'}}>Tin tức</div>
-                      <div className="d-flex mb-0 justify-content-end home-link" onClick={() => {
-                        const link = `${process.env.REACT_APP_URL_WEB_TTDK}/new`
-                        history.push(`${PATH.IFRAME_VIEW}?${PARAM_IFRAME_URL}=${encodeLink(link)}`)
-                      }}>
-                        <a href="/" onClick={(e) => e.preventDefault()}>
-                          Xem tất cả
-                        </a>
-                      </div>
-                    </div>
-                    <div className='mobile-content'>
-                      <HomeNew listNews={listNews} />
+            <div className='layout2-bg mb-4'>
+              {listNews?.length > 0 && (
+                <div className="home-container mb-1 mt-1">
+                  <div className="d-flex justify-content-between align-items-center news-center" >
+                    <div className='text-large title-homelayout' style={{ padding: '0 10px' }}>Tin tức</div>
+                    <div className="d-flex mb-0 justify-content-end home-link" onClick={() => {
+                      const link = `${process.env.REACT_APP_URL_WEB_TTDK}/new`
+                      history.push(`${PATH.IFRAME_VIEW}?${PARAM_IFRAME_URL}=${encodeLink(link)}`)
+                    }}>
+                      <a href="/" onClick={(e) => e.preventDefault()}>
+                        Xem tất cả
+                      </a>
                     </div>
                   </div>
-                )}
-              </div>
+                  <div className='mobile-content'>
+                    <HomeNew listNews={listNews} />
+                  </div>
+                </div>
+              )}
+            </div>
             {bottomBanner?.length > 0 && <PageLayout>{renderBottomSlider}</PageLayout>}
             {/* {bottomBanner?.length == 1 && (
               <div className={'layout2'}>

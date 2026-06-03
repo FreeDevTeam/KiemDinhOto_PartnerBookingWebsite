@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useRef } from 'react'
+import ReactDOM from 'react-dom'
 import Slider from 'react-slick'
 import './SliderHome.scss'
+import { Spin } from 'antd'
 import BasicPlaceholder from './../BasicComponent/BasicPlaceholder'
 import PopupSheetIframe from '../Popup/PopupSheetIframe'
 import addKeyLocalStorage, { saveClickToLocalStorage } from '../../helper/localStorage'
@@ -36,6 +38,9 @@ export const SliderHome = (props) => {
   const [sheetVisible, setSheetVisible] = useState(false)
   const intervalRef = useRef(localStorage.getItem(addKeyLocalStorage(CLICK_STORAGE_KEY)))
   const history = useHistory()
+  const [isNavigating, setIsNavigating] = useState(false)
+  const [showNavigating, setShowNavigating] = useState(false)
+  const navigatingTimerRef = useRef(null)
   const settingSilde = {
     dots: true,
     infinite: false,
@@ -60,6 +65,7 @@ export const SliderHome = (props) => {
 	};
 
   const handleClickBanner = (item, index) => {
+    if (isNavigating) return
     if (item?.bannerUrl) {
       const link = item?.bannerUrl
       
@@ -75,6 +81,10 @@ export const SliderHome = (props) => {
       }
 
       if (link) {
+        setIsNavigating(true)
+        navigatingTimerRef.current = setTimeout(() => {
+          setShowNavigating(true)
+        }, 800)
         handleDirect(item?.bannerUrl, item?.bannerNavigationType  , history, buildConsentHref)
       }
     }
@@ -142,9 +152,19 @@ export const SliderHome = (props) => {
   }, [setting, isLoading])
 
   return (
-    <div>
-      {renderSlider}
-      <PopupSheetIframe visible={sheetVisible} onClose={() => setSheetVisible(false)} iframeUrl={popupUrl} />
-    </div>
+    <>
+      <div>
+        {renderSlider}
+        <PopupSheetIframe visible={sheetVisible} onClose={() => setSheetVisible(false)} iframeUrl={popupUrl} />
+      </div>
+      {showNavigating && ReactDOM.createPortal(
+        <div className="loading">
+          <div className="text-center">
+            <Spin />
+          </div>
+        </div>,
+        document.body
+      )}
+    </>
   )
 }

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import ReactDOM from 'react-dom'
 import './index.scss'
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
 import { useGlobalContext } from './../../../context/GlobalContext'
@@ -6,6 +7,7 @@ import Slider from 'react-slick'
 import useWindowDimensions from '../../../hooks/window-dimensions'
 import { handleDirect } from '../../../components/Slider/SliderHome'
 import { useConsentContext } from '../../../context/ConsentContext'
+import { Spin } from 'antd'
 
 const L2FunctionButtonList = (props) => {
   const { handleZaloAuthorize,globalState } = useGlobalContext();
@@ -14,6 +16,9 @@ const L2FunctionButtonList = (props) => {
   const { list ,title,className } = props
   const history = useHistory()
   const { handleGetUserPhone } = useGlobalContext();
+  const [isNavigating, setIsNavigating] = useState(false)
+  const [showNavigating, setShowNavigating] = useState(false)
+  const navigatingTimerRef = useRef(null)
   const handleRouter = async (path) => {
     if(!globalState?.isAuthorize){
       await handleZaloAuthorize()
@@ -34,6 +39,7 @@ const L2FunctionButtonList = (props) => {
     rows: 2,
   }
   const handleClick= async (element)=>{
+    if (isNavigating) return
     if(!globalState?.isAuthorize){
       await handleZaloAuthorize()
     }
@@ -43,6 +49,10 @@ const L2FunctionButtonList = (props) => {
       await setSheetVisible(false)
       window.open(link, '_blank')
     } else if (link) {
+      setIsNavigating(true)
+      navigatingTimerRef.current = setTimeout(() => {
+        setShowNavigating(true)
+      }, 800)
       handleDirect(link, element?.navigationType, history, buildConsentHref)
     }
   }
@@ -109,6 +119,14 @@ const L2FunctionButtonList = (props) => {
   return (
     <>
       <div> {renderBtns()}</div>
+      {showNavigating && ReactDOM.createPortal(
+        <div className="loading">
+          <div className="text-center">
+            <Spin />
+          </div>
+        </div>,
+        document.body
+      )}
     </>
   )
 }
