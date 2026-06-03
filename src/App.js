@@ -28,7 +28,7 @@ function App() {
   // Kiểm tra xem có APIKey trong URL không cho tính năng tự động đặt lịch
   const urlParams = new URLSearchParams(window.location.search);
   const apiKey = urlParams.get('apiKey') || urlParams.get('apikey') || localStorage.getItem('apiKey') || process.env.REACT_APP_APIKEY || undefined;
-  if(apiKey) {
+  if (apiKey) {
     localStorage.setItem('apiKey', apiKey)
   }
 
@@ -39,22 +39,22 @@ function App() {
   useEffect(() => {
     setThemeApp()
   }, [])
-  
-  const handleCheckApiKey = ()=>{
+
+  const handleCheckApiKey = () => {
     const params = getQueryParams()
     const API_KEY = params?.apiKey || params?.apikey || localStorage.getItem('apiKey') || process.env.REACT_APP_APIKEY
-    if(!API_KEY){
+    if (!API_KEY) {
       // const domain = 'dangkiem1406D.ttdk.com.vn' // dùng cho trường hợp localhost
       const domain = window.location.origin.split('//')[1]
-      SystemConfigurationsService.getApiKeyByDomain({domain}).then(result => {
-        if(result){
+      SystemConfigurationsService.getApiKeyByDomain({ domain }).then(result => {
+        if (result) {
           const enableApiKey = result[0]?.apiKeyEnable
           enableApiKey && result[0]?.apiKey && localStorage.setItem('apiKey', result[0]?.apiKey)
         }
       })
     }
   }
-  
+
   const getStationConfigByApiKeyAndSetTheme = async () => {
     const apiKeyLocal = (JSON.parse(localStorage.getItem(addKeyLocalStorage('dataTheme'))) || {})?.apiKey
     const params = getQueryParams()
@@ -64,21 +64,22 @@ function App() {
     }
     const theme = {}
     apiKey && await SystemConfigurationsService.getStationConfigByApiKey({ apiKey: apiKey })
-      .then(async(result) => {
+      .then(async (result) => {
         const stationMiniAppLink = JSON.parse(result?.[0]?.stationMiniAppLink || '{}')
         theme.partnerColorTitle = stationMiniAppLink?.partnerColorTitle
+        theme.partnerFormTitle = stationMiniAppLink?.partnerFormTitle
         theme.partnerColorButton = stationMiniAppLink?.partnerColorButton
         theme.partnerBackground = stationMiniAppLink?.partnerBackground?.[0]?.url
         theme.partnerColorGradient = stationMiniAppLink?.partnerColorGradient
         theme.stationsLogo = result?.[0]?.stationsLogo
       })
-      theme.apiKey = apiKey
-      localStorage.setItem(addKeyLocalStorage('dataTheme'), JSON.stringify(theme))
-      const body = document.body;
-      theme?.partnerColorTitle && body.style.setProperty('--title-color', theme.partnerColorTitle);
-      theme?.partnerColorButton && body.style.setProperty('--linear-gradient-button', theme.partnerColorButton);
-      theme?.partnerColorGradient && body.style.setProperty('--linear-gradient-active', theme.partnerColorGradient);
-    }
+    theme.apiKey = apiKey
+    localStorage.setItem(addKeyLocalStorage('dataTheme'), JSON.stringify(theme))
+    const body = document.body;
+    theme?.partnerColorTitle && body.style.setProperty('--title-color', theme.partnerColorTitle);
+    theme?.partnerColorButton && body.style.setProperty('--linear-gradient-button', theme.partnerColorButton);
+    theme?.partnerColorGradient && body.style.setProperty('--linear-gradient-active', theme.partnerColorGradient);
+  }
 
   useLayoutEffect(() => {
     handleCheckApiKey()

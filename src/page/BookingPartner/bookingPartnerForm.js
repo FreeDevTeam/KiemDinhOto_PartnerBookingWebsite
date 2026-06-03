@@ -150,7 +150,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   const shouldShowConfirmBookingTerm = isNormalBookingFlow && isConfirmBookingScheduleEnabled && !!confirmBookingScheduleTerm
 
   const getStationConfigByApiKey = (paramsFromUrl) => {
-    setIsLoading(true)
+    setIsInitLoading(true)
     const apiKey = paramsFromUrl?.apiKey || paramsFromUrl?.apikey || localStorage.getItem('apiKey') || process.env.REACT_APP_APIKEY || undefined
     return SystemConfigurationsService.getStationConfigByApiKey({ apiKey: apiKey })
       .then((result) => {
@@ -162,7 +162,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
         setIsModalErrOpen(true)
       })
       .finally(() => {
-        setIsLoading(false)
+        setIsInitLoading(false)
       })
   }
 
@@ -844,14 +844,14 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     const stationListPromise = BookingService.searchStationList(filter)
     const stationByCodePromise = !isSystemStationConfig
       ? BookingService.searchStationList({
-          filter: {
-            stationArea,
-            stationType: 0
-          },
-          searchText: stationsCode,
-          skip: 0,
-          limit: 20
-        }).catch(() => null)
+        filter: {
+          stationArea,
+          stationType: 0
+        },
+        searchText: stationsCode,
+        skip: 0,
+        limit: 20
+      }).catch(() => null)
       : Promise.resolve(null)
 
     Promise.all([stationListPromise, stationByCodePromise])
@@ -1612,63 +1612,63 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
             <Row className="justify-content-between">
               {dataBookingParam?.visible_vehicleSubType !== false && (
                 <Col span={dataBookingParam?.visible_vehicleSubCategory !== false ? 11 : 24}>
-                <Form.Item
-                  className="radio-label"
-                  label="Loại phương tiện"
-                  name="vehicleSubType"
-                  // hidden={dataBookingParam?.visible_vehicleSubCategory === false}
-                  hidden={dataBookingParam?.visible_vehicleSubType === false}
-                  rules={[
-                    {
-                      // required: dataBookingParam?.visible_vehicleSubCategory !== false && dataBookingParam?.require_vehicleSubType === true,
-                      required: dataBookingParam?.visible_vehicleSubType !== false && dataBookingParam?.require_vehicleSubType !== false,
-                      message: 'Vui lòng nhập'
-                    }
-                  ]}>
-                  <SelectAntd
-                    className="cs-select ant-custom booking-input"
-                    options={VEHICLE_SUB_TYPE}
-                    defaultValue={dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value}
-                    onChange={(values, vehicleType) => {
-                      const newFilter = {
-                        ...workdayFilter,
-                        vehicleType: vehicleType?.vehicleType
+                  <Form.Item
+                    className="radio-label"
+                    label="Loại phương tiện"
+                    name="vehicleSubType"
+                    // hidden={dataBookingParam?.visible_vehicleSubCategory === false}
+                    hidden={dataBookingParam?.visible_vehicleSubType === false}
+                    rules={[
+                      {
+                        // required: dataBookingParam?.visible_vehicleSubCategory !== false && dataBookingParam?.require_vehicleSubType === true,
+                        required: dataBookingParam?.visible_vehicleSubType !== false && dataBookingParam?.require_vehicleSubType !== false,
+                        message: 'Vui lòng nhập'
                       }
-                      setWorkdayFilter(newFilter)
-                      handleCategory(values)
-                      if (newFilter.stationsId) {
-                        onChangeStation(newFilter.stationsId, vehicleType?.vehicleType, stationSelected)
-                      }
-                    }}
-                  />
-                </Form.Item>
+                    ]}>
+                    <SelectAntd
+                      className="cs-select ant-custom booking-input"
+                      options={VEHICLE_SUB_TYPE}
+                      defaultValue={dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value}
+                      onChange={(values, vehicleType) => {
+                        const newFilter = {
+                          ...workdayFilter,
+                          vehicleType: vehicleType?.vehicleType
+                        }
+                        setWorkdayFilter(newFilter)
+                        handleCategory(values)
+                        if (newFilter.stationsId) {
+                          onChangeStation(newFilter.stationsId, vehicleType?.vehicleType, stationSelected)
+                        }
+                      }}
+                    />
+                  </Form.Item>
                 </Col>
               )}
               {dataBookingParam?.visible_vehicleSubCategory !== false && (
                 <Col span={dataBookingParam?.visible_vehicleSubType !== false ? 11 : 24}>
-                <Form.Item
-                  className="radio-label"
-                  label="Phân loại"
-                  name="vehicleSubCategory"
-                  hidden={dataBookingParam?.visible_vehicleSubCategory === false}
-                  rules={[
-                    {
-                      // required:
-                      //   dataBookingParam?.visible_vehicleSubCategory !== false &&
-                      //   (dataBookingParam?.require_vehicleSubCategory === 'true' ? true : false),
-                      required: dataBookingParam?.visible_vehicleSubCategory !== false && dataBookingParam?.require_vehicleSubCategory !== false,
-                      message: 'Vui lòng chọn phân loại'
-                    }
-                  ]}>
-                  <SelectAntd
-                    className="cs-select ant-custom booking-input"
-                    options={vehicleSubCategoryOptions}
-                    defaultValue={dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value}
-                    onChange={(values) => {
-                      form.setFieldValue('vehicleSubCategory', values)
-                    }}
-                  />
-                </Form.Item>
+                  <Form.Item
+                    className="radio-label"
+                    label="Phân loại"
+                    name="vehicleSubCategory"
+                    hidden={dataBookingParam?.visible_vehicleSubCategory === false}
+                    rules={[
+                      {
+                        // required:
+                        //   dataBookingParam?.visible_vehicleSubCategory !== false &&
+                        //   (dataBookingParam?.require_vehicleSubCategory === 'true' ? true : false),
+                        required: dataBookingParam?.visible_vehicleSubCategory !== false && dataBookingParam?.require_vehicleSubCategory !== false,
+                        message: 'Vui lòng chọn phân loại'
+                      }
+                    ]}>
+                    <SelectAntd
+                      className="cs-select ant-custom booking-input"
+                      options={vehicleSubCategoryOptions}
+                      defaultValue={dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value}
+                      onChange={(values) => {
+                        form.setFieldValue('vehicleSubCategory', values)
+                      }}
+                    />
+                  </Form.Item>
                 </Col>
               )}
             </Row>
@@ -1914,7 +1914,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                     event.stopPropagation()
                     setIsConfirmTermModalOpen(true)
                   }} className="booking-confirm-term-link">
-                   Điều khoản chia sẻ dữ liệu.
+                    Điều khoản chia sẻ dữ liệu.
                   </span>
                 </Checkbox>
               </div>
@@ -1942,7 +1942,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
         }}
         redirectUrl={shouldUseConfirmBookingSchedule ? confirmBookingScheduleUrl : undefined}></BookingSuccess>
       <Modal
-        centered 
+        centered
         visible={isConfirmTermModalOpen}
         onCancel={() => setIsConfirmTermModalOpen(false)}
         footer={
@@ -1964,7 +1964,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       )}
       {/* Hiển thị loading */}
       {(isInitLoading || isLoading || shouldShowHiddenFieldLoading) && (
-        <div className="loading">
+        <div className="loading" style={(isInitLoading) ? { background: 'white' } : undefined}>
           <div className="text-center">
             <MainLogo height={60} width={60}></MainLogo>
             <Spin style={{ width: '100%' }} className="mt-3" />

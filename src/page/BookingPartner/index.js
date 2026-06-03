@@ -29,15 +29,17 @@ function BookingPartner() {
     checkUrlParamSaveContext('isWebView')
     checkUrlParamSaveContext('isHeaderMiniApp')
   }, [checkUrlParamSaveContext, location.search])
-  
+
   let apikey = CheckApiKey()
-  const localLogo = (JSON.parse(localStorage.getItem(addKeyLocalStorage('dataTheme'))) || {})?.stationsLogo
+  const dataTheme = JSON.parse(localStorage.getItem(addKeyLocalStorage('dataTheme'))) || {}
+  const localLogo = dataTheme?.stationsLogo
+  const partnerFormTitle = dataTheme?.partnerFormTitle
 
   const handleGetUserInfor = async () => {
     try {
       handleGetUserName()
     } catch (error) {
-      
+
     }
     try {
       await handleGetUserPhone()
@@ -59,7 +61,7 @@ function BookingPartner() {
     const splitSearchParam = searchParam?.split('=')
     const scheduleType = Number(splitSearchParam[splitSearchParam.length - 1])
     const title = SCHEDULE_TYPE.find((item) => item.value === scheduleType)?.label
-    return "THÔNG TIN LỊCH HẸN"
+    return partnerFormTitle || "THÔNG TIN LỊCH HẸN"
     // return title === undefined 
     //   ? 'ĐẶT LỊCH ĐĂNG KIỂM' 
     //   : title?.toUpperCase()
@@ -67,7 +69,7 @@ function BookingPartner() {
 
   return (
     <>
-      {(isHeaderMiniApp) && <Header/>} 
+      {(isHeaderMiniApp) && <Header />}
       {apikey ?
         (
           <div className={`partner app-container ${nextTab === 'otp' ? 'py-0 px-2' : 'pd-30-15'}`} style={{ maxWidth: 600, margin: 'auto', padding: '16px' }}>
@@ -77,7 +79,7 @@ function BookingPartner() {
               </div>
             ) : (
               <>
-                
+
                 <div
                   className={`
                 partner-container 
@@ -91,7 +93,7 @@ function BookingPartner() {
                       <Tabs activeKey={tabKey}>
                         <Tabs.TabPane tab="Đặt lịch" key="booking"> */}
                   {
-                    isWebView ? null : <div className='booking-title title-normal mb-4'>{getTitleName(searchparam)}</div>
+                    isWebView ? null : <div className='booking-title title-normal mb-4 text-uppercase'>{getTitleName(searchparam)}</div>
                   }
                   <div className='mt-3'>
                     <BookingPartnerForm gtelpayUser={gtelpayUser} zaloUserPhone={globalState.phoneNumber} zaloUserName={globalState.userName} setTabKey={setTabKey} form={form} />
@@ -111,7 +113,7 @@ function BookingPartner() {
                     <MainLogo height={60} width={60}></MainLogo>
                     {TTDK_PARTNER.map(item => {
                       if (item.name == partner) {
-                        return (<div style={{ maxHeight: '58px',maxWidth:'150px' }}>
+                        return (<div style={{ maxHeight: '58px', maxWidth: '150px' }}>
                           {item.icon}
                         </div>)
                       }
@@ -134,7 +136,7 @@ function BookingPartner() {
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 {TTDK_PARTNER.map(item => {
                   if (item.name == partner) {
-                    return (<div style={{ maxHeight: '58px',maxWidth:'150px' }}>
+                    return (<div style={{ maxHeight: '58px', maxWidth: '150px' }}>
                       {item.icon}
                     </div>)
                   }
