@@ -8,7 +8,7 @@ import BookingSuccess from './BookingSuccessModal'
 import PopupMessage from './PopupMessage'
 import { changeTime } from '../../helper/changeTime'
 import { validatorPlateNumber, normalizePlate } from './../../helper/validatorPlateNumber'
-import { E_TICKET_SALE_OPTIONS, optionServiceType, SCHEDULE_TITLE, SCHEDULE_TYPE_MINIAPP } from '../../constants/serviceOption'
+import { optionServiceType, SCHEDULE_TITLE, SCHEDULE_TYPE_MINIAPP, SCHEDULE_TYPE_PARENT_SERVICE_TYPE, SERVICE_TYPE_PARENT_SERVICE_TYPE } from '../../constants/serviceOption'
 import {
   PAYMENT_SUB_TYPE,
   PAYMENT_TYPE,
@@ -86,7 +86,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   const [listBookingTime, setListBookingTime] = useState([])
   const [minMonthAvailable, setMinMonthAvailable] = useState(moment().format(DATE_DISPLAY_FORMAT))
   const [showServiceType, setShowServiceType] = useState(false)
-  const [ETicketOptions, setETicketOptions] = useState([])
+  const [stationServiceOptions, setStationServiceOptions] = useState([])
   const [workdayFilter, setWorkdayFilter] = useState({
     stationsId: null,
     startDate: moment().format(DATE_DISPLAY_FORMAT),
@@ -683,12 +683,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     setStationSelected(selectedStation)
     setStationBookingConfig(selectedStationConfig)
 
-    getStationServices(stationsId).then((services) => {
-      const allowedLabels = E_TICKET_SALE_OPTIONS.map((option) => option?.label?.toLowerCase())
-      const filteredServices = services.filter((service) => allowedLabels.includes(service?.label?.toLowerCase()))
-      setETicketOptions(filteredServices)
-    })
-
     try {
       const vType = overrideVehicleType || workdayFilter.vehicleType || VEHICLE_SUB_TYPE[0].vehicleType
       const f = { ...workdayFilter, stationsId, vehicleType: vType }
@@ -1107,12 +1101,42 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       if (response?.isSuccess) {
         return response.data.data.map((item) => ({
           value: item.stationServicesId,
-          label: item.serviceName
+          label: item.serviceName,
+          serviceType: item.serviceType,
+          parentServiceType: item.parentServiceType
         }))
       }
       return []
     } catch (error) {
       console.error('Error fetching station services:', error)
+      return []
+    }
+  }
+
+  async function loadStationServicesByScheduleType(stationsId, scheduleType) {
+    const parentServiceType = SCHEDULE_TYPE_PARENT_SERVICE_TYPE[scheduleType]
+    form.setFieldValue('serviceId', undefined)
+    setStationServiceOptions([])
+
+    if (!stationsId || !parentServiceType) {
+      setShowServiceType(false)
+      return
+    }
+
+    const services = await getStationServices(stationsId)
+    const filteredServices = services.filter((service) => {
+      const serviceParentType = Number(service?.parentServiceType) || SERVICE_TYPE_PARENT_SERVICE_TYPE[service?.serviceType]
+      return Number(serviceParentType) === Number(parentServiceType)
+    })
+
+    if (filteredServices.length > 0) {
+      setShowServiceType(true)
+      if (Number(scheduleType) === SCHEDULE_TYPE_MINIAPP.E_TICKET_SALE) {
+        form.setFieldValue('serviceId', filteredServices[0]?.value)
+      }
+      setStationServiceOptions(filteredServices)
+    } else {
+      setShowServiceType(false)
     }
   }
 
@@ -1384,32 +1408,28 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   }, [dataBookingParam, form.getFieldValue('scheduleType'), scheduleTypes])
 
   const stationOptions = useMemo(() => listStation, [listStation])
+  const selectedScheduleType = form.getFieldValue('scheduleType')
+  const selectedStationId = form.getFieldValue('stationsId')
+  const isServiceRequired = Number(selectedScheduleType) === SCHEDULE_TYPE_MINIAPP.E_TICKET_SALE
 
   useEffect(() => {
-    if (form.getFieldValue('scheduleType') === SCHEDULE_TYPE_MINIAPP.E_TICKET_SALE) {
-      if (scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT) {
-        getStationByApiKey(dataBookingParam?.apiKey || dataBookingParam?.apikey || localStorage.getItem('apiKey') || process.env.REACT_APP_APIKEY).then((station) => {
-          if (station) {
-            getStationServices(station?.stationsId).then((services) => {
-              const allowedLabels = E_TICKET_SALE_OPTIONS.map((option) => option?.label?.toLowerCase())
-              const filteredServices = services.filter((service) => allowedLabels.includes(service?.label?.toLowerCase()))
-              if (filteredServices.length > 0) {
-                setShowServiceType(true)
-                form.setFieldValue('serviceId', filteredServices[0]?.value)
-                setETicketOptions(filteredServices)
-              } else {
-                form.setFieldValue('serviceId', undefined)
-                setShowServiceType(false)
-              }
-            })
-          }
-        })
-      }
-    } else {
-      setShowServiceType(false)
-      form.setFieldValue('serviceId', undefined)
+    if (selectedStationId) {
+      loadStationServicesByScheduleType(selectedStationId, selectedScheduleType)
+      return
     }
-  }, [form.getFieldValue('scheduleType')])
+
+    if (scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT) {
+      getStationByApiKey(dataBookingParam?.apiKey || dataBookingParam?.apikey || localStorage.getItem('apiKey') || process.env.REACT_APP_APIKEY).then((station) => {
+        if (station) {
+          loadStationServicesByScheduleType(station?.stationsId, selectedScheduleType)
+        }
+      })
+      return
+    }
+
+    setShowServiceType(false)
+    form.setFieldValue('serviceId', undefined)
+  }, [selectedScheduleType, selectedStationId])
 
   useEffect(() => {
     const scheduleTypeWithParams = scheduleTypes.find((item) => item.value === +form.getFieldValue('scheduleType'))
@@ -1537,20 +1557,22 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
               <Form.Item
                 name="serviceId"
                 label="Chọn dịch vụ"
-                required
+                required={isServiceRequired}
                 rules={[
                   {
-                    required: true,
+                    required: isServiceRequired,
                     message: 'Vui lòng chọn dịch vụ'
                   }
                 ]}>
                 <SelectAntd
                   className="cs-select ant-custom booking-input"
                   isSearchable={true}
-                  placeholder="Vui lòng chọn dịch vụ"
+                  allowClear
+                  placeholder={isServiceRequired ? 'Vui lòng chọn dịch vụ' : 'Dịch vụ tùy chọn'}
                   styles={customStyles}
-                  options={ETicketOptions}
+                  options={stationServiceOptions}
                   menuPlacement="top"
+                  notFoundContent="Không có dịch vụ phù hợp"
                   onChange={(values, scheduleType) => {
                     form.setFieldValue('serviceId', values)
                   }}
@@ -1736,7 +1758,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                     setStationSelected(null)
                     setStationBookingConfig([])
                     setListStation([])
-                    setETicketOptions([])
+                    setStationServiceOptions([])
                     setWorkdaySelectedDate(undefined)
                     setListBookingDate([])
                     setListBookingTime([])
@@ -1773,7 +1795,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                     setStationSelected(null)
                     setStationBookingConfig([])
                     setListStation([])
-                    setETicketOptions([])
+                    setStationServiceOptions([])
                     setWorkdaySelectedDate(undefined)
                     setListBookingDate([])
                     setListBookingTime([])
