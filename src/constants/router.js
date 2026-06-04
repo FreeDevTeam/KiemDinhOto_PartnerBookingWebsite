@@ -1,6 +1,8 @@
 export const PATH = {
     HOME :"/",
     LOGIN :"/login",
+    VNPAY_LOGIN: '/vnpay/login',
+    MYF88_LOGIN: '/myf88/login',
     CHECK_VIHCLE :"/check-vihcle",
     BOOKING: '/booking',
     BOOKING_PARTNER_IFRAME: '/booking-partner-iframe',

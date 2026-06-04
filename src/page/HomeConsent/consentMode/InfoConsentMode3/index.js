@@ -1,5 +1,5 @@
 import { Checkbox } from 'antd'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './index.scss'
 import { AutomatedTrafficFineNotificationAuthenticationHideInfo, AutomatedTrafficFineNotificationAuthenticationShowInfo } from '../../assets/icons'
 import Header from '../../../../components/Header'
@@ -7,6 +7,8 @@ import { useConsentContext } from '../../../../context/ConsentContext'
 import FixedBottom from '../../components/base/FixedBottom'
 import BaseButton from '../../components/base/BaseButton'
 import BasePopupTerm from '../../components/base/BasePopupTerm'
+import { redirectByMiniAppBackUrl } from '../../../../actions/miniAppBackAction'
+import { ENV } from '../../../../constants/EnvironmentVariables'
 
 const termsData = [
   {
@@ -148,16 +150,20 @@ const getDisplayValue = (value, hideInfo) => {
   return hideInfo ? '*********' : value
 }
 
-export default function InfoConsentMode2() {
-  const { acceptConsentSession, consentSessionState } = useConsentContext()
+export default function InfoConsentMode3() {
+  const { acceptConsentSession, consentUserProfile } = useConsentContext()
   const [hideInfo, setHideInfo] = useState(true)
   const [confirmTerm, setConfirmTerm] = useState(false)
   const [confirmTermSheetVisible, setConfirmTermSheetVisible] = useState(false)
   const isSubmitDisabled = !confirmTerm
 
+  useEffect(() => {
+    console.log('[CONSENT][Mode3] consentUserProfile changed', consentUserProfile)
+  }, [consentUserProfile])
+
   return (
     <div>
-      {process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE && <Header title={'Xác nhận thông tin'} onBack={() => {}} />}
+      {ENV.REACT_APP_HOME_MINIAPP_HEADER_HIDDEN * 1 !== 0 && <Header title={'Xác nhận thông tin'} onBack={() => redirectByMiniAppBackUrl()} />}
       <div className="HomeConsentLaypout">
         <div className="InfoConsentMode2">
           <img className="InfoConsentMode2_img" src={'/logo.png'} alt="" />
@@ -173,9 +179,11 @@ export default function InfoConsentMode2() {
             </div>
             <div className="InfoConsentMode2_carInfo_item">
               <div className="InfoConsentMode2_carInfo_item_label">Họ tên</div>
+              <div className="InfoConsentMode2_carInfo_item_value">{getDisplayValue(consentUserProfile?.fullName, hideInfo)}</div>
             </div>
             <div className="InfoConsentMode2_carInfo_item">
               <div className="InfoConsentMode2_carInfo_item_label">Số điện thoại</div>
+              <div className="InfoConsentMode2_carInfo_item_value">{getDisplayValue(consentUserProfile?.phoneNumber, hideInfo)}</div>
             </div>
           </div>
           <div className="InfoConsentMode2_purpose">
@@ -207,7 +215,11 @@ export default function InfoConsentMode2() {
         <BaseButton
           disabled={isSubmitDisabled}
           onClick={() => {
-            acceptConsentSession({})
+            console.log('[CONSENT][Mode3] Submit click', {
+              isSubmitDisabled,
+              consentUserProfile
+            })
+            acceptConsentSession(consentUserProfile)
           }}>
           Tiếp theo
         </BaseButton>

@@ -16,6 +16,8 @@ import Header from '../../../components/Header'
 import usePartnerBridge from '../../../sdk/usePartnerBridge'
 import { HOME_CONFIG_CATEGORY, HOME_CONFIG_CATEGORY_TEXT } from '../../../constants/Layout2Constants'
 import usePreconnectExternalLinks from '../../../hooks/usePreconnectExternalLinks'
+import { redirectByMiniAppBackUrl } from '../../../actions/miniAppBackAction'
+import { ENV } from '../../../constants/EnvironmentVariables'
 
 const HomeLayout2 = (props) => {
   const location = useLocation()
@@ -143,6 +145,10 @@ const HomeLayout2 = (props) => {
     initBridge()
   }, [initBridge, isPartnerBridgeSupported])
   const handleExit = async () => {
+    if (redirectByMiniAppBackUrl()) {
+      return
+    }
+
     try {
       await exitBridge()
       // Thường sẽ không chạy tới đây nếu host đóng webview ngay.
@@ -193,8 +199,8 @@ const HomeLayout2 = (props) => {
 
   return (
     <div>
-      {process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE && 
-        <Header title={process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE} onBack={() => {handleExit()}} />
+      {ENV.REACT_APP_HOME_MINIAPP_HEADER_HIDDEN * 1 !== 0 && 
+        <Header title={ENV.REACT_APP_HOME_MINIAPP_HEADER_TITLE} onBack={() => {handleExit()}} />
       }
 
       <PageLayout>{renderSlider}</PageLayout>

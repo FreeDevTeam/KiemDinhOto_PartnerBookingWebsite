@@ -1,7 +1,8 @@
 import React from 'react'
 import { LocalStorageManager, SessionStorageManager } from '../helper/localStorage'
-import { getUrlParamValue, smartParseParam } from '../helper/params'
+
 import { PARAM_HOME_MINIAPP_CONSENT_MODE, PARAM_IS_HEADER_MINI_APP, PARAM_IS_HEADER_MINI_APP_EXPAND, PARAM_IS_WEB_VIEW, PARAM_REFER_STATION_ID, PARAM_REFER_USER_ID } from '../constants/params'
+import { getUrlParamValue, smartParseParam } from '../helper/UrlParamsHelper'
 export const AppParamsContext = React.createContext(null)
 
 const getFirstUrlParamValue = (paramKey, search) => {
@@ -32,7 +33,7 @@ const resolveParamsMiniAppSessionStorage = (config) => {
   return config.parser ? config.parser(raw) : raw
 }
 
-const resolveParamsMiniAppLocalStorage = (config) => {
+export const resolveParamsMiniAppLocalStorage = (config) => {
   // 1. param (raw)
   const param = getFirstUrlParamValue(config.paramKey)
 

@@ -25,3 +25,6 @@
 `npm run deploy-zalo-app`
 
 ## 5. Quét mã và test ứng dụng.
+
+# run test command
+docker rm -f $(docker ps -aq --filter ancestor=demopartnerbooking) 2>/dev/null; docker rmi -f demopartnerbooking && docker build . -t demopartnerbooking && docker run -p 3000:80 demopartnerbooking

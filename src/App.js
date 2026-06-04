@@ -82,13 +82,22 @@ function App() {
   }
 
   useLayoutEffect(() => {
-    handleCheckApiKey()
-    getStationConfigByApiKeyAndSetTheme()
+    handleCheckApiKey();
+
+    // Only call getStationConfigByApiKeyAndSetTheme for the homepage
+    const currentPath = window.location.pathname;
+    if (currentPath === '/' || currentPath === '/home') {
+      getStationConfigByApiKeyAndSetTheme();
+    }
+
     const loadingScreen = document.querySelector('.splash-screen-loading');
     if (loadingScreen) {
       loadingScreen.style.display = 'none';
     }
   }, []);
+  const getRedirectPath = () => {
+    return process.env.REACT_APP_DEFAULT_HOME_PATH === '/' ? PATH.VNPAY_LOGIN : process.env.REACT_APP_DEFAULT_HOME_PATH;
+  };
   return (
     <GlobalProvider>
       <Router export basename={baseName}>
@@ -112,7 +121,7 @@ function App() {
               />
             )
           })}
-          <Redirect to={PATH.HOME} />
+          <Redirect to={getRedirectPath()} />
         </Switch>
       </Router>
     </GlobalProvider>

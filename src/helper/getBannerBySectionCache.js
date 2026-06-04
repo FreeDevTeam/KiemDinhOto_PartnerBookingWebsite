@@ -1,6 +1,12 @@
 import NewService from "./../services/addBookingService"
 const CACHE_EXPIRATION_MINUTES = 5;
 
+const normalizeBannerList = (value) => {
+    if (Array.isArray(value)) return value;
+    if (Array.isArray(value?.data)) return value.data;
+    return [];
+}
+
 export const getBannerBySectionCache = async (bannerSection) => {
     if (!bannerSection) return [];
 
@@ -16,8 +22,9 @@ export const getBannerBySectionCache = async (bannerSection) => {
             console.error('Error parsing cached data:', e);
         }
 
-        if (parsedData && parsedData.timestamp && parsedData.data) {
-            const { data, timestamp } = parsedData;
+        if (parsedData && parsedData.timestamp) {
+            const timestamp = parsedData.timestamp;
+            const data = normalizeBannerList(parsedData.data);
             const now = new Date().getTime();
 
             // Kiểm tra nếu dữ liệu cache còn hạn
@@ -34,14 +41,16 @@ export const getBannerBySectionCache = async (bannerSection) => {
         },
     });
 
-    if (result?.data) {
+    const normalizedResult = normalizeBannerList(result?.data ?? result);
+
+    if (normalizedResult) {
         // Lưu kết quả vào localStorage với timestamp hiện tại
         const cacheData = {
-            data: result.data,
+            data: normalizedResult,
             timestamp: new Date().getTime(),
         };
         localStorage.setItem(cacheKey, JSON.stringify(cacheData));
     }
 
-    return result?.data;
+    return normalizedResult;
 };

@@ -7,6 +7,7 @@ import useWindowDimensions from '../../../hooks/window-dimensions'
 import { handleDirect } from '../../../components/Slider/SliderHome'
 import { useConsentContext } from '../../../context/ConsentContext'
 import useNavigationLoading from '../../../hooks/useNavigationLoading'
+import { AppendSdkPhoneApiParamsFromLocalStorage } from '../../../helper/UrlParamsHelper'
 
 const L2FunctionButtonList = (props) => {
   const { handleZaloAuthorize,globalState } = useGlobalContext();
@@ -41,7 +42,7 @@ const L2FunctionButtonList = (props) => {
     if(!globalState?.isAuthorize){
       await handleZaloAuthorize()
     }
-    const link = element?.linkNavigation
+    const link = AppendSdkPhoneApiParamsFromLocalStorage(element?.linkNavigation)
 
     if (link && link.includes('zalo.me')) {
       await setSheetVisible(false)

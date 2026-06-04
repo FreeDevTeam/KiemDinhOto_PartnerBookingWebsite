@@ -4,7 +4,7 @@ import './index.scss'
 import { LoadingOutlined } from '@ant-design/icons';
 
 const LoadFormBookingFailed = ({ }) => {
-   const CheckApiKeys = () => {
+   const CheckSaladinApiKeys = () => {
     const searchParams = window.location.href
     const webSaladin = 'saladin.ttdk.com.vn'
     
@@ -14,7 +14,7 @@ const LoadFormBookingFailed = ({ }) => {
   }
 
   useEffect(() =>{
-    CheckApiKeys()
+    CheckSaladinApiKeys()
   },[])
 
   return (

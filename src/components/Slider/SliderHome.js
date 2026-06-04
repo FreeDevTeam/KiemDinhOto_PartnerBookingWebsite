@@ -34,6 +34,7 @@ const CLICK_STORAGE_KEY = 'recordClickData'
 export const SliderHome = (props) => {
   const { buildConsentHref } = useConsentContext()
   const { setting, isLoading, className, tramId, hideNewsFromZaloMiniApp } = props
+  const safeSetting = Array.isArray(setting) ? setting : []
   const [popupUrl, setPopupUrl] = useState(null)
   const [sheetVisible, setSheetVisible] = useState(false)
   const intervalRef = useRef(localStorage.getItem(addKeyLocalStorage(CLICK_STORAGE_KEY)))
@@ -124,8 +125,7 @@ export const SliderHome = (props) => {
     return (
       <div className={`slider-container sliderHome ${className}`}>
         <Slider {...settingSilde}>
-          {setting &&
-            setting.map((item, index) => {
+          {safeSetting.map((item, index) => {
               const imgSrc = item.bannerImageUrl || process.env.PUBLIC_URL + '/default-banner.jpg'
 
               return hideNewsFromZaloMiniApp ? (
@@ -145,7 +145,7 @@ export const SliderHome = (props) => {
         </Slider>
       </div>
     )
-  }, [setting, isLoading])
+  }, [safeSetting, isLoading])
 
   return (
     <>
