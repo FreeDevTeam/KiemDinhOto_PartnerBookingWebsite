@@ -1103,7 +1103,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           value: item.stationServicesId,
           label: item.serviceName,
           serviceType: item.serviceType,
-          parentServiceType: item.parentServiceType
+          parentServiceType: item.parentServiceType,
+          isActive: item.isActive
         }))
       }
       return []
@@ -1125,8 +1126,10 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
     const services = await getStationServices(stationsId)
     const filteredServices = services.filter((service) => {
-      const serviceParentType = Number(service?.parentServiceType) || SERVICE_TYPE_PARENT_SERVICE_TYPE[service?.serviceType]
-      return Number(serviceParentType) === Number(parentServiceType)
+      return (
+        service?.isActive === 1 &&
+        Number(service?.parentServiceType) === Number(parentServiceType)
+      )
     })
 
     if (filteredServices.length > 0) {
