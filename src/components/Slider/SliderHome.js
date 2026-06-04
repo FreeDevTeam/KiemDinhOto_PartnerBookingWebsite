@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useRef } from 'react'
-import ReactDOM from 'react-dom'
 import Slider from 'react-slick'
 import './SliderHome.scss'
 import { Spin } from 'antd'
@@ -13,6 +12,7 @@ import { PARAM_BACK_TO_HOME_MINI_APP_URL, PARAM_IFRAME_URL } from '../../constan
 import { encodeLink } from '../../helper/common'
 import { NAVIGATION_TYPE } from '../../constants/global'
 import { useConsentContext } from '../../context/ConsentContext'
+import useNavigationLoading from '../../hooks/useNavigationLoading'
 
 export const handleDirect = (link, type, history, buildConsentHref) => {
   const linkAppendData = buildConsentHref(link)
@@ -38,9 +38,8 @@ export const SliderHome = (props) => {
   const [sheetVisible, setSheetVisible] = useState(false)
   const intervalRef = useRef(localStorage.getItem(addKeyLocalStorage(CLICK_STORAGE_KEY)))
   const history = useHistory()
-  const [isNavigating, setIsNavigating] = useState(false)
-  const [showNavigating, setShowNavigating] = useState(false)
-  const navigatingTimerRef = useRef(null)
+  const { isNavigating, startNavigating, NavigationLoadingOverlay } = useNavigationLoading()
+
   const settingSilde = {
     dots: true,
     infinite: false,
@@ -81,10 +80,7 @@ export const SliderHome = (props) => {
       }
 
       if (link) {
-        setIsNavigating(true)
-        navigatingTimerRef.current = setTimeout(() => {
-          setShowNavigating(true)
-        }, 800)
+        startNavigating()
         handleDirect(item?.bannerUrl, item?.bannerNavigationType  , history, buildConsentHref)
       }
     }
@@ -157,14 +153,7 @@ export const SliderHome = (props) => {
         {renderSlider}
         <PopupSheetIframe visible={sheetVisible} onClose={() => setSheetVisible(false)} iframeUrl={popupUrl} />
       </div>
-      {showNavigating && ReactDOM.createPortal(
-        <div className="loading">
-          <div className="text-center">
-            <Spin />
-          </div>
-        </div>,
-        document.body
-      )}
+      {NavigationLoadingOverlay}
     </>
   )
 }

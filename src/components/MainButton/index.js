@@ -1,20 +1,17 @@
-import React, { useRef, useState } from 'react'
-import ReactDOM from 'react-dom'
+import React, { useRef } from 'react'
 import { useHistory } from 'react-router-dom'
 import { useGlobalContext } from '../../context/GlobalContext'
 import './index.scss'
 import { handleDirect } from '../Slider/SliderHome'
 import { useConsentContext } from '../../context/ConsentContext'
-import { Spin } from 'antd'
+import useNavigationLoading from '../../hooks/useNavigationLoading'
 
 const MainButton = ({ setSheetVisible, setDataBtn, list, title, className }) => {
   const history = useHistory()
   const { handleZaloAuthorize, globalState } = useGlobalContext()
   const { buildConsentHref } = useConsentContext()
   const isAuthorizingRef = useRef(false)
-  const [isNavigating, setIsNavigating] = useState(false)
-  const [showNavigating, setShowNavigating] = useState(false)
-  const navigatingTimerRef = useRef(null)
+  const { isNavigating, startNavigating, NavigationLoadingOverlay } = useNavigationLoading()
 
   const handleRouter = async (path) => {
     if(isAuthorizingRef.current) return
@@ -37,10 +34,7 @@ const MainButton = ({ setSheetVisible, setDataBtn, list, title, className }) => 
 
       const isZaloLink = link.includes('zalo.me')
       if (link) {
-        setIsNavigating(true)
-        navigatingTimerRef.current = setTimeout(() => {
-          setShowNavigating(true)
-        }, 800)
+        startNavigating()
         handleDirect(link, element?.navigationType, history, buildConsentHref)
       }
     } finally {
@@ -75,14 +69,7 @@ const MainButton = ({ setSheetVisible, setDataBtn, list, title, className }) => 
           ))}
         </div>
       </div>
-      {showNavigating && ReactDOM.createPortal(
-        <div className="loading">
-          <div className="text-center">
-            <Spin />
-          </div>
-        </div>,
-        document.body
-      )}
+      {NavigationLoadingOverlay}
     </>
   )
 }
