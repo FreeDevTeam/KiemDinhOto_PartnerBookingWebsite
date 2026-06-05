@@ -39,13 +39,14 @@ export const runMyf88LoginFlow = async ({ search = window.location.search } = {}
   const startedAt = Date.now()
   const flowPromise = (async () => {
     const loginRequest = getMyf88LoginRequestFromSearch(search)
+ 
     const appData = loginRequest.myf88AppData
     const loginPayload = {
       myF88AppData: appData
     }
 
     if (loginRequest.stationCode) {
-      loginPayload.clientId = loginRequest.stationCode
+      loginPayload.stationCode = loginRequest.stationCode
     }
 
     if (loginRequest.apikey) {
