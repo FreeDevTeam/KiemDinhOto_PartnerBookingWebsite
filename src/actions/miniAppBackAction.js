@@ -8,7 +8,8 @@ export const getBackToPartnerAppUrl = () => {
     case MOBILE_APP_CONTAINER.VNPAY_INAPP.ContainerCode:
       return MOBILE_APP_CONTAINER.VNPAY_INAPP.BackToAppUrl
     case MOBILE_APP_CONTAINER.MYF88_INAPP.ContainerCode:
-      return MOBILE_APP_CONTAINER.MYF88_INAPP.BackToAppUrl
+      // return MOBILE_APP_CONTAINER.MYF88_INAPP.BackToAppUrl
+      return undefined;
     default:
       return undefined;
   }
