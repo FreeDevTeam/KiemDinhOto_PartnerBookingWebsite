@@ -9,6 +9,7 @@ import companyInfo from '../../../../constants/companyInfo'
 import Header from '../../../../components/Header'
 import { redirectByMiniAppBackUrl } from '../../../../actions/miniAppBackAction'
 import { ENV } from '../../../../constants/EnvironmentVariables'
+import { useAppParamsContext } from '../../../../context/AppParamsContext'
 export default function InfoConsentMode1() {
   const termsData = [
     {
@@ -145,14 +146,14 @@ export default function InfoConsentMode1() {
     }
   ]
 
+  const { isHeaderMiniApp } = useAppParamsContext()
   const { acceptConsentSession, consentSessionState } = useConsentContext()
-
   const [confirmTerm, setConfirmTerm] = useState(false)
   const [confirmTermSheetVisible, setConfirmTermSheetVisible] = useState(false)
 
   return (
     <div>
-      {ENV.REACT_APP_HOME_MINIAPP_HEADER_HIDDEN * 1 !== 0 && <Header title={'Xác nhận đồng ý và xử lý dữ liệu'} onBack={() => redirectByMiniAppBackUrl()} />}
+      {isHeaderMiniApp && <Header title={'Xác nhận đồng ý và xử lý dữ liệu'} onBack={() => redirectByMiniAppBackUrl()} />}
       <div className="HomeConsentLaypout">
         <div className="InfoConsentMode1">
           <div className="InfoConsentMode1_img">

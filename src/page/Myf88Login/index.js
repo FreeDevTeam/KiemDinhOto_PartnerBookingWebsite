@@ -7,8 +7,10 @@ import { redirectByMiniAppBackUrl } from '../../actions/miniAppBackAction'
 import { MOBILE_APP_CONTAINER } from '../../constants/MobileAppContainer'
 import { getMyf88LoginViewModel, runMyf88LoginFlow } from './action'
 import './index.scss'
+import { useAppParamsContext } from '../../context/AppParamsContext'
 
 export default function Myf88LoginPage() {
+  const { isHeaderMiniApp } = useAppParamsContext()
   const history = useHistory()
   const viewModel = React.useMemo(() => getMyf88LoginViewModel(), [])
   const [logoPath, setLogoPath] = React.useState(viewModel.logoPath)
@@ -46,7 +48,7 @@ export default function Myf88LoginPage() {
 
   return (
     <div className="Myf88LoginPage">
-      {ENV.REACT_APP_HOME_MINIAPP_HEADER_HIDDEN * 1 !== 0 && (
+      {isHeaderMiniApp && (
         <Header onBack={handleBack} />
       )}
       <div className="Myf88LoginPage_card">

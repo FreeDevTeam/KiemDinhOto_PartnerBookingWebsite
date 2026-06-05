@@ -9,6 +9,7 @@ import BaseButton from '../../components/base/BaseButton'
 import BasePopupTerm from '../../components/base/BasePopupTerm'
 import { redirectByMiniAppBackUrl } from '../../../../actions/miniAppBackAction'
 import { ENV } from '../../../../constants/EnvironmentVariables'
+import { useAppParamsContext } from '../../../../context/AppParamsContext'
 
 const termsData = [
   {
@@ -151,6 +152,7 @@ const getDisplayValue = (value, hideInfo) => {
 }
 
 export default function InfoConsentMode3() {
+  const { isHeaderMiniApp } = useAppParamsContext()
   const { acceptConsentSession, consentUserProfile } = useConsentContext()
   const [hideInfo, setHideInfo] = useState(true)
   const [confirmTerm, setConfirmTerm] = useState(false)
@@ -163,7 +165,7 @@ export default function InfoConsentMode3() {
 
   return (
     <div>
-      {ENV.REACT_APP_HOME_MINIAPP_HEADER_HIDDEN * 1 !== 0 && <Header title={'Xác nhận thông tin'} onBack={() => redirectByMiniAppBackUrl()} />}
+      {isHeaderMiniApp && <Header title={'Xác nhận thông tin'} onBack={() => redirectByMiniAppBackUrl()} />}
       <div className="HomeConsentLaypout">
         <div className="InfoConsentMode2">
           <img className="InfoConsentMode2_img" src={'/logo.png'} alt="" />

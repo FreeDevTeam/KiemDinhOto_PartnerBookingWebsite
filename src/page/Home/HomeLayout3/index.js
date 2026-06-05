@@ -24,13 +24,14 @@ import usePartnerBridge from '../../../sdk/usePartnerBridge'
 import usePreconnectExternalLinks from '../../../hooks/usePreconnectExternalLinks'
 import { redirectByMiniAppBackUrl } from '../../../actions/miniAppBackAction'
 import { ENV } from '../../../constants/EnvironmentVariables'
+import { useAppParamsContext } from '../../../context/AppParamsContext'
 
 const HomeLayout3 = (props) => {
   const location = useLocation()
   const history = useHistory()
   const [userToken, setUserToken] = useState(location?.state?.token || localStorage.getItem('userToken') || '')
   const [isLoadingAPI, setIsLoadingAPI] = useState(true)
-
+  const { isHeaderMiniApp } = useAppParamsContext()
   const [sheetVisible, setSheetVisible] = useState(false)
   const [dataBtn, setDataBtn] = useState({
     label: 'Zalo',
@@ -203,7 +204,7 @@ const HomeLayout3 = (props) => {
 
   return (
     <>
-      {ENV.REACT_APP_HOME_MINIAPP_HEADER_HIDDEN * 1 !== 0 && 
+      {isHeaderMiniApp && 
         <Header title={ENV.REACT_APP_HOME_MINIAPP_HEADER_TITLE} onBack={() => {handleExit()}} />
       }
       <sc.Container>

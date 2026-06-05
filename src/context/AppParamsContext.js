@@ -63,7 +63,7 @@ const PARAMS_MINIAPP_SCHEMA_SESSION_STORAGE = {
   isHeaderMiniApp: {
     paramKey: PARAM_IS_HEADER_MINI_APP,
     storageKey: PARAM_IS_HEADER_MINI_APP,
-    envKey: undefined,
+    envKey: 'REACT_APP_PARAM_IS_HEADER_MINI_APP',
     defaultValue: false,
     parser: (v) => v === true || v === 1
   },

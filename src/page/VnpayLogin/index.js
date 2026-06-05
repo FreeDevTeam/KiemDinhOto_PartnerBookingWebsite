@@ -7,8 +7,10 @@ import { redirectByMiniAppBackUrl } from '../../actions/miniAppBackAction'
 import { MOBILE_APP_CONTAINER } from '../../constants/MobileAppContainer'
 import { getVnpayLoginViewModel, runVnpayLoginFlow } from './action'
 import './index.scss'
+import { useAppParamsContext } from '../../context/AppParamsContext'
 
 export default function VnpayLoginPage() {
+  const { isHeaderMiniApp } = useAppParamsContext()
   const history = useHistory()
   const viewModel = React.useMemo(() => getVnpayLoginViewModel(), [])
   const [logoPath, setLogoPath] = React.useState(viewModel.logoPath)
@@ -46,7 +48,7 @@ export default function VnpayLoginPage() {
 
   return (
     <div className="VnpayLoginPage">
-      {ENV.REACT_APP_HOME_MINIAPP_HEADER_HIDDEN * 1 !== 0 && (
+      {isHeaderMiniApp && (
         <Header onBack={handleBack} />
       )}
       <div className="VnpayLoginPage_card">
