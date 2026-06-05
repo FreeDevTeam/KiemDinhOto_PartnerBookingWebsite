@@ -26,11 +26,11 @@ export const getDataUserFromSDK = async () => {
     console.log('[CONSENT][getDataUserFromSDK] Using fallback mock source')
     return {
       data: {
-        fullName: 'Nam Nguyễn',
-        phoneNumber: '0978745645',
-        uuid: '00000011231'
+        fullName: '',
+        phoneNumber: '',
+        uuid: ''
       },
-      error: false
+      error: true
     }
   } catch (error) {
     console.error('[CONSENT][getDataUserFromSDK] Unexpected error', error)
