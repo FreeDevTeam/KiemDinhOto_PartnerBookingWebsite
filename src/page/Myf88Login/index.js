@@ -1,4 +1,5 @@
 import React from 'react'
+import { LeftOutlined } from '@ant-design/icons'
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
 import Header from '../../components/Header'
 import { ENV } from '../../constants/EnvironmentVariables'
@@ -48,14 +49,21 @@ export default function Myf88LoginPage() {
 
   return (
     <div className="Myf88LoginPage">
-      {isHeaderMiniApp && (
-        <Header onBack={handleBack} />
-      )}
+      <div className="Myf88LoginPage_header">
+        <button
+          className="Myf88LoginPage_backButton"
+          type="button"
+          onClick={handleBack}
+          aria-label="Quay lại"
+        >
+          <LeftOutlined />
+        </button>
+      </div>
       <div className="Myf88LoginPage_card">
         <img
           className="Myf88LoginPage_logo"
           src={logoPath}
-          alt="MYF88 loading"
+          alt="VNPAY loading"
           onError={() => {
             if (logoPath !== viewModel.fallbackLogoPath) {
               setLogoPath(viewModel.fallbackLogoPath)
