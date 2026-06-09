@@ -249,7 +249,7 @@ const HomeLayout2 = (props) => {
               }
             </div>
           </div>
-          {bottomBanner?.length > 0 && <PageLayout>{renderBottomSlider}</PageLayout>}
+          {ENV.REACT_APP_DEFAULT_VISIBLE_BOTTOM_BANNER && bottomBanner?.length > 0 && <PageLayout>{renderBottomSlider}</PageLayout>}
         </div>
       </div>
     </div>

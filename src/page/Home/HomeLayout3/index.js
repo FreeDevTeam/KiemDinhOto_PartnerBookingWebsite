@@ -246,7 +246,7 @@ const HomeLayout3 = (props) => {
                 </div>
               )}
             </div>
-            {bottomBanner?.length > 0 && <PageLayout>{renderBottomSlider}</PageLayout>}
+            {ENV.REACT_APP_DEFAULT_VISIBLE_BOTTOM_BANNER && bottomBanner?.length > 0 && <PageLayout>{renderBottomSlider}</PageLayout>}
             {/* {bottomBanner?.length == 1 && (
               <div className={'layout2'}>
                 <img style={{ borderRadius: '8px' }} src={bottomBanner[0]?.bannerImageUrl}></img>
