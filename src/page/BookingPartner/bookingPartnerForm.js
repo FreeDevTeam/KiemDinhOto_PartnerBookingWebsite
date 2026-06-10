@@ -412,7 +412,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       return
     }
 
-    const stationsId = values?.stationsId ?? form.getFieldValue('stationsId')
+    const stationsId = values?.stationsId ?? form.getFieldValue('stationsId') ?? stationSelected?.stationsId
     const vehicleSubCategory = values?.vehicleSubCategory ?? form.getFieldValue('vehicleSubCategory') ?? dataBookingParam?.vehicleSubCategory
     const isConsultantOrder = scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT
     const isStationFieldHidden = dataBookingParam?.visible_StationsCode === false
@@ -436,7 +436,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     if (stationsId != null && !isSystemConsultantOrder) {
       data.stationsId = stationsId
     }
-    if (values.serviceId) {
+    if (values.serviceId && (Number(values.scheduleType) === SCHEDULE_TYPE_MINIAPP.E_TICKET_SALE || dataBookingParam?.visible_stationService === true)) {
       data.stationServicesList = [values.serviceId]
     }
     // dùng cho ZALOPAY
@@ -1103,7 +1103,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           value: item.stationServicesId,
           label: item.serviceName,
           serviceType: item.serviceType,
-          parentServiceType: item.parentServiceType
+          parentServiceType: item.parentServiceType,
+          isActive: item.isActive
         }))
       }
       return []
@@ -1125,8 +1126,10 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
     const services = await getStationServices(stationsId)
     const filteredServices = services.filter((service) => {
-      const serviceParentType = Number(service?.parentServiceType) || SERVICE_TYPE_PARENT_SERVICE_TYPE[service?.serviceType]
-      return Number(serviceParentType) === Number(parentServiceType)
+      return (
+        service?.isActive === 1 &&
+        Number(service?.parentServiceType) === Number(parentServiceType)
+      )
     })
 
     if (filteredServices.length > 0) {
@@ -1411,6 +1414,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   const selectedScheduleType = form.getFieldValue('scheduleType')
   const selectedStationId = form.getFieldValue('stationsId')
   const isServiceRequired = Number(selectedScheduleType) === SCHEDULE_TYPE_MINIAPP.E_TICKET_SALE
+  const isServiceVisible = isServiceRequired || dataBookingParam?.visible_stationService === true
+  const isServiceFieldRequired = isServiceRequired || (isServiceVisible && dataBookingParam?.require_stationService === true)
 
   useEffect(() => {
     if (selectedStationId) {
@@ -1553,14 +1558,14 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                 }}
               />
             </Form.Item>
-            {showServiceType && (
+            {showServiceType && isServiceVisible && (
               <Form.Item
                 name="serviceId"
                 label="Chọn dịch vụ"
-                required={isServiceRequired}
+                required={isServiceFieldRequired}
                 rules={[
                   {
-                    required: isServiceRequired,
+                    required: isServiceFieldRequired,
                     message: 'Vui lòng chọn dịch vụ'
                   }
                 ]}>
