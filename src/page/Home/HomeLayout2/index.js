@@ -90,15 +90,18 @@ const HomeLayout2 = (props) => {
 
   const renderSlider = useMemo(() => {
     return (
-      <div className={`banner-Layout2 ${topBanner?.length === 0 ? 'banner-Layout2-empty' : ''}`}>
-        <SliderHome
-          hideNewsFromZaloMiniApp={hideNewsFromZaloMiniApp}
-          className={'layout2'}
-          setting={topBanner}
-          isLoading={isLoading}
-          setSheetVisible={setSheetVisible}
-          setDataBtn={setDataBtn}
-        />
+      <div className={`banner-Layout2 ${!ENV.REACT_APP_DEFAULT_VISIBLE_TOP_BANNER || topBanner?.length === 0 ? 'banner-Layout2-empty' : ''}`}>
+        {
+          ENV.REACT_APP_DEFAULT_VISIBLE_TOP_BANNER &&
+          <SliderHome
+            hideNewsFromZaloMiniApp={hideNewsFromZaloMiniApp}
+            className={'layout2'}
+            setting={topBanner}
+            isLoading={isLoading}
+            setSheetVisible={setSheetVisible}
+            setDataBtn={setDataBtn}
+          />
+        }
       </div>
     )
   }, [topBanner, hideNewsFromZaloMiniApp, isLoading])
