@@ -10,7 +10,9 @@ import Header from '../../../../components/Header'
 import { redirectByMiniAppBackUrl } from '../../../../actions/miniAppBackAction'
 import { ENV } from '../../../../constants/EnvironmentVariables'
 import { useAppParamsContext } from '../../../../context/AppParamsContext'
+import { useHistory } from 'react-router-dom'
 export default function InfoConsentMode1() {
+  const history = useHistory()
   const termsData = [
     {
       title: 'CHÍNH SÁCH QUYỀN RIÊNG TƯ',
@@ -153,7 +155,7 @@ export default function InfoConsentMode1() {
 
   return (
     <div>
-      {isHeaderMiniApp && <Header title={'Xác nhận đồng ý và xử lý dữ liệu'} onBack={() => redirectByMiniAppBackUrl()} />}
+      {isHeaderMiniApp && <Header title={'Xác nhận đồng ý và xử lý dữ liệu'} onBack={() => redirectByMiniAppBackUrl(history)} />}
       <div className="HomeConsentLaypout">
         <div className="InfoConsentMode1">
           <div className="InfoConsentMode1_img">

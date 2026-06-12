@@ -7,7 +7,7 @@ import { fetchMetadataWithCache } from './../../../services/addBookingService'
 import L2FunctionButtonList from './L2FunctionButtonList'
 import L2PartnerSection from './L2PartnerSection'
 import MainButton from '../../../components/MainButton'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useHistory } from 'react-router-dom'
 import 'zmp-ui/zaui.min.css'
 import { getBannerBySectionCache } from '../../../helper/getBannerBySectionCache'
 import MainLogo from '../../../components/MainLogo'
@@ -22,6 +22,7 @@ import { useAppParamsContext } from '../../../context/AppParamsContext'
 
 const HomeLayout2 = (props) => {
   const location = useLocation()
+  const history = useHistory()
   const [userToken, setUserToken] = useState(location?.state?.token || localStorage.getItem('userToken') || '')
   const [isLoadingAPI, setIsLoadingAPI] = useState(true)
   const { init: initBridge, exit: exitBridge, isSupported: isPartnerBridgeSupported } = usePartnerBridge()
@@ -149,7 +150,7 @@ const HomeLayout2 = (props) => {
     initBridge()
   }, [initBridge, isPartnerBridgeSupported])
   const handleExit = async () => {
-    if (redirectByMiniAppBackUrl()) {
+    if (redirectByMiniAppBackUrl(history)) {
       return
     }
 
