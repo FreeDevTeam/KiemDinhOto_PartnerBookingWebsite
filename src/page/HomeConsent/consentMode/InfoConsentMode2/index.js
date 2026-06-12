@@ -11,7 +11,6 @@ import { getDataUserFromSDK } from '../../sdkPartnerGetData'
 import { redirectByMiniAppBackUrl } from '../../../../actions/miniAppBackAction'
 import { ENV } from '../../../../constants/EnvironmentVariables'
 import { useAppParamsContext } from '../../../../context/AppParamsContext'
-import { useHistory } from 'react-router-dom'
 
 const termsData = [
   {
@@ -159,7 +158,6 @@ const checkIsCompleteUserProfile = (userProfile) => {
 }
 
 export default function InfoConsentMode2() {
-  const history = useHistory()
   const { acceptConsentSession, consentSessionState, consentUserProfile, updateConsentSessionState, setConsentUserProfile } = useConsentContext()
   const [hideInfo, setHideInfo] = useState(true)
   const [confirmTerm, setConfirmTerm] = useState(false)
@@ -252,7 +250,7 @@ export default function InfoConsentMode2() {
 
   return (
     <div>
-      {isHeaderMiniApp && <Header title={'Xác nhận thông tin'} onBack={() => redirectByMiniAppBackUrl(history)} />}
+      {isHeaderMiniApp && <Header title={'Xác nhận thông tin'} onBack={() => redirectByMiniAppBackUrl()} />}
       <div className="HomeConsentLaypout">
         <div className="InfoConsentMode2">
           <img className="InfoConsentMode2_img" src={'/logo.png'} alt="" />

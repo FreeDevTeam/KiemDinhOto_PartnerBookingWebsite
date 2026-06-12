@@ -65,7 +65,7 @@ const HomeLayout3 = (props) => {
   const { init: initBridge, exit: exitBridge, isSupported: isPartnerBridgeSupported } = usePartnerBridge()
 
   const handleExit = async () => {
-    if (redirectByMiniAppBackUrl(history)) {
+    if (redirectByMiniAppBackUrl()) {
       return
     }
 

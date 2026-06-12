@@ -10,7 +10,6 @@ import BasePopupTerm from '../../components/base/BasePopupTerm'
 import { redirectByMiniAppBackUrl } from '../../../../actions/miniAppBackAction'
 import { ENV } from '../../../../constants/EnvironmentVariables'
 import { useAppParamsContext } from '../../../../context/AppParamsContext'
-import { useHistory } from 'react-router-dom'
 
 const termsData = [
   {
@@ -153,7 +152,6 @@ const getDisplayValue = (value, hideInfo) => {
 }
 
 export default function InfoConsentMode3() {
-  const history = useHistory()
   const { isHeaderMiniApp } = useAppParamsContext()
   const { acceptConsentSession, consentUserProfile } = useConsentContext()
   const [hideInfo, setHideInfo] = useState(true)
@@ -167,7 +165,7 @@ export default function InfoConsentMode3() {
 
   return (
     <div>
-      {isHeaderMiniApp && <Header title={'Xác nhận thông tin'} onBack={() => redirectByMiniAppBackUrl(history)} />}
+      {isHeaderMiniApp && <Header title={'Xác nhận thông tin'} onBack={() => redirectByMiniAppBackUrl()} />}
       <div className="HomeConsentLaypout">
         <div className="InfoConsentMode2">
           <img className="InfoConsentMode2_img" src={'/logo.png'} alt="" />
