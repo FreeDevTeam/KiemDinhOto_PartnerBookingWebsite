@@ -1,0 +1,108 @@
+.floating-support-wrapper {
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  z-index: 999;
+  pointer-events: none; /* Allows clicks to pass through the wrapper to elements underneath */
+}
+
+.floating-support-button {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: auto; /* Re-enables clicks for the button itself */
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease;
+  background-color: transparent;
+  animation: pulse 2s infinite;
+  color: var(--primary-button-color, #0870d9);
+  
+  &:active {
+    transform: scale(0.95);
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(8, 112, 217, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(8, 112, 217, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(8, 112, 217, 0);
+  }
+}
+
+/* CSS cho nội dung bên trong Popup */
+.CustomerSupportPopup_contact {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.CustomerSupportPopup_contact_icon {
+  min-width: 28px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-button-color, #0870d9); /* Màu này sẽ được truyền vào currentColor của SVG */
+}
+
+.CustomerSupportPopup_contact_content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 3px;
+}
+
+.CustomerSupportPopup_contact_text {
+  display: flex;
+  align-items: center;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 20px;
+  color: #222222;
+}
+
+.CustomerSupportPopup_action {
+  width: 100%;
+  height: 48px;
+  border-radius: 9999px;
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--primary-button-color, #0870d9);
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 18px;
+  text-decoration: none;
+  
+  &:hover {
+    color: #ffffff;
+    opacity: 0.9;
+  }
+}
+
+.CustomerSupportPopup_action_icon {
+  font-size: 24px;
+}

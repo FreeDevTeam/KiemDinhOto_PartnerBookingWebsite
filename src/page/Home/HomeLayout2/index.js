@@ -19,6 +19,7 @@ import usePreconnectExternalLinks from '../../../hooks/usePreconnectExternalLink
 import { redirectByMiniAppBackUrl } from '../../../actions/miniAppBackAction'
 import { ENV } from '../../../constants/EnvironmentVariables'
 import { useAppParamsContext } from '../../../context/AppParamsContext'
+import CustomerSupportButton from '../../../components/BasicComponent/CustomerSupportButton'
 
 const HomeLayout2 = (props) => {
   const location = useLocation()
@@ -253,6 +254,7 @@ const HomeLayout2 = (props) => {
             </div>
           </div>
           {ENV.REACT_APP_DEFAULT_VISIBLE_BOTTOM_BANNER && bottomBanner?.length > 0 && <PageLayout>{renderBottomSlider}</PageLayout>}
+          <CustomerSupportButton />
         </div>
       </div>
     </div>
