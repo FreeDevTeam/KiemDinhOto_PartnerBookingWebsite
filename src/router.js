@@ -17,6 +17,7 @@ const PartnerGuide = React.lazy(() => import('./page/Guide/partnerGuide'))
 const PersonalGuide = React.lazy(() => import('./page/Guide/personalGuide'))
 const UpdateBookingDetail = React.lazy(() => import('./page/BookingDetail/UpdateBookingDetail'))
 const IframeView = React.lazy(() => import('./page/IframeView'))
+const ReferStation = React.lazy(() => import('./page/ReferStation/index'))
 
 const BookingType=process.env.REACT_APP_BHTNDS
 const DEFAULT_HOME_LAYOUT=process.env.REACT_APP_DEFAULT_HOME_LAYOUT
@@ -50,6 +51,11 @@ export const ROUTERS = {
     homePage: {
         path: PATH.HOME,
         component: handleCheckLayout(),
+        isZaloApp: 1
+    },
+    referStationZalo: {
+        path: PATH.REFER_STATION,
+        component: ReferStation,
         isZaloApp: 1
     },
     homeLogin: {
@@ -91,6 +97,11 @@ export const ROUTERS = {
     homePageWeb: {
         path: PATH.HOME,
         component: handleCheckLayout(),
+        isZaloApp: 0,
+    },
+    referStation: {
+        path: PATH.REFER_STATION,
+        component: ReferStation,
         isZaloApp: 0,
     },
     checkVihcle: {
