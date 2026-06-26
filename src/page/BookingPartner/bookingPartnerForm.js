@@ -428,6 +428,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       vehicleType: workdayFilter.vehicleType,
       licensePlateColor: values.licensePlateColor,
       scheduleType: values.scheduleType,
+        // Trạm A: trạm giới thiệu, lấy từ mã nhập ở /baoduong/referStation hoặc /cuuho/referStation
+      referStationId: dataBookingParam?.referStationId ? Number(dataBookingParam.referStationId) : undefined,
+
       vehicleSubType: values.vehicleSubType,
       vehicleSubCategory: vehicleSubCategory,
       certificateSeries: values.certificateSeries
