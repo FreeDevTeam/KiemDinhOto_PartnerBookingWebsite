@@ -36,15 +36,6 @@ import PaymentService from '../../services/paymentService'
 
 const Gtel = window
 
-const BOOKING_SERVICE_TYPES = {
-  MAINTENANCE: 7,
-  RESCUE: 10
-}
-
-const BOOKING_SERVICE_TYPE_LABELS = {
-  [BOOKING_SERVICE_TYPES.MAINTENANCE]: 'Bảo dưỡng xe',
-  [BOOKING_SERVICE_TYPES.RESCUE]: 'Cứu hộ ô tô'
-}
 // FUNC: Băm url để lấy các params trên url và trả về dạng mảng có object là key và value
 export function getQueryParams(options = {}) {
   if (typeof window !== 'undefined' && window.location && window.location.search) {
@@ -158,32 +149,6 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   const shouldUseConfirmBookingSchedule = isNormalBookingFlow && isConfirmBookingScheduleEnabled && !!confirmBookingScheduleUrl
   const shouldShowConfirmBookingTerm = isNormalBookingFlow && isConfirmBookingScheduleEnabled && !!confirmBookingScheduleTerm
 
-
-  const getConfiguredServiceType = () => {
-  const rawServiceType = dataBookingParam?.serviceType ?? dataBookingParam?.servicetype
-  const serviceType = Number(rawServiceType)
-  return Number.isFinite(serviceType) && serviceType > 0 ? serviceType : undefined
-}
-
-const getConfiguredReferStationId = () => dataBookingParam?.referStationId ?? dataBookingParam?.referstationid
-
-const configuredServiceType = getConfiguredServiceType()
-const configuredReferStationId = getConfiguredReferStationId()
-const isConfiguredServiceFlow = !!configuredServiceType
-const isRescueServiceFlow = configuredServiceType === BOOKING_SERVICE_TYPES.RESCUE
-const configuredServiceLabel = BOOKING_SERVICE_TYPE_LABELS[configuredServiceType] || 'Dịch vụ đã chọn'
-
-const appendServiceTypeToStationFilter = (params = {}) => {
-  if (!configuredServiceType) return params
-
-  return {
-    ...(params || {}),
-    filter: {
-      ...((params || {})?.filter || {}),
-      serviceType: configuredServiceType
-    }
-  }
-}
   const getStationConfigByApiKey = (paramsFromUrl) => {
     setIsInitLoading(true)
     const apiKey = paramsFromUrl?.apiKey || paramsFromUrl?.apikey || localStorage.getItem('apiKey') || process.env.REACT_APP_APIKEY || undefined
@@ -462,10 +427,7 @@ const appendServiceTypeToStationFilter = (params = {}) => {
       time: values?.time?.scheduleTime || form.getFieldValue('time')?.scheduleTime,
       vehicleType: workdayFilter.vehicleType,
       licensePlateColor: values.licensePlateColor,
-      scheduleType: isRescueServiceFlow
-      ? undefined
-      : (values.scheduleType || dataBookingParam?.scheduleType || (configuredServiceType === BOOKING_SERVICE_TYPES.MAINTENANCE ? BOOKING_SERVICE_TYPES.MAINTENANCE : undefined)),
-      referStationId: configuredReferStationId,
+      scheduleType: values.scheduleType,
       vehicleSubType: values.vehicleSubType,
       vehicleSubCategory: vehicleSubCategory,
       certificateSeries: values.certificateSeries
@@ -474,10 +436,8 @@ const appendServiceTypeToStationFilter = (params = {}) => {
     if (stationsId != null && !isSystemConsultantOrder) {
       data.stationsId = stationsId
     }
-    const selectedServiceId = values.serviceId ?? form.getFieldValue('serviceId')
-
-    if (selectedServiceId && (Number(values.scheduleType) === SCHEDULE_TYPE_MINIAPP.E_TICKET_SALE || dataBookingParam?.visible_stationService === true || configuredServiceType)) {
-      data.stationServicesList = [selectedServiceId]
+    if (values.serviceId && (Number(values.scheduleType) === SCHEDULE_TYPE_MINIAPP.E_TICKET_SALE || dataBookingParam?.visible_stationService === true)) {
+      data.stationServicesList = [values.serviceId]
     }
     // dùng cho ZALOPAY
     // if (scheduleCategory === SCHEDULE_BOOKING_TYPE.CONSULTANT && MINIAPP_ZALOPAY) {
@@ -875,9 +835,9 @@ const appendServiceTypeToStationFilter = (params = {}) => {
     const isSystemStationConfig = !stationsCode
     const stationArea = form.getFieldValue('vntId') || dataBookingParam?.vntId
 
-    const stationListPromise = BookingService.searchStationList(appendServiceTypeToStationFilter(filter))
+    const stationListPromise = BookingService.searchStationList(filter)
     const stationByCodePromise = !isSystemStationConfig
-      ? BookingService.searchStationList(appendServiceTypeToStationFilter({
+      ? BookingService.searchStationList({
         filter: {
           stationArea,
           stationType: 0
@@ -885,7 +845,7 @@ const appendServiceTypeToStationFilter = (params = {}) => {
         searchText: stationsCode,
         skip: 0,
         limit: 20
-      })).catch(() => null)
+      }).catch(() => null)
       : Promise.resolve(null)
 
     Promise.all([stationListPromise, stationByCodePromise])
@@ -1057,7 +1017,7 @@ const appendServiceTypeToStationFilter = (params = {}) => {
         }
       }
 
-      BookingService.searchStationList(appendServiceTypeToStationFilter(params))
+      BookingService.searchStationList(params)
         .then((res) => {
           const stationList = (res?.data || []).map((station) => {
             const name = `${station.stationCode} - ${station.stationsAddress || station.stationsName}`
@@ -1159,47 +1119,12 @@ const appendServiceTypeToStationFilter = (params = {}) => {
     form.setFieldValue('serviceId', undefined)
     setStationServiceOptions([])
 
-    if (!stationsId) {
+    if (!stationsId || !parentServiceType) {
       setShowServiceType(false)
       return
     }
 
     const services = await getStationServices(stationsId)
-
-    if (configuredServiceType) {
-      const selectedService = services.find((service) => {
-        return service?.isActive === 1 && Number(service?.serviceType) === Number(configuredServiceType)
-      })
-
-      if (selectedService) {
-        form.setFieldValue('serviceId', selectedService?.value)
-        setStationServiceOptions([selectedService])
-        setShowServiceType(false)
-        return
-      }
-
-      setShowServiceType(false)
-      setStationSelected(null)
-      setListBookingDate([])
-      setListBookingTime([])
-      setWorkdaySelectedDate(undefined)
-      setWorkdayFilter((prev) => ({ ...prev, stationsId: undefined }))
-      form.setFieldsValue({
-        stationsId: undefined,
-        dateSchedule: undefined,
-        time: undefined,
-        serviceId: undefined
-      })
-      setErrorMessage(`Trạm này chưa hỗ trợ dịch vụ ${configuredServiceLabel}. Vui lòng chọn trạm khác.`)
-      setIsModalErrOpen(true)
-      return
-    }
-
-    if (!parentServiceType) {
-      setShowServiceType(false)
-      return
-    }
-
     const filteredServices = services.filter((service) => {
       return (
         service?.isActive === 1 &&
@@ -1406,7 +1331,7 @@ const appendServiceTypeToStationFilter = (params = {}) => {
         name: currentValues.name || dataBookingParam.name || gtelpayUser?.fullName || zaloUserName,
         phone: currentValues.phone || dataBookingParam.phone || gtelpayUser?.phoneNumber || zaloUserPhone,
         vehicleSubType: dataBookingParam.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value,
-        scheduleType: isRescueServiceFlow ? undefined : (dataBookingParam.scheduleType || optionServiceType[0]?.value),
+        scheduleType: dataBookingParam.scheduleType || optionServiceType[0]?.value,
         licensePlateColor: dataBookingParam.licensePlateColor || licensePlateColorList[0]?.value,
         vntId: dataBookingParam.vntId || listStationArea[0]?.value,
         vehicleSubCategory: dataBookingParam.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
@@ -1441,7 +1366,7 @@ const appendServiceTypeToStationFilter = (params = {}) => {
       form.setFieldValue('phone', zaloUserPhone)
       form.setFieldValue('name', zaloUserName)
       form.setFieldValue('vehicleSubType', dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
-      form.setFieldValue('scheduleType', isRescueServiceFlow ? undefined : (dataBookingParam?.scheduleType || optionServiceType[0]?.value))
+      form.setFieldValue('scheduleType', dataBookingParam?.scheduleType || optionServiceType[0]?.value)
       form.setFieldValue('licensePlateColor', dataBookingParam?.licensePlateColor || licensePlateColorList[0]?.value)
       form.setFieldValue('vehicleSubCategory', dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value)
     }
@@ -1549,7 +1474,7 @@ const appendServiceTypeToStationFilter = (params = {}) => {
         form={form}
         onFinish={onFinish}
         initialValues={{
-          scheduleType: isRescueServiceFlow ? undefined : (dataBookingParam?.scheduleType || optionServiceType[0]?.value),
+          scheduleType: dataBookingParam?.scheduleType || optionServiceType[0]?.value,
           licensePlateColor: dataBookingParam?.licensePlateColor || licensePlateColorList[0]?.value,
           vehicleSubCategory: dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value,
           vehicleSubType: dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value
@@ -1595,13 +1520,6 @@ const appendServiceTypeToStationFilter = (params = {}) => {
               <Input className="booking-input booking-input" placeholder="Nhập số điện thoại" type="text" size="large" disabled={(isZaloApp && zaloUserPhone?.trim()) || gtelpayUser?.phoneNumber?.trim()} />
             </Form.Item>
 
-            {isConfiguredServiceFlow ? (
-            <Form.Item
-              label="Loại dịch vụ"
-              hidden={String(dataBookingParam?.visible_scheduleType) === 'false'}>
-              <Input className="booking-input" value={configuredServiceLabel} disabled size="large" />
-            </Form.Item>
-          ) : (
             <Form.Item
               name="scheduleType"
               label="Mục đích đặt hẹn"
@@ -1625,7 +1543,8 @@ const appendServiceTypeToStationFilter = (params = {}) => {
                 onChange={(values, scheduleType) => {
                   setScheduleCategory(scheduleType?.scheduleCategory)
                   form.setFieldValue('scheduleType', values)
-
+                  // Nếu config trạm là null, khi đổi mục đích sẽ tự đồng bộ lại trạm:
+                  // luồng tư vấn giữ null, luồng đăng kiểm tự chọn trạm mặc định từ danh sách đã có.
                   const isConfigStationNull = !`${dataBookingParam?.stationsCode || ''}`.trim()
                   if (isConfigStationNull && listStation?.length > 0) {
                     const defaultStation = pickDefaultStation(listStation)
@@ -1639,7 +1558,6 @@ const appendServiceTypeToStationFilter = (params = {}) => {
                 }}
               />
             </Form.Item>
-          )}
             {showServiceType && isServiceVisible && (
               <Form.Item
                 name="serviceId"
@@ -1916,7 +1834,7 @@ const appendServiceTypeToStationFilter = (params = {}) => {
                   size="middle"
                   loading={isStationLoading}
                   disabled={!form.getFieldValue('vntId')}
-                  placeholder={configuredServiceType ? `Vui lòng chọn trạm ${configuredServiceLabel.toLowerCase()}` : 'Vui lòng chọn trạm đăng kiểm'}
+                  placeholder="Vui lòng chọn trạm đăng kiểm"
                   style={{
                     customStyles,
                     ...{
