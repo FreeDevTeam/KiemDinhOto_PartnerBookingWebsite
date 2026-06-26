@@ -58,6 +58,16 @@ export const ROUTERS = {
         component: ReferStation,
         isZaloApp: 1
     },
+    referStationBaoDuongZalo: {
+        path: PATH.REFER_STATION_BAODUONG,
+        component: ReferStation,
+        isZaloApp: 1
+    },
+    referStationCuuHoZalo: {
+        path: PATH.REFER_STATION_CUUHO,
+        component: ReferStation,
+        isZaloApp: 1
+    },
     homeLogin: {
         path: PATH.LOGIN,
         component: HomePageLogin,
@@ -103,6 +113,16 @@ export const ROUTERS = {
         path: PATH.REFER_STATION,
         component: ReferStation,
         isZaloApp: 0,
+    },
+    referStationBaoDuongZalo: {
+        path: PATH.REFER_STATION_BAODUONG,
+        component: ReferStation,
+        isZaloApp: 0
+    },
+    referStationCuuHoZalo: {
+        path: PATH.REFER_STATION_CUUHO,
+        component: ReferStation,
+        isZaloApp: 0
     },
     checkVihcle: {
         path: PATH.CHECK_VIHCLE,

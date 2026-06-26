@@ -14,4 +14,6 @@ export const PATH = {
     PERSONAL_GUIDE: '/personal-guide-link',
     IFRAME_VIEW: '/page',
     REFER_STATION: '/referStation',
+    REFER_STATION_BAODUONG: '/baoduong/referStation',
+    REFER_STATION_CUUHO: '/cuuho/referStation'
 }
