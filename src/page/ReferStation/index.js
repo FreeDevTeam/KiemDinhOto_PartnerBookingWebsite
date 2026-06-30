@@ -6,10 +6,16 @@ import { PATH } from '../../constants/router'
 import referStationIcon from '../../assets/img/refer-station.png'
 import './index.scss'
 
+const TAMOVE_DATLICH_API_KEY = '05cf2340-5d11-423e-ba77-2d86d5c90d63'
 const TAMOVE_BAODUONG_API_KEY = '92de77ec-1cc0-441e-a061-d3b223f44d71'
 const TAMOVE_CUUHO_API_KEY = '334ba6b2-c502-46d4-a020-556d5f6d9931'
 
 const REFER_STATION_CONFIG_BY_PATH = {
+  '/datlich/referstation': {
+    badge: 'Đặt lịch hẹn',
+    apiKey: TAMOVE_DATLICH_API_KEY,
+    stationType: 1
+  },
   '/baoduong/referstation': {
     badge: 'Bảo dưỡng xe',
     apiKey: TAMOVE_BAODUONG_API_KEY,
@@ -39,6 +45,14 @@ const getReferStationConfigBySearch = (searchParams) => {
   const stationType = String(searchParams.get('stationType') || '')
   const service = String(searchParams.get('service') || '').toLowerCase()
 
+  if (stationType === '1' || service === 'datlich' || service === 'booking') {
+    return {
+      badge: 'Đặt lịch hẹn',
+      apiKey: TAMOVE_DATLICH_API_KEY,
+      stationType: 1
+    }
+  }
+
   if (stationType === '4' || service === 'rescue' || service === 'cuuho') {
     return {
       badge: 'Cứu hộ ô tô',
@@ -56,7 +70,9 @@ const getReferStationConfigBySearch = (searchParams) => {
   }
 
   return {
-    badge: 'Đặt lịch dịch vụ'
+    badge: 'Đặt lịch hẹn',
+    apiKey: TAMOVE_DATLICH_API_KEY,
+    stationType: 1
   }
 }
 

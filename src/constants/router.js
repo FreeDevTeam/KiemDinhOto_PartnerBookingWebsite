@@ -13,7 +13,7 @@ export const PATH = {
     PARTNER_GUIDE: '/partner-guide-link',
     PERSONAL_GUIDE: '/personal-guide-link',
     IFRAME_VIEW: '/page',
-    REFER_STATION: '/referStation',
+    REFER_STATION: '/datlich/referStation',
     REFER_STATION_BAODUONG: '/baoduong/referStation',
     REFER_STATION_CUUHO: '/cuuho/referStation'
 }
