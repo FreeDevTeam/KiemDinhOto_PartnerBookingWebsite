@@ -158,7 +158,7 @@ export const resolveVnpayConsentUserProfileFromApiResponse = (apiData = {}, fall
   const normalizedFallbackProfile = buildVnpayConsentUserProfile(fallbackPayload)
 
   return {
-    uuid: normalizeString(normalizedProfileFromApi.uuid || normalizedFallbackProfile.uuid),
+    username: normalizeString(normalizedProfileFromApi.username || normalizedFallbackProfile.username),
     phoneNumber: normalizeString(normalizedProfileFromApi.phoneNumber || normalizedFallbackProfile.phoneNumber),
     fullName: normalizeString(normalizedProfileFromApi.fullName || normalizedFallbackProfile.fullName)
   }
@@ -168,7 +168,7 @@ export const buildVnpayConsentUserProfile = (payload = {}) => {
   const normalizedPayload = normalizeVnpayPayload(payload)
 
   return {
-    uuid: normalizedPayload.token || normalizedPayload.mobile,
+    username: normalizedPayload.token || normalizedPayload.mobile,
     phoneNumber: normalizedPayload.mobile,
     fullName: normalizedPayload.fname
   }
@@ -194,7 +194,7 @@ export const readStoredVnpayConsentProfile = () => {
   const storedPayload = LocalStorageManager.getItem(VNPAY_STORAGE_KEYS.RAW_PAYLOAD)
   if (!storedPayload) {
     return {
-      uuid: '',
+      username: '',
       phoneNumber: '',
       fullName: ''
     }

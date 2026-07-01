@@ -28,7 +28,7 @@ export const getDataUserFromSDK = async () => {
       data: {
         fullName: '',
         phoneNumber: '',
-        uuid: ''
+        username: ''
       },
       error: true
     }

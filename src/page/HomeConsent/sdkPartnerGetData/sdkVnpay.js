@@ -23,7 +23,7 @@ export const getDataSDKFromVnpay = async () => {
     const mappedData = {
       phoneNumber: consentUserProfile.phoneNumber,
       fullName: consentUserProfile.fullName,
-      uuid: consentUserProfile.uuid
+      username: consentUserProfile.username
     }
     console.log('[CONSENT][sdkVnpay] Mapped consent data from storage', mappedData)
 

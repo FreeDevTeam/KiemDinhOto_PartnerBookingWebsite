@@ -62,7 +62,7 @@ export const runMyf88LoginFlow = async ({ search = window.location.search } = {}
     const phoneNumber = getFallbackField(apiData, loginRequest.myf88AppData, ['phoneNumber', 'mobile', 'phone'])
     const fullName = getFallbackField(apiData, loginRequest.myf88AppData, ['fullName', 'fname', 'name'])
     const email = getFallbackField(apiData, loginRequest.myf88AppData, ['email'])
-    const uuid = getFallbackField(apiData, loginRequest.myf88AppData, ['uuid'])
+    const username = getFallbackField(apiData, loginRequest.myf88AppData, ['username', 'uuid'])
     const partnerSessionData = apiData?.partnerSessionData !== undefined ? apiData.partnerSessionData : (loginRequest.myf88AppData?.partnerSessionData || null)
 
     persistMyf88LoginState(
@@ -70,11 +70,11 @@ export const runMyf88LoginFlow = async ({ search = window.location.search } = {}
         mobile: phoneNumber,
         fname: fullName,
         email,
-        uuid,
+        username,
         partnerSessionData
       },
       {
-        uuid,
+        username,
         phoneNumber,
         fullName,
         email,

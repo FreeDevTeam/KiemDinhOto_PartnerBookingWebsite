@@ -54,7 +54,7 @@ export const runVnpayLoginFlow = async ({ search = window.location.search } = {}
         email
       },
       {
-        uuid: phoneNumber,
+        username: phoneNumber,
         phoneNumber,
         fullName,
         email

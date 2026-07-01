@@ -23,7 +23,7 @@ export const getDataSDKFromF88 = async () => {
     const mappedData = {
       phoneNumber: consentUserProfile.phoneNumber,
       fullName: consentUserProfile.fullName,
-      uuid: consentUserProfile.uuid,
+      username: consentUserProfile.username,
       email: consentUserProfile.email,
       partnerSessionData: consentUserProfile.partnerSessionData
     }
