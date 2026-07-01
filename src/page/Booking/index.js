@@ -56,6 +56,9 @@ const StepBooking = ({ history, intl }) => {
     vehicleType:params.get('vehicletype'),
     licensePlateColor: params.get('licenseplatecolor'),
     scheduleType: params.get('scheduletype'),
+    stationType: params.get('stationType') || params.get('stationtype'),
+    referStationCode: params.get('referStationCode') || params.get('referstationcode') || localStorage.getItem('referStationCode'),
+    referStationId: params.get('referStationId') || params.get('referstationid') || localStorage.getItem('referStationId')
   })
 
 

@@ -19,6 +19,7 @@ const PartnerGuide = React.lazy(() => import('./page/Guide/partnerGuide'))
 const PersonalGuide = React.lazy(() => import('./page/Guide/personalGuide'))
 const UpdateBookingDetail = React.lazy(() => import('./page/BookingDetail/UpdateBookingDetail'))
 const IframeView = React.lazy(() => import('./page/IframeView'))
+const ReferStation = React.lazy(() => import('./page/ReferStation/index'))
 
 const BookingType=process.env.REACT_APP_BHTNDS
 const DEFAULT_HOME_LAYOUT=process.env.REACT_APP_DEFAULT_HOME_LAYOUT
@@ -52,6 +53,21 @@ export const ROUTERS = {
     homePage: {
         path: PATH.HOME,
         component: handleCheckLayout(),
+        isZaloApp: 1
+    },
+    referStationZalo: {
+        path: PATH.REFER_STATION,
+        component: ReferStation,
+        isZaloApp: 1
+    },
+    referStationBaoDuongZalo: {
+        path: PATH.REFER_STATION_BAODUONG,
+        component: ReferStation,
+        isZaloApp: 1
+    },
+    referStationCuuHoZalo: {
+        path: PATH.REFER_STATION_CUUHO,
+        component: ReferStation,
         isZaloApp: 1
     },
     homeLogin: {
@@ -104,6 +120,21 @@ export const ROUTERS = {
         path: PATH.HOME,
         component: handleCheckLayout(),
         isZaloApp: 0,
+    },
+    referStation: {
+        path: PATH.REFER_STATION,
+        component: ReferStation,
+        isZaloApp: 0,
+    },
+    referStationBaoDuongZalo: {
+        path: PATH.REFER_STATION_BAODUONG,
+        component: ReferStation,
+        isZaloApp: 0
+    },
+    referStationCuuHoZalo: {
+        path: PATH.REFER_STATION_CUUHO,
+        component: ReferStation,
+        isZaloApp: 0
     },
     checkVihcle: {
         path: PATH.CHECK_VIHCLE,

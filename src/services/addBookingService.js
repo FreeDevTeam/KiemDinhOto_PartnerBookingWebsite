@@ -481,6 +481,18 @@ export default class BookingService {
     })
   }
 
+  static async checkExistReferStationCode(data = {}) {
+    return new Promise((resolve) => {
+      Request.send({
+        method: 'POST',
+        path: '/Stations/user/checkExistReferStationCode',
+        data,
+        token: false
+      }).then((result = {}) => {
+        return resolve(result)
+      })
+    })
+  }
   static async createConsultantSchedule(data) {
     return new Promise((resolve) => {
       Request.send({
