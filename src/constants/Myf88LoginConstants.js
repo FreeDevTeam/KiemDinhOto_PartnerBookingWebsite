@@ -1,5 +1,13 @@
+export const MYF88_STORAGE_KEYS = {
+  RAW_PAYLOAD: 'myf88LoginPayload',
+  CONSENT_USER_PROFILE: 'consentUserProfile',
+  CONSENT_SESSION_STATE: 'consentSessionState',
+  CONSENT_MODE: 'homeMiniappConsentMode'
+}
+
 export const MYF88_ENV = {
   DEFAULT_LOGO: process.env.REACT_APP_MYF88_DEFAULT_LOGO || 'MYF88',
   MIN_LOADING_MS: Number(process.env.REACT_APP_MYF88_LOGIN_MIN_LOADING_MS || process.env.REACT_APP_VNPAY_LOGIN_MIN_LOADING_MS || 3000),
-  TIMEOUT_MS: Number(process.env.REACT_APP_MYF88_LOGIN_TIMEOUT_MS || process.env.REACT_APP_VNPAY_LOGIN_TIMEOUT_MS || 3000)
+  TIMEOUT_MS: Number(process.env.REACT_APP_MYF88_LOGIN_TIMEOUT_MS || process.env.REACT_APP_VNPAY_LOGIN_TIMEOUT_MS || 3000),
+  CONSENT_MODE: Number(process.env.REACT_APP_MYF88_CONSENT_MODE ?? process.env.REACT_APP_HOME_MINIAPP_CONSENT_MODE ?? 2)
 }

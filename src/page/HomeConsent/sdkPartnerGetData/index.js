@@ -1,5 +1,5 @@
 import { parseFromLocalStorage } from '../../../helper/localStorage'
-import { getDataSDKFromF88 } from './sdkF88'
+import { getDataSDKFromF88, hasF88LoginData } from './sdkF88'
 import { getDataSDKFromVnpay, hasVnpayLoginData } from './sdkVnpay'
 
 export const getDataUserFromSDK = async () => {
@@ -14,7 +14,7 @@ export const getDataUserFromSDK = async () => {
         error
       }
     }
-    if (parseFromLocalStorage(process.env.REACT_APP_MINIAPP_F88) === 1 || parseFromLocalStorage(process.env.REACT_APP_MINIAPP_F88) === true) {
+    if (hasF88LoginData() || parseFromLocalStorage(process.env.REACT_APP_MINIAPP_F88) === 1 || parseFromLocalStorage(process.env.REACT_APP_MINIAPP_F88) === true) {
       console.log('[CONSENT][getDataUserFromSDK] Using F88 source')
       const { data, error } = await getDataSDKFromF88()
       console.log('[CONSENT][getDataUserFromSDK] F88 source result', { data, error })

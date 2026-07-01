@@ -1,7 +1,6 @@
 import { PATH } from '../../constants/router'
 import { MYF88_ENV } from '../../constants/Myf88LoginConstants'
-import { getMyf88LoginRequestFromSearch, resolveMyf88LogoPath } from '../../helper/Myf88LoginHelper'
-import { persistVnpayLoginState } from '../../helper/VnpayLoginHelper'
+import { getMyf88LoginRequestFromSearch, resolveMyf88LogoPath, persistMyf88LoginState } from '../../helper/Myf88LoginHelper'
 import Myf88Service from '../../services/myf88Service'
 
 const wait = (timeout) => new Promise((resolve) => {
@@ -64,7 +63,7 @@ export const runMyf88LoginFlow = async ({ search = window.location.search } = {}
     const fullName = getFallbackField(apiData, loginRequest.myf88AppData, ['fullName', 'fname', 'name'])
     const email = getFallbackField(apiData, loginRequest.myf88AppData, ['email'])
 
-    persistVnpayLoginState(
+    persistMyf88LoginState(
       {
         mobile: phoneNumber,
         fname: fullName,

@@ -1,5 +1,6 @@
 import { CheckApiKey } from './CheckApiKey'
-import addKeyLocalStorage, { parseFromLocalStorage } from './localStorage'
+import addKeyLocalStorage, { parseFromLocalStorage, LocalStorageManager, SessionStorageManager } from './localStorage'
+import { MYF88_ENV, MYF88_STORAGE_KEYS } from '../constants/Myf88LoginConstants'
 
 /**
  * Lấy toàn bộ query params dưới dạng raw string, không smart-parse.
@@ -71,5 +72,91 @@ export const getMyf88LoginRequestFromSearch = (search = window.location.search) 
     apikey,
     myf88AppData,
     logo: resolveMyf88LogoPath(myf88AppData.logo || searchParams.get('logo'))
+  }
+}
+
+const getSafeObject = (value) => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return {}
+  }
+  return value
+}
+
+export const normalizeMyf88Payload = (value = {}) => {
+  const safeValue = getSafeObject(value)
+  const mobile = normalizeString(safeValue.mobile || safeValue.phoneNumber || safeValue.phone)
+  const fname = normalizeString(safeValue.fname || safeValue.fullName || safeValue.name)
+  const email = normalizeString(safeValue.email)
+
+  return {
+    mobile,
+    fname,
+    email
+  }
+}
+
+export const buildMyf88ConsentUserProfile = (payload = {}) => {
+  const normalizedPayload = normalizeMyf88Payload(payload)
+
+  return {
+    uuid: normalizedPayload.mobile,
+    phoneNumber: normalizedPayload.mobile,
+    fullName: normalizedPayload.fname,
+    email: normalizedPayload.email
+  }
+}
+
+export const hasMyf88StoredData = () => {
+  return Boolean(
+    LocalStorageManager.getItem(MYF88_STORAGE_KEYS.RAW_PAYLOAD) ||
+      LocalStorageManager.getItem(MYF88_STORAGE_KEYS.CONSENT_USER_PROFILE) ||
+      SessionStorageManager.getItem(MYF88_STORAGE_KEYS.CONSENT_USER_PROFILE)
+  )
+}
+
+export const readStoredMyf88ConsentProfile = () => {
+  const storedConsentProfile =
+    SessionStorageManager.getItem(MYF88_STORAGE_KEYS.CONSENT_USER_PROFILE) ||
+    LocalStorageManager.getItem(MYF88_STORAGE_KEYS.CONSENT_USER_PROFILE)
+
+  if (storedConsentProfile?.phoneNumber) {
+    return buildMyf88ConsentUserProfile(storedConsentProfile)
+  }
+
+  const storedPayload = LocalStorageManager.getItem(MYF88_STORAGE_KEYS.RAW_PAYLOAD)
+  if (!storedPayload) {
+    return {
+      uuid: '',
+      phoneNumber: '',
+      fullName: '',
+      email: ''
+    }
+  }
+
+  return buildMyf88ConsentUserProfile(storedPayload)
+}
+
+export const persistMyf88LoginState = (payload, consentUserProfileFromApi) => {
+  const normalizedPayload = normalizeMyf88Payload(payload)
+  const consentUserProfile = buildMyf88ConsentUserProfile({
+    ...normalizedPayload,
+    ...getSafeObject(consentUserProfileFromApi)
+  })
+  const consentSessionState = {
+    consentMode: MYF88_ENV.CONSENT_MODE,
+    hasAcceptedConsent: false,
+    isLoading: false
+  }
+
+  LocalStorageManager.setItem(MYF88_STORAGE_KEYS.RAW_PAYLOAD, normalizedPayload)
+  LocalStorageManager.setItem(MYF88_STORAGE_KEYS.CONSENT_USER_PROFILE, consentUserProfile)
+  SessionStorageManager.setItem(MYF88_STORAGE_KEYS.CONSENT_USER_PROFILE, consentUserProfile)
+  SessionStorageManager.setItem(MYF88_STORAGE_KEYS.CONSENT_SESSION_STATE, consentSessionState)
+  SessionStorageManager.setItem(MYF88_STORAGE_KEYS.CONSENT_MODE, MYF88_ENV.CONSENT_MODE)
+
+  return {
+    payload: normalizedPayload,
+    consentUserProfile,
+    consentSessionState
   }
 }
