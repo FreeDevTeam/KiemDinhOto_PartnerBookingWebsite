@@ -6,10 +6,23 @@ import { PATH } from '../../constants/router'
 import referStationIcon from '../../assets/img/refer-station.png'
 import './index.scss'
 
-const TAMOVE_DATLICH_API_KEY = '05cf2340-5d11-423e-ba77-2d86d5c90d63'
-const TAMOVE_BAODUONG_API_KEY = '92de77ec-1cc0-441e-a061-d3b223f44d71'
-const TAMOVE_CUUHO_API_KEY = '334ba6b2-c502-46d4-a020-556d5f6d9931'
+const RUNTIME_MODE = process.env.REACT_APP_RUNTIME_MODE
 
+const IS_DEVELOPER_MODE = RUNTIME_MODE === 'developer'
+
+const TAMOVE_DATLICH_API_KEY = IS_DEVELOPER_MODE
+  ? '05cf2340-5d11-423e-ba77-2d86d5c90d63'
+  : '0c670892-3ec1-4bfd-9115-9e54ccd9146e'
+
+const TAMOVE_BAODUONG_API_KEY = IS_DEVELOPER_MODE
+  ? '92de77ec-1cc0-441e-a061-d3b223f44d71'
+  : 'bf08e20b-b394-4fbb-bd80-d0940a418a59'
+
+const TAMOVE_CUUHO_API_KEY = IS_DEVELOPER_MODE
+  ? '334ba6b2-c502-46d4-a020-556d5f6d9931'
+  : '8f5f4cbe-4d8e-4083-90ca-b1706de96edd'
+
+  
 const REFER_STATION_CONFIG_BY_PATH = {
   '/datlich/referstation': {
     badge: 'Đặt lịch hẹn',
