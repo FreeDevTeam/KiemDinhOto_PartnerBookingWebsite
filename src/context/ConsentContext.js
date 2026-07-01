@@ -10,7 +10,8 @@ const STORAGE_KEY_CONSENT_SESSION_STATE = 'consentSessionState'
 const DEFAULT_CONSENT_USER_PROFILE = {
   uuid: '',
   phoneNumber: '',
-  fullName: ''
+  fullName: '',
+  partnerSessionData: null
 }
 
 const normalizeUrlParamValue = (value) => {
@@ -57,7 +58,8 @@ const sanitizeConsentUserProfile = (value) => {
   return {
     uuid: sanitizeStringValue(value.uuid),
     phoneNumber: sanitizeStringValue(value.phoneNumber),
-    fullName: sanitizeStringValue(value.fullName)
+    fullName: sanitizeStringValue(value.fullName),
+    partnerSessionData: value.partnerSessionData !== undefined ? value.partnerSessionData : null
   }
 }
 
@@ -89,7 +91,12 @@ const buildInitialConsentState = (initialConsentMode) => {
 }
 
 const isSameConsentUserProfile = (prev, next) => {
-  return prev.uuid === next.uuid && prev.phoneNumber === next.phoneNumber && prev.fullName === next.fullName
+  return (
+    prev.uuid === next.uuid &&
+    prev.phoneNumber === next.phoneNumber &&
+    prev.fullName === next.fullName &&
+    JSON.stringify(prev.partnerSessionData) === JSON.stringify(next.partnerSessionData)
+  )
 }
 
 const isSameConsentSessionState = (prev, next) => {
