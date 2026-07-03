@@ -1,5 +1,5 @@
 import React from 'react'
-import { SessionStorageManager } from '../helper/localStorage'
+import { LocalStorageManager } from '../helper/localStorage'
 import { mergeUrlParams } from '../helper/UrlParamsHelper'
 
 export const ConsentContext = React.createContext(null)
@@ -26,21 +26,21 @@ const normalizeConsentMode = (value) => {
   return undefined
 }
 
-const safeGetSessionItem = (key) => {
+const safeGetStorageItem = (key) => {
   try {
-    return SessionStorageManager.getItem(key)
+    return LocalStorageManager.getItem(key)
   } catch (error) {
-    console.error(`ConsentContext: failed to read session key "${key}"`, error)
+    console.error(`ConsentContext: failed to read storage key "${key}"`, error)
     return null
   }
 }
 
-const trySetSessionItem = (key, value) => {
+const trySetStorageItem = (key, value) => {
   try {
-    SessionStorageManager.setItem(key, value)
+    LocalStorageManager.setItem(key, value)
     return true
   } catch (error) {
-    console.error(`ConsentContext: failed to write session key "${key}"`, error)
+    console.error(`ConsentContext: failed to write storage key "${key}"`, error)
     return false
   }
 }
@@ -77,8 +77,8 @@ const sanitizeConsentSessionState = (value, fallbackConsentMode) => {
 }
 
 const buildInitialConsentState = (initialConsentMode) => {
-  const storedConsentUserProfile = sanitizeConsentUserProfile(safeGetSessionItem(STORAGE_KEY_CONSENT_USER_PROFILE))
-  const storedConsentSessionState = sanitizeConsentSessionState(safeGetSessionItem(STORAGE_KEY_CONSENT_SESSION_STATE), initialConsentMode)
+  const storedConsentUserProfile = sanitizeConsentUserProfile(safeGetStorageItem(STORAGE_KEY_CONSENT_USER_PROFILE))
+  const storedConsentSessionState = sanitizeConsentSessionState(safeGetStorageItem(STORAGE_KEY_CONSENT_SESSION_STATE), initialConsentMode)
 
   return {
     consentUserProfile: storedConsentUserProfile,
@@ -120,7 +120,7 @@ export const ConsentContextProvider = ({ children, initialConsentMode }) => {
         return prev
       }
 
-      const isSaved = trySetSessionItem(STORAGE_KEY_CONSENT_USER_PROFILE, nextConsentUserProfile)
+      const isSaved = trySetStorageItem(STORAGE_KEY_CONSENT_USER_PROFILE, nextConsentUserProfile)
       if (!isSaved) {
         return prev
       }
@@ -170,7 +170,7 @@ export const ConsentContextProvider = ({ children, initialConsentMode }) => {
         return prev
       }
 
-      const isSaved = trySetSessionItem(STORAGE_KEY_CONSENT_SESSION_STATE, {
+      const isSaved = trySetStorageItem(STORAGE_KEY_CONSENT_SESSION_STATE, {
         consentMode: nextConsentSessionState.consentMode,
         hasAcceptedConsent: nextConsentSessionState.hasAcceptedConsent,
         isLoading: nextConsentSessionState.isLoading
@@ -213,8 +213,8 @@ export const ConsentContextProvider = ({ children, initialConsentMode }) => {
 
   const hydrateConsentSession = React.useCallback(() => {
     const nextConsentState = buildInitialConsentState(initialConsentMode)
-    trySetSessionItem(STORAGE_KEY_CONSENT_USER_PROFILE, nextConsentState.consentUserProfile)
-    trySetSessionItem(STORAGE_KEY_CONSENT_SESSION_STATE, {
+    trySetStorageItem(STORAGE_KEY_CONSENT_USER_PROFILE, nextConsentState.consentUserProfile)
+    trySetStorageItem(STORAGE_KEY_CONSENT_SESSION_STATE, {
       consentMode: nextConsentState.consentSessionState.consentMode,
       hasAcceptedConsent: nextConsentState.consentSessionState.hasAcceptedConsent,
       isLoading: nextConsentState.consentSessionState.isLoading
@@ -239,7 +239,7 @@ export const ConsentContextProvider = ({ children, initialConsentMode }) => {
         return prev
       }
 
-      const isSaved = trySetSessionItem(STORAGE_KEY_CONSENT_SESSION_STATE, {
+      const isSaved = trySetStorageItem(STORAGE_KEY_CONSENT_SESSION_STATE, {
         consentMode: nextConsentSessionState.consentMode,
         hasAcceptedConsent: nextConsentSessionState.hasAcceptedConsent,
         isLoading: nextConsentSessionState.isLoading
@@ -266,13 +266,13 @@ export const ConsentContextProvider = ({ children, initialConsentMode }) => {
       }
 
       if (!isSameConsentUserProfile(consentState.consentUserProfile, nextConsentUserProfile)) {
-        const isProfileSaved = trySetSessionItem(STORAGE_KEY_CONSENT_USER_PROFILE, nextConsentUserProfile)
+        const isProfileSaved = trySetStorageItem(STORAGE_KEY_CONSENT_USER_PROFILE, nextConsentUserProfile)
         if (!isProfileSaved) {
           return false
         }
       }
 
-      const isSaved = trySetSessionItem(STORAGE_KEY_CONSENT_SESSION_STATE, {
+      const isSaved = trySetStorageItem(STORAGE_KEY_CONSENT_SESSION_STATE, {
         consentMode: nextConsentSessionState.consentMode,
         hasAcceptedConsent: nextConsentSessionState.hasAcceptedConsent,
         isLoading: nextConsentSessionState.isLoading

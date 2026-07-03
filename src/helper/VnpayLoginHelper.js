@@ -1,5 +1,5 @@
 import { VNPAY_ENV, VNPAY_STORAGE_KEYS } from '../constants/VnpayLoginConstants'
-import { LocalStorageManager, SessionStorageManager, parseFromLocalStorage } from './localStorage'
+import { LocalStorageManager, parseFromLocalStorage } from './localStorage'
 import addKeyLocalStorage from './localStorage'
 import { getAllUrlParams, smartParseParam } from './UrlParamsHelper'
 import { CheckApiKey } from './CheckApiKey'
@@ -177,14 +177,12 @@ export const buildVnpayConsentUserProfile = (payload = {}) => {
 export const hasVnpayStoredData = () => {
   return Boolean(
     LocalStorageManager.getItem(VNPAY_STORAGE_KEYS.RAW_PAYLOAD) ||
-      LocalStorageManager.getItem(VNPAY_STORAGE_KEYS.CONSENT_USER_PROFILE) ||
-      SessionStorageManager.getItem(VNPAY_STORAGE_KEYS.CONSENT_USER_PROFILE)
+      LocalStorageManager.getItem(VNPAY_STORAGE_KEYS.CONSENT_USER_PROFILE)
   )
 }
 
 export const readStoredVnpayConsentProfile = () => {
   const storedConsentProfile =
-    SessionStorageManager.getItem(VNPAY_STORAGE_KEYS.CONSENT_USER_PROFILE) ||
     LocalStorageManager.getItem(VNPAY_STORAGE_KEYS.CONSENT_USER_PROFILE)
 
   if (storedConsentProfile?.phoneNumber) {
@@ -217,9 +215,8 @@ export const persistVnpayLoginState = (payload, consentUserProfileFromApi) => {
 
   LocalStorageManager.setItem(VNPAY_STORAGE_KEYS.RAW_PAYLOAD, normalizedPayload)
   LocalStorageManager.setItem(VNPAY_STORAGE_KEYS.CONSENT_USER_PROFILE, consentUserProfile)
-  SessionStorageManager.setItem(VNPAY_STORAGE_KEYS.CONSENT_USER_PROFILE, consentUserProfile)
-  SessionStorageManager.setItem(VNPAY_STORAGE_KEYS.CONSENT_SESSION_STATE, consentSessionState)
-  SessionStorageManager.setItem(VNPAY_STORAGE_KEYS.CONSENT_MODE, VNPAY_ENV.CONSENT_MODE)
+  LocalStorageManager.setItem(VNPAY_STORAGE_KEYS.CONSENT_SESSION_STATE, consentSessionState)
+  LocalStorageManager.setItem(VNPAY_STORAGE_KEYS.CONSENT_MODE, VNPAY_ENV.CONSENT_MODE)
 
   return {
     payload: normalizedPayload,

@@ -1,5 +1,5 @@
 import { CheckApiKey } from './CheckApiKey'
-import addKeyLocalStorage, { parseFromLocalStorage, LocalStorageManager, SessionStorageManager } from './localStorage'
+import addKeyLocalStorage, { parseFromLocalStorage, LocalStorageManager } from './localStorage'
 import { MYF88_ENV, MYF88_STORAGE_KEYS } from '../constants/Myf88LoginConstants'
 
 /**
@@ -114,14 +114,12 @@ export const buildMyf88ConsentUserProfile = (payload = {}) => {
 export const hasMyf88StoredData = () => {
   return Boolean(
     LocalStorageManager.getItem(MYF88_STORAGE_KEYS.RAW_PAYLOAD) ||
-      LocalStorageManager.getItem(MYF88_STORAGE_KEYS.CONSENT_USER_PROFILE) ||
-      SessionStorageManager.getItem(MYF88_STORAGE_KEYS.CONSENT_USER_PROFILE)
+      LocalStorageManager.getItem(MYF88_STORAGE_KEYS.CONSENT_USER_PROFILE)
   )
 }
 
 export const readStoredMyf88ConsentProfile = () => {
   const storedConsentProfile =
-    SessionStorageManager.getItem(MYF88_STORAGE_KEYS.CONSENT_USER_PROFILE) ||
     LocalStorageManager.getItem(MYF88_STORAGE_KEYS.CONSENT_USER_PROFILE)
 
   if (storedConsentProfile?.phoneNumber) {
@@ -156,9 +154,8 @@ export const persistMyf88LoginState = (payload, consentUserProfileFromApi) => {
 
   LocalStorageManager.setItem(MYF88_STORAGE_KEYS.RAW_PAYLOAD, normalizedPayload)
   LocalStorageManager.setItem(MYF88_STORAGE_KEYS.CONSENT_USER_PROFILE, consentUserProfile)
-  SessionStorageManager.setItem(MYF88_STORAGE_KEYS.CONSENT_USER_PROFILE, consentUserProfile)
-  SessionStorageManager.setItem(MYF88_STORAGE_KEYS.CONSENT_SESSION_STATE, consentSessionState)
-  SessionStorageManager.setItem(MYF88_STORAGE_KEYS.CONSENT_MODE, MYF88_ENV.CONSENT_MODE)
+  LocalStorageManager.setItem(MYF88_STORAGE_KEYS.CONSENT_SESSION_STATE, consentSessionState)
+  LocalStorageManager.setItem(MYF88_STORAGE_KEYS.CONSENT_MODE, MYF88_ENV.CONSENT_MODE)
 
   return {
     payload: normalizedPayload,
