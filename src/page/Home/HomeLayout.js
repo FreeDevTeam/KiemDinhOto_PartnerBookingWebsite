@@ -1,11 +1,18 @@
+import { Redirect } from 'react-router-dom'
 import { useAppParamsContext } from '../../context/AppParamsContext'
 import { ConsentContextProvider, useConsentContext } from '../../context/ConsentContext'
 import MainLogo from '../../components/MainLogo'
 import HomeConsent from '../HomeConsent'
 import HomeLayout2 from './HomeLayout2'
+import { getPartnerLoginRedirect } from '../../helper/partnerAuthGuard'
 
 function HomeLayoutContent() {
   const { isConsentHydrated, shouldShowConsent } = useConsentContext()
+  const partnerLoginRedirect = getPartnerLoginRedirect()
+
+  if (partnerLoginRedirect) {
+    return <Redirect to={partnerLoginRedirect} />
+  }
 
   if (!isConsentHydrated) {
     return (
