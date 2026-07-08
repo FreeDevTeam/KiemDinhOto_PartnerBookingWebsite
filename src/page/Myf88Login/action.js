@@ -1,6 +1,6 @@
 import { PATH } from '../../constants/router'
 import { MYF88_ENV } from '../../constants/Myf88LoginConstants'
-import { getMyf88LoginRequestFromSearch, resolveMyf88LogoPath, persistMyf88LoginState } from '../../helper/Myf88LoginHelper'
+import { getMyf88LoginRequestFromSearch, resolveMyf88LogoPath, persistMyf88LoginState, clearMyf88LoginState } from '../../helper/Myf88LoginHelper'
 import Myf88Service from '../../services/myf88Service'
 
 const wait = (timeout) => new Promise((resolve) => {
@@ -55,6 +55,7 @@ export const runMyf88LoginFlow = async ({ search = window.location.search } = {}
     const loginByMyf88Result = await Myf88Service.loginByMyf88AppData(loginPayload)
 
     if (!loginByMyf88Result.isSuccess || !loginByMyf88Result.data) {
+      clearMyf88LoginState()
       throw new Error(loginByMyf88Result.message || loginByMyf88Result.error || 'MYF88 login API failed')
     }
 
@@ -119,6 +120,7 @@ export const runMyf88LoginFlow = async ({ search = window.location.search } = {}
   }
 
   if (flowResult.status === 'error') {
+    clearMyf88LoginState()
     console.error('MYF88 login flow failed', flowResult.error)
     return flowResult
   }

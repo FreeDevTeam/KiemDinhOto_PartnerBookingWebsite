@@ -163,3 +163,10 @@ export const persistMyf88LoginState = (payload, consentUserProfileFromApi) => {
     consentSessionState
   }
 }
+
+export const clearMyf88LoginState = () => {
+  LocalStorageManager.removeItem(MYF88_STORAGE_KEYS.RAW_PAYLOAD)
+  LocalStorageManager.removeItem(MYF88_STORAGE_KEYS.CONSENT_USER_PROFILE)
+  LocalStorageManager.removeItem(MYF88_STORAGE_KEYS.CONSENT_SESSION_STATE)
+  LocalStorageManager.removeItem(MYF88_STORAGE_KEYS.CONSENT_MODE)
+}
