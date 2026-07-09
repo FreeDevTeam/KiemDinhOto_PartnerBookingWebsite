@@ -11,7 +11,8 @@ const DEFAULT_CONSENT_USER_PROFILE = {
   username: '',
   phoneNumber: '',
   fullName: '',
-  partnerSessionData: null
+  partnerSessionData: null,
+  token: null
 }
 
 const normalizeUrlParamValue = (value) => {
@@ -59,7 +60,8 @@ const sanitizeConsentUserProfile = (value) => {
     username: sanitizeStringValue(value.username),
     phoneNumber: sanitizeStringValue(value.phoneNumber),
     fullName: sanitizeStringValue(value.fullName),
-    partnerSessionData: value.partnerSessionData !== undefined ? value.partnerSessionData : null
+    partnerSessionData: value.partnerSessionData !== undefined ? value.partnerSessionData : null,
+    token: value.token !== undefined ? value.token : null
   }
 }
 
@@ -95,7 +97,8 @@ const isSameConsentUserProfile = (prev, next) => {
     prev.username === next.username &&
     prev.phoneNumber === next.phoneNumber &&
     prev.fullName === next.fullName &&
-    JSON.stringify(prev.partnerSessionData) === JSON.stringify(next.partnerSessionData)
+    JSON.stringify(prev.partnerSessionData) === JSON.stringify(next.partnerSessionData) &&
+    prev.token === next.token
   )
 }
 

@@ -89,13 +89,15 @@ export const normalizeMyf88Payload = (value = {}) => {
   const email = normalizeString(safeValue.email)
   const username = normalizeString(safeValue.username || safeValue.uuid)
   const partnerSessionData = safeValue.partnerSessionData !== undefined ? safeValue.partnerSessionData : null
+  const token = normalizeString(safeValue.token)
 
   return {
     mobile,
     fname,
     email,
     username,
-    partnerSessionData
+    partnerSessionData,
+    token
   }
 }
 
@@ -107,7 +109,8 @@ export const buildMyf88ConsentUserProfile = (payload = {}) => {
     phoneNumber: normalizedPayload.mobile,
     fullName: normalizedPayload.fname,
     email: normalizedPayload.email,
-    partnerSessionData: normalizedPayload.partnerSessionData
+    partnerSessionData: normalizedPayload.partnerSessionData,
+    token: normalizedPayload.token
   }
 }
 
@@ -133,7 +136,8 @@ export const readStoredMyf88ConsentProfile = () => {
       phoneNumber: '',
       fullName: '',
       email: '',
-      partnerSessionData: null
+      partnerSessionData: null,
+      token: ''
     }
   }
 

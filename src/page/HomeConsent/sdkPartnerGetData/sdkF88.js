@@ -25,7 +25,8 @@ export const getDataSDKFromF88 = async () => {
       fullName: consentUserProfile.fullName,
       username: consentUserProfile.username,
       email: consentUserProfile.email,
-      partnerSessionData: consentUserProfile.partnerSessionData
+      partnerSessionData: consentUserProfile.partnerSessionData,
+      token: consentUserProfile.token
     }
     console.log('[CONSENT][sdkF88] Mapped consent data from storage', mappedData)
 
