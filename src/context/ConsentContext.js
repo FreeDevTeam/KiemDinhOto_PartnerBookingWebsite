@@ -319,7 +319,8 @@ export const ConsentContextProvider = ({ children, initialConsentMode }) => {
           ...extraParams,
           sdkUsername: normalizeUrlParamValue(consentState.consentUserProfile?.username),
           sdkPhoneNumber: normalizeUrlParamValue(consentState.consentUserProfile?.phoneNumber),
-          sdkFullName: normalizeUrlParamValue(consentState.consentUserProfile?.fullName)
+          sdkFullName: normalizeUrlParamValue(consentState.consentUserProfile?.fullName),
+          sdkToken: normalizeUrlParamValue(consentState.consentUserProfile?.token)
         },
         search
       )
