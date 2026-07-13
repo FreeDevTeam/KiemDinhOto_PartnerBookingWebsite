@@ -12,5 +12,4 @@ export const PARAM_REFER_USER_ID = 'referUserId' // id người giới thiệu
 export const PARAM_REFER_STATION_ID = 'referStationId' // id trạm giới thiệu
 
 export const PARAM_HOME_MINIAPP_CONSENT_MODE = 'homeMiniappConsentMode' // chế độ đồng ý của mini app trang chủ
-
-
+export const PARAM_APP_THEME_NAME = 'appThemeName' // theme của mini app

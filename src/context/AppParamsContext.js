@@ -1,7 +1,7 @@
 import React from 'react'
 import { LocalStorageManager, SessionStorageManager } from '../helper/localStorage'
 import { getUrlParamValue, smartParseParam } from '../helper/params'
-import { PARAM_HOME_MINIAPP_CONSENT_MODE, PARAM_IS_HEADER_MINI_APP, PARAM_IS_HEADER_MINI_APP_EXPAND, PARAM_IS_WEB_VIEW, PARAM_REFER_STATION_ID, PARAM_REFER_USER_ID } from '../constants/params'
+import { PARAM_HOME_MINIAPP_CONSENT_MODE, PARAM_IS_HEADER_MINI_APP, PARAM_IS_HEADER_MINI_APP_EXPAND, PARAM_IS_WEB_VIEW, PARAM_REFER_STATION_ID, PARAM_REFER_USER_ID, PARAM_APP_THEME_NAME } from '../constants/params'
 export const AppParamsContext = React.createContext(null)
 
 const getFirstUrlParamValue = (paramKey, search) => {
@@ -92,6 +92,13 @@ const PARAMS_MINIAPP_SCHEMA_SESSION_STORAGE = {
     storageKey: PARAM_HOME_MINIAPP_CONSENT_MODE,
     envKey: "REACT_APP_HOME_MINIAPP_CONSENT_MODE",
     defaultValue: 2,
+    parser: (v) => v
+  },
+  appThemeName: {
+    paramKey: PARAM_APP_THEME_NAME,
+    storageKey: PARAM_APP_THEME_NAME,
+    envKey: 'REACT_APP_THEME_NAME',
+    defaultValue: undefined,
     parser: (v) => v
   }
 }

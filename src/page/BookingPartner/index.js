@@ -28,6 +28,7 @@ function BookingPartner() {
   useEffect(() => {
     checkUrlParamSaveContext('isWebView')
     checkUrlParamSaveContext('isHeaderMiniApp')
+    checkUrlParamSaveContext('appThemeName')
   }, [checkUrlParamSaveContext, location.search])
 
   let apikey = CheckApiKey()

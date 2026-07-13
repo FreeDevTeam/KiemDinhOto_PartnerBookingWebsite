@@ -23,6 +23,7 @@ import SystemConfigurationsService from './services/SystemConfigurationsService'
 import { getQueryParams } from './page/BookingPartner/bookingPartnerForm';
 import addKeyLocalStorage from './helper/localStorage';
 import MainLogo from './components/MainLogo';
+import { useAppParamsContext } from './context/AppParamsContext';
 export const baseName = IS_ZALO_MINI_APP ? `/zapps/${process.env.REACT_APP_ZMP_APP_ID}` : '/'
 function App() {
   // Kiểm tra xem có APIKey trong URL không cho tính năng tự động đặt lịch
@@ -32,13 +33,14 @@ function App() {
     localStorage.setItem('apiKey', apiKey)
   }
 
-  const themeApp = process.env.REACT_APP_THEME_NAME
-  const setThemeApp = () => {
-    document.querySelector('body').setAttribute('data-theme', themeApp)
-  }
+  const { appThemeName } = useAppParamsContext()
+  const themeApp = appThemeName
+
   useEffect(() => {
-    setThemeApp()
-  }, [])
+    if (themeApp) {
+      document.querySelector('body').setAttribute('data-theme', themeApp)
+    }
+  }, [themeApp])
 
   const handleCheckApiKey = () => {
     const params = getQueryParams()
