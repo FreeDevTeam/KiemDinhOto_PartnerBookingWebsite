@@ -219,7 +219,7 @@ const HomeLayout2 = (props) => {
                     } else if (item.configCategory === HOME_CONFIG_CATEGORY.PARTNER) {
                       return (
                         <div key={index} className="mb-4">
-                          <div className='text-large title-homelayout' style={{padding:'0 10px', marginBottom: '12px'}}>
+                          <div className='text-large title-homelayout' style={{marginBottom: '12px'}}>
                             {item.title}
                           </div>
                           <L2PartnerSection data={item.icons} />

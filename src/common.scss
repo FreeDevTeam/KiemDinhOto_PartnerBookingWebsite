@@ -5,14 +5,14 @@ a {
 }
 
 * {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-family, 'Inter', sans-serif);
 }
 
 body {
   margin: 0;
   color: rgba(0, 0, 0, 0.85);
   font-size: 14px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif);
   font-variant: tabular-nums;
   line-height: 1.5715;
   background-color: #fff !important;
@@ -927,4 +927,12 @@ a.menu-item {
       border-color: var(--brand-primary) !important;
     }
   }
+}
+
+.app-main-wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--background-layout, transparent);
+  background-attachment: fixed;
 }

@@ -5,7 +5,7 @@ function LayoutPage(props) {
   const { Component } = props
   const dataTheme = (JSON.parse(localStorage.getItem(addKeyLocalStorage('dataTheme'))) || {})
   return (
-    <>
+    <div className="app-main-wrapper">
       {
         dataTheme?.partnerColorButton && 
          <style>{`
@@ -24,7 +24,7 @@ function LayoutPage(props) {
         `}</style>
       }
       <Component {...props} />
-    </>
+    </div>
   )
 }
 

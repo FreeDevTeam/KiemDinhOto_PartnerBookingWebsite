@@ -181,6 +181,21 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
 
 //Màu sắc cho chủ đề mặc định (chủ đề sáng)
 :root {
+  /* --- BORDER RADIUS (Mặc định) --- */
+  --input-radius: 8px;
+  --button-radius: 8px;
+  --card-radius: 8px;           // STYLE CŨ: Thẻ card bo góc 8px
+
+  /* --- PADDING & MARGIN (Mặc định) --- */
+  --screen-padding-x: 16px;     // Lề an toàn 2 bên màn hình
+  --card-padding: 12px 0 0 0;   // STYLE CŨ: Chỉ padding-top 12px
+  --card-margin-x: 16px;        // STYLE CŨ: Lề ngang 16px
+  --card-margin-y: 0px;         // STYLE CŨ: Margin trên/dưới là 0
+  --item-gap: 12px;
+  --card-shadow: 0px 4px 12px 0px rgba(29, 33, 167, 0.04); // STYLE CŨ: Đổ bóng nhẹ
+
+
+  --font-family: 'Inter', sans-serif;
   --primary-color: #0e57b7; // Màu chính cho chủ đề sáng
   --background-color: #ffffff; // Màu nền cho chủ đề sáng
   --text-color: #000000; // Màu văn bản cho chủ đề sáng
@@ -253,6 +268,7 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --brand-primary-soft: #4b7fed;
 
   /* BUTTON */
+  --button-radius: 8px;
   --btn-primary-bg: var(--brand-primary);
   --btn-primary-bg-hover: var(--brand-primary-hover);
   --btn-primary-text: var(--text-inverse);
@@ -263,6 +279,10 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --btn-danger-text: #ffffff;
 
   /* INPUT / FORM */
+  --input-radius: 8px;
+  --input-height: 40px;
+  --input-padding-x: 11px;
+  --form-item-margin-bottom: 24px;
   --input-bg: #ffffff;
   --input-bg-disabled: #f1f1f1;
   --input-text: var(--text-primary);
@@ -437,6 +457,44 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   /* ICON */
   --icon-brand: #00844a;
   --icon-inverse: var(--text-inverse);
+}
+
+[data-theme='BIDV'] {
+  // Ghi đè biến UI riêng cho theme BIDV
+  --card-radius: 24px;
+  --card-padding: 12px;
+  --card-margin-y: 12px;
+  --card-shadow: none;
+
+  // Form / Input UI
+  --input-radius: 9999px;
+  --input-height: 56px;
+  --input-padding-x: 16px;
+  --form-item-margin-bottom: 24px;
+  --button-radius: 9999px;
+
+  --primary-color: #00453c;
+  --background-color: #ffffff;
+  --background-layout: linear-gradient(180deg, rgba(166, 205, 204, 1) 0px, #F0F5F5 250px);
+  --header-text-color: #1a1a1a;
+  --font-family: 'Plus Jakarta Sans', sans-serif;
+  --background-banner-color: transparent;
+  --text-color: #1a1a1a;
+  --secondary-color: #f0f5f5;
+  --border-color: #d9e7e5;
+  --gray-color: #6b6b6b;
+  --title-color: #00453c;
+  --bgr-list-btn-color: #d9e7e5;
+  --unactive-button-color:#d6d6d6;
+  --primary-button-color: #00453c;
+  --error-btn-color: #C30000;
+  --success-btn-color:#34AA44;
+  --step-line-booking: #00453c;
+  --step-line-booking-opacity30:#00453c30;
+  --blue-ribbon: #00453c;
+  --gray-mid-gray: #686770;
+  --linear-gradient-active: #00453c;
+  --linear-gradient-button: #00453c;
 }
 
 // Màu sắc cho chủ đề tối

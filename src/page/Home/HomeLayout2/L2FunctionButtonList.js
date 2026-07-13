@@ -59,7 +59,7 @@ const L2FunctionButtonList = (props) => {
   const renderBtns = () => {
     return (
       <div style={{ marginBottom: '1rem' }}>
-        <div className='text-large title-homelayout' style={{ padding: '0 10px' }}>{title}</div>
+        <div className='text-large title-homelayout'>{title}</div>
         {slider ? (
           <div className={`card-slider layout1-btn-booking-section slider-list-btn ${className}`}>
             <Slider ref={sliderRef} {...settings}>

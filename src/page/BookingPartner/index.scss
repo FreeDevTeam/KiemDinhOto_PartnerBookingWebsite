@@ -454,3 +454,163 @@
   text-align: left;
   white-space: pre-wrap;
 }
+
+body[data-theme='BIDV'] {
+  .partner-container {
+    .ant-form-item {
+      margin-bottom: var(--form-item-margin-bottom, 24px) !important; // Tăng khoảng cách giữa các form field
+      
+      .ant-form-item-label {
+        padding-bottom: 8px !important; // Khoảng cách giữa label và input
+        > label {
+          color: var(--text-color) !important;
+          font-weight: 600 !important;
+          font-size: 16px !important;
+          line-height: 24px !important;
+          letter-spacing: 0% !important;
+          &::before {
+            color: var(--error-btn-color) !important;
+          }
+        }
+      }
+      &.ant-form-item-has-error {
+        .ant-input, .ant-select-selector, .ant-picker {
+          border-color: var(--error-btn-color) !important;
+        }
+        .ant-form-item-explain-error {
+          color: var(--error-btn-color) !important;
+          padding-top: 4px; // Tách dòng báo lỗi xa input một chút
+        }
+      }
+    }
+    
+    .ant-input, .ant-picker {
+      border-radius: var(--input-radius, 24px) !important;
+      height: var(--input-height, 48px) !important;
+      padding: 0 var(--input-padding-x, 20px) !important; // Tăng padding ngang vì góc bo 24px quá to
+      display: flex;
+      align-items: center;
+      font-weight: 400 !important;
+      font-size: 16px !important;
+      line-height: 24px !important;
+      letter-spacing: 0% !important;
+      
+      &::placeholder {
+        font-weight: 400 !important;
+        font-size: 16px !important;
+        line-height: 24px !important;
+        letter-spacing: 0% !important;
+      }
+      
+      input::placeholder {
+        font-weight: 400 !important;
+        font-size: 16px !important;
+        line-height: 24px !important;
+        letter-spacing: 0% !important;
+      }
+    }
+
+    .ant-select-selector {
+      border-radius: var(--input-radius, 24px) !important;
+      height: var(--input-height, 48px) !important;
+      padding: 0 40px 0 var(--input-padding-x, 20px) !important; // Chừa khoảng trống bên phải cho icon mũi tên
+      display: flex;
+      align-items: center;
+      .ant-select-selection-search {
+        left: var(--input-padding-x, 20px) !important;
+        right: 40px !important;
+      }
+      .ant-select-selection-item, .ant-select-selection-placeholder {
+        padding: 0 !important;
+        line-height: calc(var(--input-height, 56px) - 2px) !important; // Canh giữa text theo height (trừ 2px border)
+        font-weight: 400 !important;
+        font-size: 16px !important;
+        letter-spacing: 0% !important;
+      }
+      .ant-select-selection-placeholder {
+        font-weight: 400 !important;
+        font-size: 16px !important;
+        letter-spacing: 0% !important;
+      }
+    }
+
+    .ant-select {
+      height: var(--input-height, 56px) !important;
+      
+      .ant-select-arrow {
+        right: var(--input-padding-x, 16px) !important; // Dịch sang trái bằng khoảng cách padding-x
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        margin-top: 0 !important;
+      }
+    }
+
+    // Override the blue focus ring to green!
+    .ant-input:focus,
+    .ant-input-focused,
+    .ant-select-focused .ant-select-selector,
+    .ant-picker-focused,
+    .ant-input:hover,
+    .ant-select-selector:hover,
+    .ant-picker:hover {
+      border-color: var(--primary-color) !important;
+      box-shadow: none !important; // Hoặc thêm glow nếu muốn
+    }
+
+    .text-primary {
+      color: var(--primary-color) !important;
+    }
+  }
+
+  .ant-select-dropdown {
+    .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+      background-color: rgba(0, 69, 60, 0.1) !important;
+      color: var(--primary-color) !important;
+      font-weight: 600;
+    }
+  }
+
+  // Date Picker styling
+  .booking-date-picker {
+    .booking-date-picker__day.active {
+      background: var(--primary-color) !important;
+      .booking-date-picker__day--text, .wrap-text, .wrap-text div {
+        color: #ffffff !important;
+      }
+    }
+  }
+
+  // Hours Picker styling
+  .booking-hours-picker {
+    .booking-hours-picker_item.active {
+      background: var(--primary-color) !important;
+      .booking-hours-picker__day--text, .wrap-text, .wrap-text div {
+        color: #ffffff !important;
+      }
+      .text-primary {
+        color: #ffffff !important;
+      }
+    }
+  }
+
+  // Submit button
+  .login__button.df {
+    background: var(--primary-color) !important;
+    border-radius: var(--button-radius, 24px) !important; // Pill shape button
+  }
+
+  // Ant Design Spin (Loading) color override
+  .ant-spin-dot-item {
+    background-color: var(--primary-color) !important;
+  }
+
+  // Responsive: Chống bị ép giao diện ở màn hình nhỏ
+  @media (max-width: 576px) {
+    .partner-container {
+      .ant-col-11 {
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+      }
+    }
+  }
+}

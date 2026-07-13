@@ -17,7 +17,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: var(--primary-button-color);
+    background: var(--background-layout, var(--primary-button-color)) !important;
+    background-attachment: fixed !important;
     height: 60px;
     padding: 0px 15px;
     font-size: $text-normal-fs;
@@ -27,11 +28,11 @@
       height: 16px;
       width: 16px;
       path {
-        fill: white;
+        fill: var(--header-text-color, white);
       }
     }
     span {
-      color: white;
+      color: var(--header-text-color, white);
     }
     .no_icon {
       height: 16px;
@@ -60,14 +61,15 @@
     .Header_fixed {
       height: 60px;
       padding: 0px 15px 0;
-      background: var(--background-color);
+      background: var(--background-layout, var(--background-color)) !important;
+      background-attachment: fixed !important;
       font-size: $text-large-fs;
       span {
-        color: var(--title-color) !important;
+        color: var(--header-text-color, var(--title-color)) !important;
       }
       svg {
         path {
-          fill: var(--title-color) !important;
+          fill: var(--header-text-color, var(--title-color)) !important;
         }
       }
     }
@@ -85,6 +87,31 @@
     .Header_fixed {
       height: 80px !important;
       padding-top: 42px !important;
+    }
+  }
+}
+
+body[data-theme='BIDV'] {
+  .Header_fixed {
+    justify-content: flex-start;
+    gap: 12px;
+
+    .no_icon {
+      display: none;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+      padding: 3px;
+      box-sizing: border-box;
+    }
+
+    span {
+      font-weight: 600 !important;
+      font-size: 18px !important;
+      line-height: 24px;
+      letter-spacing: 0%;
     }
   }
 }

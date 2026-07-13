@@ -129,14 +129,15 @@
 .booking-layout2{
   .title-homelayout{
     margin-bottom: 15px;
+    padding-left: var(--screen-padding-x);
   }
   .layout1-btn-booking-section{
     background-color: var(--background-color) !important;
     border: 1px solid var(--bgr-list-btn-color);
-    border-radius: 8px;
-    margin: 0 16px;
-    padding-top: 12px;
-    box-shadow: 0px 4px 12px 0px #1D21A70A;
+    border-radius: var(--card-radius) !important;
+    margin: var(--card-margin-y) var(--card-margin-x) !important;
+    padding: var(--card-padding) !important;
+    box-shadow: var(--card-shadow) !important;
     .layout1-btn-booking-item{
       margin-top: 0 !important;
       svg,img{
@@ -158,15 +159,16 @@
   }
   img {
     aspect-ratio: 358/134 !important;
+    border-radius: var(--card-radius);
   }
   .slick-initialized .slick-slide {
     padding: 0 4px !important;
     img {
       aspect-ratio: 358/134 !important;
-      border-radius: 8px;
+      border-radius: var(--card-radius);
     }
     .slide:before{
-      border-radius: 8px !important;
+      border-radius: var(--card-radius) !important;
     }
   }
 }
@@ -230,4 +232,12 @@
   .layout2-body{
     transform: translateY(-180px);
   }
+}
+
+body[data-theme='BIDV'] {
+  .title-homelayout {
+    color: var(--primary-color) !important;
+    font-weight: 600;
+  }
+
 }
