@@ -2,10 +2,10 @@ import React from 'react'
 import addKeyLocalStorage from '../../helper/localStorage'
 
 function LayoutPage(props) {
-  const { Component } = props
+  const { Component, isFullScreen } = props
   const dataTheme = (JSON.parse(localStorage.getItem(addKeyLocalStorage('dataTheme'))) || {})
   return (
-    <div className="app-main-wrapper">
+    <div className={isFullScreen ? "" : "app-main-wrapper"}>
       {
         dataTheme?.partnerColorButton && 
          <style>{`

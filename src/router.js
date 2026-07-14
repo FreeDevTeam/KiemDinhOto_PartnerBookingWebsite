@@ -163,11 +163,13 @@ export const ROUTERS = {
         path: PATH.IFRAME_VIEW,
         component: IframeView,
         isZaloApp: 1,
+        isFullScreen: true,
     },
     iframeViewWeb: {
         path: PATH.IFRAME_VIEW,
         component: IframeView,
         isZaloApp: 0,
+        isFullScreen: true,
     },
     // bookingPartnerIframe: {
     //     path: PATH.BOOKING_PARTNER_IFRAME,

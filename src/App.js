@@ -108,7 +108,7 @@ function App() {
                         <MainLogo height={60} width={60}></MainLogo>
                       </div>
                     }>
-                    <Layout {...props} Component={fillterRoutes[key].component} hideMobileMenu={fillterRoutes[key].hideMobileMenu} />
+                    <Layout {...props} Component={fillterRoutes[key].component} hideMobileMenu={fillterRoutes[key].hideMobileMenu} isFullScreen={fillterRoutes[key].isFullScreen} />
                   </React.Suspense>
                 )}
               />
