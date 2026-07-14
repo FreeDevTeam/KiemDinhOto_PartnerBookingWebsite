@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import "./index.scss";
-import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
+import { IconArrowLeft, IconArrowRight } from '../../assets/icons';
 
 const BasicTablePaging = ({handlePaginations,count=false,firstPage}) => {
     const Enter = 13
@@ -64,7 +64,7 @@ const BasicTablePaging = ({handlePaginations,count=false,firstPage}) => {
   return (
     <div className="pagination react-paginate separated-pagination pagination-sm justify-content-center pr-3 mt-1 mb-5">
       <div className={`prev-item position-relative ${prevDisabled ? 'disable-item' : 'pointer'}`}>
-        <span onClick={() =>moveToPreviousPage()} className='bg_left'><LeftOutlined /></span>
+        <span onClick={() =>moveToPreviousPage()} className='bg_left'><IconArrowLeft /></span>
       </div>
       <div>
         <Input
@@ -75,7 +75,7 @@ const BasicTablePaging = ({handlePaginations,count=false,firstPage}) => {
           />
       </div>
       <div className={`next-item position-relative ${nextDisabled ? 'disable-item' : 'pointer'}`}>
-          <span onClick={() =>moveToNextPage()} className='bg_right'><RightOutlined /></span>
+          <span onClick={() =>moveToNextPage()} className='bg_right'><IconArrowRight /></span>
       </div>
     </div>
   )

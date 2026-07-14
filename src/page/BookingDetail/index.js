@@ -10,6 +10,8 @@ import BookingService from '../../services/addBookingService'
 import PopupMessage from '../BookingPartner/PopupMessage'
 import { useParams } from 'react-router-dom/cjs/react-router-dom'
 import { CheckApiKey } from '../../helper/CheckApiKey'
+import Header from '../../components/Header'
+import { useAppParamsContext } from '../../context/AppParamsContext'
 
 const { TextArea } = Input
 
@@ -31,6 +33,8 @@ const BookingDetail = ({
   const { customerScheduleId } = useParams()
   const urlParams = new URLSearchParams(window.location.search);
   const scheduleHash = localStorage.getItem('schedulehash') || urlParams.get('schedulehash');
+  const { appThemeName, isHeaderMiniApp } = useAppParamsContext() || {};
+  const isBIDV = appThemeName?.toUpperCase() === 'BIDV';
   let apiKey = CheckApiKey()
   if (apiKey) {
     localStorage.setItem('apiKey', apiKey);
@@ -156,153 +160,289 @@ const BookingDetail = ({
   }
 
   return (
-    <div className="detail-sche" style={{ maxWidth: 600, margin: 'auto', padding: '10px' }}>
-     {isHeader && <div className="heads" style={{borderRadius:'30px 30px 0 0',padding:''}}>
-        Thông tin lịch hẹn
-      </div>}
-      <div className="content" style={{padding: '15px 10px 30px',backgroundColor:'#e6f7ff',borderRadius:'0 0 20px 20px'}}>
-        <div className="box">
-          <div className="title-i">Nơi đặt chỗ</div>
-          <div className="text-i">
-            {scheduleInformation?.stationsName} - {scheduleInformation?.stationsAddress} - {scheduleInformation?.stationArea}
-          </div>
-        </div>
-        <div className="d-flex j-sb mgt-15">
-          <div className="box w-50">
-            <div className="title-i">Họ và tên</div>
-            <div className="text-i">{scheduleInformation?.fullnameSchedule}</div>
-          </div>
-          <div className="box w-50">
-            <div className="title-i">Số điện thoại</div>
-            <div className="text-i">{scheduleInformation?.phone}</div>
-          </div>
-        </div>
-        <div className="d-flex j-sb mgt-15">
-          {scheduleInformation?.licensePlates ? (
-            <div className="box w-50">
-              <div className="title-i">Biển số xe</div>
+    <>
+      {isHeaderMiniApp && isHeader && <Header title="Thông tin lịch hẹn" onBack={() => history.length > 1 ? history.goBack() : history.push('/')} />}
+      <div className="detail-sche" style={{ maxWidth: 600, margin: 'auto', padding: '10px' }}>
+        {!isBIDV ? (
+          <>
+          {isHeader && <div className="heads" style={{borderRadius:'30px 30px 0 0',padding:''}}>
+            Thông tin lịch hẹn
+          </div>}
+          <div className="content" style={{padding: '15px 10px 30px',backgroundColor:'#e6f7ff',borderRadius:'0 0 20px 20px'}}>
+            <div className="box">
+              <div className="title-i">Nơi đặt chỗ</div>
               <div className="text-i">
-                {' '}
-                <BindPlate type={scheduleInformation?.licensePlateColor} number={scheduleInformation?.licensePlates} />
+                {scheduleInformation?.stationsName} - {scheduleInformation?.stationsAddress} - {scheduleInformation?.stationArea}
               </div>
             </div>
-          ) : (<div className="box w-50">
-            <div className="title-i">Ngày</div>
-            <div className="text-i">{scheduleInformation?.dateSchedule}</div>
-          </div>)
-          }
-          <div className="box w-50">
-            <div className="title-i">Loại phương tiện</div>
-            <div className="text-i">{getVehicleTypeName(scheduleInformation)}</div>
+            <div className="d-flex j-sb mgt-15">
+              <div className="box w-50">
+                <div className="title-i">Họ và tên</div>
+                <div className="text-i">{scheduleInformation?.fullnameSchedule}</div>
+              </div>
+              <div className="box w-50">
+                <div className="title-i">Số điện thoại</div>
+                <div className="text-i">{scheduleInformation?.phone}</div>
+              </div>
+            </div>
+            <div className="d-flex j-sb mgt-15">
+              {scheduleInformation?.licensePlates ? (
+                <div className="box w-50">
+                  <div className="title-i">Biển số xe</div>
+                  <div className="text-i">
+                    {' '}
+                    <BindPlate type={scheduleInformation?.licensePlateColor} number={scheduleInformation?.licensePlates} />
+                  </div>
+                </div>
+              ) : (<div className="box w-50">
+                <div className="title-i">Ngày</div>
+                <div className="text-i">{scheduleInformation?.dateSchedule}</div>
+              </div>)
+              }
+              <div className="box w-50">
+                <div className="title-i">Loại phương tiện</div>
+                <div className="text-i">{getVehicleTypeName(scheduleInformation)}</div>
+              </div>
+            </div>
+            {scheduleInformation?.time &&
+              <div className="d-flex j-sb mgt-15">
+                <div className="box w-50">
+                  <div className="title-i">Ngày</div>
+                  <div className="text-i">{scheduleInformation?.dateSchedule}</div>
+                </div>
+                <div className="box w-50">
+                  <div className="title-i">Giờ</div>
+                  <div className="text-i">{changeTime(scheduleInformation?.time)}</div>
+                </div>
+              </div>
+            }
+            <div className="d-flex j-sb mgt-15">
+              {scheduleInformation?.scheduleCode && (
+                <div className="box w-50">
+                  <div className="title-i">Trạng thái</div>
+                 <RetunStatus status={scheduleInformation?.CustomerScheduleStatus} />
+                </div>
+              )}
+              {scheduleInformation?.scheduleCode && (
+                <div className="box w-50">
+                  <div className="title-i">Mã đặt vé</div>
+                  <div className="text-i detail-sche-scheduleCode">{scheduleInformation?.scheduleCode}</div>
+                </div>
+              )}
+            </div>
+
+            {scheduleInformation?.station?.enablePaymentGateway === 1 && (
+              <div>
+                {scheduleInformation?.order?.paymentStatus !== CUSTOMER_RECEIPT_STATUS.SUCCESS ? (
+                  <>
+                    <div className="d-flex j-sb mgt-15">
+                      {scheduleInformation?.order?.totalPayment > 0 && (
+                        <div className="box">
+                          <div className="title-i">Chi phí dự kiến</div>
+                          <div className="text-i">
+                            {scheduleInformation?.order?.totalPayment?.toLocaleString()}
+                          </div>
+                          <div className="text-i">
+                            <i>Ghi chú: Trên đây chỉ là chi phí dự kiến mang tính tham khảo.</i>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    {scheduleInformation?.stationServices?.length > 0 && (
+                      <div className="mgt-15">
+                        <div className="">
+                          <div className="title-i mb-2">Dịch vụ lịch hẹn</div>
+                          <ul>
+                            {scheduleInformation.stationServices.map((item, index) => (
+                              <li key={index} className="text-i">
+                                {item.serviceName}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+                    {ENABLE_PAYMENT_GATEWAY && (
+                      <div className="mgt-15">
+                        <div className="">
+                          <div className="title-i">Hỗ trợ thanh toán</div>
+                          <Row className="row">
+                            {Object.keys(PAYMENT_OBJECT).map((_method) => {
+                              if (enablePaymentMethods.indexOf(PAYMENT_OBJECT[_method].id.toString()) > -1) {
+                                return (
+                                  <div style={{ height: '60px' }} className="col-12 col-md-6 d-flex align-items-center payment-icon">
+                                    <div style={{ width: '53px', height: '60px' }} className="d-flex align-items-center">
+                                      {PAYMENT_OBJECT[_method].icon}
+                                    </div>
+                                    <div className="ms-1" style={{ fontSize: 14 }}>
+                                      {PAYMENT_OBJECT[_method].label}
+                                    </div>
+                                  </div>
+                                )
+                              } else {
+                                return <></>
+                              }
+                            })}
+                          </Row>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="d-flex j-sb mgt-15">
+                    <div className="box w-50">
+                      <div className="title-i">Trạng thái thanh toán</div>
+                      <div className="text-i">{CUSTOMER_RECEIPT_STATUS_TO_TEXT[scheduleInformation?.order?.paymentStatus?.toUpperCase()] || ''}</div>
+                    </div>
+                    <div className="box w-50">
+                      <div className="title-i">Thời gian thanh toán</div>
+                      <div className="text-i">{moment(scheduleInformation?.order?.approveDate || new Date()).format('DD/MM/YYYY HH:mm:ss')}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            {contentHeader}
+            <a target="_blank" style={{ marginTop: '1rem' }} href="https://youtu.be/mpIQeRGv3Lg?feature=shared" className="mgt-15 d-block">Xem thêm hướng dẫn quy trình đăng kiểm</a>
           </div>
-        </div>
-        {scheduleInformation?.time &&
-          <div className="d-flex j-sb mgt-15">
-            <div className="box w-50">
+        </>
+      ) : (
+        <>
+          <div className="content">
+            <div className="box">
+              <div className="title-i">Nơi đặt chỗ</div>
+              <div className="text-i">
+                {scheduleInformation?.stationsName} - {scheduleInformation?.stationsAddress} - {scheduleInformation?.stationArea}
+              </div>
+            </div>
+            
+            <div className="box">
+              <div className="title-i">Họ và tên</div>
+              <div className="text-i">{scheduleInformation?.fullnameSchedule}</div>
+            </div>
+            
+            <div className="box">
+              <div className="title-i">Số điện thoại</div>
+              <div className="text-i">{scheduleInformation?.phone}</div>
+            </div>
+
+            {scheduleInformation?.licensePlates && (
+              <div className="box">
+                <div className="title-i">Biển số xe</div>
+                <div className="text-i">{scheduleInformation?.licensePlates}</div>
+              </div>
+            )}
+
+            <div className="box">
+              <div className="title-i">Loại phương tiện</div>
+              <div className="text-i">{getVehicleTypeName(scheduleInformation)}</div>
+            </div>
+
+            <div className="box">
               <div className="title-i">Ngày</div>
               <div className="text-i">{scheduleInformation?.dateSchedule}</div>
             </div>
-            <div className="box w-50">
-              <div className="title-i">Giờ</div>
-              <div className="text-i">{changeTime(scheduleInformation?.time)}</div>
-            </div>
-          </div>
-        }
-        <div className="d-flex j-sb mgt-15">
-          {scheduleInformation?.scheduleCode && (
-            <div className="box w-50">
-              <div className="title-i">Trạng thái</div>
-             <RetunStatus status={scheduleInformation?.CustomerScheduleStatus} />
-            </div>
-          )}
-          {scheduleInformation?.scheduleCode && (
-            <div className="box w-50">
-              <div className="title-i">Mã đặt vé</div>
-              <div className="text-i detail-sche-scheduleCode">{scheduleInformation?.scheduleCode}</div>
-            </div>
-          )}
 
-        </div>
-
-        {scheduleInformation?.station?.enablePaymentGateway === 1 && (
-          <div>
-            {scheduleInformation?.order?.paymentStatus !== CUSTOMER_RECEIPT_STATUS.SUCCESS ? (
-              <>
-                <div className="d-flex j-sb mgt-15">
-                  {scheduleInformation?.order?.totalPayment > 0 && (
-                    <div className="box">
-                      <div className="title-i">Chi phí dự kiến</div>
-                      <div className="text-i">
-                        {scheduleInformation?.order?.totalPayment?.toLocaleString()}
-                      </div>
-                      <div className="text-i">
-                        <i>Ghi chú: Trên đây chỉ là chi phí dự kiến mang tính tham khảo.</i>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                {scheduleInformation?.stationServices?.length > 0 && (
-                  <div className="mgt-15">
-                    <div className="">
-                      <div className="title-i mb-2">Dịch vụ lịch hẹn</div>
-                      <ul>
-                        {scheduleInformation.stationServices.map((item, index) => (
-                          <li key={index} className="text-i">
-                            {item.serviceName}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                )}
-                {ENABLE_PAYMENT_GATEWAY && (
-                  <div className="mgt-15">
-                    <div className="">
-                      <div className="title-i">Hỗ trợ thanh toán</div>
-                      <Row className="row">
-                        {Object.keys(PAYMENT_OBJECT).map((_method) => {
-                          if (enablePaymentMethods.indexOf(PAYMENT_OBJECT[_method].id.toString()) > -1) {
-                            return (
-                              <div style={{ height: '60px' }} className="col-12 col-md-6 d-flex align-items-center payment-icon">
-                                <div style={{ width: '53px', height: '60px' }} className="d-flex align-items-center">
-                                  {PAYMENT_OBJECT[_method].icon}
-                                </div>
-                                <div className="ms-1" style={{ fontSize: 14 }}>
-                                  {PAYMENT_OBJECT[_method].label}
-                                </div>
-                              </div>
-                            )
-                          } else {
-                            return <></>
-                          }
-                        })}
-                      </Row>
-                    </div>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="d-flex j-sb mgt-15">
-                <div className="box w-50">
-                  <div className="title-i">Trạng thái thanh toán</div>
-                  <div className="text-i">{CUSTOMER_RECEIPT_STATUS_TO_TEXT[scheduleInformation?.order?.paymentStatus?.toUpperCase()] || ''}</div>
-                </div>
-                <div className="box w-50">
-                  <div className="title-i">Thời gian thanh toán</div>
-                  <div className="text-i">{moment(scheduleInformation?.order?.approveDate || new Date()).format('DD/MM/YYYY HH:mm:ss')}</div>
-                </div>
+            {scheduleInformation?.time && (
+              <div className="box">
+                <div className="title-i">Giờ</div>
+                <div className="text-i">{changeTime(scheduleInformation?.time)}</div>
               </div>
             )}
+
+            {scheduleInformation?.scheduleCode && (
+              <div className="box">
+                <div className="title-i">Trạng thái</div>
+                <RetunStatus status={scheduleInformation?.CustomerScheduleStatus} />
+              </div>
+            )}
+
+            {scheduleInformation?.scheduleCode && (
+              <div className="box">
+                <div className="title-i">Mã đặt vé</div>
+                <div className="text-i detail-sche-scheduleCode">{scheduleInformation?.scheduleCode}</div>
+              </div>
+            )}
+
+            {scheduleInformation?.station?.enablePaymentGateway === 1 && (
+              <div>
+                {scheduleInformation?.order?.paymentStatus !== CUSTOMER_RECEIPT_STATUS.SUCCESS ? (
+                  <>
+                    {scheduleInformation?.order?.totalPayment > 0 && (
+                      <div className="box" style={{ flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                          <div className="title-i">Chi phí dự kiến</div>
+                          <div className="text-i">{scheduleInformation?.order?.totalPayment?.toLocaleString()}</div>
+                        </div>
+                        <div className="text-i" style={{ fontSize: '12px', fontWeight: 400, color: 'var(--text-secondary, #7a7a7a)' }}>
+                          <i>Ghi chú: Trên đây chỉ là chi phí dự kiến mang tính tham khảo.</i>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {scheduleInformation?.stationServices?.length > 0 && (
+                      <div className="box" style={{ flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                          <div className="title-i mb-2">Dịch vụ lịch hẹn</div>
+                        </div>
+                        <ul style={{ padding: 0, listStyle: 'none', textAlign: 'right' }}>
+                          {scheduleInformation.stationServices.map((item, index) => (
+                            <li key={index} className="text-i">
+                              {item.serviceName}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {ENABLE_PAYMENT_GATEWAY && (
+                      <div className="box" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '8px' }}>
+                        <div className="title-i">Hỗ trợ thanh toán</div>
+                        <Row className="row" style={{ width: '100%' }}>
+                          {Object.keys(PAYMENT_OBJECT).map((_method) => {
+                            if (enablePaymentMethods.indexOf(PAYMENT_OBJECT[_method].id.toString()) > -1) {
+                              return (
+                                <div style={{ height: '60px' }} className="col-12 col-md-6 d-flex align-items-center payment-icon">
+                                  <div style={{ width: '53px', height: '60px' }} className="d-flex align-items-center">
+                                    {PAYMENT_OBJECT[_method].icon}
+                                  </div>
+                                  <div className="ms-1" style={{ fontSize: 14 }}>
+                                    {PAYMENT_OBJECT[_method].label}
+                                  </div>
+                                </div>
+                              )
+                            } else {
+                              return <></>
+                            }
+                          })}
+                        </Row>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div className="box">
+                      <div className="title-i">Trạng thái thanh toán</div>
+                      <div className="text-i">{CUSTOMER_RECEIPT_STATUS_TO_TEXT[scheduleInformation?.order?.paymentStatus?.toUpperCase()] || ''}</div>
+                    </div>
+                    <div className="box">
+                      <div className="title-i">Thời gian thanh toán</div>
+                      <div className="text-i">{moment(scheduleInformation?.order?.approveDate || new Date()).format('DD/MM/YYYY HH:mm:ss')}</div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+            {contentHeader}
           </div>
-        )}
-        {contentHeader}
-        <a target="_blank" style={{ marginTop: '1rem' }} href="https://youtu.be/mpIQeRGv3Lg?feature=shared" className="mgt-15 d-block">Xem thêm hướng dẫn quy trình đăng kiểm</a>
-      </div>
+          <a target="_blank" style={{ marginTop: '1rem', display: 'block' }} href="https://youtu.be/mpIQeRGv3Lg?feature=shared" className="mgt-15 link-guide">Xem thêm hướng dẫn quy trình đăng kiểm</a>
+        </>
+      )}
       {scheduleInformation?.CustomerScheduleStatus !== 20 && scheduleInformation?.CustomerScheduleStatus !== 30  ?
         <div className="w-100 d-flex justify-content-center" style={{gap:"2em"}}>
           {scheduleInformation?.confirmStatus === 0 ? (
             <>
-          <Button className="d-flex justify-content-center align-items-center" type="primary" 
+          <Button className={`d-flex justify-content-center align-items-center ${isBIDV ? 'btn-bidv' : ''}`} type="primary" 
             onClick={() => { 
               history.push({
             pathname: `/booking-update/${scheduleInformation?.customerScheduleId}`,
@@ -314,7 +454,7 @@ const BookingDetail = ({
             >
               Sửa
           </Button>
-          <Button className="d-flex justify-content-center align-items-center" type="primary" onClick={() => { setIsModal(true) }} size="larger" style={{width: '100%',padding: '20px',borderRadius:'6px',marginTop:'30px', backgroundColor:"var(--gray-mid-gray)!important"}}>
+          <Button className={`d-flex justify-content-center align-items-center ${isBIDV ? 'btn-bidv-cancel' : ''}`} type="primary" onClick={() => { setIsModal(true) }} size="larger" style={!isBIDV ? {width: '100%',padding: '20px',borderRadius:'6px',marginTop:'30px', backgroundColor:"var(--gray-mid-gray)!important"} : {width: '100%',padding: '20px',borderRadius:'6px',marginTop:'30px'}}>
             Hủy lịch hẹn
           </Button>
             </>
@@ -370,7 +510,8 @@ const BookingDetail = ({
           onClose={() => { setIsModalErrOpen(false) }}
           text={errorMessage} ></PopupMessage>
       }
-    </div>
+      </div>
+    </>
   )
 }
 

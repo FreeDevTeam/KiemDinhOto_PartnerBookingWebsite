@@ -13,3 +13,5 @@ export const PARAM_REFER_STATION_ID = 'referStationId' // id trạm giới thi�
 
 export const PARAM_HOME_MINIAPP_CONSENT_MODE = 'homeMiniappConsentMode' // chế độ đồng ý của mini app trang chủ
 export const PARAM_APP_THEME_NAME = 'appThemeName' // theme của mini app
+
+export const PARAM_SDK_PHONE_NUMBER = 'sdkPhoneNumber' // lưu số điện thoại từ param với số điện thoại từ miniapp

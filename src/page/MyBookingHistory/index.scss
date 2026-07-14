@@ -67,8 +67,8 @@
 
 .scheduleItem {
   margin-bottom: 10px;
-  background: #ffffff;
-  border: 1px solid #f2f2f2;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border-color, #f2f2f2);
   border-radius: 16px;
   padding: 24px 12px;
   &-lable {
@@ -87,7 +87,7 @@
   }
 
   &-href {
-    color: #0870d9;
+    color: var(--primary-color, #0870d9) !important;
   }
 
   &-decoration {
@@ -227,5 +227,64 @@
     right: 6px;
     top: 3px;
 
+  }
+}
+
+.bookingHistory-wrapper {
+  background: var(--background-layout, transparent);
+}
+
+.bookingHistory-main {
+  padding: 20px 16px; 
+}
+
+.paging, .ant-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+
+  .ant-pagination-prev,
+  .ant-pagination-next {
+    .ant-pagination-item-link {
+      color: var(--primary-color, #00453c);
+      border: none;
+      background: transparent;
+      font-size: 18px;
+    }
+  }
+
+  .ant-pagination-item {
+    border: none;
+    background: transparent;
+    
+    a {
+      color: var(--text-color, #1a1a1a);
+    }
+    
+    &-active {
+      background: var(--background-color, #FFFFFF);
+      border-radius: var(--button-radius, 24px);
+      min-width: 44px;
+      height: 32px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      a {
+        color: var(--primary-color, #00453c);
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+[data-theme='BIDV'] {
+  .scheduleItem {
+    margin-bottom: 12px;
+    border-radius: 24px;
+    padding: 12px;
+    border: none;
+    box-shadow: none;
   }
 }

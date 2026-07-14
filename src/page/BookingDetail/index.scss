@@ -147,3 +147,56 @@
     text-decoration: underline;
   }
 }
+
+/* ---------------- BIDV THEME OVERRIDES ---------------- */
+[data-theme='BIDV'] {
+  .detail-sche {
+    background: transparent !important;
+    
+    .content {
+      background-color: var(--background-color) !important;
+      border-radius: var(--card-radius, 24px) !important;
+      padding: 24px 16px !important;
+      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+      
+      .box {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-top: 16px;
+        gap: 16px;
+        
+        &:first-child {
+          margin-top: 0;
+        }
+
+        .title-i {
+          color: var(--gray-color);
+          font-weight: 400;
+          white-space: nowrap;
+        }
+
+        .text-i {
+          text-align: right;
+          color: var(--text-color);
+          font-weight: 600;
+        }
+      }
+    }
+    
+    .link-guide {
+      color: var(--primary-color) !important;
+      font-weight: 500;
+    }
+  }
+}
+
+.btn-bidv {
+  background: var(--primary-button-color) !important;
+  border-color: var(--primary-button-color) !important;
+}
+
+.btn-bidv-cancel {
+  background: var(--gray-mid-gray) !important;
+  border-color: var(--gray-mid-gray) !important;
+}

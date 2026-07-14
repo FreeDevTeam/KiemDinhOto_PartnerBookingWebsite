@@ -139,6 +139,11 @@ export const ROUTERS = {
         component: BookingHistory,
         isZaloApp: 0
     },
+    myBookingHistoryWeb: {
+        path: PATH.MY_BOOKING_HYSTORY,
+        component: MyBookingHistory,
+        isZaloApp: 0,
+    },
     partnerGuide: {
         path: PATH.PARTNER_GUIDE,
         component:PartnerGuide,
@@ -151,6 +156,11 @@ export const ROUTERS = {
     },
     bookingDetailNoId: {
         path: PATH.BOOKING_DETAIL_NO_ID,
+        component: BookingDetail,
+        isZaloApp: 0
+    },
+    bookingDetailWeb: {
+        path: PATH.BOOKING_DETAIL,
         component: BookingDetail,
         isZaloApp: 0
     },
