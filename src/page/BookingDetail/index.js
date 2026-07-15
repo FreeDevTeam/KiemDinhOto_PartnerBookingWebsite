@@ -33,7 +33,7 @@ const BookingDetail = ({
   const { customerScheduleId } = useParams()
   const urlParams = new URLSearchParams(window.location.search);
   const scheduleHash = localStorage.getItem('schedulehash') || urlParams.get('schedulehash');
-  const { appThemeName, isHeaderMiniApp } = useAppParamsContext() || {};
+  const { appThemeName, isHeaderMiniApp, isWebView } = useAppParamsContext() || {};
   const isBIDV = appThemeName?.toUpperCase() === 'BIDV';
   let apiKey = CheckApiKey()
   if (apiKey) {
@@ -162,7 +162,7 @@ const BookingDetail = ({
   return (
     <>
       {isHeaderMiniApp && isHeader && <Header title="Thông tin lịch hẹn" onBack={() => history.length > 1 ? history.goBack() : history.push('/')} />}
-      <div className="detail-sche" style={{ maxWidth: 600, margin: 'auto', padding: '10px' }}>
+      <div className="detail-sche" style={{ maxWidth: 600, margin: 'auto' }}>
         {!isBIDV ? (
           <>
           {isHeader && <div className="heads" style={{borderRadius:'30px 30px 0 0',padding:''}}>
@@ -442,18 +442,20 @@ const BookingDetail = ({
         <div className="w-100 d-flex justify-content-center" style={{gap:"2em"}}>
           {scheduleInformation?.confirmStatus === 0 ? (
             <>
-          <Button className={`d-flex justify-content-center align-items-center ${isBIDV ? 'btn-bidv' : ''}`} type="primary" 
-            onClick={() => { 
-              history.push({
-            pathname: `/booking-update/${scheduleInformation?.customerScheduleId}`,
-            state: { data: scheduleInformation }
-            })
-          }}
-            size="larger"
-            style={{width: '100%',padding: '20px',borderRadius:'6px',marginTop:'30px'}}
-            >
-              Sửa
-          </Button>
+          {!isWebView && (
+            <Button className={`d-flex justify-content-center align-items-center ${isBIDV ? 'btn-bidv' : ''}`} type="primary" 
+              onClick={() => { 
+                history.push({
+              pathname: `/booking-update/${scheduleInformation?.customerScheduleId}`,
+              state: { data: scheduleInformation }
+              })
+            }}
+              size="larger"
+              style={{width: '100%',padding: '20px',borderRadius:'6px',marginTop:'30px'}}
+              >
+                Sửa
+            </Button>
+          )}
           <Button className={`d-flex justify-content-center align-items-center ${isBIDV ? 'btn-bidv-cancel' : ''}`} type="primary" onClick={() => { setIsModal(true) }} size="larger" style={!isBIDV ? {width: '100%',padding: '20px',borderRadius:'6px',marginTop:'30px', backgroundColor:"var(--gray-mid-gray)!important"} : {width: '100%',padding: '20px',borderRadius:'6px',marginTop:'30px'}}>
             Hủy lịch hẹn
           </Button>
@@ -475,16 +477,16 @@ const BookingDetail = ({
                 }}
                 value={reasonRateCancelSchedule}>
                 <Space direction="vertical">
-                  <Radio value={'Tôi đặt nhầm thời gian / địa điểm.'} style={{ color: '#909090', padding: "8px 0" }}>
+                  <Radio value={'Tôi đặt nhầm thời gian / địa điểm.'} style={{ color: 'var(--gray-color, #909090)', padding: "8px 0" }}>
                     Tôi đặt nhầm thời gian / địa điểm
                   </Radio>
-                  <Radio value={'Trung tâm từ chối lịch của tôi.'} style={{ color: '#909090', padding: "8px 0" }}>
+                  <Radio value={'Trung tâm từ chối lịch của tôi.'} style={{ color: 'var(--gray-color, #909090)', padding: "8px 0" }}>
                     Trung tâm từ chối lịch của tôi
                   </Radio>
-                  <Radio value={'Tôi bận việc khác, không đến đúng giờ hẹn trước.'} style={{ color: '#909090', padding: "8px 0" }}>
+                  <Radio value={'Tôi bận việc khác, không đến đúng giờ hẹn trước.'} style={{ color: 'var(--gray-color, #909090)', padding: "8px 0" }}>
                     Tôi bận việc khác, không đến đúng giờ hẹn trước
                   </Radio>
-                  <Radio value={'Khác.'} style={{ color: '#909090', padding: "8px 0" }}>
+                  <Radio value={'Khác.'} style={{ color: 'var(--gray-color, #909090)', padding: "8px 0" }}>
                     Khác
                   </Radio>
                 </Space>
@@ -498,7 +500,7 @@ const BookingDetail = ({
               />
               {vali && <p className="validate_text text-danger">Vui lòng nhập/chọn lý do bạn muốn hủy lịch</p>}
             </div>
-            <Button className="login__button df custom-default-btn" style={{ marginTop: 25 }} onClick={() => handleCheck(customerScheduleId)} type="primary" size="large">
+            <Button className={`login__button df custom-default-btn ${isBIDV ? 'btn-bidv' : ''}`} style={{ marginTop: 25 }} onClick={() => handleCheck(customerScheduleId)} type="primary" size="large">
               Xác nhận
             </Button>
           </div>

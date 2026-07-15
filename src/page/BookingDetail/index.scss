@@ -3,6 +3,7 @@
 .detail-sche {
   background: $--unnamed-color-ffffff;
   overflow: hidden;
+  padding: 10px;
 
   &-scheduleCode {
     word-wrap: break-word;
@@ -152,11 +153,12 @@
 [data-theme='BIDV'] {
   .detail-sche {
     background: transparent !important;
+    padding: var(--card-margin-y) var(--card-margin-x) !important;
     
     .content {
       background-color: var(--background-color) !important;
       border-radius: var(--card-radius, 24px) !important;
-      padding: 24px 16px !important;
+      padding: var(--card-padding) !important;
       box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
       
       .box {
@@ -189,14 +191,45 @@
       font-weight: 500;
     }
   }
+
+  .popup-cancel {
+    .ant-radio-checked {
+      .ant-radio-inner {
+        border-color: var(--primary-color) !important;
+        background-color: transparent !important;
+        &::after {
+          background-color: var(--primary-color) !important;
+        }
+      }
+    }
+    
+    .ant-input {
+      border-radius: 16px;
+      padding: 16px;
+      border-color: var(--border-color);
+      
+      &:hover, &:focus {
+        border-color: var(--primary-color) !important;
+        box-shadow: 0 0 0 2px var(--step-line-booking-opacity30) !important;
+      }
+    }
+  }
 }
 
 .btn-bidv {
   background: var(--primary-button-color) !important;
   border-color: var(--primary-button-color) !important;
+  color: #fff !important;
+  &:hover, &:focus, &:active {
+    opacity: 0.8;
+  }
 }
 
 .btn-bidv-cancel {
   background: var(--gray-mid-gray) !important;
   border-color: var(--gray-mid-gray) !important;
+  color: #fff !important;
+  &:hover, &:focus, &:active {
+    opacity: 0.8;
+  }
 }
