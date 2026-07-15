@@ -7,7 +7,6 @@ import { useConsentContext } from '../../../../context/ConsentContext'
 import FixedBottom from '../../components/base/FixedBottom'
 import BaseButton from '../../components/base/BaseButton'
 import BasePopupTerm from '../../components/base/BasePopupTerm'
-import { getDataUserFromSDK } from '../../sdkPartnerGetData'
 
 const termsData = [
   {
@@ -149,77 +148,13 @@ const getDisplayValue = (value, hideInfo) => {
   return hideInfo ? '*********' : value
 }
 
-const checkIsCompleteUserProfile = (userProfile) => {
-  return Boolean(userProfile?.fullName?.trim() && userProfile?.phoneNumber?.trim())
-}
-
 export default function InfoConsentMode2() {
-  const { acceptConsentSession, consentSessionState, consentUserProfile, updateConsentSessionState, setConsentUserProfile } = useConsentContext()
+  const { acceptConsentSession, consentSessionState, consentUserProfile } = useConsentContext()
   const [hideInfo, setHideInfo] = useState(true)
   const [confirmTerm, setConfirmTerm] = useState(false)
   const [confirmTermSheetVisible, setConfirmTermSheetVisible] = useState(false)
-  const [sdkDataState, setSdkDataState] = useState({
-    userProfile: consentUserProfile || {},
-    error: false,
-    isLoading: !checkIsCompleteUserProfile(consentUserProfile),
-    isComplete: checkIsCompleteUserProfile(consentUserProfile)
-  })
-  const isSubmitDisabled = !(sdkDataState.isComplete && confirmTerm) || sdkDataState.isLoading || consentSessionState?.isLoading === true
 
-  const getDataFromSDK = useCallback(async () => {
-    if (checkIsCompleteUserProfile(consentUserProfile)) {
-      setSdkDataState({
-        userProfile: consentUserProfile,
-        error: false,
-        isLoading: false,
-        isComplete: true
-      })
-      return
-    }
-
-    setSdkDataState((prev) => ({
-      ...prev,
-      error: false,
-      isLoading: true
-    }))
-    updateConsentSessionState({
-      isLoading: true
-    })
-
-    try {
-      const { data, error } = await getDataUserFromSDK()
-      const nextUserProfile = data || {}
-      const isComplete = checkIsCompleteUserProfile(nextUserProfile)
-
-      if (isComplete) {
-        setConsentUserProfile(nextUserProfile)
-      }
-
-      setSdkDataState({
-        userProfile: isComplete ? nextUserProfile : {},
-        error: error || !isComplete,
-        isLoading: false,
-        isComplete
-      })
-      updateConsentSessionState({
-        isLoading: false
-      })
-    } catch (error) {
-      setSdkDataState((prev) => ({
-        ...prev,
-        error: true,
-        isLoading: false,
-        isComplete: false
-      }))
-      updateConsentSessionState({
-        isLoading: false
-      })
-    }
-  }, [consentUserProfile, setConsentUserProfile, updateConsentSessionState])
-
-  useEffect(() => {
-    getDataFromSDK()
-  }, [getDataFromSDK])
+  const isSubmitDisabled = !confirmTerm || consentSessionState?.isLoading === true
 
   return (
     <div>
@@ -239,19 +174,19 @@ export default function InfoConsentMode2() {
             </div>
             <div className="InfoConsentMode2_carInfo_item">
               <div className="InfoConsentMode2_carInfo_item_label">Họ tên</div>
-              {consentSessionState?.isLoading === true || sdkDataState?.isLoading ? (
+              {consentSessionState?.isLoading === true ? (
                 <Spin size="small" />
               ) : (
-                <div className="InfoConsentMode2_carInfo_item_value">{getDisplayValue(sdkDataState?.userProfile?.fullName, hideInfo)}</div>
+                <div className="InfoConsentMode2_carInfo_item_value">{getDisplayValue(consentUserProfile?.fullName, hideInfo)}</div>
               )}
             </div>
             <div className="InfoConsentMode2_carInfo_item">
               <div className="InfoConsentMode2_carInfo_item_label">Số điện thoại</div>
 
-              {consentSessionState?.isLoading === true || sdkDataState?.isLoading ? (
+              {consentSessionState?.isLoading === true ? (
                 <Spin size="small" />
               ) : (
-                <div className="InfoConsentMode2_carInfo_item_value">{getDisplayValue(sdkDataState?.userProfile?.phoneNumber, hideInfo)}</div>
+                <div className="InfoConsentMode2_carInfo_item_value">{getDisplayValue(consentUserProfile?.phoneNumber, hideInfo)}</div>
               )}
             </div>
           </div>
@@ -261,7 +196,6 @@ export default function InfoConsentMode2() {
               Các trường thông tin trên được chia sẻ để phục vụ đánh giá và cung cấp các sản phẩm, dịch vụ cho Quý khách.
             </p>
           </div>
-          {sdkDataState?.error && <button onClick={getDataFromSDK}>Thử lại</button>}
         </div>
       </div>
       <FixedBottom elementPaddingBottom={'LayoutPartner'}>
@@ -285,10 +219,7 @@ export default function InfoConsentMode2() {
         <BaseButton
           disabled={isSubmitDisabled}
           onClick={() => {
-            if (!sdkDataState.isComplete) {
-              return
-            }
-            acceptConsentSession(sdkDataState.userProfile)
+            acceptConsentSession()
           }}>
           Tiếp theo
         </BaseButton>

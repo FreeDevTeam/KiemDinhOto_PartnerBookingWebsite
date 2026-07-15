@@ -1,0 +1,85 @@
+.PartnerLoginPage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 72px 24px 24px;
+  background: linear-gradient(180deg, #f7fafc 0%, #eef5ff 100%);
+  position: relative;
+}
+
+.PartnerLoginPage_header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  background: transparent;
+}
+
+.PartnerLoginPage_backButton {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 18px;
+  background: rgba(16, 42, 67, 0.08);
+  color: #102a43;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.PartnerLoginPage_backButton:active {
+  transform: scale(0.96);
+}
+
+.PartnerLoginPage_card {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.PartnerLoginPage_logo {
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+  animation: PartnerLoginPagePulse 1.6s ease-in-out infinite;
+}
+
+.PartnerLoginPage_loadingText,
+.PartnerLoginPage_errorText {
+  color: #102a43;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.PartnerLoginPage_errorText {
+  max-width: 320px;
+}
+
+@keyframes PartnerLoginPagePulse {
+  0% {
+    transform: scale(0.96);
+    opacity: 0.82;
+  }
+
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.96);
+    opacity: 0.82;
+  }
+}

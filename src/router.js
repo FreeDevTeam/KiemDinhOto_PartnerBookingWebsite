@@ -1,6 +1,7 @@
 import { PATH } from './constants/router';
 import React, { createContext, useState } from 'react';
 import HomeLayout from './page/Home/HomeLayout';
+const PartnerLoginPage = React.lazy(() => import('./page/PartnerLogin/index'))
 const BookingPartner = React.lazy(() => import('./page/BookingPartner/index'))
 const CheckVihcle = React.lazy(() => import('./page/CheckVihcle/index'))
 const BookingInsurancePartner = React.lazy(() => import('./page/BookingInsurancePartner/index'))
@@ -48,6 +49,12 @@ const handleCheckLayout=()=>{
 
 export const ROUTERS = {
     //page on ZALO app
+    partnerLogin: {
+        path: PATH.PARTNER_LOGIN,
+        component: PartnerLoginPage,
+        isZaloApp: 1,
+        isFullScreen: true,
+    },
     homePage: {
         path: PATH.HOME,
         component: handleCheckLayout(),
@@ -104,6 +111,12 @@ export const ROUTERS = {
         isZaloApp: 1,
     },
     // page on web
+    partnerLoginWeb: {
+        path: PATH.PARTNER_LOGIN,
+        component: PartnerLoginPage,
+        isZaloApp: 0,
+        isFullScreen: true,
+    },
     homePageWeb: {
         path: PATH.HOME,
         component: handleCheckLayout(),

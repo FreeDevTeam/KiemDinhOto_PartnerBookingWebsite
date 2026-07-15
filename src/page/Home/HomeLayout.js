@@ -24,12 +24,28 @@ function HomeLayoutContent() {
   return <HomeLayout2 />
 }
 
+import { LocalStorageManager } from '../../helper/localStorage'
+import { getPartnerConfig } from '../../constants/partnerConfig'
+
 export default function HomeLayout() {
   const { homeMiniappConsentMode } = useAppParamsContext()
 
+  const partnerName = LocalStorageManager.getItem('partnerName')
+  const partnerConfig = partnerName ? getPartnerConfig(partnerName) : null
+
+  let resolvedConsentMode
+  if (partnerConfig && partnerConfig.requireConsent) {
+    resolvedConsentMode = partnerConfig.consentMode
+  } else if (!partnerConfig && homeMiniappConsentMode) {
+    resolvedConsentMode = undefined // user bình thường, bỏ qua consent
+  } else {
+    resolvedConsentMode = undefined
+  }
+
   return (
-    <ConsentContextProvider initialConsentMode={homeMiniappConsentMode}>
+    <ConsentContextProvider initialConsentMode={resolvedConsentMode}>
       <HomeLayoutContent />
     </ConsentContextProvider>
   )
 }
+
