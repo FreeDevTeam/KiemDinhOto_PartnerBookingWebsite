@@ -3,6 +3,8 @@ import { ConsentContextProvider, useConsentContext } from '../../context/Consent
 import MainLogo from '../../components/MainLogo'
 import HomeConsent from '../HomeConsent'
 import HomeLayout2 from './HomeLayout2'
+import { LocalStorageManager } from '../../helper/localStorage'
+import { getPartnerConfig } from '../../constants/partnerConfig'
 
 function HomeLayoutContent() {
   const { isConsentHydrated, shouldShowConsent } = useConsentContext()
@@ -23,9 +25,6 @@ function HomeLayoutContent() {
 
   return <HomeLayout2 />
 }
-
-import { LocalStorageManager } from '../../helper/localStorage'
-import { getPartnerConfig } from '../../constants/partnerConfig'
 
 export default function HomeLayout() {
   const { homeMiniappConsentMode } = useAppParamsContext()
