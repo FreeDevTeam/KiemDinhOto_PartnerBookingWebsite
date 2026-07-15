@@ -6,6 +6,15 @@ a {
 
 * {
   font-family: var(--font-family, 'Inter', sans-serif);
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+::-webkit-scrollbar {
+  width: 0px !important;
+  height: 0px !important;
+  background: transparent !important;
+  display: none !important;
 }
 
 body {
