@@ -58,7 +58,7 @@ const L2FunctionButtonList = (props) => {
   }
   const renderBtns = () => {
     return (
-      <div style={{ marginBottom: '1rem' }}>
+      <div style={{ marginBottom: 'var(--section-gap)' }}>
         <div className='text-large title-homelayout'>{title}</div>
         {slider ? (
           <div className={`card-slider layout1-btn-booking-section slider-list-btn ${className}`}>
@@ -70,7 +70,7 @@ const L2FunctionButtonList = (props) => {
                       {element.icon ? element.icon : (
                         <img style={{ width: '40px', height: '40px', borderRadius: '4px', display: 'inline' }} className='mb-2' src={element?.imageUrl} alt="" />
                       )}
-                      <div className='text-small' style={{ height: 44, transform: "translateY(-50%)", marginTop: '1rem' }} dangerouslySetInnerHTML={{ __html: element.label || element?.title }}></div>
+                      <div className='text-small' style={{ marginTop: '0' }} dangerouslySetInnerHTML={{ __html: element.label || element?.title }}></div>
                     </div>
                   )
                 } else {
@@ -79,7 +79,7 @@ const L2FunctionButtonList = (props) => {
                       {element.icon ? element.icon : (
                         <img style={{ width: '40px', height: '40px', borderRadius: '4px', display: 'inline' }} className='mb-2' src={element?.imageUrl} alt="" />
                       )}
-                      <div className='text-small' style={{ height: 44, transform: "translateY(-50%)", marginTop: '1rem' }} dangerouslySetInnerHTML={{ __html: element.label || element?.title }}></div>
+                      <div className='text-small' style={{ marginTop: '0' }} dangerouslySetInnerHTML={{ __html: element.label || element?.title }}></div>
                     </div>
                   )
                 }
@@ -87,7 +87,7 @@ const L2FunctionButtonList = (props) => {
             </Slider>
           </div>
         ) : (
-          <div className={`layout1-btn-booking-section d-flex ai-c ${className}`} style={{ flexWrap: 'wrap' }}>
+          <div className={`layout1-btn-booking-section d-flex ${className}`} style={{ flexWrap: 'wrap' }}>
             {list.map((element, key) => {
               if (element?.unOpen) {
                 return (
@@ -95,7 +95,7 @@ const L2FunctionButtonList = (props) => {
                     {element.icon ? element.icon : (
                       <img style={{ width: '40px', height: '40px', borderRadius: '4px' }} className='mb-2' src={element?.imageUrl} alt="" />
                     )}
-                    <div className='text-small' style={{ height: 44, transform: "translateY(-50%)", marginTop: '1rem' }} dangerouslySetInnerHTML={{ __html: element.label || element?.title }}></div>
+                    <div className='text-small' style={{ marginTop: '0' }} dangerouslySetInnerHTML={{ __html: element.label || element?.title }}></div>
                   </div>
                 )
               } else {
@@ -104,7 +104,7 @@ const L2FunctionButtonList = (props) => {
                     {element.icon ? element.icon : (
                       <img style={{ width: '40px', height: '40px', borderRadius: '4px' }} className='mb-2' src={element?.imageUrl} alt="" />
                     )}
-                    <div className='text-small' style={{ height: 44, transform: "translateY(-50%)", marginTop: '1rem' }} dangerouslySetInnerHTML={{ __html: element.label || element?.title }}></div>
+                    <div className='text-small' style={{ marginTop: '0' }} dangerouslySetInnerHTML={{ __html: element.label || element?.title }}></div>
                   </div>
                 )
               }

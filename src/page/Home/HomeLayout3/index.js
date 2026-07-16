@@ -202,13 +202,13 @@ const HomeLayout3 = (props) => {
       }
       <sc.Container>
         <PageLayout>{renderSlider}</PageLayout>
-        <div className="more mt-3">
+        <div className="more">
           <div className="layout2-body" style={{ maxWidth: 600, margin: 'auto' }}>
             {homeMainServicesList?.length > 0 && (
               <MainButton setSheetVisible={setSheetVisible} setDataBtn={setDataBtn} list={homeMainServicesList} title={'Dịch vụ chính trang chủ'} />
             )}
             <div>
-              <div className="booking-layout2 mb-4">
+              <div className="booking-layout2" style={{ marginBottom: 'var(--section-gap)' }}>
                 {recommendedServicesList?.length > 0 && (
                   <L2FunctionButtonList
                     setSheetVisible={setSheetVisible}
@@ -219,7 +219,7 @@ const HomeLayout3 = (props) => {
                 )}
               </div>
             </div>
-            <div className='layout2-bg mb-4'>
+            <div className='layout2-bg' style={{ marginBottom: 'var(--section-gap)' }}>
               {listNews?.length > 0 && (
                 <div className="home-container mb-1 mt-1">
                   <div className="d-flex justify-content-between align-items-center news-center" >

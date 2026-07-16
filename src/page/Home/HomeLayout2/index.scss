@@ -113,8 +113,8 @@
 .banner-Layout2{
   max-width: 600px;
   margin: auto;
-  height: 350px;
   padding-top: 12px;
+  padding-bottom: 140px;
   background-color: var(--background-banner-color);
   border-radius: 0 0 32px 32px;
 }
@@ -124,20 +124,24 @@
   min-height: 184px !important;
 }
 .layout2-body{
-  transform: translateY(-125px);
+  margin-top: calc(-140px + var(--section-gap)) !important;
+  position: relative;
+  z-index: 1;
 }
 .booking-layout2{
   .title-homelayout{
-    margin-bottom: 15px;
+    margin-bottom: var(--item-gap);
     padding-left: var(--screen-padding-x);
   }
   .layout1-btn-booking-section{
     background-color: var(--background-color) !important;
-    border: 1px solid var(--bgr-list-btn-color);
+    border: 1px solid var(--card-border-color);
     border-radius: var(--card-radius) !important;
-    margin: var(--card-margin-y) var(--card-margin-x) !important;
-    padding: var(--card-padding) !important;
+    margin: 0 var(--card-margin-x) !important;
+    padding: 16px 12px 20px !important;
     box-shadow: var(--card-shadow) !important;
+    align-items: flex-start !important;
+    row-gap: 12px;
     .layout1-btn-booking-item{
       margin-top: 0 !important;
       svg,img{
@@ -162,7 +166,7 @@
     border-radius: var(--card-radius);
   }
   .slick-initialized .slick-slide {
-    padding: 0 4px !important;
+    padding: 0 !important;
     img {
       aspect-ratio: 358/134 !important;
       border-radius: var(--card-radius);
@@ -213,24 +217,8 @@
       width: 25%;
     }
   }
-  .layout2-body{
-    transform: translateY(-130px);
-  }
-  .banner-Layout2{
-    height: 300px;
-  }
   .layout2 {
     padding: 0 12px;
-  }
-}
-@media (max-width: 380px) {
-  .layout2-body{
-    transform: translateY(-150px);
-  }
-}
-@media (max-width: 300px) {
-  .layout2-body{
-    transform: translateY(-180px);
   }
 }
 
@@ -239,5 +227,7 @@ body[data-theme='BIDV'] {
     color: var(--primary-color) !important;
     font-weight: 600;
   }
-
+  .layout1-btn-booking-section{
+    padding: 12px 12px 16px !important;
+  }
 }

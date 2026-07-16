@@ -198,16 +198,16 @@ const HomeLayout2 = (props) => {
       }
 
       <PageLayout>{renderSlider}</PageLayout>
-      <div className="more mt-3">
+      <div className="more">
         <div className="layout2-body" style={{ maxWidth: 600, margin: 'auto' }}>
           <div>
-            <div className="booking-layout2 mb-4">
+            <div className="booking-layout2" style={{ marginBottom: 'var(--section-gap)' }}>
               {
                 dataHomePageConfig.map((item, index) => {
                   if (item.icons && item.icons.length > 0) {
                     if (item.configCategory === HOME_CONFIG_CATEGORY.HOME_MAIN_SERVICES) {
                       return (
-                        <div key={index} className="mb-4">
+                        <div key={index} style={{ marginBottom: 'var(--section-gap)' }}>
                           <MainButton
                             setSheetVisible={setSheetVisible}
                             setDataBtn={setDataBtn}
@@ -218,8 +218,8 @@ const HomeLayout2 = (props) => {
                       )
                     } else if (item.configCategory === HOME_CONFIG_CATEGORY.PARTNER) {
                       return (
-                        <div key={index} className="mb-4">
-                          <div className='text-large title-homelayout' style={{marginBottom: '12px'}}>
+                        <div key={index} style={{ marginBottom: 'var(--section-gap)' }}>
+                          <div className='text-large title-homelayout'>
                             {item.title}
                           </div>
                           <L2PartnerSection data={item.icons} />

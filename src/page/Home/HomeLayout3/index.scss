@@ -1,6 +1,6 @@
 .layout1-btn-booking-section{
   background-color: var(--background-color) !important;
-  border: 1px solid var(--bgr-list-btn-color);
+  border: 1px solid var(--card-border-color);
   border-radius: 8px;
   margin: 0 16px;
   padding-top: 12px;
@@ -33,14 +33,14 @@
   }
 }
 .title-homelayout{
-  margin-bottom: 15px;
+  margin-bottom: var(--item-gap);
 }
 
 .banner-Layout2{
   max-width: 600px;
   margin: auto;
-  height: 370px;
   padding-top: 30px;
+  padding-bottom: 140px;
   background-color: var(--background-banner-color);
   border-radius: 0 0 32px 32px;
 }
@@ -72,5 +72,7 @@
 }
 
 .layout2-body{
-  transform: translateY(-125px);
+  margin-top: calc(-140px + var(--section-gap)) !important;
+  position: relative;
+  z-index: 1;
 }
