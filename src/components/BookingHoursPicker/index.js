@@ -1,5 +1,6 @@
 import React from 'react'
 import { Empty } from 'antd'
+import BasicEmpty from '../BasicComponent/BasicEmpty'
 import './index.scss'
 import LoadingPopup from '../LoadingPopup'
 
@@ -40,7 +41,7 @@ export default function BookingHoursPicker({
           })}
         </div>
       ) : (
-        <Empty description={'Không có khung giờ trống'}></Empty>
+        <BasicEmpty description={'Không có khung giờ trống'}></BasicEmpty>
       )}
     </div>
   )

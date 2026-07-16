@@ -4,6 +4,7 @@ import _ from 'lodash'
 import { SCHEDULE_STATUS_3_0, SCHEDULE_TITLE, SCHEDULE_TYPE, VIHCLE_TYPES_STATE } from '../../constants/global'
 import { changeTime } from '../../helper/changeTime'
 import BookingService from '../../services/addBookingService'
+// NOTE: Bắt buộc truyền prop `status` ('success'|'error'|'info') khi dùng PopupMessage để tránh vỡ giao diện theme BIDV.
 import PopupMessage from './PopupMessage'
 
 const { TextArea } = Input
@@ -54,6 +55,7 @@ const ScheduleItem = ({
   const [reasonRateCancelSchedule, setReasonRateCancelSchedule] = useState(null)
   const [reasonNoteCancelSchedule, setReasonNoteCancelSchedule] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
+  const [errorStatus, setErrorStatus] = useState('error')
   const [isModalErrOpen, setIsModalErrOpen] = useState(false)
 
   const onChangeReasonRateCancelSchedule = (e) => {
@@ -83,12 +85,16 @@ const ScheduleItem = ({
         customerScheduleId: customerScheduleId,
         reason: reasonNoteCancelSchedule || reasonRateCancelSchedule
       }).then((result) => {
-        const { isSuccess, data } = result
-        if (!isSuccess || !data) {
+        const { isSuccess } = result
+        if (!isSuccess) {
           setErrorMessage('Hủy lịch thất bại. Vui lòng liên hệ CSKH để được hỗ trợ')
+          // NOTE: Không xóa (ảnh hưởng theme BIDV)
+          setErrorStatus('error')
           setIsModalErrOpen(true)
         } else {
           setErrorMessage('Hủy lịch hẹn thành công')
+          // NOTE: Không xóa (ảnh hưởng theme BIDV)
+          setErrorStatus('success')
           setIsModalErrOpen(true)
           setIsModal(false)
           setTimeout(() => {
@@ -187,7 +193,12 @@ const ScheduleItem = ({
         </div>
       </Modal>
       {isModalErrOpen &&
-      <PopupMessage isModalOpen={isModalErrOpen} onClose={() => {setIsModalErrOpen(false)}} text={errorMessage} ></PopupMessage>
+        <PopupMessage
+          isModalOpen={isModalErrOpen}
+          onClose={() => { setIsModalErrOpen(false) }}
+          text={errorMessage}
+          status={errorStatus}
+        ></PopupMessage>
       }
     </div>
   )

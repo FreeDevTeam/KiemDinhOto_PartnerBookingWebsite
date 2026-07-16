@@ -66,7 +66,7 @@
 }
 
 .scheduleItem {
-  margin-bottom: 10px;
+  margin-bottom: var(--item-gap);
   background: var(--bg-card, #ffffff);
   border: 1px solid var(--border-color, #f2f2f2);
   border-radius: 16px;
@@ -108,11 +108,11 @@
 .licensePlate {
   &-tag {
     font-weight: 500;
-    font-size: 11.3168px;
-    line-height: 14px;
+    font-size: 12px;
+    line-height: 20px;
     text-align: center;
-    padding: 8px 16px;
-    border-radius: 5.65838px;
+    padding: 2px 8px;
+    border-radius: 4px;
   }
 }
 
@@ -243,6 +243,7 @@
   justify-content: center;
   align-items: center;
   gap: 8px;
+  margin-top: var(--section-gap);
 
   .ant-pagination-prev,
   .ant-pagination-next {
@@ -280,11 +281,28 @@
 }
 
 [data-theme='BIDV'] {
+  .licensePlate-tag {
+    border-radius: var(--button-radius, 9999px);
+  }
+
+  .bookingHistory-wrapper {
+    background: var(--background-layout, #f0f5f5);
+  }
+
+  .bookingHistory-main {
+    padding: var(--item-gap, 12px) var(--screen-padding-x, 16px);
+  }
+
   .scheduleItem {
-    margin-bottom: 12px;
-    border-radius: 24px;
-    padding: 12px;
+    margin-bottom: var(--item-gap, 12px);
+    border-radius: var(--card-radius-bidv, 24px);
+    padding: var(--card-padding, 12px);
+    background: var(--background-color, #ffffff);
     border: none;
     box-shadow: none;
+
+    &-href {
+      color: #00453c !important;
+    }
   }
 }

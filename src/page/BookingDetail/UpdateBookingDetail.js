@@ -760,7 +760,7 @@ function UpdateBookingDetail({ }) {
   const isSubmitDisabled = isLoading || isStationAreaLoading || isStationLoading || isWorkdayLoading || loadingHoursPicker
 
   return (
-    <div className="detail-sche" style={{ maxWidth: 600, margin: 'auto', padding: '10px' }}>
+    <div className="detail-sche" style={{ maxWidth: 600, margin: 'auto' }}>
       <Form
         name="booking"
         layout="vertical"

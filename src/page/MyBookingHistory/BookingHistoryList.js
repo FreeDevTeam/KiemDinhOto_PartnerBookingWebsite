@@ -1,5 +1,6 @@
 import React, { useEffect, useState, memo } from 'react'
-import { Spin, Tag, Input } from 'antd'
+import { Spin, Tag, Input, Empty } from 'antd'
+import BasicEmpty from '../../components/BasicComponent/BasicEmpty'
 import { SCHEDULE_STATUS_3_0, VIHCLE_TYPES_STATE } from '../../constants/global'
 import _ from 'lodash'
 import BookingService, { fetchMetadataWithCache } from '../../services/addBookingService'
@@ -236,12 +237,12 @@ function BookingHistoryList({ loading, setLoading, phoneNumber }) {
           )
         }) :(
             <div className='d-flex justify-content-center align-items-center'>
-              {resultAfterAPIText}
-          </div>
+              <BasicEmpty description={resultAfterAPIText} mode="large"></BasicEmpty>
+            </div>
         )
       }
       </div>
-      <div className="" style={{ maxWidth: 600, margin: 'auto', width: '100%', marginBottom: '60px' }}>
+      <div className="" style={{ maxWidth: 600, margin: 'auto', width: '100%', marginTop: 'var(--section-gap)', marginBottom: '60px' }}>
       {dataList?.data?.length > 0 && (
         <div className="" style={{ maxWidth: 600, margin: 'auto', width: '100%',marginBottom:'60px' }}>
           <>

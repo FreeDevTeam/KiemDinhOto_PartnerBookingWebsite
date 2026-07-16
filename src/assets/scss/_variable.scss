@@ -183,6 +183,7 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
 :root {
   /* --- BORDER RADIUS (Mặc định) --- */
   --input-radius: 8px;
+  --input-radius-small: 8px;
   --button-radius: 8px;
   --card-radius: 8px;           // STYLE CŨ: Thẻ card bo góc 8px
 
@@ -470,6 +471,7 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
 
   // Form / Input UI
   --input-radius: 9999px;
+  --input-radius-small: 16px;
   --input-height: 56px;
   --input-padding-x: 16px;
   --form-item-margin-bottom: 24px;

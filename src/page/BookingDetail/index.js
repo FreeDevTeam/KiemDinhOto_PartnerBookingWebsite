@@ -7,6 +7,7 @@ import { changeTime } from '../../helper/changeTime'
 import { useHistory } from 'react-router-dom'
 import moment from 'moment'
 import BookingService from '../../services/addBookingService'
+// NOTE: Bắt buộc truyền prop `status` ('success'|'error'|'info') khi dùng PopupMessage để tránh vỡ giao diện theme BIDV.
 import PopupMessage from '../BookingPartner/PopupMessage'
 import { useParams } from 'react-router-dom/cjs/react-router-dom'
 import { CheckApiKey } from '../../helper/CheckApiKey'
@@ -46,6 +47,7 @@ const BookingDetail = ({
   const [reasonRateCancelSchedule, setReasonRateCancelSchedule] = useState(null)
   const [reasonNoteCancelSchedule, setReasonNoteCancelSchedule] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
+  const [errorStatus, setErrorStatus] = useState('error')
   const [isModalErrOpen, setIsModalErrOpen] = useState(false)
 
   const handleCancel = () => {
@@ -61,12 +63,16 @@ const BookingDetail = ({
         customerScheduleId: customerScheduleId || scheduleInformation?.customerScheduleId,
         reason: reasonNoteCancelSchedule || reasonRateCancelSchedule
       }).then((result) => {
-        const { isSuccess, data } = result
-        if (!isSuccess || !data) {
+        const { isSuccess } = result
+        if (!isSuccess) {
           setErrorMessage('Hủy lịch thất bại. Vui lòng liên hệ CSKH để được hỗ trợ')
+          // NOTE: Không xóa (ảnh hưởng theme BIDV)
+          setErrorStatus('error')
           setIsModalErrOpen(true)
         } else {
           setErrorMessage('Hủy lịch hẹn thành công')
+          // NOTE: Không xóa (ảnh hưởng theme BIDV)
+          setErrorStatus('success')
           setScheduleInformation({
             ...scheduleInformation,
             CustomerScheduleStatus: 20
@@ -435,7 +441,7 @@ const BookingDetail = ({
             )}
             {contentHeader}
           </div>
-          <a target="_blank" style={{ marginTop: '1rem', display: 'block' }} href="https://youtu.be/mpIQeRGv3Lg?feature=shared" className="mgt-15 link-guide">Xem thêm hướng dẫn quy trình đăng kiểm</a>
+          <a target="_blank" href="https://youtu.be/mpIQeRGv3Lg?feature=shared" className="link-guide">Xem thêm hướng dẫn quy trình đăng kiểm</a>
         </>
       )}
       {scheduleInformation?.CustomerScheduleStatus !== 20 && scheduleInformation?.CustomerScheduleStatus !== 30  ?
@@ -510,7 +516,9 @@ const BookingDetail = ({
         <PopupMessage
           isModalOpen={isModalErrOpen}
           onClose={() => { setIsModalErrOpen(false) }}
-          text={errorMessage} ></PopupMessage>
+          text={errorMessage}
+          status={errorStatus}
+        ></PopupMessage>
       }
       </div>
     </>

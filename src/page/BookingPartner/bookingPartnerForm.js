@@ -6,6 +6,7 @@ import { Form, Input, Button, Spin, Select as SelectAntd, Row, Col, Checkbox, Mo
 import { IconHelpText, IconHelpTextFill } from '../../assets/icons';
 
 import BookingSuccess from './BookingSuccessModal'
+// NOTE: Bắt buộc truyền prop `status` ('success'|'error'|'info') khi dùng PopupMessage để tránh vỡ giao diện theme BIDV.
 import PopupMessage from './PopupMessage'
 import { changeTime } from '../../helper/changeTime'
 import { validatorPlateNumber, normalizePlate } from './../../helper/validatorPlateNumber'
@@ -115,6 +116,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   const [scheduleTypePopUp, setScheduleTypePopUp] = useState([])
   const [isModalErrOpen, setIsModalErrOpen] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [errorStatus, setErrorStatus] = useState('error')
   const [isRedirectConsentChecked, setIsRedirectConsentChecked] = useState(false)
   const [isConfirmTermModalOpen, setIsConfirmTermModalOpen] = useState(false)
   const stationSearchTimeoutRef = React.useRef(null)
@@ -1706,7 +1708,19 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
             <Form.Item
               name="certificateSeries"
               className="custom-help-text-item"
-              extra={<div className="custom-extra-message help" style={{display: "flex", gap: "4px", alignItems: "flex-start"}}><IconHelpTextFill className="form-message-icon" style={{width: 16, height: 16, flexShrink: 0}} /> <span>Nhập số seri GCN để được tự động kiểm tra phạt nguội</span></div>}
+              extra={<div className="custom-extra-message help" style={{display: "flex", gap: "4px", alignItems: "flex-start"}}><IconHelpTextFill className="form-message-icon" style={{width: 16, height: 16, flexShrink: 0}} /> 
+                <span
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    // NOTE: Không xóa (ảnh hưởng theme BIDV)
+                    setErrorStatus('info')
+                    setIsModalErrOpen(true)
+                    setErrorMessage(
+                      'Số seri là dãy số có dạng XXXXXXXX.<br>Số seri có thể được tìm thấy trên tem đăng kiểm hoặc dòng chữ cuối cùng ở trang 1 của sổ / giấy đăng kiểm'
+                    )
+                  }}
+                  className="form-message-link">Nhập số seri GCN để được tự động kiểm tra phạt nguội</span></div>}
               hidden={dataBookingParam?.visible_certificateSeries === false}
               label={
                 <div className="custom-label-wrapper">
@@ -1714,6 +1728,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                   <span
                     className="help-text-top-right text-primary"
                     onClick={() => {
+                      // NOTE: Không xóa (ảnh hưởng theme BIDV)
+                      setErrorStatus('info')
                       setIsModalErrOpen(true)
                       setErrorMessage(
                         'Số seri là dãy số có dạng XXXXXXXX.<br>Số seri có thể được tìm thấy trên tem đăng kiểm hoặc dòng chữ cuối cùng ở trang 1 của sổ / giấy đăng kiểm'
@@ -1993,8 +2009,12 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           isModalOpen={isModalErrOpen}
           onClose={() => {
             setIsModalErrOpen(false)
+            // NOTE: Reset status tránh ảnh hưởng thông báo sau
+            setErrorStatus('error')
           }}
-          text={errorMessage}></PopupMessage>
+          text={errorMessage}
+          status={errorStatus}
+        ></PopupMessage>
       )}
       {/* Hiển thị loading */}
       {(isInitLoading || isLoading || shouldShowHiddenFieldLoading) && (

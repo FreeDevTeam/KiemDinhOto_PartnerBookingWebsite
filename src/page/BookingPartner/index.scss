@@ -627,24 +627,6 @@ body[data-theme='BIDV'] {
         color: #ffffff !important;
       }
     }
-
-    // Replace Empty component image
-    .ant-empty {
-      .ant-empty-image {
-        height: 120px;
-        svg, img {
-          display: none !important;
-        }
-        &::after {
-          content: "";
-          display: block;
-          width: 100%;
-          height: 100%;
-          background: url('../../assets/img/BIDV/noData.png') no-repeat center center;
-          background-size: contain;
-        }
-      }
-    }
   }
 
   // Submit button
