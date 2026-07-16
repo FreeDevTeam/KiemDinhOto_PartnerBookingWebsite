@@ -485,6 +485,7 @@ body[data-theme='BIDV'] {
     }
     
     .ant-input, .ant-picker {
+      border: 1px solid var(--input-border-color) !important;
       border-radius: var(--input-radius, 24px) !important;
       height: var(--input-height, 48px) !important;
       padding: 0 var(--input-padding-x, 20px) !important; // Tăng padding ngang vì góc bo 24px quá to
@@ -511,6 +512,7 @@ body[data-theme='BIDV'] {
     }
 
     .ant-select-selector {
+      border: 1px solid var(--input-border-color) !important;
       border-radius: var(--input-radius, 24px) !important;
       height: var(--input-height, 48px) !important;
       padding: 0 40px 0 var(--input-padding-x, 20px) !important; // Chừa khoảng trống bên phải cho icon mũi tên
@@ -542,6 +544,24 @@ body[data-theme='BIDV'] {
         top: 50% !important;
         transform: translateY(-50%) !important;
         margin-top: 0 !important;
+
+        .anticon-search {
+          color: var(--primary-color) !important;
+        }
+
+        .anticon-down {
+          svg {
+            display: none;
+          }
+          &::after {
+            content: "";
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            background: url('../../assets/icons/BIDV/arrow-bottom.svg') no-repeat center center;
+            background-size: contain;
+          }
+        }
       }
     }
 
@@ -572,6 +592,14 @@ body[data-theme='BIDV'] {
 
   // Date Picker styling
   .booking-date-picker {
+    border: 1px solid var(--card-border-color) !important;
+    border-radius: var(--card-radius, 24px) !important;
+    padding: var(--card-padding, 12px) !important;
+
+    .booking-date-picker__day {
+      border-radius: var(--card-radius-small, 12px) !important;
+    }
+
     .booking-date-picker__day.active {
       background: var(--primary-color) !important;
       .booking-date-picker__day--text, .wrap-text, .wrap-text div {
@@ -582,6 +610,14 @@ body[data-theme='BIDV'] {
 
   // Hours Picker styling
   .booking-hours-picker {
+    border: 1px solid var(--card-border-color) !important;
+    border-radius: var(--card-radius, 24px) !important;
+    padding: var(--card-padding, 12px) !important;
+
+    .booking-hours-picker_item {
+      border-radius: var(--card-radius-small, 12px) !important;
+    }
+
     .booking-hours-picker_item.active {
       background: var(--primary-color) !important;
       .booking-hours-picker__day--text, .wrap-text, .wrap-text div {
@@ -589,6 +625,24 @@ body[data-theme='BIDV'] {
       }
       .text-primary {
         color: #ffffff !important;
+      }
+    }
+
+    // Replace Empty component image
+    .ant-empty {
+      .ant-empty-image {
+        height: 120px;
+        svg, img {
+          display: none !important;
+        }
+        &::after {
+          content: "";
+          display: block;
+          width: 100%;
+          height: 100%;
+          background: url('../../assets/img/BIDV/noData.png') no-repeat center center;
+          background-size: contain;
+        }
       }
     }
   }
@@ -611,6 +665,65 @@ body[data-theme='BIDV'] {
         max-width: 100% !important;
         flex: 0 0 100% !important;
       }
+    }
+  }
+
+  // Style cho helptext của field số seri GCN
+  .custom-help-text-item {
+    .ant-form-item-label {
+      padding-bottom: 8px !important; // Gap label -> input
+      > label {
+        display: flex;
+        align-items: center;
+        width: 100%;
+      }
+    }
+
+    .custom-label-wrapper {
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .help-text-top-right {
+      margin-left: auto; // Đẩy qua phải
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #8C8C8C !important;
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 16px;
+      letter-spacing: 0%;
+      cursor: pointer;
+    }
+
+    .ant-form-item-explain, .ant-form-item-extra {
+      padding-top: 8px !important;
+      min-height: unset;
+    }
+
+    .custom-extra-message {
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 16px;
+      letter-spacing: 0%;
+
+      &.help {
+        color: #8C8C8C; // Help text color
+      }
+    }
+  }
+}
+
+// Ẩn icon trên các theme khác nếu chưa cần và đổi màu text
+body:not([data-theme='BIDV']) {
+  .custom-help-text-item {
+    .form-message-icon {
+      display: none !important;
+    }
+    .help-text-top-right, .custom-extra-message.help {
+      color: var(--primary-button-color, #1890ff) !important;
     }
   }
 }

@@ -1,0 +1,64 @@
+.basic-alert-popup {
+  .ant-modal-content {
+    border-radius: var(--card-radius, 20px);
+    padding: 24px 16px !important;
+    background-color: var(--background-color, #ffffff);
+  }
+  .basic-alert-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .basic-alert-icon {
+    display: flex;
+    justify-content: center;
+  }
+  .basic-alert-title {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    text-align: center;
+    color: var(--text-color, #1a1a1a);
+    font-family: var(--font-family, inherit);
+  }
+  .basic-alert-content {
+    font-weight: 400;
+    font-size: 15.5px;
+    line-height: 24px;
+    color: var(--text-color, #595959);
+    text-align: center;
+    font-family: var(--font-family, inherit);
+  }
+  .basic-alert-extra {
+    // optional extra wrapper
+  }
+  .basic-alert-button {
+    border-radius: var(--button-radius, 9999px) !important;
+    margin: 0 !important;
+  }
+
+  // Responsive for PC: slightly larger font
+  @media (min-width: 768px) {
+    .basic-alert-title {
+      font-size: 20px;
+      line-height: 28px;
+    }
+    .basic-alert-content {
+      font-size: 16px;
+    }
+  }
+}
+
+body[data-theme='BIDV'] {
+  .basic-alert-popup {
+    .basic-alert-icon {
+      justify-content: flex-start;
+    }
+    .basic-alert-title {
+      text-align: left;
+    }
+    .basic-alert-content {
+      text-align: left;
+    }
+  }
+}

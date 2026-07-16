@@ -1,7 +1,7 @@
 import React from 'react'
 import './index.scss'
 import { useLocation } from 'react-router-dom'
-import { ReactComponent as ArrowLeft } from '../../assets/icons/arrows.svg'
+import { IconHeaderBack } from '../../assets/icons'
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
 import { MESSAGE_BACK_TO_HOME_MINI_APP, PARAM_IFRAME_HEADER_TITLE } from '../../constants/params'
 import { smartParseParam } from '../../helper/params'
@@ -20,7 +20,7 @@ export default function Header({ title, onBack }) {
   return (
     <div className={`Header ${isHeaderMiniAppExpand ? 'Header_expand' : ''}`}>
       <div className="Header_fixed">
-        <ArrowLeft
+        <IconHeaderBack
           onClick={() => {
             if (isBackToHomeMiniApp) {
               if (window.parent) {

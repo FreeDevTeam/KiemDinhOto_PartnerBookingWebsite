@@ -5,6 +5,8 @@ import { SCHEDULE_TYPE } from '../../constants/serviceOption'
 import { useAppParamsContext } from '../../context/AppParamsContext'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
+import BasicAlertPopup from '../../components/BasicComponent/BasicAlertPopup'
+
 const BookingSuccess = ({ isModalOpen, onClose,setTabKey,setIsModalOpen,scheduleType, redirectUrl }) => {
   const consultantTypes = [
     SCHEDULE_TYPE.CONSULTANT_MAINTENANCE,
@@ -39,6 +41,42 @@ const BookingSuccess = ({ isModalOpen, onClose,setTabKey,setIsModalOpen,schedule
     onClose()
   }
 
+  // NOTE: Theme BIDV sử dụng giao diện popup kiểu mới (BasicAlertPopup)
+  // Các theme khác tạm thời vẫn dùng Modal cũ để tránh ảnh hưởng giao diện hiện tại
+  const isBIDV = document.body.getAttribute('data-theme') === 'BIDV'
+
+  if (isBIDV) {
+    const extraContent = isConsultantType && !(isWebView) ? (
+      <>
+        <p style={{ margin: '15px 0' }}>
+          Bạn có thể tham khảo thông tin tại các nhóm, cộng đồng để có câu trả lời nhanh hơn
+        </p>
+        <Button 
+          type="primary" 
+          block
+          onClick={() => window.open('https://www.facebook.com/groups/940007330455923', '_blank')}
+          style={{ color: 'white' }}
+          className="login__button df"
+        >
+          Tham gia cộng đồng đăng kiểm
+        </Button>
+      </>
+    ) : null;
+
+    return (
+      <BasicAlertPopup
+        visible={isModalOpen}
+        onClose={onClose}
+        type="success"
+        title="Đặt lịch thành công"
+        content="Thông tin đã được chuyển đến tư vấn viên của chúng tôi. Nhân viên tư vấn sẽ sớm liên hệ lại để hỗ trợ tư vấn cho bạn."
+        buttonText={redirectUrl ? 'Đồng ý' : 'Xác nhận'}
+        onConfirm={handleConfirm}
+        extraContent={extraContent}
+      />
+    )
+  }
+
   return (
     <>
       <Modal title="" visible={isModalOpen} footer={null} closable={false} maskClosable={false} keyboard={false} className="text-center" centered >
@@ -68,9 +106,6 @@ const BookingSuccess = ({ isModalOpen, onClose,setTabKey,setIsModalOpen,schedule
               </Button>
               </>
             )}
-              {/* <Button className="login__button df" onClick={()=>handleViewListBooking()} type="primary" htmlType="submit" size="large">
-                Xem lịch hẹn
-              </Button> */}
               <Button className="login__button df" onClick={handleConfirm} type="primary" htmlType="submit" size="large">
                 {redirectUrl ? 'Đồng ý' : 'Xác nhận'}
               </Button>

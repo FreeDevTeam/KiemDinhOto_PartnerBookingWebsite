@@ -203,6 +203,8 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --secondary-color: #f0f0f0; // Màu phụ cho chủ đề sáng
   --border-color: #e8e8e8; // Màu viền cho chủ đề sáng
   --card-border-color: var(--border-color); // Màu viền cho thẻ card
+  --input-border-color: #DCEBE9; // Màu viền cho input và select
+  --helptext-color: #8C8C8C; // Màu của chữ help text
   --hover-color: #e6f7ff; // Màu khi rê chuột lên cho chủ đề sáng
   --gray-color: gray;
   --background-iphone-popup-coler:#a6bab8;
@@ -464,6 +466,7 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --card-margin-y: 12px;
   --card-shadow: none;
   --card-border-color: var(--background-color);
+  --card-radius-small: 12px;
 
   // Form / Input UI
   --input-radius: 9999px;

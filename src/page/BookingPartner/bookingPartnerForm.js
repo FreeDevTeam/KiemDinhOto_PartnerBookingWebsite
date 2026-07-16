@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom'
 import moment from 'moment'
 import { SHA256 } from 'crypto-js'
 import { Form, Input, Button, Spin, Select as SelectAntd, Row, Col, Checkbox, Modal } from 'antd'
+import { IconHelpText, IconHelpTextFill } from '../../assets/icons';
 
 import BookingSuccess from './BookingSuccessModal'
 import PopupMessage from './PopupMessage'
@@ -1704,20 +1705,22 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
             </Row>
             <Form.Item
               name="certificateSeries"
-              extra={'Nhập số seri GCN để được tự động kiểm tra phạt nguội'}
+              className="custom-help-text-item"
+              extra={<div className="custom-extra-message help" style={{display: "flex", gap: "4px", alignItems: "flex-start"}}><IconHelpTextFill className="form-message-icon" style={{width: 16, height: 16, flexShrink: 0}} /> <span>Nhập số seri GCN để được tự động kiểm tra phạt nguội</span></div>}
               hidden={dataBookingParam?.visible_certificateSeries === false}
               label={
-                <div>
-                  Số seri GCN mới nhất
+                <div className="custom-label-wrapper">
+                  Số seri GCN mới nhất{" "}
                   <span
-                    className="text-important text-very-small text-primary"
+                    className="help-text-top-right text-primary"
                     onClick={() => {
                       setIsModalErrOpen(true)
                       setErrorMessage(
                         'Số seri là dãy số có dạng XXXXXXXX.<br>Số seri có thể được tìm thấy trên tem đăng kiểm hoặc dòng chữ cuối cùng ở trang 1 của sổ / giấy đăng kiểm'
                       )
                     }}>
-                    (Tìm số seri)
+                    <IconHelpText className="form-message-icon" style={{width: 16, height: 16, flexShrink: 0}} />
+                    <span>(Tìm số seri)</span>
                   </span>
                 </div>
               }
@@ -1872,8 +1875,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
             {isShowStationDateTime.showDateField && (
               <Form.Item
                 name="dateSchedule"
+                className="custom-help-text-item"
                 label="Ngày hẹn"
-                extra="Đặt lịch hẹn qua App để được nhắc hẹn tự động"
+                extra={<div className="custom-extra-message help" style={{display: "flex", gap: "4px", alignItems: "flex-start"}}><IconHelpTextFill className="form-message-icon" style={{width: 16, height: 16, flexShrink: 0}} /> <span>Đặt lịch hẹn qua App để được nhắc hẹn tự động</span></div>}
                 hidden={dataBookingParam?.visible_dateSchedule === false}
                 rules={[
                   {

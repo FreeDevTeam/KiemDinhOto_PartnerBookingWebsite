@@ -20,7 +20,7 @@
     background: var(--background-layout, var(--primary-button-color)) !important;
     background-attachment: fixed !important;
     height: 60px;
-    padding: 0px 15px;
+    padding: 0px var(--screen-padding-x);
     font-size: $text-normal-fs;
     padding-top: 0px; // ẩn app cho ko bị che camera ở phía trên
 
@@ -60,7 +60,7 @@
   .Header {
     .Header_fixed {
       height: 60px;
-      padding: 0px 15px 0;
+      padding: 0px var(--screen-padding-x) 0;
       background: var(--background-layout, var(--background-color)) !important;
       background-attachment: fixed !important;
       font-size: $text-large-fs;
@@ -103,7 +103,6 @@ body[data-theme='BIDV'] {
     svg {
       width: 24px;
       height: 24px;
-      padding: 3px;
       box-sizing: border-box;
     }
 

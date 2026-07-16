@@ -96,7 +96,7 @@ function BookingPartner() {
                   {
                     isWebView ? null : <div className='booking-title title-normal mb-4 text-uppercase'>{getTitleName(searchparam)}</div>
                   }
-                  <div className='mt-3'>
+                  <div className='mt-1'>
                     <BookingPartnerForm gtelpayUser={gtelpayUser} zaloUserPhone={globalState.phoneNumber} zaloUserName={globalState.userName} setTabKey={setTabKey} form={form} />
                   </div>
                   {/* </Tabs.TabPane>
