@@ -10,9 +10,8 @@ import OtherVehiclesDefaultPath from './otherVehicles.png';
 import { ReactComponent as HelpTextSVG } from './iconHepText.svg';
 import { ReactComponent as HelpTextFillSVG } from './iconHepTextFill.svg';
 
-// Khi nào có icon cho BIDV thì anh import vào đây, ví dụ:
-// import { ReactComponent as CarBIDV } from './BIDV/car.svg';
-// import { ReactComponent as OtherVehiclesBIDV } from './BIDV/moto.svg';
+import CarBIDVPath from './BIDV/vehicleCar.png';
+import OtherVehiclesBIDVPath from './BIDV/vehicleOther.png';
 
 export const IconArrowLeft = createThemeIcon({
   default: LeftOutlined,
@@ -32,15 +31,17 @@ export const IconHeaderBack = createThemeIcon({
 
 const ImgCarDefault = (props) => <img src={CarDefaultPath} {...props} alt="car" />;
 const ImgOtherVehiclesDefault = (props) => <img src={OtherVehiclesDefaultPath} {...props} alt="other vehicles" />;
+const ImgCarBIDV = (props) => <img src={CarBIDVPath} {...props} alt="car" />;
+const ImgOtherVehiclesBIDV = (props) => <img src={OtherVehiclesBIDVPath} {...props} alt="other vehicles" />;
 
 export const IconCar = createThemeIcon({
   default: ImgCarDefault,
-  // BIDV: CarBIDV
+  BIDV: ImgCarBIDV
 });
 
 export const IconOtherVehicles = createThemeIcon({
   default: ImgOtherVehiclesDefault,
-  // BIDV: OtherVehiclesBIDV
+  BIDV: ImgOtherVehiclesBIDV
 });
 
 export const IconHelpText = createThemeIcon({

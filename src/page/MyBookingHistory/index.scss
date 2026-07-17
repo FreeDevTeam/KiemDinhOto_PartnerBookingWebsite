@@ -304,5 +304,15 @@
     &-href {
       color: #00453c !important;
     }
+
+    &-info {
+      padding-bottom: var(--item-gap, 12px);
+      margin-bottom: var(--item-gap, 12px);
+      border-color: #E6EBEB; // Chỉnh màu viền nhạt hơn cho theme BIDV nếu cần
+
+      .mt-2 {
+        margin-top: var(--item-gap, 12px) !important;
+      }
+    }
   }
 }

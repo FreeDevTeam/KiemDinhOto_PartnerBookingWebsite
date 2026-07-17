@@ -6,8 +6,7 @@ import _ from 'lodash'
 import BookingService, { fetchMetadataWithCache } from '../../services/addBookingService'
 import { changeTime } from '../../helper/changeTime'
 import { useHistory, useLocation } from 'react-router-dom'
-import OtherVehicles from './../../assets/icons/otherVehicles.png'
-import Car from './../../assets/icons/car.png'
+import { IconCar, IconOtherVehicles } from '../../assets/icons'
 import BasicTablePaging from '../../components/BasicComponent/BasicTablePaging'
 import useWindowDimensions from '../../hooks/window-dimensions'
 import { isMobileDisplaySize } from '../../pageUtililiy/isMobileDisplaySize'
@@ -15,22 +14,22 @@ const { TextArea } = Input
 const LicensePlateTag = ({ color, licensePlate }) => {
   const plateColor = {
     1: (
-      <Tag className="licensePlate-tag white mgl-5" color="#fffff" style={{ color: '#333', borderColor: '#000' }}>
+      <Tag className="licensePlate-tag white" color="#fffff" style={{ color: '#333', borderColor: '#000' }}>
         {licensePlate}
       </Tag>
     ),
     2: (
-      <Tag className="licensePlate-tag mgl-5" color="#0050B3">
+      <Tag className="licensePlate-tag" color="#0050B3">
         {licensePlate}
       </Tag>
     ),
     3: (
-      <Tag className="licensePlate-tag mgl-5" color="#FFC53D">
+      <Tag className="licensePlate-tag" color="#FFC53D">
         {licensePlate}
       </Tag>
     ),
     4: (
-      <Tag className="licensePlate-tag mgl-5" color="#FF4D4F">
+      <Tag className="licensePlate-tag" color="#FF4D4F">
         {licensePlate}
       </Tag>
     )
@@ -93,12 +92,12 @@ const ScheduleItem = ({
   return (
     <div className="scheduleItem cursor" onClick={() => history.push(`/booking-detail/${customerScheduleId}`)}>
       <div className="d-flex justify-content-between">
-        <div className="d-flex align-items-center">
-          <div className="me-3">
+        <div className="d-flex align-items-center" style={{ gap: 'var(--item-gap, 12px)' }}>
+          <div>
             {vehicleType === VIHCLE_TYPES_STATE.TRAILERS || vehicleType === VIHCLE_TYPES_STATE.OTHER_VEHICLES ? (
-              <img src={OtherVehicles} style={{ width: 29, height: 30 }} />
+              <IconOtherVehicles style={{ width: 29, height: 30 }} />
             ) : (
-              <img src={Car} style={{ width: 29, height: 30 }} />
+              <IconCar style={{ width: 29, height: 30 }} />
             )}
           </div>
           {licensePlates && <LicensePlateTag licensePlate={licensePlates} color={licensePlateColor} />}

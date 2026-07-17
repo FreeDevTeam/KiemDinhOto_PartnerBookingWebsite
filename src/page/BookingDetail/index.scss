@@ -205,23 +205,32 @@
 
   .popup-cancel {
     .ant-modal-content {
-      border-radius: var(--card-radius, 24px) !important;
-      padding: 24px !important;
+      border-radius: var(--card-radius, 20px) !important;
+      padding: 24px 16px !important;
+      background-color: var(--background-color, #ffffff) !important;
     }
     
+    .ant-modal-header {
+      background: transparent !important;
+      padding: 0 !important;
+      margin-bottom: 16px !important;
+      border-bottom: none !important;
+    }
+
     .ant-modal-title {
-      font-size: 24px !important;
-      font-weight: 700 !important;
-      color: var(--text-color) !important;
-      text-transform: uppercase;
-      text-align: center;
+      font-size: 18px !important;
+      font-weight: 600 !important;
+      color: var(--text-color, #1a1a1a) !important;
+      text-transform: none !important;
+      text-align: left !important;
+      line-height: 24px !important;
     }
 
     .ant-modal-close {
-      top: 15px;
-      right: 24px;
-      width: 36px;
-      height: 36px;
+      top: 21px;
+      right: 16px;
+      width: 30px;
+      height: 30px;
       
       .ant-modal-close-x {
         display: none !important;
@@ -237,20 +246,31 @@
       }
     }
 
+    .ant-modal-body > div {
+      min-height: auto !important;
+      padding-top: 0 !important;
+    }
+
     strong {
       display: block;
-      padding-bottom: 8px !important;
+      padding-bottom: 0 !important;
       color: var(--text-color) !important;
       font-weight: 600 !important;
-      font-size: 16px !important;
+      font-size: 15.5px !important;
       line-height: 24px !important;
       letter-spacing: 0% !important;
     }
 
+    .ant-space {
+      gap: var(--item-gap, 12px) !important;
+      margin-bottom: 16px !important;
+    }
+
     .ant-radio-wrapper {
-      font-size: 16px !important;
+      font-size: 15.5px !important;
+      padding: 0 !important;
       span.ant-radio + * {
-        color: var(--text-color) !important;
+        color: var(--text-color-secondary) !important;
       }
     }
 

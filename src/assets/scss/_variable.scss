@@ -201,6 +201,7 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --primary-color: #0e57b7; // Màu chính cho chủ đề sáng
   --background-color: #ffffff; // Màu nền cho chủ đề sáng
   --text-color: #000000; // Màu văn bản cho chủ đề sáng
+  --text-color-secondary: #909090; // Màu văn bản phụ
   --secondary-color: #f0f0f0; // Màu phụ cho chủ đề sáng
   --border-color: #e8e8e8; // Màu viền cho chủ đề sáng
   --card-border-color: var(--border-color); // Màu viền cho thẻ card
@@ -484,6 +485,7 @@ $title-x-large-fw: map-get(map-get($title-styles, 'x-large'), 'font-weight'); //
   --font-family: 'Plus Jakarta Sans', sans-serif;
   --background-banner-color: transparent;
   --text-color: #1a1a1a;
+  --text-color-secondary: #666666;
   --secondary-color: #f0f5f5;
   --border-color: #d9e7e5;
   --gray-color: #6b6b6b;

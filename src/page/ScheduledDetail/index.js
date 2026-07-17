@@ -280,7 +280,7 @@ const DetailScheduledComponent = ({
       <Modal title="Hủy Lịch hẹn" open={isModal} onCancel={()=>handleCancel()} className={ `${isHeader ? '' : 'my-modal' } popup-cancel`}>
       <div style={{ maxWidth: 600, margin: 'auto', padding: '0 30px', minHeight: '400px', paddingTop: 30 }}>
           <div>
-            <strong>Lý do huỷ lịch:</strong>
+            <strong style={{ display: 'block', marginBottom: 'var(--item-gap, 12px)' }}>Lý do huỷ lịch:</strong>
 
             <div className="box-form">
               <Radio.Group
@@ -289,20 +289,20 @@ const DetailScheduledComponent = ({
                   onChangeReasonRateCancelSchedule(e)
                 }}
                 value={reasonRateCancelSchedule}>
-                <Space direction="vertical">
-                  <Radio value={'Tôi đặt nhầm thời gian / địa điểm.'} style={{ color: '#909090',padding:"8px 0" }}>
+                <div className="d-flex flex-column" style={{ gap: 'var(--item-gap, 12px)', marginBottom: 'var(--item-gap, 12px)' }}>
+                  <Radio value={'Tôi đặt nhầm thời gian / địa điểm.'} style={{ color: 'var(--text-color-secondary, #777777)' }}>
                     Tôi đặt nhầm thời gian / địa điểm
                   </Radio>
-                  <Radio value={'Trung tâm từ chối lịch của tôi.'} style={{ color: '#909090',padding:"8px 0" }}>
+                  <Radio value={'Trung tâm từ chối lịch của tôi.'} style={{ color: 'var(--text-color-secondary, #777777)' }}>
                     Trung tâm từ chối lịch của tôi
                   </Radio>
-                  <Radio value={'Tôi bận việc khác, không đến đúng giờ hẹn trước.'} style={{ color: '#909090',padding:"8px 0" }}>
+                  <Radio value={'Tôi bận việc khác, không đến đúng giờ hẹn trước.'} style={{ color: 'var(--text-color-secondary, #777777)' }}>
                     Tôi bận việc khác, không đến đúng giờ hẹn trước
                   </Radio>
-                  <Radio value={'Khác.'} style={{ color: '#909090',padding:"8px 0" }}>
+                  <Radio value={'Khác.'} style={{ color: 'var(--text-color-secondary, #777777)' }}>
                     Khác
                   </Radio>
-                </Space>
+                </div>
               </Radio.Group>
               <TextArea
                 rows={4}
