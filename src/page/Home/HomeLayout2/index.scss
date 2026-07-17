@@ -127,6 +127,7 @@
   margin-top: calc(-140px + var(--section-gap)) !important;
   position: relative;
   z-index: 1;
+  padding-bottom: var(--section-gap);
 }
 .booking-layout2{
   .title-homelayout{
@@ -151,7 +152,7 @@
   }
 }
 .layout2 {
-  padding: 0 16px;
+  padding: 0 var(--screen-padding-x);
   .slick-arrow{
     display: none !important;
   }
@@ -218,14 +219,24 @@
     }
   }
   .layout2 {
-    padding: 0 12px;
+    padding: 0 var(--screen-padding-x);
   }
 }
 
 body[data-theme='BIDV'] {
   .title-homelayout {
     color: var(--primary-color) !important;
-    font-weight: 600;
+    font-weight: 600 !important;
+    font-size: 18px !important;
+    line-height: 24px !important;
+    letter-spacing: 0% !important;
+  }
+  .booking-layout2 .text-small,
+  .layout1-btn-booking-section .text-small {
+    font-weight: 400 !important;
+    font-size: 14px !important;
+    line-height: 20px !important;
+    letter-spacing: 0% !important;
   }
   .layout1-btn-booking-section{
     padding: 12px 12px 16px !important;
