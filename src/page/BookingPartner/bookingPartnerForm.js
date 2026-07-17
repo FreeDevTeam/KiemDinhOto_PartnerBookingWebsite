@@ -1709,18 +1709,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
               name="certificateSeries"
               className="custom-help-text-item"
               extra={<div className="custom-extra-message help" style={{display: "flex", gap: "4px", alignItems: "flex-start"}}><IconHelpTextFill className="form-message-icon" style={{width: 16, height: 16, flexShrink: 0}} /> 
-                <span
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    // NOTE: Không xóa (ảnh hưởng theme BIDV)
-                    setErrorStatus('info')
-                    setIsModalErrOpen(true)
-                    setErrorMessage(
-                      'Số seri là dãy số có dạng XXXXXXXX.<br>Số seri có thể được tìm thấy trên tem đăng kiểm hoặc dòng chữ cuối cùng ở trang 1 của sổ / giấy đăng kiểm'
-                    )
-                  }}
-                  className="form-message-link">Nhập số seri GCN để được tự động kiểm tra phạt nguội</span></div>}
+                <span>Nhập số seri GCN để được tự động kiểm tra phạt nguội</span></div>}
               hidden={dataBookingParam?.visible_certificateSeries === false}
               label={
                 <div className="custom-label-wrapper">

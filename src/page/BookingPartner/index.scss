@@ -456,6 +456,9 @@
 }
 
 body[data-theme='BIDV'] {
+  .partner.app-container {
+    padding-top: 12px !important;
+  }
   .partner-container {
     .ant-form-item {
       margin-bottom: var(--form-item-margin-bottom, 24px) !important; // Tăng khoảng cách giữa các form field
@@ -470,6 +473,11 @@ body[data-theme='BIDV'] {
           letter-spacing: 0% !important;
           &::before {
             color: var(--error-btn-color) !important;
+          }
+          &::after {
+            display: none !important;
+            content: none !important;
+            margin: 0 !important;
           }
         }
       }
@@ -583,6 +591,11 @@ body[data-theme='BIDV'] {
   }
 
   .ant-select-dropdown {
+    padding: var(--card-padding, 12px) !important;
+    border-radius: var(--card-radius-small, 12px) !important;
+    .ant-select-item-option {
+      border-radius: var(--card-radius-small, 12px) !important;
+    }
     .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
       background-color: rgba(0, 69, 60, 0.1) !important;
       color: var(--primary-color) !important;
