@@ -19,7 +19,7 @@ const { TextArea } = Input
 const RetunStatus = ({ status }) => {
   let el = _.find(SCHEDULE_STATUS_3_0, { value: status })
   return el ? (
-    <div style={{ color: el?.color, fontWeight: 500, fontSize: 14, lineHeight: '15.4px', display: 'inline' }}>
+    <div className="text-i" style={{ color: el?.color }}>
       {el?.label}
     </div>
   ) : (
@@ -470,7 +470,7 @@ const BookingDetail = ({
         </div>
         : <></>
       }
-      <Modal title="Hủy Lịch hẹn" open={isModal} onCancel={() => handleCancel()} className={`${isHeader ? '' : 'my-modal'} popup-cancel`}>
+      <Modal title="Hủy lịch hẹn" open={isModal} onCancel={() => handleCancel()} className={`${isHeader ? '' : 'my-modal'} popup-cancel`}>
         <div style={{ maxWidth: 600, margin: 'auto', padding: '0', minHeight: '400px', paddingTop: 10 }}>
           <div>
             <strong style={{ display: 'block', marginBottom: 'var(--item-gap, 12px)' }}>Lý do huỷ lịch:</strong>

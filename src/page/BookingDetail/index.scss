@@ -175,7 +175,7 @@
         .title-i {
           color: var(--gray-color);
           font-weight: 400;
-          font-size: 15.5px;
+          font-size: 14px;
           line-height: 24px;
           letter-spacing: 0%;
           white-space: nowrap;
@@ -185,7 +185,7 @@
           text-align: right;
           color: var(--text-color);
           font-weight: 600;
-          font-size: 15.5px;
+          font-size: 14px;
           line-height: 24px;
           letter-spacing: 0%;
         }
@@ -274,6 +274,12 @@
       }
     }
 
+    .ant-radio:hover .ant-radio-inner,
+    .ant-radio-wrapper:hover .ant-radio-inner,
+    .ant-radio-input:focus + .ant-radio-inner {
+      border-color: var(--primary-color) !important;
+    }
+
     .ant-radio-checked {
       .ant-radio-inner {
         border-color: var(--primary-color) !important;
@@ -281,6 +287,9 @@
         &::after {
           background-color: var(--primary-color) !important;
         }
+      }
+      &::after {
+        border-color: var(--primary-color) !important;
       }
     }
     
