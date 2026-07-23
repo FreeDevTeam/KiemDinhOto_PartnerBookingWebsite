@@ -1,5 +1,4 @@
 import { LocalStorageManager } from '../../helper/localStorage'
-import { handleMyf88Login } from './handlers/myf88Handler'
 import { handleBidvLogin } from './handlers/bidvHandler'
 import { getPartnerConfig } from '../../constants/partnerConfig'
 
@@ -32,9 +31,6 @@ export const runPartnerLoginFlow = async (partnerName, search) => {
 
   let result
   switch (partnerName) {
-    case 'myf88':
-      result = await handleMyf88Login(search)
-      break
     case 'bidv':
       result = await handleBidvLogin(search)
       break
