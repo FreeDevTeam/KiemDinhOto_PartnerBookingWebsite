@@ -464,12 +464,14 @@ export default class BookingService {
     })
   }
 
-  static async createSchedule(data) {
+  static async createSchedule(data, token) {
+    const headers = token ? { Authorization: `Bearer ${token}` } : {}
     return new Promise((resolve) => {
       Request.send({
         method: 'POST',
         path: '/PartnerAPI/CustomerSchedule/user/createSchedule',
-        data: data
+        data: data,
+        headers: headers
       }).then((result = {}) => {
         const { statusCode, data } = result
         if (statusCode === 200) {
@@ -493,12 +495,14 @@ export default class BookingService {
       })
     })
   }
-  static async createConsultantSchedule(data) {
+  static async createConsultantSchedule(data, token) {
+    const headers = token ? { Authorization: `Bearer ${token}` } : {}
     return new Promise((resolve) => {
       Request.send({
         method: 'POST',
         path: '/PartnerAPI/CustomerSchedule/user/userCreateConsultant',
-        data: data
+        data: data,
+        headers: headers
       }).then((result = {}) => {
         const { statusCode, data } = result
         if (statusCode === 200) {
@@ -564,12 +568,14 @@ export default class BookingService {
     })
   }
 
-  static async getBookingHistory(data = {}) {
+  static async getBookingHistory(data = {}, token) {
+    const headers = token ? { Authorization: `Bearer ${token}` } : {}
     return new Promise((resolve) => {
       Request.send({
         method: 'POST',
         path: '/PartnerAPI/CustomerSchedule/user/getListSchedule',
-        data
+        data,
+        headers
       }).then((result = {}) => {
         const { statusCode, data, message } = result
 
@@ -677,12 +683,14 @@ export default class BookingService {
     })
   }
 
-  static async createOrderSchedule(data = {}) {
+  static async createOrderSchedule(data = {}, token) {
+    const headers = token ? { Authorization: `Bearer ${token}` } : {}
     return new Promise((resolve) => {
       Request.send({
         method: 'POST',
         path: '/PartnerAPI/Order/user/createOrderSchedule',
-        data
+        data,
+        headers
       }).then((result = {}) => {
         const { statusCode, data } = result
         if (statusCode === 200) {

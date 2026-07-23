@@ -10,6 +10,7 @@ import { IconCar, IconOtherVehicles } from '../../assets/icons'
 import BasicTablePaging from '../../components/BasicComponent/BasicTablePaging'
 import useWindowDimensions from '../../hooks/window-dimensions'
 import { isMobileDisplaySize } from '../../pageUtililiy/isMobileDisplaySize'
+import { useAppParamsContext } from '../../context/AppParamsContext'
 const { TextArea } = Input
 const LicensePlateTag = ({ color, licensePlate }) => {
   const plateColor = {
@@ -156,6 +157,7 @@ const ScheduleItem = ({
 
 function BookingHistoryList({ loading, setLoading, phoneNumber }) {
   const location = useLocation();
+  const { sdkToken } = useAppParamsContext() || {}
   const DEFAULT_FILTER = {
     skip: 0,
     limit: 20,
@@ -173,19 +175,19 @@ function BookingHistoryList({ loading, setLoading, phoneNumber }) {
   const [dataList, setDataList] = useState({ data: [], total: 0 })
   const [resultAfterAPIText, setResultAfterAPIText] = useState('')
   useEffect(() => {
-    if (phoneNumber) {
+    if (phoneNumber || sdkToken) {
       getData({
         ...filter,
         filter: {
-          phone: phoneNumber
+          ...(phoneNumber ? { phone: phoneNumber } : {})
         }
       })
     }
-  }, [phoneNumber])
+  }, [phoneNumber, sdkToken])
 
   function getData(filter) {
     setLoading(true)
-    BookingService.getBookingHistory(filter).then((result) => {
+    BookingService.getBookingHistory(filter, sdkToken).then((result) => {
       const { isSuccess, message, data } = result
       setLoading(false)
       if (!isSuccess || !data) {

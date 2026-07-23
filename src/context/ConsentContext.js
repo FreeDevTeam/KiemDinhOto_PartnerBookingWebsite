@@ -8,10 +8,9 @@ const STORAGE_KEY_CONSENT_USER_PROFILE = 'consentUserProfile'
 const STORAGE_KEY_CONSENT_SESSION_STATE = 'consentSessionState'
 
 const DEFAULT_CONSENT_USER_PROFILE = {
-  uuid: '',
+  username: '',
   phoneNumber: '',
   fullName: '',
-  email: '',
   token: ''
 }
 
@@ -57,9 +56,10 @@ const sanitizeConsentUserProfile = (value) => {
   }
 
   return {
-    uuid: sanitizeStringValue(value.uuid),
+    username: sanitizeStringValue(value.username),
     phoneNumber: sanitizeStringValue(value.phoneNumber),
-    fullName: sanitizeStringValue(value.fullName)
+    fullName: sanitizeStringValue(value.fullName),
+    token: sanitizeStringValue(value.token)
   }
 }
 
@@ -91,7 +91,7 @@ const buildInitialConsentState = (initialConsentMode) => {
 }
 
 const isSameConsentUserProfile = (prev, next) => {
-  return prev.uuid === next.uuid && prev.phoneNumber === next.phoneNumber && prev.fullName === next.fullName
+  return prev.username === next.username && prev.phoneNumber === next.phoneNumber && prev.fullName === next.fullName && prev.token === next.token
 }
 
 const isSameConsentSessionState = (prev, next) => {
@@ -309,9 +309,10 @@ export const ConsentContextProvider = ({ children, initialConsentMode }) => {
       const queryString = mergeUrlParams(
         {
           ...extraParams,
-          sdkUsername: normalizeUrlParamValue(consentState.consentUserProfile?.uuid),
+          sdkUsername: normalizeUrlParamValue(consentState.consentUserProfile?.username),
           sdkPhoneNumber: normalizeUrlParamValue(consentState.consentUserProfile?.phoneNumber),
-          sdkFullName: normalizeUrlParamValue(consentState.consentUserProfile?.fullName)
+          sdkFullName: normalizeUrlParamValue(consentState.consentUserProfile?.fullName),
+          sdkToken: normalizeUrlParamValue(consentState.consentUserProfile?.token)
         },
         search
       )

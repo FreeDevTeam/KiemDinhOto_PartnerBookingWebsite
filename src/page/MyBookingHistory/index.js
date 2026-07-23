@@ -13,7 +13,7 @@ const MyBookingHistory = () => {
   const [loading, setLoading] = useState(false)
   const history = useHistory()
   const { globalState, handleGetUserPhone } = useGlobalContext();
-  const { sdkPhoneNumber, isHeaderMiniApp, isWebView } = useAppParamsContext();
+  const { sdkPhoneNumber, isHeaderMiniApp, isWebView, sdkToken } = useAppParamsContext();
 
   useEffect(() => {
     const isZaloApp = process.env.REACT_APP_ZALO_AUTH_ENABLE * 1 === 1;
@@ -22,16 +22,16 @@ const MyBookingHistory = () => {
       setLoading(true)
       handleGetUserPhone().then(data => {
         setLoading(false)
-        if (!sdkPhoneNumber && !data && !globalState.phoneNumber) {
-          history.push('/')
+        if (!sdkPhoneNumber && !sdkToken && !data && !globalState.phoneNumber) {
+          history.goBack()
         }
       }).catch(err => {
         setLoading(false)
-        history.push('/')
+        history.goBack()
       })
     } else {
-      if (!sdkPhoneNumber) {
-        history.push('/')
+      if (!sdkPhoneNumber && !sdkToken) {
+        history.goBack()
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -42,7 +42,7 @@ const MyBookingHistory = () => {
 
   return (
     <div className="w-100 bookingHistory-wrapper" style={{ minHeight: '100vh', maxWidth: 600, margin: 'auto' }}>
-      {isHeaderMiniApp && <Header title="Danh sách lịch hẹn" onBack={() => history.push('/')} />}
+      {isHeaderMiniApp && <Header title="Danh sách lịch hẹn" onBack={() => history.goBack()} />}
       <div className="bookingHistory-main">
         {!isWebView && (
           <div style={{ padding: '10px 0px 15px' }}>

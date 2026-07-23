@@ -9,9 +9,10 @@ const STORAGE_KEY_PARTNER_NAME = 'partnerName'
 
 const persistPartnerLoginResult = (partnerName, userProfile, consentMode) => {
   LocalStorageManager.setItem(STORAGE_KEY_CONSENT_USER_PROFILE, {
-    uuid: userProfile.username || '',
+    username: userProfile.username || '',
     phoneNumber: userProfile.phoneNumber || '',
-    fullName: userProfile.fullName || ''
+    fullName: userProfile.fullName || '',
+    token: userProfile.token || ''
   })
 
   LocalStorageManager.setItem(STORAGE_KEY_CONSENT_SESSION_STATE, {

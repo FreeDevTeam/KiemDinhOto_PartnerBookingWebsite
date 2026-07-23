@@ -35,6 +35,7 @@ import SystemConfigurationsService from '../../services/SystemConfigurationsServ
 import MainLogo from '../../components/MainLogo'
 import addKeyLocalStorage from '../../helper/localStorage'
 import PaymentService from '../../services/paymentService'
+import { useAppParamsContext } from '../../context/AppParamsContext'
 
 const Gtel = window
 
@@ -110,6 +111,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   // state này để lấy thông tin trên params và hiển thị cho lần đầu tiên
   const [dataBookingParam, setDataBookingParam] = useState({})
   const [isInitLoading, setIsInitLoading] = useState(true)
+  const { sdkToken } = useAppParamsContext() || {}
 
   // state của các modal hiển thị thông báo
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -241,7 +243,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
   const bookingConsultantSchedule = (values) => {
     setIsLoading(true)
-    return BookingService.createConsultantSchedule(values)
+    return BookingService.createConsultantSchedule(values, sdkToken)
       .then((result) => {
         const { error: rsMess, statusCode, data } = result
         if (statusCode !== 200) {
@@ -278,7 +280,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
   const createBookingSchedule = (values) => {
     setIsLoading(true)
-    return BookingService.createSchedule(values)
+    return BookingService.createSchedule(values, sdkToken)
       .then((result) => {
         const { error: rsMess, statusCode, data } = result
 

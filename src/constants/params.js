@@ -15,3 +15,4 @@ export const PARAM_HOME_MINIAPP_CONSENT_MODE = 'homeMiniappConsentMode' // chế
 export const PARAM_APP_THEME_NAME = 'appThemeName' // theme của mini app
 
 export const PARAM_SDK_PHONE_NUMBER = 'sdkPhoneNumber' // lưu số điện thoại từ param với số điện thoại từ miniapp
+export const PARAM_SDK_TOKEN = 'sdkToken'
