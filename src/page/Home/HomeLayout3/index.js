@@ -20,7 +20,7 @@ import { PARAM_IFRAME_URL } from '../../../constants/params'
 import { encodeLink } from '../../../helper/common'
 import useWindowDimensions from '../../../hooks/window-dimensions'
 import Header from '../../../components/Header'
-import usePartnerBridge from '../../../sdk/usePartnerBridge'
+import { usePartnerExit } from '../../PartnerLogin/partnerExitAction'
 import usePreconnectExternalLinks from '../../../hooks/usePreconnectExternalLinks'
 
 const HomeLayout3 = (props) => {
@@ -58,16 +58,7 @@ const HomeLayout3 = (props) => {
   usePreconnectExternalLinks(combinedServicesList)
 
   const [listNews, setListNews] = useState([])
-
-  const { init: initBridge, exit: exitBridge, isSupported: isPartnerBridgeSupported } = usePartnerBridge()
-
-  const handleExit = async () => {
-    try {
-      await exitBridge()
-    } catch (e) {
-      console.error(e);
-    }
-  };
+  const { handleExit } = usePartnerExit()
 
   const pushCacheDataIntoObj = (typeOfNews, lastId, obj) => {
     const id = JSON.parse(localStorage.getItem(`LAST_${typeOfNews}_NEWS_ID`)) || undefined

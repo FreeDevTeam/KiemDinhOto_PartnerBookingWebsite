@@ -7,6 +7,7 @@ import { useConsentContext } from '../../../../context/ConsentContext'
 import { useState } from 'react'
 import companyInfo from '../../../../constants/companyInfo'
 import Header from '../../../../components/Header'
+import { usePartnerExit } from '../../../../page/PartnerLogin/partnerExitAction'
 export default function InfoConsentMode1() {
   const termsData = [
     {
@@ -144,13 +145,14 @@ export default function InfoConsentMode1() {
   ]
 
   const { acceptConsentSession, consentSessionState } = useConsentContext()
+  const { handleExit } = usePartnerExit()
 
   const [confirmTerm, setConfirmTerm] = useState(false)
   const [confirmTermSheetVisible, setConfirmTermSheetVisible] = useState(false)
 
   return (
     <div>
-      {process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE && <Header title={'Xác nhận đồng ý và xử lý dữ liệu'} onBack={() => {}} />}
+      {process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE && <Header title={'Xác nhận đồng ý và xử lý dữ liệu'} onBack={() => handleExit()} />}
       <div className="HomeConsentLaypout">
         <div className="InfoConsentMode1">
           <div className="InfoConsentMode1_img">

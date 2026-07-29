@@ -2,16 +2,17 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useHistory, useLocation } from 'react-router-dom'
 import { LeftOutlined } from '@ant-design/icons'
 import './index.scss'
-import { getPartnerConfig } from '../../constants/partnerConfig'
+import { getPartnerConfig, getPartnerName } from '../../constants/partnerConfig'
 import { runPartnerLoginFlow } from './partnerLoginAction'
 
 const MIN_LOADING_MS = 2000
 
 export default function PartnerLoginPage() {
-  const { partnerName } = useParams()
+  const { partnerName: rawPartnerName } = useParams()
   const history = useHistory()
   const location = useLocation()
   
+  const partnerName = getPartnerName(rawPartnerName)
   const config = getPartnerConfig(partnerName)
   
   const [status, setStatus] = useState('loading') // 'loading' | 'error' | 'invalid'

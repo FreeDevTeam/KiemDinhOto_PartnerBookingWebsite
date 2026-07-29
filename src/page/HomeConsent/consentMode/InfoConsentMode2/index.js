@@ -4,6 +4,7 @@ import './index.scss'
 import { AutomatedTrafficFineNotificationAuthenticationHideInfo, AutomatedTrafficFineNotificationAuthenticationShowInfo } from '../../assets/icons'
 import Header from '../../../../components/Header'
 import { useConsentContext } from '../../../../context/ConsentContext'
+import { usePartnerExit } from '../../../../page/PartnerLogin/partnerExitAction'
 import FixedBottom from '../../components/base/FixedBottom'
 import BaseButton from '../../components/base/BaseButton'
 import BasePopupTerm from '../../components/base/BasePopupTerm'
@@ -150,6 +151,7 @@ const getDisplayValue = (value, hideInfo) => {
 
 export default function InfoConsentMode2() {
   const { acceptConsentSession, consentSessionState, consentUserProfile } = useConsentContext()
+  const { handleExit } = usePartnerExit()
   const [hideInfo, setHideInfo] = useState(true)
   const [confirmTerm, setConfirmTerm] = useState(false)
   const [confirmTermSheetVisible, setConfirmTermSheetVisible] = useState(false)
@@ -158,7 +160,7 @@ export default function InfoConsentMode2() {
 
   return (
     <div>
-      {process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE && <Header title={'Xác nhận thông tin'} onBack={() => {}} />}
+      {process.env.REACT_APP_HOME_MINIAPP_HEADER_TITLE && <Header title={'Xác nhận thông tin'} onBack={() => handleExit()} />}
       <div className="HomeConsentLaypout">
         <div className="InfoConsentMode2">
           <img className="InfoConsentMode2_img" src={'/logo.png'} alt="" />

@@ -1,4 +1,3 @@
-// miniappBridge.js
 const DEFAULT_TIMEOUT_MS = 10000;
 
 function generateRequestId() {
@@ -179,10 +178,36 @@ const MiniAppBridge = (() => {
   return {
     init,
     exit,
-    sendToSdkAsyncCallback, // nếu bạn cần gửi event khác
-    detectMode, // debug
+    sendToSdkAsyncCallback,
+    detectMode,
     getMode: () => mode,
   };
 })();
+
+let bridgeInitialized = false;
+
+export const isIhanoiSupported = () => {
+  return Boolean(MiniAppBridge);
+};
+
+export const initIhanoiBridge = (options = {}) => {
+  if (!MiniAppBridge?.init) return { mode: 'UNSUPPORTED', targetOrigin: '*' };
+  if (bridgeInitialized) {
+    return { mode: MiniAppBridge.getMode(), targetOrigin: '*' };
+  }
+  bridgeInitialized = true;
+  return MiniAppBridge.init({
+    targetOrigin: '*',
+    ...options,
+  });
+};
+
+export const handleIhanoiExit = async (action, data) => {
+  if (!MiniAppBridge?.exit) return Promise.resolve();
+  return MiniAppBridge.exit(
+    action ?? 'GO_BACK',
+    data ?? { success: true, reason: 'user_click_exit' }
+  );
+};
 
 export default MiniAppBridge;

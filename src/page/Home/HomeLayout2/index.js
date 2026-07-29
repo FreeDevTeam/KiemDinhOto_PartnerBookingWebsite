@@ -13,7 +13,7 @@ import { getBannerBySectionCache } from '../../../helper/getBannerBySectionCache
 import MainLogo from '../../../components/MainLogo'
 import { getHomePageConfigCache } from '../../../helper/getHomePageConfigCache'
 import Header from '../../../components/Header'
-import usePartnerBridge from '../../../sdk/usePartnerBridge'
+import { usePartnerExit } from '../../PartnerLogin/partnerExitAction'
 import { HOME_CONFIG_CATEGORY, HOME_CONFIG_CATEGORY_TEXT } from '../../../constants/Layout2Constants'
 import usePreconnectExternalLinks from '../../../hooks/usePreconnectExternalLinks'
 
@@ -21,7 +21,7 @@ const HomeLayout2 = (props) => {
   const location = useLocation()
   const [userToken, setUserToken] = useState(location?.state?.token || localStorage.getItem('userToken') || '')
   const [isLoadingAPI, setIsLoadingAPI] = useState(true)
-  const { init: initBridge, exit: exitBridge, isSupported: isPartnerBridgeSupported } = usePartnerBridge()
+  const { handleExit } = usePartnerExit()
 
   const [sheetVisible, setSheetVisible] = useState(false)
   const [dataBtn, setDataBtn] = useState({
@@ -138,18 +138,6 @@ const HomeLayout2 = (props) => {
     setIsLoadingAPI(false)
   }
 
-  useEffect(() => {
-    if (!isPartnerBridgeSupported) return
-    initBridge()
-  }, [initBridge, isPartnerBridgeSupported])
-  const handleExit = async () => {
-    try {
-      await exitBridge()
-      // Thường sẽ không chạy tới đây nếu host đóng webview ngay.
-    } catch (e) {
-      console.error(e);
-    }
-  };
 
   // DNS Prefetch & Preconnect: warm up connections cho các domain external
   // Mục đích là để xử lý gọi link nhanh hơn khi người dùng click vào button, tránh bị chậm quá mức 
