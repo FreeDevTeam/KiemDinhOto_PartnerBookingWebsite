@@ -28,6 +28,7 @@ button {
 }
 body {
   min-height: 100dvh;
+  font-family: var(--font-family, 'Inter', sans-serif);
   font-weight: 400;
   font-size: 14px;
   line-height: 1;
