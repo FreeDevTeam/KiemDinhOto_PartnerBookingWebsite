@@ -4,6 +4,7 @@ import { LeftOutlined } from '@ant-design/icons'
 import './index.scss'
 import { getPartnerConfig, getPartnerName } from '../../constants/partnerConfig'
 import { runPartnerLoginFlow } from './partnerLoginAction'
+import { usePartnerExit } from './partnerExitAction'
 
 const MIN_LOADING_MS = 2000
 
@@ -11,6 +12,7 @@ export default function PartnerLoginPage() {
   const { partnerName: rawPartnerName } = useParams()
   const history = useHistory()
   const location = useLocation()
+  const { handleExit } = usePartnerExit()
   
   const partnerName = getPartnerName(rawPartnerName)
   const config = getPartnerConfig(partnerName)
@@ -80,7 +82,7 @@ export default function PartnerLoginPage() {
     if (config?.backToAppUrl) {
       window.location.replace(config.backToAppUrl)
     } else {
-      history.replace('/')
+      handleExit()
     }
   }
 
