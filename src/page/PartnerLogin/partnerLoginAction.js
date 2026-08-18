@@ -5,7 +5,7 @@ import { getPartnerConfig, getPartnerName, STORAGE_KEY_PARTNER_NAME } from '../.
 const STORAGE_KEY_CONSENT_USER_PROFILE = 'consentUserProfile'
 const STORAGE_KEY_CONSENT_SESSION_STATE = 'consentSessionState'
 
-const persistPartnerLoginResult = (partnerName, userProfile, consentMode) => {
+const persistPartnerLoginResult = (userProfile, consentMode) => {
   LocalStorageManager.setItem(STORAGE_KEY_CONSENT_USER_PROFILE, {
     username: userProfile.username || '',
     phoneNumber: userProfile.phoneNumber || '',
@@ -18,12 +18,16 @@ const persistPartnerLoginResult = (partnerName, userProfile, consentMode) => {
     hasAcceptedConsent: false,
     isLoading: false
   })
-
-  LocalStorageManager.setItem(STORAGE_KEY_PARTNER_NAME, getPartnerName(partnerName))
 }
 
 export const runPartnerLoginFlow = async (rawPartnerName, search) => {
   const partnerName = getPartnerName(rawPartnerName)
+  
+  // Lưu partnerName ngay lập tức bất kể đăng nhập có thành công hay không
+  if (partnerName) {
+    LocalStorageManager.setItem(STORAGE_KEY_PARTNER_NAME, partnerName)
+  }
+
   const config = getPartnerConfig(partnerName)
   if (!config) {
     return { status: 'error', message: 'Đối tác không được hỗ trợ' }
@@ -43,7 +47,7 @@ export const runPartnerLoginFlow = async (rawPartnerName, search) => {
   }
 
   const consentMode = config.requireConsent ? config.consentMode : undefined
-  persistPartnerLoginResult(partnerName, result.userProfile, consentMode)
+  persistPartnerLoginResult(result.userProfile, consentMode)
 
   return { status: 'success' }
 }
