@@ -7,7 +7,8 @@ export const handleBidvLogin = async (search = window.location.search) => {
 
   try {
     const params = new URLSearchParams(search)
-    const userId = (params.get('user_id') || '').trim()
+    const rawUserId = (params.get('user_id') || '').trim()
+    const userId = rawUserId ? decodeURIComponent(rawUserId) : ''
 
     if (!userId) {
       return { isSuccess: false, message: genericError }
