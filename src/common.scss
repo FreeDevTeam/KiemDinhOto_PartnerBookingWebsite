@@ -294,6 +294,13 @@ li.ant-pagination-item-active {
   background: white;
 }
 
+body[data-theme='BIDV'] {
+  .mobile-menu {
+    height: calc(70px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
 a.menu-item {
   width: calc((100% - 85px) / 4);
   height: 70px;

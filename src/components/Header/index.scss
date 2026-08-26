@@ -95,6 +95,8 @@ body[data-theme='BIDV'] {
   .Header_fixed {
     justify-content: flex-start;
     gap: 12px;
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    height: calc(60px + env(safe-area-inset-top, 0px)) !important;
 
     .no_icon {
       display: none;

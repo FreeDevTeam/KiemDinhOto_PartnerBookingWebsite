@@ -55,3 +55,9 @@
     }
   }
 }
+
+body[data-theme='BIDV'] {
+  .BaseSlidePopup_slide_button {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}

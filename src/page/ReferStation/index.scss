@@ -322,3 +322,9 @@
     }
   }
 }
+
+body[data-theme='BIDV'] {
+  .ReferStation_fixedBottom {
+    padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
