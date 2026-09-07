@@ -114,6 +114,13 @@ body[data-theme='BIDV'] {
     }
   }
 
+  .Header_expand {
+    .Header_fixed {
+      height: 92px !important;
+      padding-top: 54px !important;
+    }
+  }
+
   .Header.is-android.Header_expand {
     .Header_fixed {
       height: 60px !important;
