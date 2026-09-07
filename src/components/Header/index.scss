@@ -95,8 +95,6 @@ body[data-theme='BIDV'] {
   .Header_fixed {
     justify-content: flex-start;
     gap: 12px;
-    padding-top: env(safe-area-inset-top, 0px) !important;
-    height: calc(60px + env(safe-area-inset-top, 0px)) !important;
 
     .no_icon {
       display: none;
@@ -113,6 +111,13 @@ body[data-theme='BIDV'] {
       font-size: 18px !important;
       line-height: 24px;
       letter-spacing: 0%;
+    }
+  }
+
+  .Header.is-android.Header_expand {
+    .Header_fixed {
+      height: 60px !important;
+      padding-top: 0px !important;
     }
   }
 }

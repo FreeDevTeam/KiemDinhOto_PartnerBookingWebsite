@@ -17,8 +17,10 @@ export default function Header({ title, onBack }) {
   const { isHeaderMiniAppExpand } = useAppParamsContext()
 
   const isBackToHomeMiniApp = checkIsBackToHomeMiniApp(window.location.href)
+  const isAndroid = navigator.userAgent.toLowerCase().indexOf('android') > -1
+
   return (
-    <div className={`Header ${isHeaderMiniAppExpand ? 'Header_expand' : ''}`}>
+    <div className={`Header ${isHeaderMiniAppExpand ? 'Header_expand' : ''} ${isAndroid ? 'is-android' : ''}`}>
       <div className="Header_fixed">
         <IconHeaderBack
           onClick={() => {
