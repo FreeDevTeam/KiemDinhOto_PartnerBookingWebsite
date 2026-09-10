@@ -13,6 +13,8 @@ import { useParams } from 'react-router-dom/cjs/react-router-dom'
 import { CheckApiKey } from '../../helper/CheckApiKey'
 import Header from '../../components/Header'
 import { useAppParamsContext } from '../../context/AppParamsContext'
+import FixedBottom from '../../components/FixedBottom'
+import BaseBottomSheet from '../../components/BaseBottomSheet'
 
 const { TextArea } = Input
 
@@ -43,6 +45,7 @@ const BookingDetail = ({
   let wab = []
   const [scheduleInformation, setScheduleInformation] = useState([])
   const [isModal, setIsModal] = useState(false)
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false)
   const [vali, setVali] = useState(false)
   const [reasonRateCancelSchedule, setReasonRateCancelSchedule] = useState(null)
   const [reasonNoteCancelSchedule, setReasonNoteCancelSchedule] = useState(null)
@@ -52,6 +55,9 @@ const BookingDetail = ({
 
   const handleCancel = () => {
     setIsModal(false);
+  };
+  const handleCloseBottomSheet = () => {
+    setIsBottomSheetOpen(false);
   };
   const onChangeReasonRateCancelSchedule = (e) => {
     setReasonRateCancelSchedule(e.target.value)
@@ -165,10 +171,37 @@ const BookingDetail = ({
     return ('Phương tiện khác')
   }
 
+  const renderActionButtons = () => {
+    if (scheduleInformation?.CustomerScheduleStatus === 20 || scheduleInformation?.CustomerScheduleStatus === 30) return null;
+    
+    const buttons = (
+      <div className="w-100 d-flex justify-content-center" style={{gap: isBIDV ? "12px" : "2em"}}>
+        {scheduleInformation?.confirmStatus === 0 ? (
+          <>
+            {!isWebView && (
+              <Button className={`d-flex justify-content-center align-items-center custom-font-btn ${isBIDV ? 'btn-bidv' : ''}`} type="primary" 
+                onClick={() => history.push({ pathname: `/booking-update/${scheduleInformation?.customerScheduleId}`, state: { data: scheduleInformation } })}
+                size="large" style={{width: '100%', padding: '20px', borderRadius:'6px', marginTop: isBIDV ? 0 : '30px'}}>
+                Sửa
+              </Button>
+            )}
+            <Button className={`d-flex justify-content-center align-items-center custom-font-btn ${isBIDV ? 'btn-bidv-cancel' : ''}`} type="primary" 
+              onClick={() => isBIDV ? setIsBottomSheetOpen(true) : setIsModal(true)} 
+              size="large" style={{width: '100%', padding: '20px', borderRadius:'6px', marginTop: isBIDV ? 0 : '30px', backgroundColor: isBIDV ? undefined : "var(--gray-mid-gray)!important"}}>
+              Hủy lịch hẹn
+            </Button>
+          </>
+        ) : null}
+      </div>
+    );
+    
+    return isBIDV ? <div id="fixed_bottom" className='position-relative'><FixedBottom elementPaddingBottom="fixed_bottom">{buttons}</FixedBottom></div> : buttons;
+  };
+
   return (
     <>
       {isHeaderMiniApp && isHeader && <Header title="Thông tin lịch hẹn" onBack={() => history.length > 1 ? history.goBack() : history.push('/')} />}
-      <div className="detail-sche" style={{ maxWidth: 600, margin: 'auto' }}>
+      <div id="booking-detail-app" className="detail-sche" style={{ maxWidth: 600, margin: 'auto' }}>
         {!isBIDV ? (
           <>
           {isHeader && <div className="heads" style={{borderRadius:'30px 30px 0 0',padding:''}}>
@@ -444,37 +477,12 @@ const BookingDetail = ({
           <a target="_blank" href="https://youtu.be/mpIQeRGv3Lg?feature=shared" className="link-guide">Xem thêm hướng dẫn quy trình đăng kiểm</a>
         </>
       )}
-      {scheduleInformation?.CustomerScheduleStatus !== 20 && scheduleInformation?.CustomerScheduleStatus !== 30  ?
-        <div className="w-100 d-flex justify-content-center" style={{gap:"2em"}}>
-          {scheduleInformation?.confirmStatus === 0 ? (
-            <>
-          {!isWebView && (
-            <Button className={`d-flex justify-content-center align-items-center ${isBIDV ? 'btn-bidv' : ''}`} type="primary" 
-              onClick={() => { 
-                history.push({
-              pathname: `/booking-update/${scheduleInformation?.customerScheduleId}`,
-              state: { data: scheduleInformation }
-              })
-            }}
-              size="larger"
-              style={{width: '100%',padding: '20px',borderRadius:'6px',marginTop:'30px'}}
-              >
-                Sửa
-            </Button>
-          )}
-          <Button className={`d-flex justify-content-center align-items-center ${isBIDV ? 'btn-bidv-cancel' : ''}`} type="primary" onClick={() => { setIsModal(true) }} size="larger" style={!isBIDV ? {width: '100%',padding: '20px',borderRadius:'6px',marginTop:'30px', backgroundColor:"var(--gray-mid-gray)!important"} : {width: '100%',padding: '20px',borderRadius:'6px',marginTop:'30px'}}>
-            Hủy lịch hẹn
-          </Button>
-            </>
-          ):(null)}
-        </div>
-        : <></>
-      }
-      <Modal title="Hủy lịch hẹn" open={isModal} onCancel={() => handleCancel()} className={`${isHeader ? '' : 'my-modal'} popup-cancel`}>
-        <div style={{ maxWidth: 600, margin: 'auto', padding: '0', minHeight: '400px', paddingTop: 10 }}>
-          <div>
+      {renderActionButtons()}
+      {/* Nội dung form hủy lịch - dùng chung cho cả Modal và BottomSheet */}
+      {(() => {
+        const cancelFormContent = (
+          <div className={isBIDV ? 'cancel-form-content' : ''}>
             <strong style={{ display: 'block', marginBottom: 'var(--item-gap, 12px)' }}>Lý do huỷ lịch:</strong>
-
             <div className="box-form">
               <Radio.Group
                 onChange={(e) => {
@@ -506,12 +514,43 @@ const BookingDetail = ({
               />
               {vali && <p className="validate_text text-danger">Vui lòng nhập/chọn lý do bạn muốn hủy lịch</p>}
             </div>
-            <Button className={`login__button df custom-default-btn ${isBIDV ? 'btn-bidv' : ''}`} style={{ marginTop: 25 }} onClick={() => handleCheck(customerScheduleId)} type="primary" size="large">
+            <Button
+              className={`login__button df custom-default-btn custom-font-btn ${isBIDV ? 'btn-bidv' : ''}`}
+              style={{ marginTop: 25 }}
+              onClick={() => handleCheck(customerScheduleId)}
+              type="primary"
+              size="large"
+            >
               Xác nhận
             </Button>
           </div>
-        </div>
-      </Modal>
+        )
+
+        if (isBIDV) {
+          return (
+            <BaseBottomSheet
+              isOpen={isBottomSheetOpen}
+              onClose={handleCloseBottomSheet}
+              title="Hủy lịch hẹn"
+            >
+              {cancelFormContent}
+            </BaseBottomSheet>
+          )
+        }
+
+        return (
+          <Modal
+            title="Hủy lịch hẹn"
+            open={isModal}
+            onCancel={() => handleCancel()}
+            className={`${isHeader ? '' : 'my-modal'} popup-cancel`}
+          >
+            <div style={{ maxWidth: 600, margin: 'auto', padding: '0', minHeight: '400px', paddingTop: 10 }}>
+              {cancelFormContent}
+            </div>
+          </Modal>
+        )
+      })()}
       {isModalErrOpen &&
         <PopupMessage
           isModalOpen={isModalErrOpen}

@@ -23,9 +23,11 @@ const BasicAlertPopup = ({
         return <ErrorIcon />;
       case 'info':
       default:
-        return <InfoIcon />;
+        return null;
     }
   };
+
+  const iconElement = getIcon();
 
   const handleConfirm = () => {
     if (onConfirm) {
@@ -48,9 +50,11 @@ const BasicAlertPopup = ({
       width={400}
     >
       <div className="basic-alert-container">
-        <div className="basic-alert-icon">
-          {getIcon()}
-        </div>
+        {iconElement && (
+          <div className="basic-alert-icon">
+            {iconElement}
+          </div>
+        )}
         {title && <div className="basic-alert-title">{title}</div>}
         <div className="basic-alert-content">
           {typeof content === 'string' ? (

@@ -1,0 +1,46 @@
+.base-bottom-sheet {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+
+  .ant-drawer-header-title {
+    display: flex !important;
+    align-items: center !important;
+    width: 100%;
+  }
+
+  .ant-drawer-title {
+    flex: 1 !important;
+    text-align: left !important;
+  }
+
+  .bottom-sheet-title {
+    color: #1a1a1a !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    font-style: normal;
+    line-height: 24px !important;
+    letter-spacing: 0;
+  }
+
+  button.ant-drawer-close {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bidv-bottom-sheet-close-icon {
+    display: block;
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+  }
+
+  // Loại bỏ hiệu ứng hover/focus của nút close mặc định
+  button.ant-drawer-close:hover {
+    background: transparent !important;
+  }
+}

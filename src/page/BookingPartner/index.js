@@ -13,6 +13,7 @@ import MainLogo from '../../components/MainLogo'
 import addKeyLocalStorage from '../../helper/localStorage'
 import Header from '../../components/Header'
 import { useAppParamsContext } from '../../context/AppParamsContext'
+
 function BookingPartner() {
   const { globalState, handleGetUserPhone, handleGetUserName, setGlobalState } = useGlobalContext();
   const { gtelpayUser } = useGtelpayUserData()

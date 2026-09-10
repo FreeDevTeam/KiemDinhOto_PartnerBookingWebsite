@@ -62,13 +62,13 @@ const BasicTablePaging = ({handlePaginations,count=false,firstPage}) => {
       }
     },[value])
   return (
-    <div className="pagination react-paginate separated-pagination pagination-sm justify-content-center pr-3 mt-1 mb-5">
+    <div className="pagination react-paginate separated-pagination pagination-sm justify-content-center pr-3 mt-1 mb-5 custom-font-family">
       <div className={`prev-item position-relative ${prevDisabled ? 'disable-item' : 'pointer'}`}>
         <span onClick={() =>moveToPreviousPage()} className='bg_left'><IconArrowLeft /></span>
       </div>
       <div>
         <Input
-          className='input_paging'
+          className='input_paging custom-font-family'
           value={value}
           onKeyDown={(e) => onKeyDown(e)}
           onChange={(e) => { handleChange(e.target.value) }}

@@ -49,10 +49,12 @@
             }
         }
     }
-    .booking-hours-picker__day--text {
+    .booking-hours-picker__text {
         text-align: center;
         font-weight: 500;
         color: var(--text-color);
+        font-variant-numeric: normal;
+        font-feature-settings: normal;
     }
     .active {
         background: var(--linear-gradient-active);

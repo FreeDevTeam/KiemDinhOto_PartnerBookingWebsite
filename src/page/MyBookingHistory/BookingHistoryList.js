@@ -15,22 +15,22 @@ const { TextArea } = Input
 const LicensePlateTag = ({ color, licensePlate }) => {
   const plateColor = {
     1: (
-      <Tag className="licensePlate-tag white" color="#fffff" style={{ color: '#333', borderColor: '#000' }}>
+      <Tag className="licensePlate-tag white custom-font-family" color="#fffff" style={{ color: '#333', borderColor: '#000' }}>
         {licensePlate}
       </Tag>
     ),
     2: (
-      <Tag className="licensePlate-tag" color="#0050B3">
+      <Tag className="licensePlate-tag custom-font-family" color="#0050B3">
         {licensePlate}
       </Tag>
     ),
     3: (
-      <Tag className="licensePlate-tag" color="#FFC53D">
+      <Tag className="licensePlate-tag custom-font-family" color="#FFC53D">
         {licensePlate}
       </Tag>
     ),
     4: (
-      <Tag className="licensePlate-tag" color="#FF4D4F">
+      <Tag className="licensePlate-tag custom-font-family" color="#FF4D4F">
         {licensePlate}
       </Tag>
     )

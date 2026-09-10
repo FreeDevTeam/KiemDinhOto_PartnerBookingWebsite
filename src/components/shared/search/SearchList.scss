@@ -6,9 +6,16 @@
     width: 100%;
     border-right-width: 1px;
     z-index: 1;
-    border-radius: 8px;
+    border-radius: 6px;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
+    max-height: 48px !important;
+    font-family: var(--font-family, 'Plus Jakarta Sans', sans-serif);
+  }
+
+  &.ant-input::placeholder {
+    font-size: 14px;
+    font-family: var(--font-family, 'Plus Jakarta Sans', sans-serif);
   }
 
   & .ant-input-search-button {
@@ -18,9 +25,100 @@
     transform: translateY(-50%);
     border: none;
     z-index: 99;
+    background: transparent;
+    box-shadow: none;
+
+    svg, svg path {
+      fill: var(--primary-button-color) !important;
+      color: var(--primary-button-color) !important;
+    }
   }
 
   & svg {
     color: #e5e5e5;
+  }
+}
+
+.ant-input-search-with-button .ant-input-group .ant-input:hover {
+  z-index: 1 !important;
+}
+
+[data-theme='BIDV'] {
+  .SearchList {
+    height: 48px;
+    margin-bottom: 8px;
+    background: transparent !important;
+
+    .ant-input-group-wrapper,
+    .ant-input-group-wrapper.ant-input-search {
+      height: 48px !important;
+      background: transparent !important;
+    }
+
+    .ant-input-wrapper.ant-input-group {
+      height: 48px !important;
+
+      display: flex !important;
+      align-items: center !important;
+
+      background: #ffffff !important;
+      border: 1px solid #d9e7e5 !important;
+      border-radius: 24px !important;
+      overflow: hidden;
+    }
+
+    .ant-input-group .ant-input {
+      height: 48px !important;
+      max-height: 48px !important;
+
+      background: #ffffff !important;
+      border: none !important;
+      border-radius: 24px 0 0 24px !important;
+      box-shadow: none !important;
+
+      color: #1a1a1a !important;
+      font-size: 16px !important;
+      padding: 0 16px 0 24px !important;
+      font-family: var(--font-family, 'Plus Jakarta Sans', sans-serif) !important;
+    }
+
+    .ant-input-group .ant-input::placeholder {
+      color: #b8b8b8 !important;
+      font-family: var(--font-family, 'Plus Jakarta Sans', sans-serif) !important;
+    }
+
+    .ant-input-group-addon {
+      width: 56px !important;
+      height: 48px !important;
+
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+
+      padding: 0 8px 0 0 !important;
+      background: #ffffff !important;
+      border: none !important;
+    }
+
+    .ant-input-search-button {
+      width: 40px !important;
+      height: 40px !important;
+
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: var(--primary-button-color, #00453c) !important;
+    }
+
+    .ant-input-search-button:hover {
+      background: transparent !important;
+      color: var(--primary-button-hover-color, #00382f) !important;
+    }
+
+    .ant-input-search-button svg,
+    .ant-input-search-button svg path {
+      color: currentColor !important;
+      fill: currentColor !important;
+    }
   }
 }

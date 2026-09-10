@@ -499,12 +499,14 @@ body[data-theme='BIDV'] {
       padding: 0 var(--input-padding-x, 20px) !important; // Tăng padding ngang vì góc bo 24px quá to
       display: flex;
       align-items: center;
+      font-family: var(--font-family, inherit) !important;
       font-weight: 400 !important;
       font-size: 16px !important;
       line-height: 24px !important;
       letter-spacing: 0% !important;
       
       &::placeholder {
+        font-family: var(--font-family, inherit) !important;
         font-weight: 400 !important;
         font-size: 16px !important;
         line-height: 24px !important;
@@ -512,6 +514,7 @@ body[data-theme='BIDV'] {
       }
       
       input::placeholder {
+        font-family: var(--font-family, inherit) !important;
         font-weight: 400 !important;
         font-size: 16px !important;
         line-height: 24px !important;
@@ -533,11 +536,13 @@ body[data-theme='BIDV'] {
       .ant-select-selection-item, .ant-select-selection-placeholder {
         padding: 0 !important;
         line-height: calc(var(--input-height, 56px) - 2px) !important; // Canh giữa text theo height (trừ 2px border)
+        font-family: var(--font-family, inherit) !important;
         font-weight: 400 !important;
         font-size: 16px !important;
         letter-spacing: 0% !important;
       }
       .ant-select-selection-placeholder {
+        font-family: var(--font-family, inherit) !important;
         font-weight: 400 !important;
         font-size: 16px !important;
         letter-spacing: 0% !important;

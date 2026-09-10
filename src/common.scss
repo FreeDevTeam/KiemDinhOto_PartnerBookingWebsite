@@ -28,6 +28,13 @@ body {
   font-feature-settings: 'tnum';
 }
 
+body[data-theme='BIDV'] {
+  font-family: var(--font-family, 'Plus Jakarta Sans', sans-serif) !important;
+  font-variant: normal;
+  font-feature-settings: normal;
+  font-variant-numeric: normal;
+}
+
 .pointer {
   cursor: pointer;
 }
@@ -298,6 +305,17 @@ body[data-theme='BIDV'] {
   .mobile-menu {
     height: calc(70px + env(safe-area-inset-bottom, 0px));
     padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  // Override button font for BIDV theme to match design (16px, SemiBold)
+  .login__button.df,
+  .custom-df-btn {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    &.ant-btn span {
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+      font-weight: 600 !important;
+      font-size: 16px !important;
+    }
   }
 }
 
@@ -960,5 +978,4 @@ a.menu-item {
   margin: 0 auto;
   min-height: 100vh;
   background: var(--background-layout, transparent);
-  background-attachment: fixed;
 }

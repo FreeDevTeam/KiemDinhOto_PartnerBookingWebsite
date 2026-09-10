@@ -35,6 +35,7 @@ import SystemConfigurationsService from '../../services/SystemConfigurationsServ
 import MainLogo from '../../components/MainLogo'
 import addKeyLocalStorage from '../../helper/localStorage'
 import PaymentService from '../../services/paymentService'
+import BottomSheetSelect from '../../components/BottomSheetSelect'
 import { useAppParamsContext } from '../../context/AppParamsContext'
 
 const Gtel = window
@@ -51,6 +52,13 @@ export function getQueryParams(options = {}) {
   }
   return {}
 }
+const CustomSelect = ({ isBidvTheme, ...props }) => {
+  if (isBidvTheme) {
+    return <BottomSheetSelect {...props} />
+  }
+  return <SelectAntd {...props} />
+}
+
 function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtelpayUser }) {
   const customStyles = {
     control: (base) => ({
@@ -65,6 +73,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     SCHEDULE: 1,
     CONSULTANT: 2
   }
+
+
 
   // state dùng cho form
   const [scheduleCategory, setScheduleCategory] = useState(1)
@@ -111,7 +121,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   // state này để lấy thông tin trên params và hiển thị cho lần đầu tiên
   const [dataBookingParam, setDataBookingParam] = useState({})
   const [isInitLoading, setIsInitLoading] = useState(true)
-  const { sdkToken } = useAppParamsContext() || {}
+  const { sdkToken, appThemeName } = useAppParamsContext() || {}
+  const isBidvTheme = appThemeName === 'BIDV'
 
   // state của các modal hiển thị thông báo
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -1540,7 +1551,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
               ]}
               hidden={String(dataBookingParam?.visible_scheduleType) === 'false'}
             >
-              <SelectAntd
+              <CustomSelect isBidvTheme={isBidvTheme}
                 defaultValue={dataBookingParam?.scheduleType || optionServiceType[0]?.value}
                 className="cs-select ant-custom booking-input"
                 isSearchable={true}
@@ -1577,7 +1588,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                     message: 'Vui lòng chọn dịch vụ'
                   }
                 ]}>
-                <SelectAntd
+                <CustomSelect isBidvTheme={isBidvTheme}
                   className="cs-select ant-custom booking-input"
                   isSearchable={true}
                   allowClear
@@ -1631,7 +1642,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                   message: 'Vui lòng chọn màu biển số'
                 }
               ]}>
-              <SelectAntd
+              <CustomSelect isBidvTheme={isBidvTheme}
                 defaultValue={dataBookingParam?.licensePlateColor || licensePlateColorList[0]?.value}
                 className="cs-select ant-custom booking-input"
                 isSearchable={true}
@@ -1660,7 +1671,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                         message: 'Vui lòng nhập'
                       }
                     ]}>
-                    <SelectAntd
+                    <CustomSelect isBidvTheme={isBidvTheme}
                       className="cs-select ant-custom booking-input"
                       options={VEHICLE_SUB_TYPE}
                       defaultValue={dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value}
@@ -1695,7 +1706,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                         message: 'Vui lòng chọn phân loại'
                       }
                     ]}>
-                    <SelectAntd
+                    <CustomSelect isBidvTheme={isBidvTheme}
                       className="cs-select ant-custom booking-input"
                       options={vehicleSubCategoryOptions}
                       defaultValue={dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value}
@@ -1767,7 +1778,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                     message: 'Vui lòng chọn khu vực'
                   }
                 ]}>
-                <SelectAntd
+                <CustomSelect isBidvTheme={isBidvTheme}
                   className="cs-select ant-custom booking-input"
                   showSearch
                   loading={isStationAreaLoading}
@@ -1805,7 +1816,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                   }
                 ]}
                 hidden={dataBookingParam?.visible_StationType !== true}>
-                <SelectAntd
+                <CustomSelect isBidvTheme={isBidvTheme}
                   className="cs-select ant-custom booking-input"
                   placeholder="Vui lòng chọn loại trung tâm"
                   options={stationTypeOptions}
@@ -1840,7 +1851,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                   }
                 ]}
                 hidden={dataBookingParam?.visible_StationsCode === false}>
-                <SelectAntd
+                <CustomSelect isBidvTheme={isBidvTheme}
                   className="cs-select ant-custom booking-input"
                   showSearch
                   filterOption={false}
@@ -2021,4 +2032,5 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 }
 
 export default BookingPartnerForm
+
 

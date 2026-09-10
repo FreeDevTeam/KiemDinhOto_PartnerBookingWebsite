@@ -21,7 +21,7 @@ export const SCHEDULE_STATUS_3_0 = [
   {
     label: 'Đã xác nhận',
     value: 10,
-    color: '#FF7B42'
+    color: '#D35801'
   },
   {
     label: 'Đã hủy',

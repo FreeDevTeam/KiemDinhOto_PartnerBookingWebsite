@@ -316,3 +316,8 @@
     }
   }
 }
+
+.custom-font-family,
+.custom-font-family * {
+  font-family: var(--font-family) !important;
+}
