@@ -162,7 +162,7 @@ function BookingHistoryList({ loading, setLoading, phoneNumber }) {
     skip: 0,
     limit: 20,
     filter: {
-      phone: phoneNumber
+      ...((phoneNumber && !sdkToken) ? { phone: phoneNumber } : {})
     },
     order: {
       key: "createdAt",
@@ -179,7 +179,7 @@ function BookingHistoryList({ loading, setLoading, phoneNumber }) {
       getData({
         ...filter,
         filter: {
-          ...(phoneNumber ? { phone: phoneNumber } : {})
+          ...((phoneNumber && !sdkToken) ? { phone: phoneNumber } : {})
         }
       })
     }

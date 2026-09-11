@@ -1645,7 +1645,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
               <CustomSelect isBidvTheme={isBidvTheme}
                 defaultValue={dataBookingParam?.licensePlateColor || licensePlateColorList[0]?.value}
                 className="cs-select ant-custom booking-input"
-                isSearchable={true}
+                isSearchable={false}
                 placeholder="Vui lòng chọn màu biển số"
                 styles={customStyles}
                 options={licensePlateColorList}
