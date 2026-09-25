@@ -3,11 +3,17 @@ import "./index.scss";
 import { Input } from 'antd';
 import { IconArrowLeft, IconArrowRight } from '../../assets/icons';
 
-const BasicTablePaging = ({handlePaginations,count=false,firstPage}) => {
+const BasicTablePaging = ({handlePaginations,count=false,firstPage, currentPage}) => {
     const Enter = 13
     const [prevDisabled, setPrevDisabled] = useState(true)
     const [nextDisabled, setNextDisabled] = useState()
-    const [value, setValue] = useState(1)
+    const [value, setValue] = useState(currentPage || 1)
+
+    useEffect(() => {
+      if (currentPage !== undefined) {
+        setValue(currentPage)
+      }
+    }, [currentPage])
 
     const onKeyDown = (e) =>{
       let value=Number(e.target.value)
@@ -54,12 +60,12 @@ const BasicTablePaging = ({handlePaginations,count=false,firstPage}) => {
       setNextDisabled(count)
     },[count])
     useEffect(()=>{
-      setValue(1)
+      if (firstPage !== undefined) {
+        setValue(1)
+      }
     },[firstPage])
     useEffect(()=>{
-      if(value <= 1){
-      setPrevDisabled(true)
-      }
+      setPrevDisabled(value <= 1)
     },[value])
   return (
     <div className="pagination react-paginate separated-pagination pagination-sm justify-content-center pr-3 mt-1 mb-5 custom-font-family">

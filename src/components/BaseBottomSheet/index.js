@@ -32,6 +32,35 @@ const BaseBottomSheet = (props) => {
       }
       height={drawerHeight}
       className={`popup-booking base-bottom-sheet ${drawerClassName}`}
+      contentWrapperStyle={{
+        maxWidth: '600px',
+        margin: '0 auto',
+        width: '100%',
+        boxShadow: 'none'
+      }}
+      drawerStyle={{
+        borderRadius: '24px 24px 0 0',
+        overflow: 'hidden',
+        background: '#ffffff',
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '45dvh',
+        maxHeight: '80dvh'
+      }}
+      headerStyle={{
+        borderBottom: 'none',
+        padding: '24px 16px 12px',
+        background: '#ffffff',
+        display: 'flex',
+        alignItems: 'center',
+        flex: '0 0 auto'
+      }}
+      bodyStyle={{
+        padding: '0 16px 24px',
+        background: '#ffffff',
+        overflowY: 'auto',
+        flex: '1 1 auto'
+      }}
       styles={{
         wrapper: {
           maxWidth: '600px',

@@ -247,7 +247,7 @@ function BookingHistoryList({ loading, setLoading, phoneNumber }) {
       {dataList?.data?.length > 0 && (
         <div className="" style={{ maxWidth: 600, margin: 'auto', width: '100%',marginBottom:'60px' }}>
           <>
-            <BasicTablePaging handlePaginations={handleChangePage} count={dataList?.data?.length < filter.limit}></BasicTablePaging>
+            <BasicTablePaging handlePaginations={handleChangePage} count={dataList?.data?.length < filter.limit} currentPage={Math.floor(filter.skip / filter.limit) + 1}></BasicTablePaging>
           </>
         </div>
       )}

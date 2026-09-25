@@ -132,7 +132,7 @@ const BottomSheetSelect = (props) => {
               filteredOptions.map((item) => (
                 <button
                   key={item.value}
-                  className={`list-items ${item.disabled ? 'disabled-item' : ''} ${item.value === value ? 'selected-item' : ''}`}
+                  className={`list-items ${item.disabled ? 'disabled-item' : ''} ${String(item.value) === String(value) ? 'selected-item' : ''}`}
                   disabled={item.disabled}
                   onClick={() => handleSelectItem(item)}
                 >
