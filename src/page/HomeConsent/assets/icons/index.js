@@ -1,3 +1,0 @@
-
-export { ReactComponent as AutomatedTrafficFineNotificationAuthenticationHideInfo } from './AutomatedTrafficFineNotificationAuthenticationHideInfo.svg'
-export { ReactComponent as AutomatedTrafficFineNotificationAuthenticationShowInfo } from './AutomatedTrafficFineNotificationAuthenticationShowInfo.svg'

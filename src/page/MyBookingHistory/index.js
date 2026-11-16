@@ -5,10 +5,11 @@ import DefaultButton from '../../components/elements/button'
 import { useGlobalContext } from '../../context/GlobalContext'
 import { PATH } from '../../constants/router'
 import BookingHistoryList from './BookingHistoryList'
-import { useHistory } from 'react-router-dom/cjs/react-router-dom.min'
+import { useHistory, useLocation } from 'react-router-dom'
 const MyBookingHistory = () => {
   const [loading, setLoading] = useState(false)
   const history = useHistory()
+  const location = useLocation()
   const { globalState, handleGetUserPhone } = useGlobalContext();
   useEffect(() => {
     setLoading(true)
@@ -16,11 +17,12 @@ const MyBookingHistory = () => {
       setLoading(false)
     }).catch(err => {
       setLoading(false)
-      history.push('/')
+      history.push(PATH.HOME)
     })
   }, [])
 
-  const { userName, phoneNumber } = globalState
+  // Zalo: lấy SĐT từ Zalo; Web: lấy SĐT từ param ?phone=
+  const phoneNumber = globalState.phoneNumber || new URLSearchParams(location.search).get('phone') || ''
   return (
     <div className="w-100" style={{ minHeight: '100vh', maxWidth: 600, margin: 'auto' }}>
       <div className="bookingHistory-main" style={{ padding: "20px 15px 20px 15px" }}>
@@ -29,7 +31,7 @@ const MyBookingHistory = () => {
             colorType="dark"
             title="+ Đặt lịch hẹn"
             action={() => {
-              history.push(`${PATH.BOOKING}`)
+              history.push({ pathname: PATH.HOME, search: location.search })
             }}
           />
         </div>

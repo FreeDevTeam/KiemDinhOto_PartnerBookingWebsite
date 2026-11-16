@@ -1,0 +1,20 @@
+.basic-button {
+  height: 44px;
+  border-radius: 6px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.basic-button-primary.ant-btn-primary,
+.basic-button-primary.ant-btn-primary:not(:disabled):hover,
+.basic-button-primary.ant-btn-primary:not(:disabled):active {
+  background: var(--linear-gradient-button, var(--primary-button-color));
+  border-color: transparent;
+  color: #fff;
+}
+
+.basic-button-primary.ant-btn-primary:not(:disabled):hover {
+  opacity: 0.9;
+}
