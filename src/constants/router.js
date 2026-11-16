@@ -1,21 +1,9 @@
 export const PATH = {
-    HOME :"/",
-    LOGIN :"/login",
-    VNPAY_LOGIN: '/vnpay/login',
-    MYF88_LOGIN: '/myf88/login',
-    CHECK_VIHCLE :"/check-vihcle",
-    BOOKING: '/booking',
-    BOOKING_PARTNER_IFRAME: '/booking-partner-iframe',
-    RESET_PASSWORD: '/resetPassword',
-    MY_BOOKING_HYSTORY: '/my-booking-history',
-    BOOKING_HYSTORY: '/booking-history',
+    HOME: '/',
+    BOOKING_HISTORY: '/booking-history',
     BOOKING_DETAIL: '/booking-detail/:customerScheduleId',
     BOOKING_DETAIL_NO_ID: '/booking-detail',
     BOOKING_UPDATE: '/booking-update/:customerScheduleId',
-    PARTNER_GUIDE: '/partner-guide-link',
-    PERSONAL_GUIDE: '/personal-guide-link',
-    IFRAME_VIEW: '/page',
-    REFER_STATION: '/datlich/referStation',
-    REFER_STATION_BAODUONG: '/baoduong/referStation',
-    REFER_STATION_CUUHO: '/cuuho/referStation'
+    LOGIN_SUCCESS: '/loginSuccess',
+    LOGOUT: '/logout'
 }

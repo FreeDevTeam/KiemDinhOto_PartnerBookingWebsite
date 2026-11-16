@@ -1,16 +1,13 @@
 import axios from 'axios'
 import { HOST } from './../constants/url'
-import { IS_ZALO_MINI_APP } from '../constants/global'
 import { getQueryString } from '../helper/common'
 import { CheckApiKey } from '../helper/CheckApiKey'
 import { decryptAes256CBC } from './../pageUtililiy/EncryptionFunctions'
+import { getAuthToken, removeAuthToken } from '../helper/authToken'
 
 function cleanUp() {
-  window.localStorage.clear()
-  if (IS_ZALO_MINI_APP) {
-  } else {
-    window.location.href = '/login'
-  }
+  // Token hết hạn / không hợp lệ: xoá token để các lần gọi sau không gửi token cũ
+  removeAuthToken()
 }
 
 function send({ method = 'get', path, data = null, query = null, headers = {}, newUrl, }) {
@@ -19,6 +16,10 @@ function send({ method = 'get', path, data = null, query = null, headers = {}, n
     let _query={
       ...query,
       apiKey : apiKey
+    }
+    const token = getAuthToken()
+    if (token && !headers.Authorization && !headers.authorization) {
+      headers = { ...headers, Authorization: `Bearer ${token}` }
     }
     let url = HOST + `${path}${getQueryString(_query)}`
     if (newUrl) {
@@ -43,18 +44,16 @@ function send({ method = 'get', path, data = null, query = null, headers = {}, n
         const { response = {} } = error
         const result = response.data ? response.data : null
         if (!result) {
+          // Lỗi mạng / không có response: vẫn resolve để màn hình không bị treo loading
+          return resolve({})
         } else {
           const { statusCode, message: data } = result
 
           if (statusCode === 401) {
-            setTimeout(() => {
-              cleanUp()
-            }, 1000)
-          } else if ((statusCode === 401 && data === 'Unauthorized') || (statusCode === 403 && data === 'InvalidToken')) {
             cleanUp()
-          } else if (statusCode === 505) {
             return resolve(result)
-          } else if (statusCode === 500) {
+          } else if (statusCode === 403 && data === 'InvalidToken') {
+            cleanUp()
             return resolve(result)
           } else {
             return resolve(result)
