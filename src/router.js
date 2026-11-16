@@ -5,6 +5,7 @@ const MyBookingHistory = React.lazy(() => import('./page/MyBookingHistory/index'
 const BookingDetail = React.lazy(() => import('./page/BookingDetail/index'))
 const UpdateBookingDetail = React.lazy(() => import('./page/BookingDetail/UpdateBookingDetail'))
 const LoginSuccess = React.lazy(() => import('./page/LoginSuccess/index'))
+const Logout = React.lazy(() => import('./page/Logout/index'))
 
 export const ROUTERS = {
     // Trang chủ là trang đặt lịch
@@ -31,5 +32,9 @@ export const ROUTERS = {
     loginSuccess: {
         path: PATH.LOGIN_SUCCESS,
         component: LoginSuccess
+    },
+    logout: {
+        path: PATH.LOGOUT,
+        component: Logout
     }
 };
