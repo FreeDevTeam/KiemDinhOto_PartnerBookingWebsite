@@ -1114,22 +1114,26 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       })
   }
 
-  async function getStationServices(stationsId) {
+  // BE lọc option theo config của đối tác (isParentFiltered = true), FE chỉ hiển thị
+  async function getStationServices(stationsId, scheduleType) {
     try {
-      const response = await BookingService.getListStationService({ filter: { stationsId: stationsId } })
+      const response = await BookingService.getListStationService({ filter: { stationsId: stationsId }, scheduleType: scheduleType ? Number(scheduleType) : undefined })
       if (response?.isSuccess) {
-        return response.data.data.map((item) => ({
-          value: item.stationServicesId,
-          label: item.serviceName,
-          serviceType: item.serviceType,
-          parentServiceType: item.parentServiceType,
-          isActive: item.isActive
-        }))
+        return {
+          isParentFiltered: response.data.isParentFiltered === true,
+          services: response.data.data.map((item) => ({
+            value: item.stationServicesId,
+            label: item.serviceName,
+            serviceType: item.serviceType,
+            parentServiceType: item.parentServiceType,
+            isActive: item.isActive
+          }))
+        }
       }
-      return []
+      return { isParentFiltered: false, services: [] }
     } catch (error) {
       console.error('Error fetching station services:', error)
-      return []
+      return { isParentFiltered: false, services: [] }
     }
   }
 
@@ -1138,18 +1142,16 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     form.setFieldValue('serviceId', undefined)
     setStationServiceOptions([])
 
-    if (!stationsId || !parentServiceType) {
+    if (!stationsId) {
       setShowServiceType(false)
       return
     }
 
-    const services = await getStationServices(stationsId)
-    const filteredServices = services.filter((service) => {
-      return (
-        service?.isActive === 1 &&
-        Number(service?.parentServiceType) === Number(parentServiceType)
-      )
-    })
+    const { services, isParentFiltered } = await getStationServices(stationsId, scheduleType)
+    // BE đã lọc theo config đối tác thì dùng nguyên danh sách, ngược lại lọc theo nhóm mặc định
+    const filteredServices = isParentFiltered
+      ? services
+      : services.filter((service) => service?.isActive === 1 && Number(service?.parentServiceType) === Number(parentServiceType))
 
     if (filteredServices.length > 0) {
       setShowServiceType(true)
@@ -1453,7 +1455,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
     setShowServiceType(false)
     form.setFieldValue('serviceId', undefined)
-  }, [selectedScheduleType, selectedStationId])
+  }, [selectedScheduleType, selectedStationId, scheduleCategory, dataBookingParam])
 
   useEffect(() => {
     const scheduleTypeWithParams = scheduleTypes.find((item) => item.value === +form.getFieldValue('scheduleType'))
