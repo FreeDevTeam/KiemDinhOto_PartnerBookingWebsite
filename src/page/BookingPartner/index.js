@@ -3,7 +3,7 @@ import { Form, Spin, notification } from 'antd'
 import './index.scss'
 import BookingPartnerForm from './bookingPartnerForm'
 import { useGtelpayUserData } from '../../context/GtelpayContext'
-import { useLocation } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import LoadFormBookingFailed from '../../components/BasicComponent/LoadFormBookingFailed'
 import { CheckApiKey } from '../../helper/CheckApiKey'
 import { TTDK_PARTNER } from '../../components/BasicComponent/CheckLogoPartner'
@@ -13,6 +13,8 @@ import MainLogo from '../../components/MainLogo'
 import addKeyLocalStorage from '../../helper/localStorage'
 import Header from '../../components/Header'
 import { useAppParamsContext } from '../../context/AppParamsContext'
+import BasicButton from '../../components/BasicComponent/BasicButton'
+import { PATH } from '../../constants/router'
 function BookingPartner() {
   const { globalState, handleGetUserPhone, handleGetUserName, setGlobalState } = useGlobalContext();
   const { gtelpayUser } = useGtelpayUserData()
@@ -21,6 +23,7 @@ function BookingPartner() {
   const [tabKey, setTabKey] = useState()
   const [form] = Form.useForm()
   const location = useLocation();
+  const history = useHistory()
   const searchparam = location.search
   const params = new URLSearchParams(searchparam)
   let partner = params.get('partner')?.toLowerCase()
@@ -73,6 +76,13 @@ function BookingPartner() {
       {apikey ?
         (
           <div className={`partner app-container ${nextTab === 'otp' ? 'py-0 px-2' : 'pd-30-15'}`} style={{ maxWidth: 600, margin: 'auto', padding: '16px' }}>
+            <div className="mb-3">
+              <BasicButton
+                type="primary"
+                title="Danh sách lịch hẹn"
+                onClick={() => history.push({ pathname: PATH.BOOKING_HISTORY, search: location.search })}
+              />
+            </div>
             {isVisible ? (
               <div className="loading">
                 <Spin style={{ width: '100%' }} />

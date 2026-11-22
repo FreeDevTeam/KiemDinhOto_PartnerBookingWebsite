@@ -10,6 +10,7 @@ import Car from './../../assets/icons/car.png'
 import BasicTablePaging from '../../components/BasicComponent/BasicTablePaging'
 import useWindowDimensions from '../../hooks/window-dimensions'
 import { isMobileDisplaySize } from '../../pageUtililiy/isMobileDisplaySize'
+import { getAuthToken } from '../../helper/authToken'
 const { TextArea } = Input
 const LicensePlateTag = ({ color, licensePlate }) => {
   const plateColor = {
@@ -173,13 +174,16 @@ function BookingHistoryList({ loading, setLoading, phoneNumber }) {
   const [dataList, setDataList] = useState({ data: [], total: 0 })
   const [resultAfterAPIText, setResultAfterAPIText] = useState('')
   useEffect(() => {
-    if (phoneNumber) {
-      getData({
-        ...filter,
-        filter: {
-          phone: phoneNumber
-        }
-      })
+    // Có SĐT hoặc đã đăng nhập (có token) thì mới lấy danh sách lịch hẹn
+    if (phoneNumber || getAuthToken()) {
+      const newFilter = {
+        ...DEFAULT_FILTER,
+        filter: phoneNumber ? { phone: phoneNumber } : {}
+      }
+      setFilter(newFilter)
+      getData(newFilter)
+    } else {
+      setResultAfterAPIText("Bạn chưa có lịch hẹn nào")
     }
   }, [phoneNumber])
 

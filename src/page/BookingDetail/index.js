@@ -4,12 +4,15 @@ import { Tag, Row, message, Button, Modal, Spin, Pagination, Empty, Radio, Space
 import { VEHICLE_SUB_TYPE, VIHCLE_TYPES, SCHEDULE_STATUS, CUSTOMER_RECEIPT_STATUS, CUSTOMER_RECEIPT_STATUS_TO_TEXT, PAYMENT_OBJECT, SCHEDULE_STATUS_3_0 } from '../../constants/global'
 import _ from 'lodash'
 import { changeTime } from '../../helper/changeTime'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 import moment from 'moment'
 import BookingService from '../../services/addBookingService'
 import PopupMessage from '../BookingPartner/PopupMessage'
 import { useParams } from 'react-router-dom/cjs/react-router-dom'
 import { CheckApiKey } from '../../helper/CheckApiKey'
+import { PATH } from '../../constants/router'
+import BasicButton from '../../components/BasicComponent/BasicButton'
+import BasicResultMessage from '../../components/BasicComponent/BasicResultMessage'
 
 const { TextArea } = Input
 
@@ -29,8 +32,12 @@ const BookingDetail = ({
   isHeader = true
 }) => {
   const { customerScheduleId } = useParams()
-  const urlParams = new URLSearchParams(window.location.search);
-  const scheduleHash = localStorage.getItem('schedulehash') || urlParams.get('schedulehash');
+  const location = useLocation()
+  const urlParams = new URLSearchParams(location.search);
+  const scheduleHash = (urlParams.get('scheduleHash') || urlParams.get('schedulehash') || '').trim();
+  const [searchHash, setSearchHash] = useState(scheduleHash)
+  const [isLoading, setIsLoading] = useState(false)
+  const [isNotFound, setIsNotFound] = useState(false)
   let apiKey = CheckApiKey()
   if (apiKey) {
     localStorage.setItem('apiKey', apiKey);
@@ -96,35 +103,99 @@ const BookingDetail = ({
   if (dataTime) {
     wab = JSON.parse(scheduleInformation?.station?.stationWorkTimeConfig)
   }
-  const getScheduleDetail = () => {
-    BookingService.getBookingDetail(customerScheduleId).then((result) => {
-      const { isSuccess, message, data } = result
-      if (!isSuccess || !data) {
-        return
-      } else {
-        setScheduleInformation(data)
-      }
-    })
+  const handleScheduleResult = (result = {}) => {
+    const { isSuccess, data } = result
+    setIsLoading(false)
+    if (!isSuccess || !data) {
+      setScheduleInformation([])
+      setIsNotFound(true)
+    } else {
+      setIsNotFound(false)
+      setScheduleInformation(data)
+    }
   }
   useEffect(() => {
-    if(scheduleHash){
-      BookingService.findByHash({scheduleHash:scheduleHash}).then((result) => {
-        const { isSuccess, message, data } = result
-        if (!isSuccess || !data) {
-          return
-        } else {
-          setScheduleInformation(data)
-        }
-      })
+    setSearchHash(scheduleHash)
+    if (scheduleHash) {
+      // Tìm trực tiếp theo scheduleHash
+      setIsLoading(true)
+      BookingService.findByHash({ scheduleHash: scheduleHash }).then(handleScheduleResult)
+    } else if (customerScheduleId) {
+      setIsLoading(true)
+      BookingService.getBookingDetail(customerScheduleId).then(handleScheduleResult)
+    } else {
+      setScheduleInformation([])
+      setIsNotFound(false)
     }
-    else{
-      if(customerScheduleId) {
-        getScheduleDetail()
-      }
-    }
-  }, [customerScheduleId,scheduleHash])
+  }, [customerScheduleId, scheduleHash])
 
   const history = useHistory()
+
+  const handleSearchByHash = (value) => {
+    const hash = (value || '').trim()
+    if (!hash) {
+      return
+    }
+    const params = new URLSearchParams(location.search)
+    params.delete('schedulehash')
+    params.set('scheduleHash', hash)
+    history.push({ pathname: PATH.BOOKING_DETAIL_NO_ID, search: `?${params.toString()}` })
+  }
+
+  const goToBookingHistory = () => {
+    const params = new URLSearchParams(location.search)
+    params.delete('schedulehash')
+    params.delete('scheduleHash')
+    const search = params.toString()
+    history.push({ pathname: PATH.BOOKING_HISTORY, search: search ? `?${search}` : '' })
+  }
+
+  const searchBox = (
+    <div className="mb-3">
+      <Input.Search
+        size="large"
+        placeholder="Nhập mã lịch hẹn (scheduleHash)"
+        value={searchHash}
+        onChange={(e) => setSearchHash(e.target.value)}
+        onSearch={handleSearchByHash}
+        enterButton="Tìm"
+        allowClear
+      />
+    </div>
+  )
+
+  if (isLoading) {
+    return (
+      <div className="detail-sche" style={{ maxWidth: 600, margin: 'auto', padding: '10px' }}>
+        {searchBox}
+        <div className="d-flex justify-content-center" style={{ padding: '40px 0' }}>
+          <Spin />
+        </div>
+      </div>
+    )
+  }
+
+  if (isNotFound) {
+    return (
+      <div className="detail-sche" style={{ maxWidth: 600, margin: 'auto', padding: '10px' }}>
+        {searchBox}
+        <BasicResultMessage
+          message="Thông tin không đúng"
+          ctaTitle="Quay lại danh sách lịch hẹn"
+          onCtaClick={goToBookingHistory}
+        />
+      </div>
+    )
+  }
+
+  if (!scheduleHash && !customerScheduleId) {
+    return (
+      <div className="detail-sche" style={{ maxWidth: 600, margin: 'auto', padding: '10px' }}>
+        {searchBox}
+        <BasicButton type="default" title="Quay lại danh sách lịch hẹn" onClick={goToBookingHistory} />
+      </div>
+    )
+  }
   const BindPlate = ({ type, number }) => {
     const colors = {
       1: '#fffff',
@@ -157,6 +228,7 @@ const BookingDetail = ({
 
   return (
     <div className="detail-sche" style={{ maxWidth: 600, margin: 'auto', padding: '10px' }}>
+     {searchBox}
      {isHeader && <div className="heads" style={{borderRadius:'30px 30px 0 0',padding:''}}>
         Thông tin lịch hẹn
       </div>}

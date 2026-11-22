@@ -17,7 +17,7 @@ import { IS_ZALO_MINI_APP } from './constants/global';
 import Layout from './components/Layout';
 import { PATH } from './constants/router';
 import { GlobalProvider } from './context/GlobalContext';
-import { fillterRoutes } from './router';
+import { ROUTERS } from './router';
 
 import SystemConfigurationsService from './services/SystemConfigurationsService';
 import { getQueryParams } from './page/BookingPartner/bookingPartnerForm';
@@ -95,19 +95,16 @@ function App() {
       loadingScreen.style.display = 'none';
     }
   }, []);
-  const getRedirectPath = () => {
-    return process.env.REACT_APP_DEFAULT_HOME_PATH === '/' ? PATH.VNPAY_LOGIN : process.env.REACT_APP_DEFAULT_HOME_PATH;
-  };
   return (
     <GlobalProvider>
       <Router export basename={baseName}>
         <Switch>
-          {Object.keys(fillterRoutes).map((key) => {
+          {Object.keys(ROUTERS).map((key) => {
             return (
               <Route
                 key={Math.random()}
                 exact
-                path={fillterRoutes[key].path}
+                path={ROUTERS[key].path}
                 component={(props) => (
                   <React.Suspense
                     fallback={
@@ -115,13 +112,13 @@ function App() {
                         <MainLogo height={60} width={60}></MainLogo>
                       </div>
                     }>
-                    <Layout {...props} Component={fillterRoutes[key].component} hideMobileMenu={fillterRoutes[key].hideMobileMenu} />
+                    <Layout {...props} Component={ROUTERS[key].component} hideMobileMenu={ROUTERS[key].hideMobileMenu} />
                   </React.Suspense>
                 )}
               />
             )
           })}
-          <Redirect to={getRedirectPath()} />
+          <Redirect to={PATH.HOME} />
         </Switch>
       </Router>
     </GlobalProvider>
