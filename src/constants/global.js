@@ -871,3 +871,6 @@ export const NAVIGATION_TYPE= {
   EXTERNAL: 2,    // Ra ngoài
   INTERNAL: 3,    // Nội bộ
 }
+
+// Loại trạm Backend: 1 = Trung tâm đăng kiểm (Backend không có loại 0)
+export const STATION_TYPE_EXTERNAL = 1

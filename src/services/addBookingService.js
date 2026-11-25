@@ -672,12 +672,12 @@ export default class BookingService {
         method: 'POST',
         path: '/PartnerAPI/CustomerSchedule/user/createPayment',
         data
-      }).then((result = {}) => {
-        const { statusCode, data, message } = result
+      }).then((result) => {
+        const { statusCode, data, message, error } = result || {}
         if (statusCode === 200) {
           return resolve({ isSuccess: true, data })
         } else {
-          return resolve({ isSuccess: false, message })
+          return resolve({ isSuccess: false, message, error, isNetworkError: !result })
         }
       })
     })

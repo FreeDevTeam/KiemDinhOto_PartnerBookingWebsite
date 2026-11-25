@@ -15,6 +15,7 @@ import {
   PAYMENT_SUB_TYPE,
   PAYMENT_TYPE,
   PLATE_COLOR,
+  STATION_TYPE_EXTERNAL,
   VEHICLE_SUB_CATEGORY,
   VEHICLE_SUB_TYPE,
   VIHCLE_CATEGORY_BUS,
@@ -35,6 +36,7 @@ import SystemConfigurationsService from '../../services/SystemConfigurationsServ
 import MainLogo from '../../components/MainLogo'
 import addKeyLocalStorage from '../../helper/localStorage'
 import PaymentService from '../../services/paymentService'
+import { getPrepaidRedirect } from '../../helper/orderPayment'
 import BottomSheetSelect from '../../components/BottomSheetSelect'
 import { useAppParamsContext } from '../../context/AppParamsContext'
 
@@ -150,6 +152,22 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     }
   }
 
+  // Đặt lịch có dịch vụ thu tiền trước: chưa có lịch, mở màn chi tiết đơn hàng để thanh toán.
+  // Trả về true nếu response thuộc luồng thanh toán trước (caller không được báo đặt lịch thành công).
+  const redirectToOrderPaymentIfPrepaid = (data) => {
+    const prepaidRedirect = getPrepaidRedirect(data)
+    if (!prepaidRedirect.isPrepaid) {
+      return false
+    }
+    if (!prepaidRedirect.path) {
+      setIsModalErrOpen(true)
+      setErrorMessage(SCHEDULE_ERROR.INVALID_REQUEST)
+      return true
+    }
+    history.push(prepaidRedirect.path)
+    return true
+  }
+
   const isConfigEnabled = (value) => value === true || value === 1 || `${value}`.toLowerCase() === 'true' || `${value}` === '1'
   const getConfigText = (value) => (typeof value === 'string' ? value.trim() : '')
   // Sẽ ưu tiên biến miniAppVisible nếu có, nếu không mới dùng biến metadataRequired để check
@@ -263,6 +281,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           setErrorMessage(SCHEDULE_ERROR[rsMess] || SCHEDULE_ERROR.INVALID_REQUEST)
           return false
         }
+        if (redirectToOrderPaymentIfPrepaid(data)) {
+          return false
+        }
         const { customerScheduleId, paymentUrl } = data
         // Gọi API thanh toán nếu ở môi trường GTEL
         if (MINIAPP_GTELPAY) {
@@ -299,6 +320,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
         if (statusCode !== 200) {
           setIsModalErrOpen(true)
           setErrorMessage(SCHEDULE_ERROR[rsMess] || SCHEDULE_ERROR.INVALID_REQUEST)
+          return false
+        }
+        if (redirectToOrderPaymentIfPrepaid(data)) {
           return false
         }
         const scheduleId = data?.[0]
@@ -849,6 +873,25 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     )
   }
 
+  // Tìm trạm theo mã đã cấu hình. Trạm cấu hình có thể không phải trung tâm đăng kiểm (vd garage, loại 3)
+  // nên lấy đúng loại trạm từ chi tiết trạm; không lấy được thì mới dùng trung tâm đăng kiểm.
+  async function searchConfiguredStationByCode(stationsCode, stationArea, configuredStationsId) {
+    let stationType = STATION_TYPE_EXTERNAL
+    if (configuredStationsId) {
+      const stationDetail = await BookingService.getDetailStation({ id: Number(configuredStationsId) })
+      if (Number.isInteger(stationDetail?.stationType) && stationDetail.stationType > 0) {
+        stationType = stationDetail.stationType
+      }
+    }
+
+    return BookingService.searchStationList({
+      filter: { stationArea, stationType },
+      searchText: stationsCode,
+      skip: 0,
+      limit: 20
+    })
+  }
+
   function getStations(filter = null, callback = null) {
     setIsStationLoading(true)
     const stationsCode = `${dataBookingParam?.stationsCode || ''}`.trim()
@@ -857,15 +900,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
 
     const stationListPromise = BookingService.searchStationList(filter)
     const stationByCodePromise = !isSystemStationConfig
-      ? BookingService.searchStationList({
-        filter: {
-          stationArea,
-          stationType: 0
-        },
-        searchText: stationsCode,
-        skip: 0,
-        limit: 20
-      }).catch(() => null)
+      ? searchConfiguredStationByCode(stationsCode, stationArea, dataBookingParam?.stationsId).catch(() => null)
       : Promise.resolve(null)
 
     Promise.all([stationListPromise, stationByCodePromise])

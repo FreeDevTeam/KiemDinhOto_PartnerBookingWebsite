@@ -6,6 +6,7 @@ import { SCHEDULE_ERROR } from './../../constants/errorMessage'
 import BookingService from './../../services/addBookingService'
 import BookingSuccess from './BookingSuccessModal'
 import { useHistory } from 'react-router-dom'
+import { getPrepaidRedirect } from '../../helper/orderPayment'
 import DefaultButton from './../../components/elements/button'
 import CheckboxConfig from './../../components/shared/checkbox/checkbox'
 import { PAYMENT_OBJECT, VEHICLE_SUB_CATEGORY } from './../../constants/global'
@@ -69,6 +70,18 @@ function BookingAdditionalInfo({ data, setStep }) {
         }
       setIsVisible(false)
       } else {
+        // Dịch vụ thu tiền trước: chưa có lịch, mở màn chi tiết đơn hàng thay vì báo đặt lịch thành công
+        const prepaidRedirect = getPrepaidRedirect(data)
+        if (prepaidRedirect.isPrepaid) {
+          if (prepaidRedirect.path) {
+            history.push(prepaidRedirect.path)
+          } else {
+            setIsModalErrOpen(true)
+            setErrorMessage(SCHEDULE_ERROR.INVALID_REQUEST)
+            setIsVisible(false)
+          }
+          return
+        }
         setScheduleId(data[0])
         setIsModalOpen(true)
       }

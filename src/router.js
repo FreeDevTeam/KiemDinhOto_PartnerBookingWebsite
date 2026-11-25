@@ -18,6 +18,7 @@ const PartnerGuide = React.lazy(() => import('./page/Guide/partnerGuide'))
 const PersonalGuide = React.lazy(() => import('./page/Guide/personalGuide'))
 const UpdateBookingDetail = React.lazy(() => import('./page/BookingDetail/UpdateBookingDetail'))
 const IframeView = React.lazy(() => import('./page/IframeView'))
+const SchedulePayment = React.lazy(() => import('./page/SchedulePayment/index'))
 const ReferStation = React.lazy(() => import('./page/ReferStation/index'))
 
 const BookingType=process.env.REACT_APP_BHTNDS
@@ -110,6 +111,11 @@ export const ROUTERS = {
         component: UpdateBookingDetail,
         isZaloApp: 1,
     },
+    schedulePaymentZalo: {
+        path: PATH.SCHEDULE_PAYMENT,
+        component: SchedulePayment,
+        isZaloApp: 1,
+    },
     // page on web
     partnerLoginWeb: {
         path: PATH.PARTNER_LOGIN,
@@ -180,6 +186,11 @@ export const ROUTERS = {
     updateBookingOnWeb: {
         path: PATH.BOOKING_UPDATE,
         component: UpdateBookingDetail,
+        isZaloApp: 0,
+    },
+    schedulePaymentWeb: {
+        path: PATH.SCHEDULE_PAYMENT,
+        component: SchedulePayment,
         isZaloApp: 0,
     },
     iframeView: {
