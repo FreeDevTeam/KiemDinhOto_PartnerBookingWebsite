@@ -9,6 +9,7 @@ import BookingSuccess from './BookingSuccessModal'
 // NOTE: Bắt buộc truyền prop `status` ('success'|'error'|'info') khi dùng PopupMessage để tránh vỡ giao diện theme BIDV.
 import PopupMessage from './PopupMessage'
 import { changeTime } from '../../helper/changeTime'
+import { numberWithSeparator } from '../../helper/numberWithSeparator'
 import { validatorPlateNumber, normalizePlate } from './../../helper/validatorPlateNumber'
 import { optionServiceType, SCHEDULE_TITLE, SCHEDULE_TYPE_MINIAPP, SCHEDULE_TYPE_PARENT_SERVICE_TYPE, SERVICE_TYPE_PARENT_SERVICE_TYPE } from '../../constants/serviceOption'
 import {
@@ -55,6 +56,17 @@ export function getQueryParams(options = {}) {
   }
   return {}
 }
+// Tên dịch vụ kèm giá; servicePrice <= 0 (chưa niêm yết) thì chỉ hiện tên
+const renderStationServiceLabel = (serviceName, servicePrice) => {
+  const price = Number(servicePrice) || 0
+  return (
+    <div className="station-service-option">
+      <span className="station-service-option-name">{serviceName}</span>
+      {price > 0 && <span className="station-service-option-price">{numberWithSeparator(price, ',')}đ</span>}
+    </div>
+  )
+}
+
 const CustomSelect = ({ isBidvTheme, ...props }) => {
   if (isBidvTheme) {
     return <BottomSheetSelect {...props} />
@@ -1210,7 +1222,9 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
           isScheduleTypeMapped: response.data.isScheduleTypeMapped === true,
           services: response.data.data.map((item) => ({
             value: item.stationServicesId,
-            label: item.serviceName,
+            label: renderStationServiceLabel(item.serviceName, item.servicePrice),
+            serviceName: item.serviceName,
+            servicePrice: Number(item.servicePrice) || 0,
             serviceType: item.serviceType,
             parentServiceType: item.parentServiceType,
             isActive: item.isActive

@@ -727,3 +727,25 @@ body:not([data-theme='BIDV']) {
     }
   }
 }
+
+// Option chọn dịch vụ: tên bên trái, giá bên phải
+.station-service-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+
+  &-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &-price {
+    flex-shrink: 0;
+    font-weight: 500;
+    color: var(--primary-button-color);
+  }
+}
