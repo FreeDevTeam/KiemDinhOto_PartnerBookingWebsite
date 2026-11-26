@@ -24,6 +24,8 @@ const PackageInfo = ({ orderDetail }) => {
   const orderItems = Array.isArray(orderDetail?.orderItems) ? orderDetail.orderItems : []
   const discountAmount = Number(orderDetail?.discountAmount) || 0
   const vatPercent = getVatPercent(orderDetail)
+  // Đơn không có thuế (0đ) thì ẩn dòng VAT và lưu ý xuất hoá đơn
+  const hasTax = (Number(orderDetail?.taxAmount) || 0) > 0
 
   return (
     <div className="package-info">
@@ -76,23 +78,27 @@ const PackageInfo = ({ orderDetail }) => {
           </div>
 
           <div className="package-info-prices py-3">
-            <div className="d-flex w-100 justify-content-between align-items-center pb-3">
+            <div className={`d-flex w-100 justify-content-between align-items-center ${hasTax ? 'pb-3' : ''}`}>
               <span>Tạm tính</span>
               <span>
                 <b>{formatMoney(orderDetail?.subTotalAmount)}</b>
               </span>
             </div>
-            <div className="d-flex w-100 justify-content-between align-items-center">
-              <span>Thuế VAT{vatPercent ? ` (${vatPercent}%)` : ''}</span>
-              <span>
-                <b>{formatMoney(orderDetail?.taxAmount)}</b>
-              </span>
-            </div>
-            <span className="package-info-prices-invoice-tips">
-              <small>
-                <i>Vui lòng liên hệ CSKH nếu cần xuất Hoá đơn GTGT.</i>
-              </small>
-            </span>
+            {hasTax && (
+              <>
+                <div className="d-flex w-100 justify-content-between align-items-center">
+                  <span>Thuế VAT{vatPercent ? ` (${vatPercent}%)` : ''}</span>
+                  <span>
+                    <b>{formatMoney(orderDetail?.taxAmount)}</b>
+                  </span>
+                </div>
+                <span className="package-info-prices-invoice-tips">
+                  <small>
+                    <i>Vui lòng liên hệ CSKH nếu cần xuất Hoá đơn GTGT.</i>
+                  </small>
+                </span>
+              </>
+            )}
           </div>
 
           <div className="package-info-prices py-3">
