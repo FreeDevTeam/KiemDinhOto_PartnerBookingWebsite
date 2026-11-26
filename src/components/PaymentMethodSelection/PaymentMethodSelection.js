@@ -4,6 +4,7 @@ import './index.scss'
 import PaymentService from '../../services/paymentService'
 import { useAppParamsContext } from '../../context/AppParamsContext'
 import { normalizePaymentMethodList } from '../../helper/orderPayment'
+import defaultPaymentIcon from '../../assets/icons/payment-default.svg'
 
 export const PAYMENT_TYPE_CODE = {
   ATM_BANK: 'ATM_BANK',
@@ -30,6 +31,29 @@ export const PAYMENT_TYPE = {
   VIETTEL_MONEY: 9,
   SHOPEEPAY: 10,
   BAOKIM: 11
+}
+
+// Ảnh cổng thanh toán: Backend có thể trả null/rỗng hoặc URL hỏng -> dùng ảnh mặc định
+const PaymentMethodImage = ({ src, height, alt }) => {
+  const imageUrl = typeof src === 'string' && src.trim() ? src.trim() : defaultPaymentIcon
+  const [currentSrc, setCurrentSrc] = useState(imageUrl)
+
+  useEffect(() => {
+    setCurrentSrc(imageUrl)
+  }, [imageUrl])
+
+  return (
+    <img
+      height={height}
+      src={currentSrc}
+      alt={alt || 'payment-method'}
+      onError={() => {
+        if (currentSrc !== defaultPaymentIcon) {
+          setCurrentSrc(defaultPaymentIcon)
+        }
+      }}
+    />
+  )
 }
 
 const SYSTEM_METHOD_TIMEOUT_MS = 20000
@@ -115,8 +139,8 @@ const PaymentMethodSelection = ({ paymentMethod, setPaymentMethod, setListPaymen
                 className={`payment-method-selection-item py-3 d-flex flex-column align-items-center justify-content-center gap-3 bg-white ${
                   methodList.length === 1 ? 'w-100' : ''
                 } ${paymentMethod === item.paymentMethodId ? 'active' : ''}`}>
-                {item.paymentMethodImageUrl && <img height={item.paymentMethodName === 'ZaloPay' ? 50 : 30} src={item.paymentMethodImageUrl} alt={item.paymentMethodReferName} />}
-                <div>{item.paymentMethodName}</div>
+                <PaymentMethodImage height={item.paymentMethodName === 'ZaloPay' ? 50 : 30} src={item.paymentMethodImageUrl} alt={item.paymentMethodReferName} />
+                <div>{item.paymentMethodName?.trim() || item.paymentMethodReferName?.trim() || 'Cổng thanh toán'}</div>
               </div>
             ))}
           </div>
