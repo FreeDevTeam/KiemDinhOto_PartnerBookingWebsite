@@ -37,6 +37,7 @@ import MainLogo from '../../components/MainLogo'
 import addKeyLocalStorage from '../../helper/localStorage'
 import PaymentService from '../../services/paymentService'
 import { getPrepaidRedirect } from '../../helper/orderPayment'
+import { buildBookingDraft, getBookingDraftFromLocation, saveBookingDraftToHistory } from '../../helper/bookingDraft'
 import BottomSheetSelect from '../../components/BottomSheetSelect'
 import { useAppParamsContext } from '../../context/AppParamsContext'
 
@@ -137,6 +138,15 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   const [isConfirmTermModalOpen, setIsConfirmTermModalOpen] = useState(false)
   const stationSearchTimeoutRef = React.useRef(null)
   const stationTypeDefaultAppliedRef = React.useRef(false)
+  // Bản nháp form khi quay lại từ màn thanh toán (xem helper/bookingDraft): field nhập tay khôi phục lúc khởi tạo form,
+  // trạm/ngày/giờ/dịch vụ phụ thuộc API nên chờ danh sách tải xong mới khôi phục, dùng xong thì bỏ để không ghi đè lựa chọn mới.
+  const bookingDraftRef = React.useRef(getBookingDraftFromLocation(history.location))
+  const pendingScheduleDraftRef = React.useRef(bookingDraftRef.current?.schedule?.stationsId ? bookingDraftRef.current.schedule : null)
+  const pendingServiceDraftRef = React.useRef(
+    bookingDraftRef.current?.schedule?.serviceId != null
+      ? { stationsId: bookingDraftRef.current.schedule.stationsId, serviceId: bookingDraftRef.current.schedule.serviceId }
+      : null
+  )
 
   // states cho phương thức thanh toán
   const [zalopayPaymentMethod, setZalopayPaymentMethod] = useState(null)
@@ -164,6 +174,8 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       setErrorMessage(SCHEDULE_ERROR.INVALID_REQUEST)
       return true
     }
+    // Giữ dữ liệu đã nhập để người dùng back lại từ màn thanh toán không phải nhập lại
+    saveBookingDraftToHistory(history, buildBookingDraft(form.getFieldsValue(true), { isRedirectConsentChecked }))
     history.push(prepaidRedirect.path)
     return true
   }
@@ -704,6 +716,12 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   }
 
   const onChangeStation = async (stationsId, overrideVehicleType = null, stationOption = null) => {
+    // Bản nháp ngày/giờ chỉ áp dụng cho đúng trạm đã chọn trước đó; đổi sang trạm khác thì bỏ
+    const draftSchedule = pendingScheduleDraftRef.current && `${pendingScheduleDraftRef.current.stationsId}` === `${stationsId}` ? pendingScheduleDraftRef.current : null
+    if (!draftSchedule) {
+      pendingScheduleDraftRef.current = null
+    }
+
     // Reset Date & Time
     form.setFieldValue('dateSchedule', undefined)
     form.setFieldValue('time', undefined)
@@ -740,9 +758,11 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
         return
       }
 
-      const actualFilter = result.filter
+      // Ngày trong bản nháp có thể thuộc tháng sau tháng có ngày trống đầu tiên: tải đúng tháng đó để chọn lại
+      const draftMonthFilter = getDraftDateMonthFilter(result.filter, draftSchedule?.dateSchedule)
+      const actualFilter = draftMonthFilter || result.filter
       setWorkdayFilter(actualFilter)
-      getBookingDate(actualFilter, result.bookingDates, result.selectedDate, stationAcceptBooking)
+      getBookingDate(actualFilter, draftMonthFilter ? null : result.bookingDates, draftSchedule?.dateSchedule || result.selectedDate, stationAcceptBooking)
     } catch (err) {
       console.error(err)
       form.setFieldValue('dateSchedule', undefined)
@@ -754,7 +774,27 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     }
   }
 
+  // Filter tháng chứa ngày hẹn trong bản nháp; null nếu ngày không hợp lệ, đã qua hoặc cùng tháng với filter hiện tại
+  function getDraftDateMonthFilter(currentFilter, draftDate) {
+    const date = moment(draftDate, DATE_DISPLAY_FORMAT, true)
+    const currentStart = moment(currentFilter?.startDate, DATE_DISPLAY_FORMAT, true)
+    if (!draftDate || !date.isValid() || !currentStart.isValid() || date.isBefore(currentStart, 'day') || date.isSame(currentStart, 'month')) {
+      return null
+    }
+    return {
+      ...currentFilter,
+      startDate: date.clone().startOf('month').format(DATE_DISPLAY_FORMAT),
+      endDate: date.clone().endOf('month').format(DATE_DISPLAY_FORMAT)
+    }
+  }
+
   function getBookingHours(params) {
+    // Giờ trong bản nháp chỉ áp dụng khi đúng trạm và ngày đã chọn trước đó; lần tải giờ này dùng xong bản nháp
+    const pendingSchedule = pendingScheduleDraftRef.current
+    const draftScheduleTime =
+      pendingSchedule && `${pendingSchedule.stationsId}` === `${params.stationsId}` && pendingSchedule.dateSchedule === params.date ? pendingSchedule.scheduleTime : null
+    pendingScheduleDraftRef.current = null
+
     setLoadingHoursPicker(true)
     BookingService.getBookingHours(params)
       .then((data) => {
@@ -778,7 +818,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
             element.value = element.disabled
           })
 
-          const firstAvailableTime = tmp.find((item) => !item.disabled)
+          const firstAvailableTime = (draftScheduleTime && tmp.find((item) => !item.disabled && item.scheduleTime === draftScheduleTime)) || tmp.find((item) => !item.disabled)
           if (firstAvailableTime) {
             form.setFieldValue('time', firstAvailableTime)
           } else {
@@ -1010,6 +1050,17 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
             setListStation(finalStationList)
           }
 
+          // Quay lại từ màn thanh toán: chọn lại trạm đã chọn nếu trạm vẫn còn hoạt động, không thì bỏ bản nháp lịch hẹn
+          const pendingSchedule = pendingScheduleDraftRef.current
+          if (pendingSchedule) {
+            const draftStation = finalStationList.find((item) => `${item?.stationsId}` === `${pendingSchedule.stationsId}` && !item?.disabled)
+            if (draftStation) {
+              targetStationId = draftStation.stationsId
+            } else {
+              pendingScheduleDraftRef.current = null
+            }
+          }
+
           const targetStation = finalStationList?.find((item) => `${item?.stationsId}` === `${targetStationId}`) || null
 
           setStationSelected(targetStation)
@@ -1196,6 +1247,12 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
       if (Number(scheduleType) === SCHEDULE_TYPE_MINIAPP.E_TICKET_SALE) {
         form.setFieldValue('serviceId', filteredServices[0]?.value)
       }
+      // Quay lại từ màn thanh toán: chọn lại dịch vụ nếu vẫn thuộc danh sách của trạm.
+      // Danh sách có thể tải lại nhiều lần cho cùng trạm nên giữ bản nháp tới khi người dùng tự đổi dịch vụ/mục đích/trạm.
+      const pendingService = pendingServiceDraftRef.current
+      if (pendingService && `${pendingService.stationsId}` === `${stationsId}` && filteredServices.some((service) => `${service?.value}` === `${pendingService.serviceId}`)) {
+        form.setFieldValue('serviceId', pendingService.serviceId)
+      }
       setStationServiceOptions(filteredServices)
     } else {
       setShowServiceType(false)
@@ -1374,9 +1431,11 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
   }, [form.getFieldValue('vntId'), form.getFieldValue('stationType')])
 
   useEffect(() => {
-    if (dataBookingParam?.vehicleSubType || form.getFieldValue('vehicleSubType')) {
-      handleCategory(dataBookingParam?.vehicleSubType || form.getFieldValue('vehicleSubType') || VEHICLE_SUB_TYPE[0]?.value) // Phân loại
-      const vehicleType = VEHICLE_SUB_TYPE.find((item) => item.value === (dataBookingParam?.vehicleSubType || form.getFieldValue('vehicleSubType'))) // loại phương tiện
+    const draftFields = bookingDraftRef.current?.fields || {}
+    const initVehicleSubType = draftFields.vehicleSubType || dataBookingParam?.vehicleSubType || form.getFieldValue('vehicleSubType')
+    if (initVehicleSubType) {
+      handleCategory(initVehicleSubType) // Phân loại
+      const vehicleType = VEHICLE_SUB_TYPE.find((item) => item.value === initVehicleSubType) // loại phương tiện
       setWorkdayFilter({
         ...workdayFilter,
         vehicleType: vehicleType?.vehicleType,
@@ -1397,8 +1456,16 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
         certificateSeries: dataBookingParam.certificateSeries || undefined,
         licensePlates: normalizePlate(dataBookingParam.licensePlates) || undefined,
         stationType: dataBookingParam.stationType ?? defaultStationType,
-        stationsId: dataBookingParam.stationsId || undefined
+        stationsId: dataBookingParam.stationsId || undefined,
+        // Quay lại từ màn thanh toán: dữ liệu người dùng đã nhập ưu tiên hơn giá trị mặc định/cấu hình
+        ...draftFields
       })
+      if (bookingDraftRef.current) {
+        if (draftFields.stationType !== undefined) {
+          stationTypeDefaultAppliedRef.current = true
+        }
+        setIsRedirectConsentChecked(!!bookingDraftRef.current.isRedirectConsentChecked)
+      }
     }
   }, [dataBookingParam])
 
@@ -1424,10 +1491,11 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
     if (isZaloApp) {
       form.setFieldValue('phone', zaloUserPhone)
       form.setFieldValue('name', zaloUserName)
-      form.setFieldValue('vehicleSubType', dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
-      form.setFieldValue('scheduleType', dataBookingParam?.scheduleType || optionServiceType[0]?.value)
-      form.setFieldValue('licensePlateColor', dataBookingParam?.licensePlateColor || licensePlateColorList[0]?.value)
-      form.setFieldValue('vehicleSubCategory', dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value)
+      const draftFields = bookingDraftRef.current?.fields || {}
+      form.setFieldValue('vehicleSubType', draftFields.vehicleSubType || dataBookingParam?.vehicleSubType || VEHICLE_SUB_TYPE[0]?.value)
+      form.setFieldValue('scheduleType', draftFields.scheduleType || dataBookingParam?.scheduleType || optionServiceType[0]?.value)
+      form.setFieldValue('licensePlateColor', draftFields.licensePlateColor || dataBookingParam?.licensePlateColor || licensePlateColorList[0]?.value)
+      form.setFieldValue('vehicleSubCategory', draftFields.vehicleSubCategory || dataBookingParam?.vehicleSubCategory || vehicleSubCategoryOptions[0]?.value)
     }
   }, [isZaloApp, zaloUserPhone, zaloUserName])
 
@@ -1600,6 +1668,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                 options={paramsScheduleTypeParams ? (scheduleTypes || optionServiceType)?.filter((item) => +item?.value === +paramsScheduleTypeParams) : (scheduleTypes || optionServiceType)}
                 menuPlacement="top"
                 onChange={(values, scheduleType) => {
+                  pendingServiceDraftRef.current = null
                   setScheduleCategory(scheduleType?.scheduleCategory)
                   form.setFieldValue('scheduleType', values)
                   // Nếu config trạm là null, khi đổi mục đích sẽ tự đồng bộ lại trạm:
@@ -1638,6 +1707,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                   menuPlacement="top"
                   notFoundContent="Không có dịch vụ phù hợp"
                   onChange={(values, scheduleType) => {
+                    pendingServiceDraftRef.current = null
                     form.setFieldValue('serviceId', values)
                   }}
                 />
@@ -1909,6 +1979,7 @@ function BookingPartnerForm({ form, setTabKey, zaloUserName, zaloUserPhone, gtel
                   menuPlacement="top"
                   onSearch={handleSearchStation}
                   onChange={(value, station) => {
+                    pendingServiceDraftRef.current = null
                     form.setFieldValue('stationsId', value)
                     setStationSelected(station)
                     onChangeStation(value, null, station)
